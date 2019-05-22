@@ -16,7 +16,7 @@ const (
 
 type appContext struct {
 	configuration *configs.Configuration
-	dbms          dbms.Dbms
+	database      dbms.Database
 }
 
 func main() {
@@ -27,8 +27,10 @@ func main() {
 	checkFatalError(error)
 
 	appContext := &appContext{configuration: config}
-	session := appContext.dbms.Connect()
-	defer session.Close()
+
+	//Conecta no postgres
+	appContext.database.Connect()
+	defer appContext.database.Db.Close()
 
 	global.Logger.Info(logFields, "iniciando o servidor http")
 	startHTTPServer(appContext)
@@ -36,6 +38,7 @@ func main() {
 
 func startHTTPServer(appContext *appContext) {
 
+	http.HandleFunc("/variables", appContext.variables)
 	http.HandleFunc("/environments", appContext.environments)
 	http.HandleFunc("/hello", use(appContext.hello))
 	http.HandleFunc("/", appContext.rootHandler)

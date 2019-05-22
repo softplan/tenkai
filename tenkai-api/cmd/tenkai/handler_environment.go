@@ -44,7 +44,7 @@ func (appContext *appContext) environments(w http.ResponseWriter, r *http.Reques
 			return
 		}
 
-		if err := appContext.dbms.CreateEnvironment(data.Data); err != nil {
+		if err := appContext.database.CreateEnvironment(data.Data); err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
@@ -56,7 +56,7 @@ func (appContext *appContext) environments(w http.ResponseWriter, r *http.Reques
 		envResult := &model.EnvResult{}
 		var err error
 
-		if envResult.Envs, err = appContext.dbms.GetAllEnvironments(); err == nil {
+		if envResult.Envs, err = appContext.database.GetAllEnvironments(); err == nil {
 			data, _ := json.Marshal(envResult)
 			w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 			w.WriteHeader(http.StatusOK)
