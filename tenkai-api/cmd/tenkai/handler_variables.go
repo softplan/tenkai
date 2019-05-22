@@ -6,7 +6,9 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strconv"
 
+	"github.com/gorilla/mux"
 	"github.com/softplan/tenkai-api/dbms/model"
 )
 
@@ -51,13 +53,18 @@ func (appContext *appContext) variables(w http.ResponseWriter, r *http.Request) 
 
 		w.WriteHeader(http.StatusCreated)
 
-	} /*else {
+	} else {
 
-		envResult := &model.EnvResult{}
+		vars := mux.Vars(r)
+
+		sl := vars["envId"]
+		id, _ := strconv.Atoi(sl)
+
+		variableResult := &model.VariablesResult{}
 		var err error
 
-		if envResult.Envs, err = appContext.database.GetAllEnvironments(); err == nil {
-			data, _ := json.Marshal(envResult)
+		if variableResult.Variables, err = appContext.database.GetAllVariablesByEnvironment(id); err == nil {
+			data, _ := json.Marshal(variableResult)
 			w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 			w.WriteHeader(http.StatusOK)
 			w.Write(data)
@@ -69,6 +76,6 @@ func (appContext *appContext) variables(w http.ResponseWriter, r *http.Request) 
 		}
 		return
 
-	}*/
+	}
 
 }

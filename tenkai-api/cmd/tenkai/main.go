@@ -8,6 +8,8 @@ import (
 
 	"github.com/softplan/tenkai-api/configs"
 	"github.com/softplan/tenkai-api/global"
+
+	"github.com/gorilla/mux"
 )
 
 const (
@@ -38,13 +40,15 @@ func main() {
 
 func startHTTPServer(appContext *appContext) {
 
-	http.HandleFunc("/variables", appContext.variables)
-	http.HandleFunc("/environments", appContext.environments)
-	http.HandleFunc("/hello", use(appContext.hello))
-	http.HandleFunc("/", appContext.rootHandler)
-
 	port := appContext.configuration.Server.Port
-
 	global.Logger.Info(global.AppFields{global.FUNCTION: "startHTTPServer", "port": port}, "online - listen and server")
-	log.Fatal(http.ListenAndServe(":"+port, nil))
+
+	r := mux.NewRouter()
+	r.HandleFunc("/variables", appContext.variables)
+	r.HandleFunc("/variables/{envId}", appContext.variables)
+	r.HandleFunc("/environments", appContext.environments)
+	r.HandleFunc("/", appContext.rootHandler)
+
+	log.Fatal(http.ListenAndServe(":"+port, r))
+
 }

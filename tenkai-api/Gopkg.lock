@@ -8,6 +8,12 @@
   version = "v1.4.7"
 
 [[projects]]
+  name = "github.com/gorilla/mux"
+  packages = ["."]
+  revision = "ed099d42384823742bba0bf9a72b53b55c9e2e38"
+  version = "v1.7.2"
+
+[[projects]]
   name = "github.com/hashicorp/hcl"
   packages = [
     ".",
@@ -136,6 +142,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "d20e0479be630b6d1ee0769b97befe450df9507a24fba60f672d60ba987494ed"
+  inputs-digest = "baa5d207894884455728ac96e7958e4936b26a186ddb363c49b15e4079ef4ea4"
   solver-name = "gps-cdcl"
   solver-version = 1

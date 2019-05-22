@@ -23,6 +23,11 @@ type DataElement struct {
 	Data Environment `json:"data"`
 }
 
+//VariablesResult Model
+type VariablesResult struct {
+	Variables []Variable
+}
+
 //Variable Structure
 type Variable struct {
 	gorm.Model
