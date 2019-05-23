@@ -23,6 +23,11 @@ type DataElement struct {
 	Data Environment `json:"data"`
 }
 
+//DataVariableElement dataElement
+type DataVariableElement struct {
+	Data Variable `json:"data"`
+}
+
 //VariablesResult Model
 type VariablesResult struct {
 	Variables []Variable

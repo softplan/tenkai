@@ -14,7 +14,7 @@ import (
 
 func (appContext *appContext) variables(w http.ResponseWriter, r *http.Request) {
 
-	var variable model.Variable
+	var data model.DataVariableElement
 
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
@@ -37,16 +37,16 @@ func (appContext *appContext) variables(w http.ResponseWriter, r *http.Request) 
 			log.Fatalln("Error - body closed", err)
 		}
 
-		if err := json.Unmarshal(body, &variable); err != nil {
+		if err := json.Unmarshal(body, &data); err != nil {
+			log.Fatalln("Error unmarshalling data", err)
 			w.WriteHeader(422)
 			if err := json.NewEncoder(w).Encode(err); err != nil {
-				log.Fatalln("Error unmarshalling data", err)
 				w.WriteHeader(http.StatusInternalServerError)
 			}
 			return
 		}
 
-		if err := appContext.database.CreateVariable(variable); err != nil {
+		if err := appContext.database.CreateVariable(data.Data); err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
