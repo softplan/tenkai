@@ -34,5 +34,6 @@ type Variable struct {
 	Scope         string `json:"scope"`
 	Name          string `json:"name"`
 	Value         string `json:"value"`
+	Description   string `json:"description"`
 	EnvironmentID int    `json:"environmentId"`
 }

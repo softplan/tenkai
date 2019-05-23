@@ -5,6 +5,9 @@ import {
     Col, InputGroup, 
     FormControl, Table
 } from "react-bootstrap";
+import queryString from 'query-string';
+import axios from 'axios';
+
 
 
 import { Card } from "components/Card/Card.jsx";
@@ -16,8 +19,26 @@ import { VariablesForm } from "components/Environments/VariablesForm.jsx";
 class Variables extends Component {
 
     state = {
-        showInsertUpdateForm: false
+        item: {},
+        showInsertUpdateForm: false,
+        variablesResult: {Variables: []}
+                
     }    
+
+    componentDidMount() {
+        this.getScopedVariables()
+    }
+
+    getScopedVariables() {
+
+        const values = queryString.parse(this.props.location.search)
+
+        axios.get('http://localhost:8080/variables/' + values.id )
+        .then(response => this.setState({variablesResult: response.data}))
+        .catch(error => console.log(error.message))
+    }
+
+
 
     handleNewClick(e) {
         this.setState({ showInsertUpdateForm: true });
@@ -29,6 +50,18 @@ class Variables extends Component {
 
     render() {
 
+        const items = this.state.variablesResult.Variables.map((item, key) =>
+            
+        <tr key={key}>
+            <td>{item.scope}</td>
+            <td>{item.name}</td>
+            <td>{item.value}</td>
+            <td>{item.description}</td>
+        </tr>
+
+    );   
+
+
         return (
             <div className="content">
                 <Grid fluid>
@@ -39,7 +72,7 @@ class Variables extends Component {
                                 content={
                                     <form>
 
-                                        <h2>TK-XK Produção</h2> 
+                                        <h2>{this.props.location.state.item.name}</h2> 
 
                                         <div className="col-md-8" style={{ padding: '8px 0px' }}>
                                             <InputGroup>
@@ -128,19 +161,7 @@ class Variables extends Component {
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    <tr>
-                                                    <td>GDX_LEGAL</td>
-                                                    <td>GDX_LEGAL_DB_NAME</td>
-                                                    <td>legaldb</td>
-                                                    <td>Nome da base de dados no mongo utilizado pelo GDX_LEGAL</td>
-                                                    </tr>
-                                                    <tr>
-                                                    <td>GDX_SAJ</td>
-                                                    <td>GDX_LEGAL_BACKEND</td>
-                                                    <td>http://gdxlegal.tjsp.jus.br</td>
-                                                    <td>Endereço URI do GDX_LEGAL</td>
-                                                    </tr>
-
+                                                    {items}
                                                 </tbody>
                                                 </Table>
             

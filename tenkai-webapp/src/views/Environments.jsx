@@ -28,8 +28,13 @@ class Environments extends Component {
         .catch(error => console.log(error.message))
     }
 
-    handleClick(e) {
-        this.props.history.push('/admin/environments-envvars');
+    navigateToEnvironmentVariables(id, group, name) {
+        console.log("id: " + JSON.stringify(id));
+        this.props.history.push({
+            pathname: "/admin/environments-envvars", 
+            search: "?id="+id,
+            state: { item: {group: group, name: name } }
+        });
     }
 
 
@@ -62,7 +67,7 @@ class Environments extends Component {
 
         const items = this.state.envResult.Envs.map((item, key) =>
             
-            <tr key={key} onClick={this.handleClick.bind(this)}>
+            <tr key={key} onClick={this.navigateToEnvironmentVariables.bind(this, item.ID, item.group, item.name)}>
                 <td>{key}</td>
                 <td>{item.group}</td>
                 <td>{item.name}</td>
