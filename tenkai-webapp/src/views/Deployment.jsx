@@ -8,11 +8,39 @@ import {
 
 import { Card } from "components/Card/Card.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
+import axios from 'axios';
+
 
 
 class Deployment extends Component {
 
+  state = {
+    chartsResult: {charts:[]}
+  }    
+
+  componentDidMount() {
+    this.getCharts()
+  }
+
+  getCharts() {
+    axios.get('http://localhost:8080/charts')
+    .then(response => this.setState({chartsResult: response.data}))
+    .catch(error => console.log(error.message))
+  }
+
   render() {
+           
+    const items = this.state.chartsResult.charts.map((item, key) =>
+            
+    <tr key={key} >
+        <td><input type="checkbox" className="checkbox"/></td>
+        <td>{item.name}</td>
+        <td>{item.chartVersion}</td>
+        <td>{item.description}</td>
+    </tr>
+
+  );       
+
 
     return (
       <div className="content">
@@ -22,7 +50,6 @@ class Deployment extends Component {
               <Card
                 title=""
                 content={
-                  
 
                             <Row>
                                 <Col md={12}>
@@ -39,24 +66,11 @@ class Deployment extends Component {
                                                       <th>#</th>
                                                       <th>Helm Chart</th>
                                                       <th>Version</th>
+                                                      <th>Description</th>
                                                       </tr>
                                                   </thead>
                                                   <tbody>
-                                                      <tr >
-                                                      <td><input type="checkbox" className="checkbox"/></td>
-                                                      <td>GDX-SAJ</td>
-                                                      <td>0.1.0</td>
-                                                      </tr>
-                                                      <tr >
-                                                      <td><input type="checkbox" className="checkbox"/></td>
-                                                      <td>PD-API</td>
-                                                      <td>0.1.0</td>
-                                                      </tr>
-                                                      <tr >
-                                                      <td><input type="checkbox" className="checkbox"/></td>
-                                                      <td>TJ-REPORTS</td>
-                                                      <td>0.1.0</td>
-                                                      </tr>
+                                                    {items}
                                                   </tbody>
                                                   </Table>
               
