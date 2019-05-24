@@ -33,6 +33,19 @@ type VariablesResult struct {
 	Variables []Variable
 }
 
+//SearchResult result
+type SearchResult struct {
+	Name         string `json:"name"`
+	ChartVersion string `json:"chartVersion"`
+	AppVersion   string `json:"appVersion"`
+	Description  string `json:"description"`
+}
+
+//ChartsResult Model
+type ChartsResult struct {
+	Charts []SearchResult `json:"charts"`
+}
+
 //Variable Structure
 type Variable struct {
 	gorm.Model

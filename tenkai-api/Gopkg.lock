@@ -166,6 +166,12 @@
   revision = "d6023ce2651d8eafb5c75bb0c7167536102ec9f5"
 
 [[projects]]
+  name = "github.com/fatih/color"
+  packages = ["."]
+  revision = "5b77d2a35fb0ede96d138fc9a99f5c9b6aef11b4"
+  version = "v1.7.0"
+
+[[projects]]
   name = "github.com/fsnotify/fsnotify"
   packages = ["."]
   revision = "c2828203cd70a50dcccfb2761f8b1f8ceef9a8e9"
@@ -299,6 +305,16 @@
   version = "v1.7.2"
 
 [[projects]]
+  name = "github.com/gosuri/uitable"
+  packages = [
+    ".",
+    "util/strutil",
+    "util/wordwrap"
+  ]
+  revision = "2cf933346b8370a3a3d8867ef5cf54b2129d8ecf"
+  version = "v0.0.3"
+
+[[projects]]
   branch = "master"
   name = "github.com/gregjones/httpcache"
   packages = [
@@ -342,6 +358,12 @@
   ]
   revision = "8cb6e5b959231cc1119e43259c4a608f9c51a241"
   version = "v1.0.0"
+
+[[projects]]
+  name = "github.com/helm/helm"
+  packages = ["cmd/helm/search"]
+  revision = "05811b84a3f93603dd6c2fcfe57944dfa7ab7fd0"
+  version = "v2.14.0"
 
 [[projects]]
   name = "github.com/huandu/xstrings"
@@ -428,6 +450,24 @@
     "jwriter"
   ]
   revision = "1ea4449da9834f4d333f1cc461c374aea217d249"
+
+[[projects]]
+  name = "github.com/mattn/go-colorable"
+  packages = ["."]
+  revision = "167de6bfdfba052fa6b2d3664c8f5272e23c9072"
+  version = "v0.0.9"
+
+[[projects]]
+  name = "github.com/mattn/go-isatty"
+  packages = ["."]
+  revision = "1311e847b0cb909da63b5fecfb5370aa66236465"
+  version = "v0.0.8"
+
+[[projects]]
+  name = "github.com/mattn/go-runewidth"
+  packages = ["."]
+  revision = "3ee7d812e62a0804a7d0a324e0249ca2db3476d3"
+  version = "v0.0.4"
 
 [[projects]]
   name = "github.com/mattn/go-sqlite3"
@@ -583,8 +623,16 @@
   branch = "master"
   name = "golang.org/x/crypto"
   packages = [
+    "cast5",
     "ed25519",
     "ed25519/internal/edwards25519",
+    "openpgp",
+    "openpgp/armor",
+    "openpgp/clearsign",
+    "openpgp/elgamal",
+    "openpgp/errors",
+    "openpgp/packet",
+    "openpgp/s2k",
     "pbkdf2",
     "scrypt",
     "ssh/terminal"
@@ -1021,6 +1069,7 @@
   packages = [
     "pkg/chartutil",
     "pkg/engine",
+    "pkg/getter",
     "pkg/helm",
     "pkg/helm/environment",
     "pkg/helm/helmpath",
@@ -1028,12 +1077,15 @@
     "pkg/ignore",
     "pkg/kube",
     "pkg/manifest",
+    "pkg/plugin",
     "pkg/proto/hapi/chart",
     "pkg/proto/hapi/release",
     "pkg/proto/hapi/services",
     "pkg/proto/hapi/version",
+    "pkg/provenance",
     "pkg/releaseutil",
     "pkg/renderutil",
+    "pkg/repo",
     "pkg/storage",
     "pkg/storage/driver",
     "pkg/storage/errors",
@@ -1226,6 +1278,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "95e5783fc835263626bc62afa3de1b1950a6b4ad404f461e8725c70eb8309eed"
+  inputs-digest = "be01ba3240812a2f5932f6f4caafcbf6f4f03a611190a2c223024c37c4f944d2"
   solver-name = "gps-cdcl"
   solver-version = 1

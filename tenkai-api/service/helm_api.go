@@ -28,36 +28,11 @@ var (
 	settings     helm_env.EnvSettings
 )
 
-var globalUsage = `The Kubernetes package manager
-To begin working with Helm, run the 'helm init' command:
-	$ helm init
-This will install Tiller to your running Kubernetes cluster.
-It will also set up any necessary local configuration.
-Common actions from this point include:
-- helm search:    search for charts
-- helm fetch:     download a chart to your local directory to view
-- helm install:   upload the chart to Kubernetes
-- helm list:      list releases of charts
-Environment:
-- $HELM_HOME:           set an alternative location for Helm files. By default, these are stored in ~/.helm
-- $HELM_HOST:           set an alternative Tiller host. The format is host:port
-- $HELM_NO_PLUGINS:     disable plugins. Set HELM_NO_PLUGINS=1 to disable plugins.
-- $TILLER_NAMESPACE:    set an alternative Tiller namespace (default "kube-system")
-- $KUBECONFIG:          set an alternative Kubernetes configuration file (default "~/.kube/config")
-- $HELM_TLS_CA_CERT:    path to TLS CA certificate used to verify the Helm client and Tiller server certificates (default "$HELM_HOME/ca.pem")
-- $HELM_TLS_CERT:       path to TLS client certificate file for authenticating to Tiller (default "$HELM_HOME/cert.pem")
-- $HELM_TLS_KEY:        path to TLS client key file for authenticating to Tiller (default "$HELM_HOME/key.pem")
-- $HELM_TLS_ENABLE:     enable TLS connection between Helm and Tiller (default "false")
-- $HELM_TLS_VERIFY:     enable TLS connection between Helm and Tiller and verify Tiller server certificate (default "false")
-- $HELM_TLS_HOSTNAME:   the hostname or IP address used to verify the Tiller server certificate (default "127.0.0.1")
-- $HELM_KEY_PASSPHRASE: set HELM_KEY_PASSPHRASE to the passphrase of your PGP private key. If set, you will not be prompted for the passphrase while signing helm charts
-`
-
 func newRootCmd(args []string) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:          "helm",
 		Short:        "The Helm package manager for Kubernetes.",
-		Long:         globalUsage,
+		Long:         "",
 		SilenceUsage: true,
 		PersistentPreRun: func(*cobra.Command, []string) {
 			if settings.TLSCaCertFile == helm_env.DefaultTLSCaCert || settings.TLSCaCertFile == "" {
@@ -137,21 +112,28 @@ func newRootCmd(args []string) *cobra.Command {
 	return cmd
 }
 
-func init() {
-	// Tell gRPC not to log to console.
-	grpclog.SetLogger(log.New(ioutil.Discard, "", log.LstdFlags))
-}
-
-func TestX() {
+func TestK() {
 	cmd := newRootCmd(os.Args[1:])
 	if err := cmd.Execute(); err != nil {
 		os.Exit(1)
 	}
 }
 
+func init() {
+	// Tell gRPC not to log to console.
+	grpclog.SetLogger(log.New(ioutil.Discard, "", log.LstdFlags))
+}
+
 func markDeprecated(cmd *cobra.Command, notice string) *cobra.Command {
 	cmd.Deprecated = notice
 	return cmd
+}
+
+func Testk() {
+	cmd := newRootCmd(os.Args[1:])
+	if err := cmd.Execute(); err != nil {
+		os.Exit(1)
+	}
 }
 
 func setupConnection() error {
