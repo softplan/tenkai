@@ -44,6 +44,8 @@ func startHTTPServer(appContext *appContext) {
 	global.Logger.Info(global.AppFields{global.FUNCTION: "startHTTPServer", "port": port}, "online - listen and server")
 
 	r := mux.NewRouter()
+
+	r.HandleFunc("/listHelmDeployments", appContext.listHelmDeployments)
 	r.HandleFunc("/charts", appContext.listCharts)
 	r.HandleFunc("/variables", appContext.variables)
 	r.HandleFunc("/variables/{envId}", appContext.variables)

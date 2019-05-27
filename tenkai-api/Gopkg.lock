@@ -1091,6 +1091,7 @@
     "pkg/storage/errors",
     "pkg/sympath",
     "pkg/tiller/environment",
+    "pkg/timeconv",
     "pkg/tlsutil",
     "pkg/urlutil",
     "pkg/version"
@@ -1278,6 +1279,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "be01ba3240812a2f5932f6f4caafcbf6f4f03a611190a2c223024c37c4f944d2"
+  inputs-digest = "79e435a7cfaa02ada5c41416457eae5a1859dc52f77d682f73c6f9449946d273"
   solver-name = "gps-cdcl"
   solver-version = 1
