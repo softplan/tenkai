@@ -361,7 +361,10 @@
 
 [[projects]]
   name = "github.com/helm/helm"
-  packages = ["cmd/helm/search"]
+  packages = [
+    "cmd/helm/search",
+    "pkg/downloader"
+  ]
   revision = "05811b84a3f93603dd6c2fcfe57944dfa7ab7fd0"
   version = "v2.14.0"
 
@@ -1086,6 +1089,7 @@
     "pkg/releaseutil",
     "pkg/renderutil",
     "pkg/repo",
+    "pkg/resolver",
     "pkg/storage",
     "pkg/storage/driver",
     "pkg/storage/errors",
@@ -1279,6 +1283,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "79e435a7cfaa02ada5c41416457eae5a1859dc52f77d682f73c6f9449946d273"
+  inputs-digest = "6fbfa629550597907ff48e9693c8306dff48c25f37fb3eecefd141293e620c2c"
   solver-name = "gps-cdcl"
   solver-version = 1
