@@ -17,9 +17,10 @@ import axios from 'axios';
 class Deployment extends Component {
 
   state = {
-    selectedOption: null,
+    selectedOption: {},
     chartsResult: { charts: [] },
-    environmentList: []
+    environmentList: [],
+    charts: []
   }
  
   componentDidMount() {
@@ -31,7 +32,6 @@ class Deployment extends Component {
     this.setState({ selectedOption });
   }
 
-
   getEnvironments() {
     axios.get('http://localhost:8080/environments')
       .then(response => {
@@ -40,10 +40,8 @@ class Deployment extends Component {
         var arr = [];
         for (var x=0; x < response.data.Envs.length; x++) {
           var element = response.data.Envs[x];
-          console.log(element);
-          arr.push({ value: element.name, label: element.name });
+          arr.push({ value: element.ID, label: element.name });
         }
-
         this.setState({ environmentList: arr });
 
 
@@ -57,22 +55,49 @@ class Deployment extends Component {
       .catch(error => console.log(error.message))
   }
 
-  render() {
+  navigateToCheckVariables(charts, selected) {
 
+    this.props.history.push({
+        pathname: "/admin/deployment-wvars", 
+        search: "?environment="+selected.value,
+        state: { charts: charts, environment: selected.label }
+    });
+
+  }    
+
+  handleCheckboxChange(e) {
+    const item = e.target.name;
+    const isChecked = e.target.checked;
+    let array;
+    if (isChecked) {
+       array = this.state.charts;
+      array.push(item);   
+      this.setState({charts: array})
+    } else {
+      array = this.state.charts; 
+      var index = array.indexOf(item)
+      if (index !== -1) {
+        array.splice(index, 1);
+        this.setState({ charts: array });
+      }
+    }
+    
+  }  
+
+  render() {
 
     const { selectedOption } = this.state;
 
     const items = this.state.chartsResult.charts.map((item, key) =>
 
       <tr key={key} >
-        <td><input type="checkbox" className="checkbox" /></td>
+        <td><input name={item.name} type="checkbox" className="checkbox"  onChange={this.handleCheckboxChange.bind(this)} /></td>
         <td>{item.name}</td>
         <td>{item.chartVersion}</td>
         <td>{item.description}</td>
       </tr>
 
     );
-
 
     return (
       <div className="content">
@@ -128,9 +153,11 @@ class Deployment extends Component {
 
                     </div>
 
-                    <Button bsStyle="info" fill type="button">Analyse Dependencies</Button>
-
-
+                    <Button bsStyle="info" 
+                      fill type="button"
+                      onClick={this.navigateToCheckVariables.bind(this, this.state.charts, this.state.selectedOption)}>
+                        Analyse Dependencies
+                    </Button>
 
                   </div>
                 }

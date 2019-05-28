@@ -6,6 +6,7 @@ import Management from "views/Management";
 import Config from "views/Config";
 import Variables from "views/Variables";
 import Dependencies from "views/Dependencies";
+import VariablesWizard from "views/VariablesWizard";
 
 const dashboardRoutes = [
   {
@@ -56,6 +57,14 @@ const dashboardRoutes = [
     component: Deployment,
     layout: "/admin",
     menu: true
+  },
+  {
+    path: "/deployment-wvars",
+    name: "Deployment Variables Review ",
+    icon: "pe-7s-news-paper",
+    component: VariablesWizard,
+    layout: "/admin",
+    menu: false
   },
   {
     path: "/management",
