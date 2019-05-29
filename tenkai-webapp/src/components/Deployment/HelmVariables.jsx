@@ -29,14 +29,9 @@ export class HelmVariables extends Component {
     }
 
     save() {
-
-        console.log("Env: " + this.props.environment);
-        console.log("Project: " + this.props.name);
-
-        console.log(this.state.values);
         
         const scope = this.props.name;
-        const environmentId = parseInt(this.props.environment);
+        const environmentId = parseInt(this.props.envId);
         let payload = {data: []};
 
         const elements = this.state.values;
@@ -46,13 +41,30 @@ export class HelmVariables extends Component {
             return null;
         });
 
-        console.log(payload);
-
         let data = payload.data;
 
         axios.post('http://localhost:8080/saveVariableValues', { data })
           .then(res => {
-            console.log("OK" + res);
+
+           let installPayload = {};
+           installPayload.namespace = "master";
+
+           var n = scope.indexOf("/");
+           installPayload.name = scope.substring(n+1) + "-" + installPayload.namespace
+           installPayload.chart = scope
+            
+           let args = []
+
+           Object.keys(this.state.values).map(function(key, index) {
+                args.push({name: key, value: elements[key]});
+                return null;
+           });
+           installPayload.arguments = args;
+           
+           axios.post('http://localhost:8080/install', installPayload).then(function() {
+               console.log('OK -> DEPLOYED');
+           });
+
          });
 
     }
@@ -70,15 +82,13 @@ export class HelmVariables extends Component {
         }).catch(error => console.log(error.message))
 
         const scope = this.props.name;
-        const environmentId = parseInt(this.props.environment);
+        const environmentId = parseInt(this.props.envId);
 
-        let payload = {};
-        payload.scope = scope;
-        payload.environmentId = environmentId;
-
-        axios.post('http://localhost:8080/listVariables', { payload })
+        axios.post('http://localhost:8080/listVariables', { environmentId: environmentId, scope: scope })
         .then(response => {
+
             this.addToValues(response.data.Variables);
+
         }).catch(error => console.log(error.message))
 
     }
@@ -88,8 +98,6 @@ export class HelmVariables extends Component {
         variables.forEach((value, index, array) => {
             valuesMap[value.name] = value.value;
         });
-        console.log(valuesMap);
-
         this.setState({
             values: valuesMap
         });

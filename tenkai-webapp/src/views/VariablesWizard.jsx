@@ -13,13 +13,15 @@ import queryString from 'query-string';
 class VariablesWizard extends Component {
 
   state = {
-    envId: ""
+    envId: "x"
   }
 
-  componentDidMount() {
-    const values = queryString.parse(this.props.location.search);
-    this.setState({envId: values.environment});
+  constructor(props) {
+    super(props);
+    const values = queryString.parse(props.location.search);
+    this.state.envId = values.environment;
   }
+
 
   onClick = () => {
     this.props.location.state.charts.map((item, key) => {
@@ -30,8 +32,9 @@ class VariablesWizard extends Component {
 
   render() {
 
+    const envId = this.state.envId;
     const items = this.props.location.state.charts.map((item, key) =>
-      <HelmVariables key={key} name={item} ref={"h" + key} environment={this.state.envId}/>
+      <HelmVariables key={key} name={item} ref={"h" + key} envId={envId}/>
     );     
 
     return (
