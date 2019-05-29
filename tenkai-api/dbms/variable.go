@@ -50,3 +50,16 @@ func (database *Database) GetAllVariablesByEnvironment(envID int) ([]model.Varia
 	}
 	return variables, nil
 }
+
+//GetAllVariablesByEnvironmentAndScope - Retrieve all variables
+func (database *Database) GetAllVariablesByEnvironmentAndScope(envID int, scope string) ([]model.Variable, error) {
+	variables := make([]model.Variable, 0)
+
+	if err := database.Db.Where(&model.Variable{EnvironmentID: envID,
+		Scope: scope,
+	}).Find(&variables).Error; err != nil {
+		return nil, err
+	}
+
+	return variables, nil
+}

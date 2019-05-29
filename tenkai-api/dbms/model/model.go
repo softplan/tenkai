@@ -60,3 +60,17 @@ type Variable struct {
 type VariableData struct {
 	Data []Variable `json:"data"`
 }
+
+//InstallArguments Method
+type InstallArguments struct {
+	Name  string `json:"name"`
+	Value string `json:"value"`
+}
+
+//InstallPayload Struct
+type InstallPayload struct {
+	Namespace string             `json:"namespace"`
+	Chart     string             `json:"chart"`
+	Name      string             `json:"name"`
+	Arguments []InstallArguments `json:"arguments"`
+}

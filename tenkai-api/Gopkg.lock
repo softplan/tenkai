@@ -1071,6 +1071,7 @@
   name = "k8s.io/helm"
   packages = [
     "pkg/chartutil",
+    "pkg/downloader",
     "pkg/engine",
     "pkg/getter",
     "pkg/helm",
@@ -1093,6 +1094,7 @@
     "pkg/storage",
     "pkg/storage/driver",
     "pkg/storage/errors",
+    "pkg/strvals",
     "pkg/sympath",
     "pkg/tiller/environment",
     "pkg/timeconv",
@@ -1283,6 +1285,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "6fbfa629550597907ff48e9693c8306dff48c25f37fb3eecefd141293e620c2c"
+  inputs-digest = "b9e6ed93e279649f3fb4caaa7f577cfd206ceb2d266ecb5564e6f9125c64d068"
   solver-name = "gps-cdcl"
   solver-version = 1

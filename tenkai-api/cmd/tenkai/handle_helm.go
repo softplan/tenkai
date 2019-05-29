@@ -2,6 +2,9 @@ package main
 
 import (
 	"encoding/json"
+	"io"
+	"io/ioutil"
+	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -70,4 +73,46 @@ func (appContext *appContext) getChartVariables(w http.ResponseWriter, r *http.R
 
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(result)
+}
+
+func (appContext *appContext) install(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+
+	if r.Method == "OPTIONS" {
+		return
+	}
+
+	var payload model.InstallPayload
+
+	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
+	if err != nil {
+		log.Fatalln("Error on body", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	if err := r.Body.Close(); err != nil {
+		log.Fatalln("Error - body closed", err)
+	}
+
+	if err := json.Unmarshal(body, &payload); err != nil {
+		log.Fatalln("Error unmarshalling data", err)
+		w.WriteHeader(422)
+		if err := json.NewEncoder(w).Encode(err); err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+		}
+		return
+	}
+
+	var args []string
+
+	for _, item := range payload.Arguments {
+		args = append(args, "app."+item.Name+"="+item.Value)
+	}
+
+	helmapi.Upgrade(payload.Namespace, payload.Name, payload.Chart, args)
+
 }
