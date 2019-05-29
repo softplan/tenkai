@@ -14,14 +14,6 @@ func (appContext *appContext) environments(w http.ResponseWriter, r *http.Reques
 
 	var data model.DataElement
 
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
-
-	if r.Method == "OPTIONS" {
-		return
-	}
-
 	if r.Method == "POST" {
 
 		body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))

@@ -57,6 +57,6 @@ func startHTTPServer(appContext *appContext) {
 	r.HandleFunc("/environments", appContext.environments)
 	r.HandleFunc("/", appContext.rootHandler)
 
-	log.Fatal(http.ListenAndServe(":"+port, r))
+	log.Fatal(http.ListenAndServe(":"+port, corsMiddleware(r)))
 
 }

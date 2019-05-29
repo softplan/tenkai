@@ -14,18 +14,8 @@ import (
 
 func (appContext *appContext) listCharts(w http.ResponseWriter, r *http.Request) {
 
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
-
-	if r.Method == "OPTIONS" {
-		return
-	}
-
 	searchTerms := []string{"saj6"}
-
 	searchResult := helmapi.SearchCharts(searchTerms)
-
 	result := &model.ChartsResult{Charts: *searchResult}
 
 	data, _ := json.Marshal(result)
@@ -36,14 +26,6 @@ func (appContext *appContext) listCharts(w http.ResponseWriter, r *http.Request)
 }
 
 func (appContext *appContext) listHelmDeployments(w http.ResponseWriter, r *http.Request) {
-
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
-
-	if r.Method == "OPTIONS" {
-		return
-	}
 
 	result := helmapi.ListHelmDeployments()
 
@@ -56,16 +38,7 @@ func (appContext *appContext) listHelmDeployments(w http.ResponseWriter, r *http
 
 func (appContext *appContext) getChartVariables(w http.ResponseWriter, r *http.Request) {
 
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
-
-	if r.Method == "OPTIONS" {
-		return
-	}
-
 	vars := mux.Vars(r)
-
 	chartRepo := vars["chartRepo"]
 	chartName := vars["chartName"]
 
@@ -77,16 +50,7 @@ func (appContext *appContext) getChartVariables(w http.ResponseWriter, r *http.R
 
 func (appContext *appContext) install(w http.ResponseWriter, r *http.Request) {
 
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
-
-	if r.Method == "OPTIONS" {
-		return
-	}
-
 	var payload model.InstallPayload
-
 	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
 	if err != nil {
 		log.Fatalln("Error on body", err)

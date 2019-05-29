@@ -12,14 +12,6 @@ import (
 
 func (appContext *appContext) saveVariableValues(w http.ResponseWriter, r *http.Request) {
 
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
-
-	if r.Method == "OPTIONS" {
-		return
-	}
-
 	var data model.VariableData
 
 	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
@@ -52,14 +44,6 @@ func (appContext *appContext) saveVariableValues(w http.ResponseWriter, r *http.
 }
 
 func (appContext *appContext) getVariablesByEnvironmentAndScope(w http.ResponseWriter, r *http.Request) {
-
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
-
-	if r.Method == "OPTIONS" {
-		return
-	}
 
 	type Payload struct {
 		EnvironmentID int    `json:"environmentId"`
