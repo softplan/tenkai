@@ -7,9 +7,28 @@ import (
 
 //CreateVariable - Create a new environment
 func (database *Database) CreateVariable(variable model.Variable) error {
-	if err := database.Db.Create(&variable).Error; err != nil {
-		return err
+
+	var variableEntity model.Variable
+
+	//Verify if update
+	if err := database.Db.Where(&model.Variable{EnvironmentID: variable.EnvironmentID,
+		Scope: variable.Scope,
+		Name:  variable.Name}).First(&variableEntity).Error; err == nil {
+
+		variableEntity.Value = variable.Value
+
+		if err := database.Db.Save(variableEntity).Error; err != nil {
+			return err
+		}
+
+	} else {
+
+		if err := database.Db.Create(&variable).Error; err != nil {
+			return err
+		}
+
 	}
+
 	return nil
 }
 

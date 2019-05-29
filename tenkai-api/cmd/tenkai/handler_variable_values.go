@@ -43,7 +43,7 @@ func (appContext *appContext) saveVariableValues(w http.ResponseWriter, r *http.
 	}
 
 	for _, item := range data.Data {
-		if err := appContext.database.SaveVariableValue(item); err != nil {
+		if err := appContext.database.CreateVariable(item); err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}

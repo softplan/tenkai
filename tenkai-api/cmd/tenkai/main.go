@@ -45,7 +45,7 @@ func startHTTPServer(appContext *appContext) {
 
 	r := mux.NewRouter()
 
-	r.HandleFunc("/saveVariableValues", appContext.getChartVariables).Methods("POST")
+	r.HandleFunc("/saveVariableValues", appContext.saveVariableValues)
 	r.HandleFunc("/getChartVariables/{chartRepo}/{chartName}", appContext.getChartVariables)
 	r.HandleFunc("/listHelmDeployments", appContext.listHelmDeployments)
 	r.HandleFunc("/charts", appContext.listCharts)

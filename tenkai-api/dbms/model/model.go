@@ -49,9 +49,14 @@ type ChartsResult struct {
 //Variable Structure
 type Variable struct {
 	gorm.Model
-	Scope         string `json:"scope"`
-	Name          string `json:"name"`
+	Scope         string `json:"scope" gorm:"index:var_scope"`
+	Name          string `json:"name" gorm:"index:var_name"`
 	Value         string `json:"value"`
 	Description   string `json:"description"`
 	EnvironmentID int    `json:"environmentId"`
+}
+
+//VariableData Struct
+type VariableData struct {
+	Data []Variable `json:"data"`
 }

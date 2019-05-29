@@ -47,8 +47,6 @@ func GetValues(chartName string) ([]byte, error) {
 
 	values, _ := insp.run()
 
-	fmt.Println(values.Raw)
-
 	j2, err := yaml.YAMLToJSON([]byte(values.Raw))
 
 	if err != nil {
