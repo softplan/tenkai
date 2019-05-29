@@ -11,7 +11,7 @@ export class HelmVariables extends Component {
 
     state = {
         variables:[],
-        values: new Map()
+        values: {}
     }
 
     componentDidMount() {
@@ -33,24 +33,27 @@ export class HelmVariables extends Component {
         console.log("Env: " + this.props.environment);
         console.log("Project: " + this.props.name);
 
-       
-
-        /*
         console.log(this.state.values);
-
-        const values = queryString.parse(this.props.location.search);
-        data.environmentId = parseInt(values.id);
-
-        let payload = {data:[]}
-
-
-
         
-        axios.post('http://localhost:8080/saveVariableValues', { payload })
+        const scope = this.props.name;
+        const environmentId = parseInt(this.props.environment);
+        let payload = {data: []};
+
+        const elements = this.state.values;
+
+        Object.keys(this.state.values).map(function(key, index) {
+            payload.data.push({scope: scope, name: key, value: elements[key], environmentId: environmentId});
+            return null;
+        });
+
+        console.log(payload);
+
+        let data = payload.data;
+
+        axios.post('http://localhost:8080/saveVariableValues', { data })
           .then(res => {
             console.log("OK" + res);
-         });        
-         */
+         });
 
     }
 
@@ -65,6 +68,31 @@ export class HelmVariables extends Component {
             }
 
         }).catch(error => console.log(error.message))
+
+        const scope = this.props.name;
+        const environmentId = parseInt(this.props.environment);
+
+        let payload = {};
+        payload.scope = scope;
+        payload.environmentId = environmentId;
+
+        axios.post('http://localhost:8080/listVariables', { payload })
+        .then(response => {
+            this.addToValues(response.data.Variables);
+        }).catch(error => console.log(error.message))
+
+    }
+
+    addToValues(variables) {
+        let valuesMap = new Map();
+        variables.forEach((value, index, array) => {
+            valuesMap[value.name] = value.value;
+        });
+        console.log(valuesMap);
+
+        this.setState({
+            values: valuesMap
+        });
     }
 
     render() {
@@ -103,22 +131,20 @@ export class HelmVariables extends Component {
                 valueTd = <td>{this.state.variables[key]}</td>;
             }
 
+            const value = this.state.values[key] || "";
 
             return (
 
             <tr key={key}>
                 <td>{key}</td>
                 {valueTd}
-                <td><input name={key} value={this.state.values[key]} 
+                <td><input name={key} value={value} 
                     onChange={this.onInputChange}
-                    type="text" style={{width: "370px"}}/></td>
+                    type="text" style={{width: "100%"}}/></td>
             </tr>                
 
             );
           });        
-
-
-
       
 
         return (

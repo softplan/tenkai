@@ -8,27 +8,30 @@ import {
 import { Card } from "components/Card/Card.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
 import HelmVariables from "components/Deployment/HelmVariables.jsx";
+import queryString from 'query-string';
 
 class VariablesWizard extends Component {
 
+  state = {
+    envId: ""
+  }
+
   componentDidMount() {
-    
+    const values = queryString.parse(this.props.location.search);
+    this.setState({envId: values.environment});
   }
 
   onClick = () => {
-    
     this.props.location.state.charts.map((item, key) => {
       this.refs["h" + key].save()
       return null;
     });
-  
-  
   }
 
   render() {
 
     const items = this.props.location.state.charts.map((item, key) =>
-      <HelmVariables key={key} name={item} ref={"h" + key} environment={this.props.location.state.environment}/>
+      <HelmVariables key={key} name={item} ref={"h" + key} environment={this.state.envId}/>
     );     
 
     return (
