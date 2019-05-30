@@ -53,8 +53,9 @@ type upgradeCmd struct {
 }
 
 //HelmUpgrade Method
-func Upgrade(namespace string, release string, chart string, variables []string) {
+func Upgrade(kubeconfig string, release string, chart string, variables []string) {
 
+	settings.KubeConfig = kubeconfig
 	settings.Home = "/home/denny/.helm"
 	settings.TillerNamespace = "kube-system"
 	settings.TLSEnable = false
@@ -65,8 +66,6 @@ func Upgrade(namespace string, release string, chart string, variables []string)
 	setupConnection()
 	upgrade.client = newClient()
 	upgrade.version = ">0.0.0-0"
-
-	upgrade.namespace = namespace
 	upgrade.install = true
 	upgrade.recreate = true
 	upgrade.force = true
@@ -80,6 +79,7 @@ func Upgrade(namespace string, release string, chart string, variables []string)
 
 	teardown()
 	settings.TillerHost = ""
+	settings.KubeConfig = ""
 
 }
 

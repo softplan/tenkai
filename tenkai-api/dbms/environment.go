@@ -25,3 +25,12 @@ func (database *Database) GetAllEnvironments() ([]model.Environment, error) {
 	}
 	return envs, nil
 }
+
+//GetByID - Get Environment By Id
+func (database *Database) GetByID(envID int) (*model.Environment, error) {
+	var result model.Environment
+	if err := database.Db.First(&result, envID).Error; err != nil {
+		return nil, err
+	}
+	return &result, nil
+}

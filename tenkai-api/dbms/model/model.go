@@ -69,8 +69,9 @@ type InstallArguments struct {
 
 //InstallPayload Struct
 type InstallPayload struct {
-	Namespace string             `json:"namespace"`
-	Chart     string             `json:"chart"`
-	Name      string             `json:"name"`
-	Arguments []InstallArguments `json:"arguments"`
+	EnvironmentID int                `json:"environmentId"`
+	Namespace     string             `json:"namespace"`
+	Chart         string             `json:"chart"`
+	Name          string             `json:"name"`
+	Arguments     []InstallArguments `json:"arguments"`
 }
