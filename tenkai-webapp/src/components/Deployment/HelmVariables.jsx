@@ -6,6 +6,7 @@ import {
     Table
 } from "react-bootstrap";
 import axios from 'axios';
+import ArrayVariable from "components/Deployment/ArrayVariable.jsx"
 
 export class HelmVariables extends Component {
 
@@ -48,6 +49,7 @@ export class HelmVariables extends Component {
 
            let installPayload = {};
            installPayload.namespace = "master";
+           const environmentId = parseInt(this.props.envId);
 
            var n = scope.indexOf("/");
            installPayload.name = scope.substring(n+1) + "-" + installPayload.namespace
@@ -60,6 +62,7 @@ export class HelmVariables extends Component {
                 return null;
            });
            installPayload.arguments = args;
+           installPayload.environmentId = environmentId;
            
            axios.post('http://localhost:8080/install', installPayload).then(function() {
                console.log('OK -> DEPLOYED');
@@ -107,51 +110,31 @@ export class HelmVariables extends Component {
 
         const items = Object.keys(this.state.variables).map(key => {
 
-            let valueTd;
-            if (typeof this.state.variables[key] == 'object') {
-
-                let innerObject = this.state.variables[key]
-                const inner = Object.keys(innerObject).map(innerKey => {
-                    return (
-                        //TODO THINK HOW TO REPRESENT THIS IN A GOOD WAY !
-                        <Table bordered>
-                             <thead>
-                                <th>Index</th>
-                                <th>Name</th>
-                                <th>Value</th>
-                            </thead>
-                            <tbody>
-                                <td>{innerKey}</td>
-                                <td>
-                                    {innerObject[innerKey].name}
-                                </td>
-                                <td>
-                                    {innerObject[innerKey].value}
-                                </td>
-                            </tbody>
-                        </Table>
-                        
-                    );
-                });
-
-                valueTd = <td>{inner}</td>;
-            } else {
-                valueTd = <td>{this.state.variables[key]}</td>;
-            }
 
             const value = this.state.values[key] || "";
 
-            return (
+            if (typeof this.state.variables[key] == 'object') {
 
-            <tr key={key}>
-                <td>{key}</td>
-                {valueTd}
-                <td><input name={key} value={value} 
-                    onChange={this.onInputChange}
-                    type="text" style={{width: "100%"}}/></td>
-            </tr>                
+                return(
+                    <ArrayVariable key={key} name={key} variables={this.state.variables[key]}/>
+                )
 
-            );
+            } else {
+
+                return (
+
+                    <tr key={key}>
+                        <td>{key}</td>
+                        <td>{this.state.variables[key]}</td>
+                        <td><input name={key} value={value} 
+                            onChange={this.onInputChange}
+                            type="text" style={{width: "100%"}}/></td>
+                    </tr>                
+        
+                );
+
+            }
+
           });        
       
 
