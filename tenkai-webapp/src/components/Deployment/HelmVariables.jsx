@@ -11,13 +11,46 @@ import ArrayVariable from "components/Deployment/ArrayVariable.jsx"
 export class HelmVariables extends Component {
 
     state = {
-        variables:[],
+        variables:{},
         values: {}
     }
 
     componentDidMount() {
         this.getVariables()
-      }    
+    }    
+
+    addDynamicVariableClick(variableName) {
+        let dbArray = [...this.state.variables[variableName]];
+        let item = {}
+        if (dbArray.length > 0) {
+            for (let element of dbArray.keys()) {
+                item = dbArray[element];
+            }        
+        } else {
+            item = {name: "", value:""};
+        }
+        dbArray.push(item);
+        this.setState(state => ({
+            variables: {
+                ...state.variables,
+                [variableName]: dbArray
+            }
+        }));
+    }
+
+    onInputChangeFromChild(name, value){
+        console.log('here on input change');
+        this.setState(state => ({
+            values: {
+                ...state.values,
+                [name]: value
+            }
+        }), function() {
+            console.log(this.state.values);
+        });
+    }
+
+
 
     onInputChange = event => {
         const { value, name } = event.target;
@@ -116,13 +149,15 @@ export class HelmVariables extends Component {
             if (typeof this.state.variables[key] == 'object') {
 
                 return(
-                    <ArrayVariable key={key} name={key} variables={this.state.variables[key]}/>
+                    <ArrayVariable key={key} name={key} 
+                    variables={this.state.variables[key]} 
+                    values={this.state.values}
+                    onCreateDynamicVariable={this.addDynamicVariableClick.bind(this)} 
+                    onInputChange={this.onInputChangeFromChild.bind(this)}/>
                 )
 
             } else {
-
                 return (
-
                     <tr key={key}>
                         <td>{key}</td>
                         <td>{this.state.variables[key]}</td>
@@ -130,11 +165,8 @@ export class HelmVariables extends Component {
                             onChange={this.onInputChange}
                             type="text" style={{width: "100%"}}/></td>
                     </tr>                
-        
                 );
-
             }
-
           });        
       
 
@@ -142,23 +174,21 @@ export class HelmVariables extends Component {
 
             <Row>
                 <Col md={12}>
-
                     <Card
                         title={this.props.name}
                         content={
-                                <Table striped hover>
-                                    <thead>
-                                        <tr>
-                                            <th style={{ width: "20%" }}>Variable</th>
-                                            <th style={{ width: "40%" }}>Chart Default Value</th>
-                                            <th style={{ width: "40%" }}>Environment Value</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {items}
-                                    </tbody>
-                                </Table>
-
+                            <Table striped hover>
+                                <thead>
+                                    <tr>
+                                        <th style={{ width: "20%" }}>Variable</th>
+                                        <th style={{ width: "40%" }}>Chart Default Value</th>
+                                        <th style={{ width: "40%" }}>Environment Value</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {items}
+                                </tbody>
+                            </Table>
                         }
                     />
                 </Col>

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import {
-  Grid, Row, Col, FormControl, FormGroup, ControlLabel, Table, InputGroup
+  Grid, Row, Col, FormGroup, ControlLabel, Table
 } from "react-bootstrap";
 
 
@@ -86,9 +86,6 @@ class Deployment extends Component {
   }
 
   render() {
-
-    const list = this.state.users
-
 
     const { selectedOption } = this.state;
 

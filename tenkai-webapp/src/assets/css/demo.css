@@ -497,6 +497,10 @@
     height: calc(100% - 60px);
 }
 
+.btn {
+    margin-bottom: 10px
+}
+
 .places-buttons .btn{
     margin-bottom: 30px
 }

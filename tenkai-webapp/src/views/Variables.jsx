@@ -104,7 +104,7 @@ class Variables extends Component {
                                         </div>
                                         <Button className="pull-right" variant="primary" onClick={this.handleNewClick.bind(this)}>New Variable</Button>
 
-                                        <div className="clearfix" />
+                                        
                                     </form>
 
                                 }
