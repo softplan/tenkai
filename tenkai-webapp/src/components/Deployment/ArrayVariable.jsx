@@ -19,7 +19,7 @@ class TableRow extends Component {
         let index=this.props.index;
         const variables =  Object.keys(this.props.element).map(item => {
 
-            let variableName = `${this.props.baseVarName}.[${index}].${item}`;
+            let variableName = `${this.props.baseVarName}[${index}].${item}`;
             const value = this.props.values[variableName] || "";
             return (
                 <tr key={item}>

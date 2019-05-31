@@ -39,15 +39,12 @@ export class HelmVariables extends Component {
     }
 
     onInputChangeFromChild(name, value){
-        console.log('here on input change');
         this.setState(state => ({
             values: {
                 ...state.values,
                 [name]: value
             }
-        }), function() {
-            console.log(this.state.values);
-        });
+        }));
     }
 
 
@@ -115,25 +112,50 @@ export class HelmVariables extends Component {
                 this.setState({variables: []});
             }
 
+            const scope = this.props.name;
+            const environmentId = parseInt(this.props.envId);
+    
+            axios.post('http://localhost:8080/listVariables', { environmentId: environmentId, scope: scope })
+            .then(response => {
+    
+                this.addToValues(this, response.data.Variables);
+    
+            }).catch(error => console.log(error.message))
+    
+
         }).catch(error => console.log(error.message))
 
-        const scope = this.props.name;
-        const environmentId = parseInt(this.props.envId);
-
-        axios.post('http://localhost:8080/listVariables', { environmentId: environmentId, scope: scope })
-        .then(response => {
-
-            this.addToValues(response.data.Variables);
-
-        }).catch(error => console.log(error.message))
 
     }
 
-    addToValues(variables) {
+    getRootName(name) {
+        let i = name.indexOf(".[");
+        return name.substring(0,i);
+    }
+
+    addToValues(self, variables) {
+
+        let dynamicEntries = new Map();
         let valuesMap = new Map();
+
         variables.forEach((value, index, array) => {
             valuesMap[value.name] = value.value;
+            if (value.name.indexOf(".[") > -1) {
+                if (dynamicEntries[this.getRootName(value.name)] !== undefined) {
+                    dynamicEntries[this.getRootName(value.name)]++;
+                } else {
+                    dynamicEntries[this.getRootName(value.name)] = 1;
+                }
+            }
         });
+
+        Object.keys(dynamicEntries).map(function(key) {
+            for (let x = 0; x < (dynamicEntries[key] /2)-1; x++) {
+                self.addDynamicVariableClick(key);
+            }
+            return null
+        });
+
         this.setState({
             values: valuesMap
         });
