@@ -8,11 +8,7 @@ import {
 class TableRow extends Component {
     
     onInputChange(event) {
-
-        console.log(event);
-
         this.props.onInputChange(event.target.name, event.target.value);
-
     }
 
     render() {

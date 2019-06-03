@@ -19,7 +19,8 @@ export class EnvironmentForm extends Component {
             cluster_uri: '',
             ca_certificate: '',
             token: '',
-            namespace: ''
+            namespace: '',
+            gateway:''
         }
     }    
 
@@ -97,7 +98,7 @@ export class EnvironmentForm extends Component {
                             </Row>               
 
                             <FormInputs
-                                ncols={["col-md-2", "col-md-3"]}
+                                ncols={["col-md-2", "col-md-3", "col-md-3"]}
                                 properties={[
                                     {
                                         name: "token",
@@ -117,6 +118,16 @@ export class EnvironmentForm extends Component {
                                         bsClass: "form-control",
                                         placeholder: "",
                                         value: this.state.formData.namespace,
+                                        onChange: this.handleChange
+
+                                    },
+                                    {
+                                        name: "gateway",
+                                        label: "Default Gateway",
+                                        type: "text",
+                                        bsClass: "form-control",
+                                        placeholder: "",
+                                        value: this.state.formData.gateway,
                                         onChange: this.handleChange
 
                                     }

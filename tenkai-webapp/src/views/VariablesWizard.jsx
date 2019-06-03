@@ -13,7 +13,7 @@ import queryString from 'query-string';
 class VariablesWizard extends Component {
 
   state = {
-    envId: "x"
+    envId: ""
   }
 
   constructor(props) {
