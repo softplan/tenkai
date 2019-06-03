@@ -36,7 +36,7 @@ func SearchCharts(searchTerms []string) *[]model.SearchResult {
 
 	sc.run(searchTerms)
 
-	var res []*search.Result = sc.out
+	res := sc.out
 
 	var sr []model.SearchResult
 

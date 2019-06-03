@@ -7,6 +7,8 @@ import (
 	"log"
 	"net/http"
 
+	"strings"
+
 	"github.com/gorilla/mux"
 	"github.com/softplan/tenkai-api/dbms/model"
 	"github.com/softplan/tenkai-api/service/helm"
@@ -71,14 +73,22 @@ func (appContext *appContext) install(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	//Locate Environment
+	environment, err := appContext.database.GetByID(payload.EnvironmentID)
+
 	var args []string
 
 	for _, item := range payload.Arguments {
-		args = append(args, "app."+item.Name+"="+item.Value)
+		if len(item.Name) > 0 {
+			args = append(args, item.Name+"="+replace(item.Value, *environment))
+		}
 	}
 
-	//Locate Environment
-	environment, err := appContext.database.GetByID(payload.EnvironmentID)
+	//Add Default Gateway
+	if len(environment.Gateway) > 0 {
+		args = append(args, "istio.virtualservices.gateways[0]="+environment.Gateway)
+	}
+
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	} else {
@@ -86,4 +96,8 @@ func (appContext *appContext) install(w http.ResponseWriter, r *http.Request) {
 		helmapi.Upgrade(kubeconfig, payload.Name, payload.Chart, args)
 	}
 
+}
+
+func replace(value string, environment model.Environment) string {
+	return strings.Replace(value, "${NAMESPACE}", environment.Namespace, -1)
 }

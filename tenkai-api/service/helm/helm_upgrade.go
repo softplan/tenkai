@@ -52,7 +52,7 @@ type upgradeCmd struct {
 	caFile   string
 }
 
-//HelmUpgrade Method
+//Upgrade Method
 func Upgrade(kubeconfig string, release string, chart string, variables []string) {
 
 	settings.KubeConfig = kubeconfig

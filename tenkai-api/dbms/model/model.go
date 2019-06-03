@@ -11,6 +11,7 @@ type Environment struct {
 	CACertificate string `json:"ca_certificate"`
 	Token         string `json:"token"`
 	Namespace     string `json:"namespace"`
+	Gateway       string `json:"gateway"`
 }
 
 //EnvResult Model
