@@ -39,7 +39,7 @@ func GetValues(chartName string) ([]byte, error) {
 		out: os.Stdout,
 	}
 
-	settings.Home = "/home/denny/.helm"
+	settings.Home = ".helm"
 
 	if err := insp.prepare(chartName); err != nil {
 		return nil, err

@@ -56,7 +56,7 @@ type upgradeCmd struct {
 func Upgrade(kubeconfig string, release string, chart string, variables []string) {
 
 	settings.KubeConfig = kubeconfig
-	settings.Home = "/home/denny/.helm"
+	settings.Home = ".helm"
 	settings.TillerNamespace = "kube-system"
 	settings.TLSEnable = false
 	settings.TLSVerify = false

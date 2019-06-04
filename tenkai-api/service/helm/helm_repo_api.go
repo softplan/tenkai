@@ -31,7 +31,7 @@ func SearchCharts(searchTerms []string) *[]model.SearchResult {
 	sc := &searchCmd{}
 	//var defaultHelmHome = filepath.Join(homedir.HomeDir(), ".helm")
 
-	var z helmpath.Home = "/home/denny/.helm"
+	var z helmpath.Home = ".helm"
 	sc.helmhome = z
 
 	sc.run(searchTerms)

@@ -92,7 +92,7 @@ func (appContext *appContext) install(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	} else {
-		kubeconfig := "/home/denny/.kube/" + environment.Group + "_" + environment.Name
+		kubeconfig := "./" + environment.Group + "_" + environment.Name
 		helmapi.Upgrade(kubeconfig, payload.Name, payload.Chart, args)
 	}
 

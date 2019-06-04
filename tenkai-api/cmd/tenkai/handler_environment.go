@@ -75,7 +75,7 @@ func (appContext *appContext) environments(w http.ResponseWriter, r *http.Reques
 func createEnvironmentFile(clusterName string, clusterUserToken string,
 	fileName string, ca string, server string, namespace string) {
 
-	file, err := os.Create("/home/denny/.kube/" + fileName)
+	file, err := os.Create("./" + fileName)
 	if err != nil {
 		panic(err)
 	}

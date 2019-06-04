@@ -1,0 +1,29 @@
+{{- if .Values.istio.virtualservices.enabled -}}
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: {{ template "tenkai-api.fullname" . }}
+  labels:
+    app: {{ template "tenkai-api.name" . }}
+    chart: {{ template "tenkai-api.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  gateways:
+  {{- range $key, $value := .Values.istio.virtualservices.gateways }}
+  - {{ $value }}
+  {{- end }}
+  hosts:
+  {{- range $key, $value := .Values.istio.virtualservices.hosts }}
+  - {{ $value }}
+  {{- end }}
+  http:
+  - match:
+    - uri:
+        prefix: {{ .Values.istio.virtualservices.apiPath }}
+    route:
+    - destination:
+        host:  {{ template "tenkai-api.fullname" . }}
+        port:
+          number: {{ .Values.service.port }}
+{{- end }}          
