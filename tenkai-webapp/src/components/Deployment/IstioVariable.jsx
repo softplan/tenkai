@@ -6,9 +6,8 @@ import { FormInputs } from "components/FormInputs/FormInputs.jsx";
 
 export class IstioVariable extends Component {
 
-    addHost = event => {
-        const name = event.target.name;        
-        this.props.onAddHost(name);
+    addHost = () => {
+        this.props.onAddHost();
     }
 
     handleApiGatewayPathChange = event => {
@@ -28,20 +27,23 @@ export class IstioVariable extends Component {
 
     handleOnHostChange = event => {
         const {name, value} = event.target;        
+        console.log(name + " =>" + value);
         this.props.onHostChange(name, value);
     }
 
 
     render() {
 
-         const hosts =  Object.keys(this.props.hosts).map((item, index, array) => {
-            let name="istio.virtualservices.hosts[" + index + "]";
+         const hosts =  Object.keys(this.props.hosts).map((item, index) => {
+            //let name="istio.virtualservices.hosts[" + index + "]";
+            //console.log('alfa: ' + name);
+            //console.log('beta: ' + item);
             return(
                 <FormControl key={index}
-                    name={name}
+                    name={item}
                     type="text"
                     placeholder="Add URL"
-                    value={array[item]}
+                    value={this.props.hosts[item]}
                     onChange={this.handleOnHostChange}
                 />
             );

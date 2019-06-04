@@ -17,12 +17,13 @@ export class HelmVariables extends Component {
         defaultApiPath: "",
         injectIstioCar: true,
         enableVirtualService: true,
-        hosts: {}
+        hosts: {},
+        hostCount: 0
     }
 
     componentDidMount() {
-        this.getVariables()
-        this.addHost("istio.virtualservices.hosts[0]")
+        this.addHost();
+        this.getVariables();
     }
 
     addDynamicVariableClick(variableName) {
@@ -178,30 +179,11 @@ export class HelmVariables extends Component {
                     break;
                 default:
                     if (value.name.indexOf("istio.virtualservices.hosts[") > -1) {
-                        console.log(value.name);
-                        /*
                         let name = value.name;
-                        let value = value.value;
-
-                        console.log(name + "=>" + value);
-
-                        if (this.state.hosts[value.name] !== undefined) {
-                            console.log('aqui');
-                            this.setState(state => ({
-                                hosts: {
-                                    ...state.hosts,
-                                    [name]: value
-                                }
-                            }));
-                        }
-                        */
+                        let varValue = value.value;
+                        this.onHostChange(name, varValue);
                     }
-                  // code block
               }             
-            
-
-
-
         });
     }
 
@@ -247,8 +229,12 @@ export class HelmVariables extends Component {
         this.setState({enableVirtualService: newValue});
     }
 
-    addHost(name) {
+    addHost() {
+        let name = "istio.virtualservices.hosts[" + this.state.hostCount + "]";
         this.onHostChange(name, '');
+        this.setState({
+           hostCount: this.state.hostCount + 1
+        });
     }
 
     onHostChange(name, value) {
@@ -311,7 +297,7 @@ export class HelmVariables extends Component {
                                     <Table striped hover>
                                         <thead>
                                             <tr>
-                                                <th style={{ width: "20%" }}>Variable</th>
+                                                <th style={{ width: "10%" }}>Variable</th>
                                                 <th style={{ width: "40%" }}>Chart Default Value</th>
                                                 <th style={{ width: "40%" }}>Environment Value</th>
                                             </tr>
