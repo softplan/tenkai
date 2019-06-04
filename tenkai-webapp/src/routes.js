@@ -10,6 +10,43 @@ import VariablesWizard from "views/VariablesWizard";
 
 const dashboardRoutes = [
   {
+    path: "/environments",
+    name: "Environments",
+    icon: "pe-7s-server",
+    component: Enviroments,
+    layout: "/admin",
+    menu: true
+  },
+  {
+    path: "/environments-envvars",
+    name: "Variables",
+    icon: "pe-7s-server",
+    component: Variables,
+    layout: "/admin",
+    menu: false
+  },
+  {
+    path: "/deployment",
+    name: "Deployment",
+    icon: "pe-7s-news-paper",
+    component: Deployment,
+    layout: "/admin",
+    menu: true
+  },
+  {
+    path: "/deployment-wvars",
+    name: "Deployment Variables Review ",
+    icon: "pe-7s-news-paper",
+    component: VariablesWizard,
+    layout: "/admin",
+    menu: false
+  }
+  
+];
+
+/*
+const dashboardRoutes = [
+  {
     path: "/dashboard",
     name: "Dashboard",
     icon: "pe-7s-graph",
@@ -84,5 +121,6 @@ const dashboardRoutes = [
   }
   
 ];
+*/
 
 export default dashboardRoutes;

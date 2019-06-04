@@ -8,6 +8,7 @@ import {
 import axios from 'axios';
 import ArrayVariable from "components/Deployment/ArrayVariable.jsx"
 import IstioVariable from "./IstioVariable";
+import TENKAI_API_URL from 'env.js';
 
 export class HelmVariables extends Component {
 
@@ -92,7 +93,7 @@ export class HelmVariables extends Component {
 
         let data = payload.data;
 
-        axios.post('http://localhost:8080/saveVariableValues', { data })
+        axios.post(TENKAI_API_URL + '/saveVariableValues', { data })
             .then(res => {
 
                 let installPayload = {};
@@ -122,7 +123,7 @@ export class HelmVariables extends Component {
                 installPayload.arguments = args;
                 installPayload.environmentId = environmentId;
 
-                axios.post('http://localhost:8080/install', installPayload).then(function () {
+                axios.post(TENKAI_API_URL + '/install', installPayload).then(function () {
                     console.log('OK -> DEPLOYED');
                     alert("OK - Verifiy with \"kubectl get pods\"");
                 });
@@ -133,7 +134,7 @@ export class HelmVariables extends Component {
     
 
     getVariables() {
-        axios.get('http://localhost:8080/getChartVariables/' + this.props.name)
+        axios.get(TENKAI_API_URL + '/getChartVariables/' + this.props.name)
             .then(response => {
 
                 if (response.data.app != null) {
@@ -147,7 +148,7 @@ export class HelmVariables extends Component {
                 const scope = this.props.name;
                 const environmentId = parseInt(this.props.envId);
 
-                axios.post('http://localhost:8080/listVariables', { environmentId: environmentId, scope: scope })
+                axios.post(TENKAI_API_URL + '/listVariables', { environmentId: environmentId, scope: scope })
                     .then(response => {
 
                         this.addToValues(this, response.data.Variables);

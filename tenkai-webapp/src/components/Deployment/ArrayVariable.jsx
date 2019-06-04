@@ -13,7 +13,8 @@ class TableRow extends Component {
 
     render() {
         let index=this.props.index;
-        const variables =  Object.keys(this.props.element).map(item => {
+        let element = this.props.element || ""
+        const variables =  Object.keys(element).map(item => {
 
             let variableName = `${this.props.baseVarName}[${index}].${item}`;
             const value = this.props.values[variableName] || "";
@@ -39,8 +40,8 @@ export class ArrayVariable extends Component {
     }
 
     render() {
-
-        const fieldNames = Object.keys(this.props.variables).map(index => {
+        let variables = this.props.variables || [];
+        const fieldNames = Object.keys(variables).map(index => {
             return (
                 <TableRow key={index} baseVarName={this.props.name} 
                     index={index} 

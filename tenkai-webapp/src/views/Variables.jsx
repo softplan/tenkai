@@ -7,8 +7,7 @@ import {
 } from "react-bootstrap";
 import queryString from 'query-string';
 import axios from 'axios';
-
-
+import TENKAI_API_URL from 'env.js';
 
 import { Card } from "components/Card/Card.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
@@ -33,7 +32,7 @@ class Variables extends Component {
 
         const values = queryString.parse(this.props.location.search);
 
-        axios.get('http://localhost:8080/variables/' + values.id)
+        axios.get(TENKAI_API_URL + '/variables/' + values.id)
             .then(response => this.setState({ variablesResult: response.data }))
             .catch(error => console.log(error.message));
     }
@@ -51,7 +50,7 @@ class Variables extends Component {
         const values = queryString.parse(this.props.location.search);
         data.environmentId = parseInt(values.id);
 
-        axios.post('http://localhost:8080/variables', { data })
+        axios.post(TENKAI_API_URL + '/variables', { data })
           .then(res => {
            
             this.setState({variablesResult: {Variables: [...this.state.variablesResult.Variables, data]}});
@@ -103,7 +102,7 @@ class Variables extends Component {
 
                                         </div>
                                         <Button className="pull-right" variant="primary" onClick={this.handleNewClick.bind(this)}>New Variable</Button>
-
+                                        <div className="clearfix" />
                                         
                                     </form>
 

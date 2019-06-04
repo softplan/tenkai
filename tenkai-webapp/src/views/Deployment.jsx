@@ -9,6 +9,8 @@ import { Card } from "components/Card/Card.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
 import axios from 'axios';
 
+import TENKAI_API_URL from 'env.js';
+
 
 class Deployment extends Component {
 
@@ -30,7 +32,7 @@ class Deployment extends Component {
   }
 
   getEnvironments() {
-    axios.get('http://localhost:8080/environments')
+    axios.get(TENKAI_API_URL + '/environments')
       .then(response => {
 
 
@@ -47,7 +49,7 @@ class Deployment extends Component {
   }
 
   getCharts() {
-    axios.get('http://localhost:8080/charts')
+    axios.get(TENKAI_API_URL + '/charts')
       .then(response => this.setState({ chartsResult: response.data }))
       .catch(error => console.log(error.message))
   }
@@ -75,8 +77,6 @@ class Deployment extends Component {
       array.push(item);
       this.setState({ charts: array })
     }
-    console.log(this.state.charts);
-
   }
   
   onChangeInputHandler(e){

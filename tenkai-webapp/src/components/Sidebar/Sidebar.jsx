@@ -44,7 +44,7 @@ class Sidebar extends Component {
           )}
         <div className="logo">
           <a
-            href="https://www.creative-tim.com?ref=lbd-sidebar"
+            href="http://tenkai.saj6.softplan.com.br"
             className="simple-text logo-mini"
           >
             <div className="logo-img">
@@ -52,7 +52,7 @@ class Sidebar extends Component {
             </div>
           </a>
           <a
-            href="https://www.creative-tim.com?ref=lbd-sidebar"
+            href="http://tenkai.saj6.softplan.com.br"
             className="simple-text logo-normal"
           >
             Tenkai

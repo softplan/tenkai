@@ -10,6 +10,7 @@ import { Card } from "components/Card/Card.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
 import EnvironmentForm from "components/Environments/EnvironmentForm.jsx";
 import axios from 'axios';
+import TENKAI_API_URL from 'env.js';
 
 class Environments extends Component {
 
@@ -23,7 +24,7 @@ class Environments extends Component {
     }
 
     getEnvironments() {
-        axios.get('http://localhost:8080/environments')
+        axios.get(TENKAI_API_URL + '/environments')
         .then(response => this.setState({envResult: response.data}))
         .catch(error => console.log(error.message))
     }
@@ -48,7 +49,7 @@ class Environments extends Component {
 
     onSaveClick(data) {
         
-        axios.post('http://localhost:8080/environments', { data })
+        axios.post(TENKAI_API_URL + '/environments', { data })
           .then(res => {
            
             this.setState({envResult: {Envs: [...this.state.envResult.Envs, data]}});
