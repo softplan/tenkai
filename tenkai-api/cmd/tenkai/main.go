@@ -54,6 +54,8 @@ func startHTTPServer(appContext *appContext) {
 	r.HandleFunc("/variables", appContext.variables)
 	r.HandleFunc("/variables/{envId}", appContext.variables)
 
+	r.HandleFunc("/environments/delete/{id}", appContext.delete)
+	r.HandleFunc("/environments/edit", appContext.edit)
 	r.HandleFunc("/environments", appContext.environments)
 	r.HandleFunc("/", appContext.rootHandler)
 

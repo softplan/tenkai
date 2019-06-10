@@ -38,42 +38,72 @@ class Environments extends Component {
         });
     }
 
+    navigateToEditEnvironment(item) {
+        this.setState(() => ({
+            showInsertUpdateForm: true,
+            editItem: item,
+            editMode: true
+        }));
+    }
 
     handleNewEnvironmentClick(e) {
-        this.setState({ showInsertUpdateForm: true });
+        this.setState(() => ({
+            showInsertUpdateForm: true,
+            editItem: {},
+            editMode: false
+        }));
     }
 
     handleCancelEnvironmentClick(e) {
-        this.setState({ showInsertUpdateForm: false });
-    }    
+        this.setState(() => ({
+            showInsertUpdateForm: false,
+            editItem: {},
+            editMode: false
+        }));
+    }
 
     onSaveClick(data) {
-        
-        axios.post(TENKAI_API_URL + '/environments', { data })
-          .then(res => {
-           
-            this.setState({envResult: {Envs: [...this.state.envResult.Envs, data]}});
+        if (this.state.editMode) {
+            console.log("edit")
+            this.save(data, '/environments/edit')
+        } else {
+            console.log("new")
+            this.save(data, '/environments')
+        }
+    }
 
-            console.log("OK" + res);
-            console.log(res.data);
+    save(data, uri) {
+        axios.post(TENKAI_API_URL + uri, { data })
+            .then(res => {
+                this.setState({ envResult: { Envs: [...this.state.envResult.Envs, data] } });
+                this.getEnvironments();
+            });
+        this.setState(() => ({ 
+            showInsertUpdateForm: false,
+            editItem: {},
+            editMode: false
+        }));
+    }
 
-         });
-
-        this.setState({ showInsertUpdateForm: false });
-                
-    }    
-
+    onDelete(item) {
+        axios.delete(TENKAI_API_URL + "/environments/delete/" + item.ID, )
+            .then(res => {
+                this.getEnvironments();
+            })
+    }
 
     render() {
 
         const items = this.state.envResult.Envs.map((item, key) =>
             
-            <tr key={key} onClick={this.navigateToEnvironmentVariables.bind(this, item.ID, item.group, item.name)}>
-                <td>{key}</td>
-                <td>{item.group}</td>
-                <td>{item.name}</td>
-                <td>{item.cluster_uri}</td>
-                <td>{item.namespace}</td>
+            <tr key={key}>
+                <td onClick={this.navigateToEnvironmentVariables.bind(this, item.ID, item.group, item.name)}>{item.ID}</td>
+                <td onClick={this.navigateToEnvironmentVariables.bind(this, item.ID, item.group, item.name)}>{item.group}</td>
+                <td onClick={this.navigateToEnvironmentVariables.bind(this, item.ID, item.group, item.name)}>{item.name}</td>
+                <td onClick={this.navigateToEnvironmentVariables.bind(this, item.ID, item.group, item.name)}>{item.cluster_uri}</td>
+                <td onClick={this.navigateToEnvironmentVariables.bind(this, item.ID, item.group, item.name)}>{item.namespace}</td>
+                <td onClick={this.navigateToEditEnvironment.bind(this, item)}>Edit</td>
+                <td onClick={this.onDelete.bind(this, item)}>Delete</td>
             </tr>
 
         );        
@@ -112,7 +142,7 @@ class Environments extends Component {
                         <Row>
                         <Col md={12}>
                         { this.state.showInsertUpdateForm ? 
-                            <EnvironmentForm saveClick={this.onSaveClick.bind(this)} cancelClick={this.handleCancelEnvironmentClick.bind(this)}/> : null 
+                            <EnvironmentForm editMode={this.state.editMode} editItem={this.state.editItem} saveClick={this.onSaveClick.bind(this)} cancelClick={this.handleCancelEnvironmentClick.bind(this)}/> : null 
                         }
                         </Col>
                         </Row>                        
@@ -133,6 +163,8 @@ class Environments extends Component {
                                                 <th>Environment Name</th>
                                                 <th>Cluster URI</th>
                                                 <th>Namespace</th>
+                                                <th>Edit</th>
+                                                <th>Delete</th>
                                                 </tr>
                                             </thead>
                                             <tbody>

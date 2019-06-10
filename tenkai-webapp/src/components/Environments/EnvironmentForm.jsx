@@ -14,6 +14,7 @@ export class EnvironmentForm extends Component {
 
     state = {
         formData: {
+            ID: '',
             group: '',
             name: '',
             cluster_uri: '',
@@ -22,7 +23,19 @@ export class EnvironmentForm extends Component {
             namespace: '',
             gateway:''
         }
-    }    
+    }
+
+    componentDidMount() {
+        if(this.props.editItem) {
+            this.setState(() => ({
+                formData: this.props.editItem
+            }));
+        } else {
+            this.setState(() => ({
+                formData: {}
+            }));
+        }
+    }
 
     handleChange = event => {
         const { value, name } = event.target;
@@ -42,9 +55,11 @@ export class EnvironmentForm extends Component {
 
 
     render() {
+        const { editMode } = this.props;
+
         return (
             <div>
-                <Card title="New Environment"
+                <Card title={editMode ? "Edit Environment" : "New Environment"}
                     content={
                         <form>
                             <FormInputs
@@ -74,7 +89,7 @@ export class EnvironmentForm extends Component {
                                         type: "text",
                                         bsClass: "form-control",
                                         placeholder: "http://clusterInfo/",
-                                        value: this.state.formData.cluster,
+                                        value: this.state.formData.cluster_uri,
                                         onChange: this.handleChange
                                     }
                                 ]}
@@ -90,7 +105,7 @@ export class EnvironmentForm extends Component {
                                     componentClass="textarea"
                                     bsClass="form-control"
                                     placeholder="Paste here the CA Certificate"
-                                    value={this.state.formData.certificate}
+                                    value={this.state.formData.ca_certificate}
                                     onChange={this.handleChange}
                                 />
                                 </FormGroup>
