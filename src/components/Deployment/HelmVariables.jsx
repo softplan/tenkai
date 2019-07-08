@@ -99,65 +99,12 @@ export class HelmVariables extends Component {
             .then(res => {
 
                 let installPayload = {};
-                const environmentId = parseInt(this.props.envId);
 
+                const environmentId = parseInt(this.props.envId);
                 var n = scope.indexOf("/");
                 installPayload.name = scope.substring(n + 1)
+
                 installPayload.chart = scope
-
-                let args = []
-
-                Object.keys(this.state.values).map(function (key, index) {
-                    if (key.indexOf("istio") === 0) {
-                        args.push({ name: key, value: elements[key] });
-                    } else {
-                        args.push({ name: "app." + key, value: elements[key] });
-                    }
-                    return null;
-                });
-
-                var istioEnabledElement = args.filter(obj => {
-                    return obj.name === "istio.enabled"
-                })
-                if (istioEnabledElement !== undefined) {
-                    istioEnabledElement.value = this.state.injectIstioCar ? "true" : "false";
-                } else {
-                    args.push({ name: "istio.enabled", value: this.state.injectIstioCar ? "true" : "false" });
-                }
-
-                var vsEnabledElement = args.filter(obj => {
-                    return obj.name === "istio.virtualservices.enabled"
-                })
-                if (vsEnabledElement !== undefined) {
-                    vsEnabledElement.value = this.state.enableVirtualService ? "true" : "false";
-                } else {
-                    args.push({ name: "istio.virtualservices.enabled", value: this.state.enableVirtualService ? "true" : "false" });
-                }
-                
-                var apiPathElement = args.filter(obj => {
-                    return obj.name === "istio.virtualservices.apiPath"
-                })
-                if (apiPathElement !== undefined) {
-                    apiPathElement.value = this.state.defaultApiPath;
-                } else {
-                    args.push({ name: "istio.virtualservices.apiPath", value: this.state.defaultApiPath });
-                }
-                
-                const hosts =  this.state.hosts;
-                Object.keys(hosts).map(function (key, index) {
-                    var host = args.filter(obj => {
-                        return obj.name === key
-                    })
-                    if (host !== undefined) {
-                        host.value =  hosts[key];
-                    } else {
-                        args.push({ name: key, value: hosts[key]});
-                    }
-                    return null;
-                });
-                
-
-                installPayload.arguments = args;
                 installPayload.environmentId = environmentId;
 
                 axios.post(TENKAI_API_URL + '/install', installPayload).then(() => {
@@ -172,9 +119,7 @@ export class HelmVariables extends Component {
                 this.props.handleNotification("general_fail", "error");
                 console.log("Error saveVariableValues: " + error.message);
             });
-
     }
-    
 
     getVariables() {
         axios.get(TENKAI_API_URL + '/getChartVariables/' + this.props.name)
