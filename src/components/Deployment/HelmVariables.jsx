@@ -71,7 +71,7 @@ export class HelmVariables extends Component {
         }));
     }
 
-    save() {
+    save(callbackFunction) {
 
         const scope = this.props.name;
         const environmentId = parseInt(this.props.envId);
@@ -95,8 +95,9 @@ export class HelmVariables extends Component {
 
         let data = payload.data;
 
-        axios.post(TENKAI_API_URL + '/saveVariableValues', { data })
-            .then(res => {
+        axios.post(TENKAI_API_URL + '/saveVariableValues', { data }).then(res => {
+
+               
 
                 let installPayload = {};
 
@@ -107,6 +108,9 @@ export class HelmVariables extends Component {
                 installPayload.chart = scope
                 installPayload.environmentId = environmentId;
 
+                callbackFunction(installPayload);
+
+                /*
                 axios.post(TENKAI_API_URL + '/install', installPayload).then(() => {
                     this.props.handleNotification("deployment_ok", "success");
                     console.log('OK -> DEPLOYED => After notification');
@@ -114,11 +118,13 @@ export class HelmVariables extends Component {
                     console.log("Error deploying: " + error.message);
                     this.props.handleNotification("deployment_fail", "error");
                 });
+                */
 
             }).catch(error => {
                 this.props.handleNotification("general_fail", "error");
                 console.log("Error saveVariableValues: " + error.message);
             });
+
     }
 
     getVariables() {

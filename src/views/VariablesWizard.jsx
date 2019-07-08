@@ -9,6 +9,9 @@ import { Card } from "components/Card/Card.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
 import HelmVariables from "components/Deployment/HelmVariables.jsx";
 import queryString from 'query-string';
+import axios from 'axios';
+import TENKAI_API_URL from 'env.js';
+
 
 class VariablesWizard extends Component {
 
@@ -22,12 +25,41 @@ class VariablesWizard extends Component {
     this.state.envId = values.environment;
   }
 
+  onSave = (payload) => {
+
+    console.log(payload);
+    
+    axios.post(TENKAI_API_URL + '/multipleInstall', payload).then(() => {
+        this.props.handleNotification("deployment_ok", "success");
+        console.log('OK -> DEPLOYED => After notification');
+    }).catch(error => {
+        console.log("Error deploying: " + error.message);
+        this.props.handleNotification("deployment_fail", "error");
+    });
+
+  }
 
   onClick = () => {
-    this.props.location.state.charts.map((item, key) => {
-      this.refs["h" + key].save()
-      return null;
+
+    let payload={deployables:[]};
+    let count = 0;
+    const totalCharts = this.props.location.state.charts.length;
+
+    this.props.location.state.charts.forEach((item, key) => {
+      
+        this.refs["h" + key].save( (data) => {
+          console.log("Adding: " + JSON.stringify(data));
+          payload.deployables.push(data);
+          count++;
+          if (count == totalCharts) {
+            this.onSave(payload);
+          }
+        });
+
     });
+
+    
+
   }
 
   render() {
