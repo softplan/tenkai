@@ -9,6 +9,8 @@ import {
 import { Card } from "components/Card/Card.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
 import RepoForm from "components/Config/RepoForm.jsx";
+import SimpleModal from 'components/Modal/SimpleModal.jsx'
+
 import axios from 'axios';
 import TENKAI_API_URL from 'env.js';
 
@@ -17,11 +19,22 @@ class Config extends Component {
   state = {
     showInsertUpdateForm: false,
     repoResult: { repositories: [] },
-    editItem: {}
+    editItem: {},
+    showConfirmDeleteModal: false,
+    itemToDelete: {},
+
   }
 
   componentDidMount() {
     this.getRepositories()
+  }
+
+  handleConfirmDeleteModalClose() {
+    this.setState({ showConfirmDeleteModal: false, itemToDelete: {} });
+  }
+
+  handleConfirmDeleteModalShow() {
+    this.setState({ showConfirmDeleteModal: true });
   }
 
   getRepositories() {
@@ -60,6 +73,23 @@ class Config extends Component {
       });
   }
 
+  onDelete(item) {
+    this.setState({ itemToDelete: item }, () => { this.handleConfirmDeleteModalShow() });
+  }
+
+  handleConfirmDelete() {
+    if (this.state.itemToDelete != undefined) {
+      axios.delete(TENKAI_API_URL + "/repositories/" + this.state.itemToDelete.name)
+        .then(res => {
+          this.getRepositories();
+        }).catch(error => {
+          console.log(error.message);
+          this.props.handleNotification("general_fail", "error");
+        });
+    }
+    this.setState({ showConfirmDeleteModal: false, itemToDelete: {} });
+  }
+
   onSaveClick(data) {
     console.log(data)
 
@@ -77,7 +107,7 @@ class Config extends Component {
         }).catch(error => {
           console.log(error.message);
           this.props.handleNotification("general_fail", "error");
-      });
+        });
 
 
     } else {
@@ -117,6 +147,17 @@ class Config extends Component {
 
     return (
       <div className="content">
+
+
+        <SimpleModal
+          showConfirmDeleteModal={this.state.showConfirmDeleteModal}
+          handleConfirmDeleteModalClose={this.handleConfirmDeleteModalClose.bind(this)}
+          title="Confirm" subTitle="Delete repository" message="Are you sure you want to delete this repository?"
+          handleConfirmDelete={this.handleConfirmDelete.bind(this)}
+          handleConfirmDeleteModalClose={this.handleConfirmDeleteModalClose.bind(this)}>
+        </SimpleModal>
+
+
         <Grid fluid>
           <Row>
             <Col md={12}>

@@ -5,6 +5,7 @@ import {
     Col, InputGroup,
     FormControl, Table
 } from "react-bootstrap";
+import SimpleModal from 'components/Modal/SimpleModal.jsx'
 import queryString from 'query-string';
 import axios from 'axios';
 import TENKAI_API_URL from 'env.js';
@@ -22,26 +23,54 @@ class Variables extends Component {
         showInsertUpdateForm: false,
         variablesResult: { Variables: [] },
         environmentName: "",
-        locationSearch: ""
+        locationSearch: "",
+        showConfirmDeleteModal: false,
+        itemToDelete: {}, 
+
     }
 
     componentDidMount() {
-        const environmentName = this.props.location.state.item.name;
-        const locationSearch = this.props.location.search;
+        let environmentName = "";
+        if (this.props.location.state != undefined) {
+            environmentName = this.props.location.state.item.name;
+        } else {
+            this.props.history.push({
+                pathname: "/admin/environments",
+            });
+        }
+        let locationSearch= "";
+        if (this.props.location.search != undefined) {
+            locationSearch = this.props.location.search;
+        } else {
+            this.props.history.push({
+                pathname: "/admin/environments",
+            });
+        }
         this.setState({environmentName: environmentName, locationSearch: locationSearch},
         () => {
             this.getScopedVariables();
         });
     }
 
+    handleConfirmDeleteModalClose() {
+        this.setState({ showConfirmDeleteModal: false, itemToDelete: {} });
+    }
+
+    handleConfirmDeleteModalShow() {
+        this.setState({ showConfirmDeleteModal: true });
+    }
+
     getScopedVariables() {
         const values = queryString.parse(this.state.locationSearch);
-        axios.get(TENKAI_API_URL + '/variables/' + values.id)
-            .then(response => this.setState({ variablesResult: response.data }))
-            .catch(error => {
+        setTimeout( () => {
+            axios.get(TENKAI_API_URL + '/variables/' + values.id)
+            .then(response =>  {
+                this.setState({ variablesResult: response.data });
+            }).catch(error => {
                 console.log(error.message);
                 this.props.handleNotification("general_fail", "error");
             });
+          }, 1000);
     }
 
     handleNewClick(e) {
@@ -93,10 +122,17 @@ class Variables extends Component {
     }
 
     onDelete(item) {
-        axios.delete(TENKAI_API_URL + "/variables/delete/" + item.ID).then(this.getScopedVariables()).catch(error => {
-            console.log(error.message);
-            this.props.handleNotification("general_fail", "error");
-        });
+        this.setState({itemToDelete: item}, () => {this.handleConfirmDeleteModalShow()});
+    }
+
+    handleConfirmDelete() {
+        if (this.state.itemToDelete != undefined) {
+            axios.delete(TENKAI_API_URL + "/variables/delete/" + this.state.itemToDelete.ID).then(this.getScopedVariables()).catch(error => {
+                console.log(error.message);
+                this.props.handleNotification("general_fail", "error");
+            });            
+        }
+        this.setState({showConfirmDeleteModal: false, itemToDelete: {}});
     }
 
     render() {
@@ -116,6 +152,15 @@ class Variables extends Component {
 
         return (
             <div className="content">
+
+                <SimpleModal 
+                    showConfirmDeleteModal={this.state.showConfirmDeleteModal}
+                    handleConfirmDeleteModalClose={this.handleConfirmDeleteModalClose.bind(this)}
+                    title="Confirm" subTitle="Delete variable" message="Are you sure you want to delete this variable?"
+                    handleConfirmDelete={this.handleConfirmDelete.bind(this)}
+                    handleConfirmDeleteModalClose= {this.handleConfirmDeleteModalClose.bind(this)}>  
+                </SimpleModal>
+         
                 <Grid fluid>
                     <Row>
                         <Col md={12}>
@@ -158,7 +203,7 @@ class Variables extends Component {
                     <Row>
                         <Col md={12}>
                             <Card
-                                title="Variables x"
+                                title="Variables"
                                 content={
                                     <form>
                                         <Row>
