@@ -73,12 +73,13 @@ class Deployment extends Component {
   }
 
   getCharts(repo) {
+    this.props.handleLoading(true);
     let url = "/charts/" + repo;
-    axios.get(TENKAI_API_URL + url)
-      .then(response => this.setState({
-        chartsResult: response.data.charts != null ? response.data : { charts: [] }
-      }))
-      .catch(error => {
+    axios.get(TENKAI_API_URL + url).then(response => {
+        this.setState({chartsResult: response.data.charts != null ? response.data : { charts: [] }});
+        this.props.handleLoading(false);
+      }).catch(error => {
+        this.props.handleLoading(false);
         console.log(error.message);
         this.props.handleNotification("general_fail", "error");
       });
@@ -127,6 +128,7 @@ class Deployment extends Component {
           <td><input name={item.name} checked={this.state.charts.indexOf(item.name) !== -1} type="checkbox" className="checkbox" onChange={this.handleCheckboxChange.bind(this)} /></td>
           <td>{item.name}</td>
           <td>{item.chartVersion}</td>
+          <td>{item.appVersion}</td>
           <td>{item.description}</td>
         </tr>
 
@@ -197,6 +199,7 @@ class Deployment extends Component {
                             <th>#</th>
                             <th>Helm Chart</th>
                             <th>Version</th>
+                            <th>App Version</th>
                             <th>Description</th>
                           </tr>
                         </thead>

@@ -5,45 +5,78 @@ import { Button} from "react-bootstrap";
 
 
 export class ReleaseForm extends Component {
+
+    state = {
+        formData: {
+            ID: '',
+            chartName: '', 
+            release: '',
+        }
+    }    
+
+    componentDidMount() {
+        if(this.props.editItem) {
+            this.setState(() => ({
+                formData: this.props.editItem
+            }));
+        } else {
+            this.setState(() => ({
+                formData: {}
+            }));
+        }
+    }    
+
+    handleChange = event => {
+        const { value, name } = event.target;
+        this.setState(state => ({
+            formData: {
+                ...state.formData,
+                [name]: value
+            }
+        }));
+    }
+
+    saveClick = event => {
+        event.preventDefault();
+        const data = this.state.formData;
+        this.props.saveClick(data);
+    }    
+
     render() {
+        const { editMode } = this.props;
         return (
             <div>
-                <Card title="New Release"
+                <Card title={editMode ? "Edit Release" : "New Release"}
                     content={
                         <form>
                             <FormInputs
-                                ncols={["col-md-2", "col-md-2"]}
+                                ncols={["col-md-2"]}
                                 properties={[
                                     {
+                                        name: "release",
                                         label: "Release Number",
                                         type: "text",
                                         bsClass: "form-control",
-                                        placeholder: "Version"
-                                    },
-                                    {
-                                        label: "Release Date",
-                                        type: "text",
-                                        bsClass: "form-control",
-                                        placeholder: "dd/MM/yyyy"
+                                        placeholder: "Version",
+                                        value: this.state.formData.release,
+                                        onChange: this.handleChange
+
                                     }
                                 ]}
                             />
-                            <div class="btn-toolbar">
-                                <div class="btn-group">
-                                    <Button bsStyle="info" pullRight fill type="button">
+                            <div className="btn-toolbar">
+                                <div className="btn-group">
+                                    <Button bsStyle="info" type="button" onClick={this.saveClick}>
                                         Save
                                     </Button>
                                 </div>
-                                <div class="btn-group">
-                                    <Button bsStyle="info" pullRight fill type="button" onClick={this.props.cancelClick}>
+                                <div className="btn-group">
+                                    <Button bsStyle="info" type="button" onClick={this.props.cancelClick}>
                                         Cancel
                                     </Button>
-
                                 </div>
                             </div>
-
                             <div className="clearfix" />
-
                         </form>
                     }
                 />

@@ -26,15 +26,15 @@ class VariablesWizard extends Component {
   }
 
   onSave = (payload) => {
-
-    console.log(payload);
-    
+    this.props.handleLoading(true);
     axios.post(TENKAI_API_URL + '/multipleInstall', payload).then(() => {
         this.props.handleNotification("deployment_ok", "success");
         console.log('OK -> DEPLOYED => After notification');
+        this.props.handleLoading(false);
     }).catch(error => {
         console.log("Error deploying: " + error.message);
         this.props.handleNotification("deployment_fail", "error");
+        this.props.handleLoading(false);
     });
 
   }
@@ -66,7 +66,7 @@ class VariablesWizard extends Component {
 
     const envId = this.state.envId;
     const items = this.props.location.state.charts.map((item, key) =>
-      <HelmVariables handleNotification={this.props.handleNotification} key={key} name={item} ref={"h" + key} envId={envId}/>
+      <HelmVariables handleLoading={this.props.handleLoading} handleNotification={this.props.handleNotification} key={key} name={item} ref={"h" + key} envId={envId}/>
     );     
 
     return (

@@ -3,14 +3,30 @@ import Deployment from "views/Deployment";
 import Config from "views/Config";
 import Variables from "views/Variables";
 import VariablesWizard from "views/VariablesWizard";
+import Microservices from "views/Microservices";
+import Dependencies from "views/Dependencies";
+
 /*
 import Dashboard from "views/Dashboard";
-import Microservices from "views/Microservices";
-import Management from "views/Management";
-import Dependencies from "views/Dependencies";
 */
 
 const dashboardRoutes = [
+  {
+    path: "/microservices",
+    name: "Releases",
+    icon: "pe-7s-tools",
+    component: Microservices,
+    layout: "/admin",
+    menu: true
+  },
+  {
+    path: "/microservices-deps",
+    name: "Dependencies",
+    icon: "pe-7s-tools",
+    component: Dependencies,
+    layout: "/admin",
+    menu: false
+  },
   {
     path: "/environments",
     name: "Environments",

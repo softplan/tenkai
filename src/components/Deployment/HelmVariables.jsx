@@ -57,10 +57,6 @@ export class HelmVariables extends Component {
         }));
     }
 
-
-
-
-
     onInputChange = event => {
         const { value, name } = event.target;
         this.setState(state => ({
@@ -110,16 +106,6 @@ export class HelmVariables extends Component {
 
                 callbackFunction(installPayload);
 
-                /*
-                axios.post(TENKAI_API_URL + '/install', installPayload).then(() => {
-                    this.props.handleNotification("deployment_ok", "success");
-                    console.log('OK -> DEPLOYED => After notification');
-                }).catch(error => {
-                    console.log("Error deploying: " + error.message);
-                    this.props.handleNotification("deployment_fail", "error");
-                });
-                */
-
             }).catch(error => {
                 this.props.handleNotification("general_fail", "error");
                 console.log("Error saveVariableValues: " + error.message);
@@ -128,16 +114,20 @@ export class HelmVariables extends Component {
     }
 
     getVariables() {
+        this.props.handleLoading(true);
         axios.get(TENKAI_API_URL + '/getChartVariables/' + this.props.name)
             .then(response => {
 
+                if (response.data.istio != null) {
+                    this.setState({ 
+                        defaultApiPath: response.data.istio.virtualservices.apiPath,
+                        injectIstioCar: response.data.istio.enabled,
+                        enableVirtualService: response.data.istio.virtualservices.enabled
+                     });
+                }
                 
                 if (response.data.app != null) {
-
-                    
                     this.setState({ variables: response.data.app });
-                    this.setState({ defaultApiPath: response.data.istio.virtualservices.apiPath });
-
                 } else {
                     this.setState({ variables: [] });
                 }
@@ -150,13 +140,16 @@ export class HelmVariables extends Component {
 
                         this.addToValues(this, response.data.Variables);
                         this.fillIstioFields(this, response.data.Variables);
+                        this.props.handleLoading(false);
 
                     }).catch(error => {
+                        this.props.handleLoading(false);
                         console.log(error.message);
                         this.props.handleNotification("general_fail", "error");
                     });
 
             }).catch(error => {
+                this.props.handleLoading(false);
                 console.log(error.message);
                 this.props.handleNotification("general_fail", "error");
             });

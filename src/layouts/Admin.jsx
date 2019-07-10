@@ -11,17 +11,25 @@ import { style } from "variables/Variables.jsx";
 import routes from "routes.js";
 
 import image from "assets/img/sidebar-8.jpg";
+import spinner from "assets/img/loading.gif";
+import "assets/css/loading.css"
 
 class Admin extends Component {
+
   constructor(props) {
     super(props);
     this.state = {
+      loading: false,
       _notificationSystem: null,
       image: image,
       color: "black",
       hasImage: true,
       fixedClasses: "dropdown show-dropdown open"
     };
+  }
+
+  handleLoading = value => {
+    this.setState({loading: value});
   }
 
   handleNotification = (type, level) => {
@@ -116,6 +124,7 @@ class Admin extends Component {
                 {...props}
                 handleClick={this.handleNotificationClick}
                 handleNotification={this.handleNotification}
+                handleLoading={this.handleLoading}
               />
             )}
             key={key}
@@ -192,13 +201,27 @@ class Admin extends Component {
     }
   }
   render() {
+
+    const loading = this.state.loading;
+
+    let loadingDiv;
+    console.log(loading);
+    if (this.state.loading) {
+      loadingDiv = <div className="loading"></div> 
+    } else {
+      loadingDiv = <div></div> 
+    }
+    
     return (
       <div className="wrapper">
+
+        
         <NotificationSystem ref="notificationSystem" style={style} />
         <Sidebar {...this.props} routes={routes} image={this.state.image}
         color={this.state.color}
         hasImage={this.state.hasImage}/>
         <div id="main-panel" className="main-panel" ref="mainPanel">
+          {loadingDiv}
           <AdminNavbar
             {...this.props}
             brandText={this.getBrandText(this.props.location.pathname)}

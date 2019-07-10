@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import {
     Grid,
     Row,
-    Col, InputGroup,
+    Col, FormGroup, ControlLabel,
     FormControl, Table
 } from "react-bootstrap";
 import SimpleModal from 'components/Modal/SimpleModal.jsx'
@@ -26,6 +26,7 @@ class Variables extends Component {
         locationSearch: "",
         showConfirmDeleteModal: false,
         itemToDelete: {}, 
+        inputFilter: "",
 
     }
 
@@ -95,6 +96,13 @@ class Variables extends Component {
         }
     }
 
+    onChangeFilterHandler(e) {
+        this.setState({
+            inputFilter: e.target.value,
+        })
+    }
+
+
     save(data, uri) {
         const values = queryString.parse(this.state.locationSearch);
         data.environmentId = parseInt(values.id);
@@ -137,8 +145,8 @@ class Variables extends Component {
 
     render() {
 
-        const items = this.state.variablesResult.Variables.map((item, key) =>
-
+        const items = this.state.variablesResult.Variables
+            .filter(d => this.state.inputFilter === '' || d.name.includes(this.state.inputFilter)).map((item, key) =>
             <tr key={key}>
                 <td>{item.scope}</td>
                 <td>{item.name}</td>
@@ -170,18 +178,6 @@ class Variables extends Component {
                                     <form>
 
                                         <h2>{this.state.environmentName}</h2>
-
-                                        <div className="col-md-8" style={{ padding: '8px 0px' }}>
-                                            <InputGroup>
-                                                <FormControl
-                                                    placeholder="Search variables using any field" aria-label="Search variables using any field"
-                                                />
-                                                <InputGroup.Button>
-                                                    <Button variant="outline-secondary" >Search</Button>
-                                                </InputGroup.Button>
-                                            </InputGroup>
-
-                                        </div>
                                         <Button className="pull-right" variant="primary" onClick={this.handleNewClick.bind(this)}>New Variable</Button>
                                         <div className="clearfix" />
                                         
@@ -207,6 +203,20 @@ class Variables extends Component {
                                 content={
                                     <form>
                                         <Row>
+
+                                            <div className="col-md-8">
+                                            <FormGroup>
+                                                <ControlLabel>Variable Search</ControlLabel>
+                                                <FormControl
+                                                value={this.state.inputFilter}
+                                                onChange={this.onChangeFilterHandler.bind(this)}
+                                                style={{ width: '100%' }} type="text"
+                                                placeholder="Search using any field"
+                                                aria-label="Search using any field"></FormControl>
+
+                                            </FormGroup>
+                                            </div>
+
                                             <Table bordered hover size="sm">
                                                 <thead>
                                                     <tr>
