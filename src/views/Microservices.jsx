@@ -5,15 +5,13 @@ import {
     Col,
     FormGroup, ControlLabel, Table, Button
 } from "react-bootstrap";
-import { thReleaseArray, tdReleaseArray } from "variables/Variables.jsx";
+
 import Select from 'react-select';
 
 import { Card } from "components/Card/Card.jsx";
 import { ReleaseForm } from "components/Microservices/ReleaseForm.jsx";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import axios from 'axios';
-import TENKAI_API_URL from 'env.js';
-
+import { retriveRepo, retrieveCharts, retrieveReleases, saveReleases } from 'client-api/apicall.jsx';
 
 class Microservices extends Component {
 
@@ -25,72 +23,30 @@ class Microservices extends Component {
         selectedRepository: {},
         releases: [],
         editMode: false,
-        editItem: {},
+        editItem: {}
     }
 
     componentDidMount() {
-        this.getRepos();
+        retriveRepo(this);
     }
 
     handleRepositoryChange = (selectedRepository) => {
         this.setState({ selectedRepository });
-        this.getCharts(selectedRepository.value);
+        retrieveCharts(selectedRepository.value, this);
     }
 
     handleChartChange = (selectedChart) => {
         this.setState({ selectedChart }, () => {
-            this.getReleases(selectedChart.value);
+            retrieveReleases(selectedChart.value, this);
         });
     }
 
-    getRepos() {
-        axios.get(TENKAI_API_URL + '/repositories')
-            .then(response => {
-                var arr = [];
-                for (var x = 0; x < response.data.repositories.length; x++) {
-                    var element = response.data.repositories[x];
-                    arr.push({ value: element.name, label: element.name });
-                }
-                this.setState({ repositories: arr });
-            }).catch(error => {
-                console.log(error.message);
-                this.props.handleNotification("general_fail", "error");
-            });
-    }
-
-    getCharts(repo) {
-        this.props.handleLoading(true);
-        let url = "/charts/" + repo + "?all=false";
-        axios.get(TENKAI_API_URL + url).then(response => {
-            var arr = [];
-            for (var x = 0; x < response.data.charts.length; x++) {
-                var element = response.data.charts[x];
-                arr.push({ value: element.name, label: element.name });
-            }
-            this.setState({ charts: arr });
-            this.props.handleLoading(false);
-        }).catch(error => {
-            this.props.handleLoading(false);
-            console.log(error.message);
-            this.props.handleNotification("general_fail", "error");
+    handleDependenciesClick(id) {
+        this.props.history.push({
+            pathname: "/admin/microservices-deps",
+            search: "?releaseId=" + id,
+            state: { releaseName: this.state.selectedChart.value }
         });
-    }
-
-    getReleases(chartName) {
-        this.props.handleLoading(true);
-        let url = `/releases?chartName=${chartName}`;
-        axios.get(TENKAI_API_URL + url).then(response => {
-            this.setState({ releases: response.data.releases });
-            this.props.handleLoading(false);
-        }).catch(error => {
-            this.props.handleLoading(false);
-            console.log(error.message);
-            this.props.handleNotification("general_fail", "error");
-        });
-    }
-
-    handleDependenciesClick(e) {
-        this.props.history.push('/admin/microservices-deps');
     }
 
     handleNewReleaseClick(e) {
@@ -102,32 +58,8 @@ class Microservices extends Component {
     }
 
     onSaveClick(data) {
-        if (this.state.editMode) {
-            console.log("edit")
-            this.save(data, '/releases/edit')
-        } else {
-            console.log("new")
-            this.save(data, '/releases')
-        }
-    }
-
-    save(data, uri) {
         data.chartName = this.state.selectedChart.value;
-        console.log(data);
-
-        axios.post(TENKAI_API_URL + uri,  data )
-            .then(res => {
-                this.setState({ releases: [...this.state.releases, data] });
-            }).catch(error => {
-                console.log(error.message);
-                this.props.handleNotification("general_fail", "error");
-            });
-        this.setState(() => ({
-            showInsertUpdateForm: false,
-            editItem: {},
-            editMode: false
-        }));
-
+        saveReleases(data, this);
     }
 
     render() {
@@ -139,7 +71,7 @@ class Microservices extends Component {
             <tr key={key} >
                 <td>{item.release}</td>
                 <td><a href="#/"><FontAwesomeIcon icon="minus-circle" /></a></td>
-                <td><a href="#/"><FontAwesomeIcon icon="edit" onClick={this.handleDependenciesClick.bind(this)} /></a></td>                
+                <td><a href="#/"><FontAwesomeIcon icon="edit" onClick={this.handleDependenciesClick.bind(this, item.ID)} /></a></td>                
             </tr>
 
         );

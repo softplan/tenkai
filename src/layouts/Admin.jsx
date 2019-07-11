@@ -205,7 +205,6 @@ class Admin extends Component {
     const loading = this.state.loading;
 
     let loadingDiv;
-    console.log(loading);
     if (this.state.loading) {
       loadingDiv = <div className="loading"></div> 
     } else {

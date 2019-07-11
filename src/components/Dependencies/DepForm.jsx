@@ -1,17 +1,22 @@
 import React, { Component } from "react";
 import { Card } from "components/Card/Card.jsx";
 import { FormInputs } from "components/FormInputs/FormInputs.jsx";
-import { Button} from "react-bootstrap";
-
+import { FormGroup, ControlLabel, Button} from "react-bootstrap";
+import Select from 'react-select';
+import { retriveRepo, retrieveCharts } from 'client-api/apicall.jsx';
 
 export class DepForm extends Component {
 
     state = {
         formData: {
-            ID: '',
+            release_id: '',
             chartName: '', 
             version: '',
-        }
+        },
+        charts: [],
+        repositories: [],
+        selectedRepository: {},
+        selectedChart: {},
     }    
 
     componentDidMount() {
@@ -24,6 +29,7 @@ export class DepForm extends Component {
                 formData: {}
             }));
         }
+        retriveRepo(this);
     }    
 
     handleChange = event => {
@@ -39,32 +45,47 @@ export class DepForm extends Component {
     saveClick = event => {
         event.preventDefault();
         const data = this.state.formData;
+        console.log(this.state.selectedChart);
+        data.chartName = this.state.selectedChart.value;
         this.props.saveClick(data);
     }    
 
+    handleRepositoryChange = (selectedRepository) => {
+        this.setState({ selectedRepository });
+        retrieveCharts(selectedRepository.value, this);
+    }
+
+    handleChartChange = (selectedChart) => {
+        this.setState({ selectedChart });
+    }
+
     render() {
         const { editMode } = this.props;
+        const { selectedChart } = this.state;
+        const { selectedRepository } = this.state;
+
         return (
             <div>
                 <Card title={editMode ? "Edit Dependency" : "New Dependency"}
                     content={
                         <form>
-                            <FormInputs
-                                ncols={["col-md-4", "col-md-2" ]}
-                                properties={[
-                                    {
-                                        name: "chartName",
-                                        label: "Release",
-                                        type: "text",
-                                        bsClass: "form-control",
-                                        placeholder: "Version",
-                                        value: this.state.formData.chartName,
-                                        onChange: this.handleChange
 
-                                    },
-                                    {
+                            <FormGroup>
+                                <ControlLabel>Repository</ControlLabel>
+                                <Select value={selectedRepository} onChange={this.handleRepositoryChange} options={this.state.repositories} />
+                            </FormGroup>
+
+                            <FormGroup>
+                                <ControlLabel>Helm Chart</ControlLabel>
+                                <Select value={selectedChart} onChange={this.handleChartChange} options={this.state.charts} />
+                            </FormGroup>
+
+                            <FormInputs
+                                ncols={["col-md-4"]}
+                                properties={[
+                                     {
                                         name: "version",
-                                        label: "Version",
+                                        label: "Version (Tag)",
                                         type: "text",
                                         bsClass: "form-control",
                                         placeholder: "Version",

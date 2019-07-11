@@ -6,30 +6,39 @@ import {
   FormControl, Table
 } from "react-bootstrap";
 import SimpleModal from 'components/Modal/SimpleModal.jsx'
-import queryString from 'query-string';
 import axios from 'axios';
 import TENKAI_API_URL from 'env.js';
 
 import { Card } from "components/Card/Card.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
 import DepForm from "components/Dependencies/DepForm.jsx";
+import queryString from 'query-string';
+import { retrieveDependencies, saveDependency } from 'client-api/apicall.jsx';
+import { deleteDependency } from "client-api/apicall";
 
 class Dependencies extends Component {
 
-  state = {
-    item: {},
-    showInsertUpdateForm: false,
-    list: [],
-    header: "",
-    showConfirmDeleteModal: false,
-    itemToDelete: {},
-    inputFilter: "",
-    editMode: false,
-    editItem: {},
+  constructor(props) {
+    super(props);
+    const values = queryString.parse(props.location.search);
+    const releaseName = props.location.state.releaseName;
+    this.state = {
+      releaseId: values.releaseId,
+      item: {},
+      showInsertUpdateForm: false,
+      list: [],
+      header: "",
+      showConfirmDeleteModal: false,
+      itemToDelete: {},
+      inputFilter: "",
+      editMode: false,
+      editItem: {},
+      releaseName: releaseName,
+    }
   }
 
   componentDidMount() {
-
+    retrieveDependencies(this.state.releaseId, this)
   }
 
   handleConfirmDeleteModalClose() {
@@ -63,24 +72,14 @@ class Dependencies extends Component {
   }
 
   handleConfirmDelete() {
-    if (this.state.itemToDelete != undefined) {
-      axios.delete(TENKAI_API_URL + "/dependencies/delete/" + this.state.itemToDelete.ID).then(this.getScopedVariables()).catch(error => {
-        console.log(error.message);
-        this.props.handleNotification("general_fail", "error");
-      });
-    }
-    this.setState({ showConfirmDeleteModal: false, itemToDelete: {} });
+    deleteDependency(this.state.itemToDelete.ID, this);
   }
 
   onSaveClick(data) {
-    if (this.state.editMode) {
-      console.log("edit")
-
-    } else {
-      console.log("new")
-
-    }
+    data.release_id = parseInt(this.state.releaseId);
+    saveDependency(data, this);
   }
+
 
   handleCancelClick(e) {
     this.setState(() => ({
@@ -90,25 +89,29 @@ class Dependencies extends Component {
     }));
   }
 
+  handleConfirmDeleteModalClose() {
+    this.setState({ showConfirmDeleteModal: false, itemToDelete: {} });
+  }
 
+  handleConfirmDeleteModalShow() {
+    this.setState({ showConfirmDeleteModal: true });
+  }
 
-
-
+  onDelete(item) {
+    this.setState({ itemToDelete: item }, () => { this.handleConfirmDeleteModalShow() });
+  }
 
 
   render() {
 
     const items = this.state.list
-      .filter(d => this.state.inputFilter === '' || d.name.includes(this.state.inputFilter)).map((item, key) =>
+      .filter(d => this.state.inputFilter === '' || d.chartName.includes(this.state.inputFilter)).map((item, key) =>
         <tr key={key}>
-          <td>{item.release}</td>
+          <td>{item.chartName}</td>
           <td>{item.version}</td>
-          <td><a href="#" onClick={this.navigateToEditEnvironment.bind(this, item)}><i className="pe-7s-edit" /></a></td>
           <td><a href="#" onClick={this.onDelete.bind(this, item)}><i className="pe-7s-trash" /></a></td>
         </tr>
-
       );
-
 
 
     return (
@@ -117,7 +120,7 @@ class Dependencies extends Component {
         <SimpleModal
           showConfirmDeleteModal={this.state.showConfirmDeleteModal}
           handleConfirmDeleteModalClose={this.handleConfirmDeleteModalClose.bind(this)}
-          title="Confirm" subTitle="Delete variable" message="Are you sure you want to delete this variable?"
+          title="Confirm" subTitle="Delete dependency" message="Are you sure you want to delete this dependency?"
           handleConfirmDelete={this.handleConfirmDelete.bind(this)}
           handleConfirmDeleteModalClose={this.handleConfirmDeleteModalClose.bind(this)}>
         </SimpleModal>
@@ -130,7 +133,7 @@ class Dependencies extends Component {
                 content={
                   <form>
 
-                    <h2>{this.state.environmentName}</h2>
+                    <h2>{this.state.releaseName}</h2>
                     <Button className="pull-right" variant="primary" onClick={this.handleNewClick.bind(this)}>New Release</Button>
                     <div className="clearfix" />
 
@@ -145,6 +148,7 @@ class Dependencies extends Component {
             <Col md={12}>
               {this.state.showInsertUpdateForm ?
                 <DepForm editMode={this.state.editMode}
+                  handleLoading={this.props.handleLoading}
                   editItem={this.state.editItem}
                   saveClick={this.onSaveClick.bind(this)}
                   cancelClick={this.handleCancelClick.bind(this)} /> : null
@@ -184,9 +188,8 @@ class Dependencies extends Component {
                         <Table bordered hover size="sm">
                           <thead>
                             <tr>
-                              <th>Release</th>
-                              <th>Version</th>
-                              <th>Edit</th>
+                              <th>Helm Chart</th>
+                              <th>Version (Tag)</th>
                               <th>Delete</th>
                             </tr>
                           </thead>
