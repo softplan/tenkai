@@ -11,7 +11,8 @@ import Select from 'react-select';
 import { Card } from "components/Card/Card.jsx";
 import { ReleaseForm } from "components/Microservices/ReleaseForm.jsx";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { retriveRepo, retrieveCharts, retrieveReleases, saveReleases } from 'client-api/apicall.jsx';
+import SimpleModal from 'components/Modal/SimpleModal.jsx'
+import { retriveRepo, retrieveCharts, retrieveReleases, saveReleases, deleteRelease } from 'client-api/apicall.jsx';
 
 class Microservices extends Component {
 
@@ -23,11 +24,24 @@ class Microservices extends Component {
         selectedRepository: {},
         releases: [],
         editMode: false,
-        editItem: {}
+        editItem: {},
+        itemToDelete: {},
     }
 
     componentDidMount() {
         retriveRepo(this);
+    }
+
+    handleConfirmDeleteModalClose() {
+        this.setState({ showConfirmDeleteModal: false, itemToDelete: {} });
+      }
+    
+    handleConfirmDeleteModalShow() {
+       this.setState({ showConfirmDeleteModal: true });
+    }
+
+    handleConfirmDelete() {
+        deleteRelease(this.state.itemToDelete.ID, this);
     }
 
     handleRepositoryChange = (selectedRepository) => {
@@ -57,6 +71,10 @@ class Microservices extends Component {
         this.setState({ showInsertUpdateForm: false });
     }
 
+    onDelete(item) {
+        this.setState({ itemToDelete: item }, () => { this.handleConfirmDeleteModalShow() });
+      }
+    
     onSaveClick(data) {
         data.chartName = this.state.selectedChart.value;
         saveReleases(data, this);
@@ -70,7 +88,7 @@ class Microservices extends Component {
         const items = this.state.releases.map((item, key) =>
             <tr key={key} >
                 <td>{item.release}</td>
-                <td><a href="#/"><FontAwesomeIcon icon="minus-circle" /></a></td>
+                <td><a href="#/"><FontAwesomeIcon icon="minus-circle"  onClick={this.onDelete.bind(this, item)}/></a></td>
                 <td><a href="#/"><FontAwesomeIcon icon="edit" onClick={this.handleDependenciesClick.bind(this, item.ID)} /></a></td>                
             </tr>
 
@@ -78,6 +96,15 @@ class Microservices extends Component {
 
         return (
             <div className="content">
+
+                <SimpleModal
+                showConfirmDeleteModal={this.state.showConfirmDeleteModal}
+                handleConfirmDeleteModalClose={this.handleConfirmDeleteModalClose.bind(this)}
+                title="Confirm" subTitle="Delete release" message="Are you sure you want to delete this release?"
+                handleConfirmDelete={this.handleConfirmDelete.bind(this)}
+                handleConfirmDeleteModalClose={this.handleConfirmDeleteModalClose.bind(this)}>
+                </SimpleModal>
+
                 <Grid fluid>
 
                     <Row>

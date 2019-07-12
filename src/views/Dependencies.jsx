@@ -134,11 +134,10 @@ class Dependencies extends Component {
                   <form>
 
                     <h2>{this.state.releaseName}</h2>
-                    <Button className="pull-right" variant="primary" onClick={this.handleNewClick.bind(this)}>New Release</Button>
+                    <Button className="pull-right" variant="primary" onClick={this.handleNewClick.bind(this)}>New Dependency</Button>
                     <div className="clearfix" />
 
                   </form>
-
                 }
               />
             </Col>
