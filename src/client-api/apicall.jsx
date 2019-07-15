@@ -142,8 +142,20 @@ function deleteDependency(id, self) {
 }
 
 
+function retrieveDependency(chartName, tag, self) {
+    axios.post(TENKAI_API_URL + "/analyse", { chartName, tag })
+        .then(result => {
+            const data = result.data; 
+            console.log(result.data);
+            self.setState({ list: {...self.state.data, data }});
+        }).catch(error => {
+            console.log(error.message);
+
+        });
+}
+
 export {
     retriveRepo, retrieveCharts, retrieveReleases,
-    saveReleases, retrieveDependencies, saveDependency, 
-    deleteDependency, deleteRelease
+    saveReleases, retrieveDependencies, saveDependency,
+    deleteDependency, deleteRelease, retrieveDependency
 };

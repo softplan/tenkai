@@ -5,12 +5,21 @@ import Variables from "views/Variables";
 import VariablesWizard from "views/VariablesWizard";
 import Microservices from "views/Microservices";
 import Dependencies from "views/Dependencies";
+import DepAnalysis from "views/DepAnalysis"
 
 /*
 import Dashboard from "views/Dashboard";
 */
 
 const dashboardRoutes = [
+  {
+    path: "/depanalysis",
+    name: "Dependency Analysis",
+    icon: "pe-7s-tools",
+    component: DepAnalysis,
+    layout: "/admin",
+    menu: true
+  },
   {
     path: "/microservices",
     name: "Releases",
