@@ -16,8 +16,30 @@ import TENKAI_API_URL from 'env.js';
 class VariablesWizard extends Component {
 
   state = {
-    envId: ""
+    envId: "",
+    charts: [],
+    tags:[],
   }
+
+
+  componentDidMount() {
+
+    let total = this.props.location.state.charts.length;
+    let helmCharts = [];
+    let tags = [];
+    let value = ""; 
+    let tag = "";
+    for (let i = 0; i < total; i++) {
+      value = this.props.location.state.charts[i].substring(0, this.props.location.state.charts[i].indexOf("@"))
+      tag = this.props.location.state.charts[i].substring(this.props.location.state.charts[i].indexOf("@")+1,this.props.location.state.charts[i].length)
+      helmCharts.push(value);
+      tags.push(tag);
+      console.log(tag);
+    }
+
+    this.setState({charts: helmCharts, tags: tags });
+  }
+  
 
   constructor(props) {
     super(props);
@@ -43,12 +65,11 @@ class VariablesWizard extends Component {
 
     let payload={deployables:[]};
     let count = 0;
-    const totalCharts = this.props.location.state.charts.length;
+    const totalCharts = this.state.charts.length;
 
-    this.props.location.state.charts.forEach((item, key) => {
+    this.state.charts.forEach((item, key) => {
       
         this.refs["h" + key].save( (data) => {
-          console.log("Adding: " + JSON.stringify(data));
           payload.deployables.push(data);
           count++;
           if (count == totalCharts) {
@@ -65,7 +86,7 @@ class VariablesWizard extends Component {
   render() {
 
     const envId = this.state.envId;
-    const items = this.props.location.state.charts.map((item, key) =>
+    const items = this.state.charts.map((item, key) =>
       <HelmVariables handleLoading={this.props.handleLoading} handleNotification={this.props.handleNotification} key={key} name={item} ref={"h" + key} envId={envId}/>
     );     
 

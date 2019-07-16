@@ -125,7 +125,7 @@ class Deployment extends Component {
       .filter(d => this.state.inputFilter === '' || d.name.includes(this.state.inputFilter)).map((item, key) =>
 
         <tr key={key} >
-          <td><input name={item.name} checked={this.state.charts.indexOf(item.name) !== -1} type="checkbox" className="checkbox" onChange={this.handleCheckboxChange.bind(this)} /></td>
+          <td><input name={item.name+"@"+item.chartVersion} checked={this.state.charts.indexOf(item.name+"@"+item.chartVersion) !== -1} type="checkbox" className="checkbox" onChange={this.handleCheckboxChange.bind(this)} /></td>
           <td>{item.name}</td>
           <td>{item.chartVersion}</td>
           <td>{item.appVersion}</td>

@@ -146,8 +146,8 @@ function retrieveDependency(chartName, tag, self) {
     axios.post(TENKAI_API_URL + "/analyse", { chartName, tag })
         .then(result => {
             const data = result.data; 
-            console.log(result.data);
-            self.setState({ list: {...self.state.data, data }});
+            console.log("Retorno: " + JSON.stringify(result.data));
+            self.setState( {data: data });
         }).catch(error => {
             console.log(error.message);
 

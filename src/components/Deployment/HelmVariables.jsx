@@ -194,8 +194,6 @@ export class HelmVariables extends Component {
             valuesMap[value.name] = value.value;
             if (value.name.indexOf("].") > -1) {
 
-                console.log(value.name);
-
                 if (dynamicEntries[this.getRootName(value.name)] !== undefined) {
                     dynamicEntries[this.getRootName(value.name)]++;
                 } else {
@@ -208,11 +206,7 @@ export class HelmVariables extends Component {
         
 
         Object.keys(dynamicEntries).map(function (key) {
-
-            console.log("aqui=" + key);
             for (let x = 0; x < (dynamicEntries[key] / 2) - 1; x++) {
-            
-                
                 self.addDynamicVariableClick(key);
             }
             return null

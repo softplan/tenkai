@@ -17,6 +17,10 @@ class DepAnalysis extends Component {
         }
     }
 
+    componentDidMount() {
+
+    }
+
     analyse() {
         console.log("aqui");
         retrieveDependency("saj6/pd-frontend", "latest", this)
@@ -25,9 +29,11 @@ class DepAnalysis extends Component {
 
     render() {
 
+       const { data } = this.state;
+
         const myConfig = {
             "automaticRearrangeAfterDropNode": false,
-            "collapsible": false,
+            "collapsible": true,
             "directed": true,
             "focusAnimationDuration": 0.75,
             "focusZoom": 1,
@@ -37,7 +43,7 @@ class DepAnalysis extends Component {
             "linkHighlightBehavior": false,
             "maxZoom": 8,
             "minZoom": 0.1,
-            "nodeHighlightBehavior": false,
+            "nodeHighlightBehavior": true,
             "panAndZoom": true,
             "staticGraph": false,
             "width": 1000,
@@ -131,7 +137,7 @@ class DepAnalysis extends Component {
             <Button className="pull-right" variant="primary" onClick={this.analyse.bind(this)}>Aqui</Button>
             <Graph
                 id="graph-id"
-                data={this.state.data}
+                data={data}
                 config={myConfig}
                 onClickNode={onClickNode}
                 onRightClickNode={onRightClickNode}
