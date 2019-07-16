@@ -23,7 +23,6 @@ class VariablesWizard extends Component {
 
 
   componentDidMount() {
-
     let total = this.props.location.state.charts.length;
     let helmCharts = [];
     let tags = [];
@@ -34,9 +33,7 @@ class VariablesWizard extends Component {
       tag = this.props.location.state.charts[i].substring(this.props.location.state.charts[i].indexOf("@")+1,this.props.location.state.charts[i].length)
       helmCharts.push(value);
       tags.push(tag);
-      console.log(tag);
     }
-
     this.setState({charts: helmCharts, tags: tags });
   }
   
@@ -72,7 +69,7 @@ class VariablesWizard extends Component {
         this.refs["h" + key].save( (data) => {
           payload.deployables.push(data);
           count++;
-          if (count == totalCharts) {
+          if (count === totalCharts) {
             this.onSave(payload);
           }
         });

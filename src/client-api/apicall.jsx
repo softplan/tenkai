@@ -47,8 +47,22 @@ function retrieveReleases(chartName, self) {
     });
 }
 
+function retrieveReleasesWithCallBack(chartName, self, callback) {
+    self.props.handleLoading(true);
+    let url = `/releases?chartName=${chartName}`;
+    axios.get(TENKAI_API_URL + url).then(response => {
+        callback(chartName, response.data.releases, self);
+        self.props.handleLoading(false);
+    }).catch(error => {
+        self.props.handleLoading(false);
+        console.log(error.message);
+        self.props.handleNotification("general_fail", "error");
+    });
+}
+
+
 function deleteRelease(id, self) {
-    if (self.state.itemToDelete != undefined) {
+    if (self.state.itemToDelete !== undefined) {
         self.props.handleLoading(true);
         axios.delete(TENKAI_API_URL + "/releases/" + id)
             .then(response => {
@@ -131,7 +145,7 @@ function saveDependency(data, self) {
 }
 
 function deleteDependency(id, self) {
-    if (self.state.itemToDelete != undefined) {
+    if (self.state.itemToDelete !== undefined) {
         axios.delete(TENKAI_API_URL + "/dependencies/" + id)
             .then(retrieveDependencies(self.state.releaseId, self)).catch(error => {
                 console.log(error.message);
@@ -157,5 +171,5 @@ function retrieveDependency(chartName, tag, self) {
 export {
     retriveRepo, retrieveCharts, retrieveReleases,
     saveReleases, retrieveDependencies, saveDependency,
-    deleteDependency, deleteRelease, retrieveDependency
+    deleteDependency, deleteRelease, retrieveDependency, retrieveReleasesWithCallBack
 };

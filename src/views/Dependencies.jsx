@@ -6,8 +6,6 @@ import {
   FormControl, Table
 } from "react-bootstrap";
 import SimpleModal from 'components/Modal/SimpleModal.jsx'
-import axios from 'axios';
-import TENKAI_API_URL from 'env.js';
 
 import { Card } from "components/Card/Card.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
@@ -45,30 +43,14 @@ class Dependencies extends Component {
     this.setState({ showConfirmDeleteModal: false, itemToDelete: {} });
   }
 
-  handleConfirmDeleteModalShow() {
-    this.setState({ showConfirmDeleteModal: true });
-  }
-
   handleNewClick(e) {
     this.setState({ showInsertUpdateForm: true });
-  }
-
-  handleCancelClick(e) {
-    this.setState(() => ({
-      showInsertUpdateForm: true,
-      editItem: {},
-      editMode: false
-    }));
   }
 
   onChangeFilterHandler(e) {
     this.setState({
       inputFilter: e.target.value,
     })
-  }
-
-  onDelete(item) {
-    this.setState({ itemToDelete: item }, () => { this.handleConfirmDeleteModalShow() });
   }
 
   handleConfirmDelete() {
@@ -89,9 +71,6 @@ class Dependencies extends Component {
     }));
   }
 
-  handleConfirmDeleteModalClose() {
-    this.setState({ showConfirmDeleteModal: false, itemToDelete: {} });
-  }
 
   handleConfirmDeleteModalShow() {
     this.setState({ showConfirmDeleteModal: true });
@@ -109,7 +88,9 @@ class Dependencies extends Component {
         <tr key={key}>
           <td>{item.chartName}</td>
           <td>{item.version}</td>
-          <td><a href="#" onClick={this.onDelete.bind(this, item)}><i className="pe-7s-trash" /></a></td>
+
+          <td><Button className="link-button"
+                    onClick={this.onDelete.bind(this, item)}><i className="pe-7s-trash"/></Button></td>
         </tr>
       );
 
@@ -121,8 +102,7 @@ class Dependencies extends Component {
           showConfirmDeleteModal={this.state.showConfirmDeleteModal}
           handleConfirmDeleteModalClose={this.handleConfirmDeleteModalClose.bind(this)}
           title="Confirm" subTitle="Delete dependency" message="Are you sure you want to delete this dependency?"
-          handleConfirmDelete={this.handleConfirmDelete.bind(this)}
-          handleConfirmDeleteModalClose={this.handleConfirmDeleteModalClose.bind(this)}>
+          handleConfirmDelete={this.handleConfirmDelete.bind(this)}>
         </SimpleModal>
 
         <Grid fluid>

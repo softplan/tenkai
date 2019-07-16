@@ -6,20 +6,13 @@ import VariablesWizard from "views/VariablesWizard";
 import Microservices from "views/Microservices";
 import Dependencies from "views/Dependencies";
 import DepAnalysis from "views/DepAnalysis"
+import DepGraph from "views/DepGraph"
 
 /*
 import Dashboard from "views/Dashboard";
 */
 
 const dashboardRoutes = [
-  {
-    path: "/depanalysis",
-    name: "Dependency Analysis",
-    icon: "pe-7s-tools",
-    component: DepAnalysis,
-    layout: "/admin",
-    menu: true
-  },
   {
     path: "/microservices",
     name: "Releases",
@@ -65,6 +58,22 @@ const dashboardRoutes = [
     name: "Deployment Variables Review ",
     icon: "pe-7s-news-paper",
     component: VariablesWizard,
+    layout: "/admin",
+    menu: false
+  },
+  {
+    path: "/deployment-depanalysis",
+    name: "Dependency Analysis",
+    icon: "pepe-7s-news-paper",
+    component: DepAnalysis,
+    layout: "/admin",
+    menu: false
+  },
+  {
+    path: "/deployment-depgraph",
+    name: "Dependency Analysis Graph",
+    icon: "pepe-7s-news-paper",
+    component: DepGraph,
     layout: "/admin",
     menu: false
   },

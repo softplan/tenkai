@@ -32,7 +32,7 @@ class Variables extends Component {
 
     componentDidMount() {
         let environmentName = "";
-        if (this.props.location.state != undefined) {
+        if (this.props.location.state !== undefined) {
             environmentName = this.props.location.state.item.name;
         } else {
             this.props.history.push({
@@ -40,7 +40,7 @@ class Variables extends Component {
             });
         }
         let locationSearch= "";
-        if (this.props.location.search != undefined) {
+        if (this.props.location.search !== undefined) {
             locationSearch = this.props.location.search;
         } else {
             this.props.history.push({
@@ -134,7 +134,7 @@ class Variables extends Component {
     }
 
     handleConfirmDelete() {
-        if (this.state.itemToDelete != undefined) {
+        if (this.state.itemToDelete !== undefined) {
             axios.delete(TENKAI_API_URL + "/variables/delete/" + this.state.itemToDelete.ID).then(this.getScopedVariables()).catch(error => {
                 console.log(error.message);
                 this.props.handleNotification("general_fail", "error");
@@ -152,8 +152,13 @@ class Variables extends Component {
                 <td>{item.name}</td>
                 <td>{item.value}</td>
                 <td>{item.description}</td>
-                <td><a href="#" onClick={this.navigateToEditEnvironment.bind(this, item)}><i className="pe-7s-edit"/></a></td>
-                <td><a href="#" onClick={this.onDelete.bind(this, item)}><i className="pe-7s-trash"/></a></td>
+
+                <td><Button className="link-button"
+                    onClick={this.navigateToEditEnvironment.bind(this, item)}><i className="pe-7s-edit"/></Button></td>
+
+                <td><Button className="link-button"
+                    onClick={this.onDelete.bind(this, item)}><i className="pe-7s-trash"/></Button></td>
+
             </tr>
 
         );
@@ -165,8 +170,7 @@ class Variables extends Component {
                     showConfirmDeleteModal={this.state.showConfirmDeleteModal}
                     handleConfirmDeleteModalClose={this.handleConfirmDeleteModalClose.bind(this)}
                     title="Confirm" subTitle="Delete variable" message="Are you sure you want to delete this variable?"
-                    handleConfirmDelete={this.handleConfirmDelete.bind(this)}
-                    handleConfirmDeleteModalClose= {this.handleConfirmDeleteModalClose.bind(this)}>  
+                    handleConfirmDelete={this.handleConfirmDelete.bind(this)}>  
                 </SimpleModal>
          
                 <Grid fluid>

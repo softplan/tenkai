@@ -11,7 +11,6 @@ import { style } from "variables/Variables.jsx";
 import routes from "routes.js";
 
 import image from "assets/img/sidebar-8.jpg";
-import spinner from "assets/img/loading.gif";
 import "assets/css/loading.css"
 
 class Admin extends Component {
@@ -165,6 +164,7 @@ class Admin extends Component {
   };
   componentDidMount() {
     this.setState({ _notificationSystem: this.refs.notificationSystem });
+    /*
     var _notificationSystem = this.refs.notificationSystem;
     var color = Math.floor(Math.random() * 4 + 1);
     var level;
@@ -184,6 +184,7 @@ class Admin extends Component {
       default:
         break;
     }
+    */
   }
 
   componentDidUpdate(e) {
@@ -201,8 +202,6 @@ class Admin extends Component {
     }
   }
   render() {
-
-    const loading = this.state.loading;
 
     let loadingDiv;
     if (this.state.loading) {

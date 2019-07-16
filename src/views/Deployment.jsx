@@ -1,12 +1,14 @@
 import React, { Component } from "react";
 import {
-  Grid, Row, Col, FormGroup, FormControl, ControlLabel, Table
+  Grid, Row, Col, FormGroup, FormControl, ControlLabel, Table, ButtonToolbar
 } from "react-bootstrap";
 
 
 import Select from 'react-select';
 import { Card } from "components/Card/Card.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
+
+
 import axios from 'axios';
 
 import TENKAI_API_URL from 'env.js';
@@ -94,6 +96,15 @@ class Deployment extends Component {
     });
 
   }
+
+  navigateToDependencyAnalysis(charts, selected) {
+    this.props.history.push({
+      pathname: "/admin/deployment-depanalysis",
+      search: "?environment=" + selected.value,
+      state: { charts: charts, environment: selected.label }
+    });
+  }
+
 
   handleCheckboxChange(e) {
 
@@ -210,13 +221,26 @@ class Deployment extends Component {
 
                     </div>
 
-                    <Button bsStyle="info"
-                      disabled={(Object.entries(this.state.selectedOption).length === 0 &&
-                        this.state.selectedOption.constructor === Object) || this.state.charts.length <= 0}
-                      fill type="button"
-                      onClick={this.navigateToCheckVariables.bind(this, this.state.charts, this.state.selectedOption)}>
-                      Analyse Dependencies
-                    </Button>
+                    <ButtonToolbar>
+
+                    <Button bsStyle="primary"
+                        disabled={(Object.entries(this.state.selectedOption).length === 0 &&
+                          this.state.selectedOption.constructor === Object) || this.state.charts.length <= 0}
+                        fill type="button"
+                        onClick={this.navigateToDependencyAnalysis.bind(this, this.state.charts, this.state.selectedOption)}>
+                        Analyse Dependencies
+                      </Button>
+
+                      <Button bsStyle="default"
+                        disabled={(Object.entries(this.state.selectedOption).length === 0 &&
+                          this.state.selectedOption.constructor === Object) || this.state.charts.length <= 0}
+                        fill type="button"
+                        onClick={this.navigateToCheckVariables.bind(this, this.state.charts, this.state.selectedOption)}>
+                        Direct Deploy
+                      </Button>
+
+                    </ButtonToolbar>
+
 
                   </div>
                 }

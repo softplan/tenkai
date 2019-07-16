@@ -1,12 +1,12 @@
 import React, { Component } from "react";
 import {
-    Button,
     Grid,
     Row,
     Col,
     FormControl, Table, FormGroup, ControlLabel
 } from "react-bootstrap";
 
+import Button from "components/CustomButton/CustomButton.jsx";
 import { Card } from "components/Card/Card.jsx";
 import CButton from "components/CustomButton/CustomButton.jsx";
 import EnvironmentForm from "components/Environments/EnvironmentForm.jsx";
@@ -61,6 +61,7 @@ class Environments extends Component {
     }
 
     navigateToEditEnvironment(item) {
+    
         this.setState(() => ({
             showInsertUpdateForm: true,
             editItem: item,
@@ -115,7 +116,7 @@ class Environments extends Component {
     }
 
     handleConfirmDelete() {
-        if (this.state.itemToDelete != undefined) {
+        if (this.state.itemToDelete !== undefined) {
             axios.delete(TENKAI_API_URL + "/environments/delete/" + this.state.itemToDelete.ID)
             .then(res => {
                 this.getEnvironments();
@@ -137,9 +138,12 @@ class Environments extends Component {
                     <td>{item.name}</td>
                     <td>{item.cluster_uri}</td>
                     <td>{item.namespace}</td>
-                    <td><a href="#" onClick={this.navigateToEditEnvironment.bind(this, item)}><i className="pe-7s-edit" /></a></td>
-                    <td><a href="#" onClick={this.onDelete.bind(this, item)}><i className="pe-7s-trash" /></a></td>
-                    <td onClick={this.navigateToEnvironmentVariables.bind(this, item.ID, item.group, item.name)}><i className="pe-7s-plugin" /></td>
+                    <td><Button className="link-button"
+                         onClick={this.navigateToEditEnvironment.bind(this, item)}><i className="pe-7s-edit"/></Button></td>
+                    <td><Button className="link-button" 
+                        onClick={this.onDelete.bind(this, item)}><i className="pe-7s-trash" /></Button></td> 
+                    <td><Button className="link-button" 
+                        onClick={this.navigateToEnvironmentVariables.bind(this, item.ID, item.group, item.name)}><i className="pe-7s-plugin" /></Button></td> 
                 </tr>
             );
 
@@ -151,8 +155,7 @@ class Environments extends Component {
                     showConfirmDeleteModal={this.state.showConfirmDeleteModal}
                     handleConfirmDeleteModalClose={this.handleConfirmDeleteModalClose.bind(this)}
                     title="Confirm" subTitle="Delete environment" message="Are you sure you want to delete this environment?"
-                    handleConfirmDelete={this.handleConfirmDelete.bind(this)}
-                    handleConfirmDeleteModalClose= {this.handleConfirmDeleteModalClose.bind(this)}>  
+                    handleConfirmDelete={this.handleConfirmDelete.bind(this)}>  
                 </SimpleModal>
 
                 <Grid fluid>

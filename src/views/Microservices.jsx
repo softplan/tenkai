@@ -101,8 +101,7 @@ class Microservices extends Component {
                 showConfirmDeleteModal={this.state.showConfirmDeleteModal}
                 handleConfirmDeleteModalClose={this.handleConfirmDeleteModalClose.bind(this)}
                 title="Confirm" subTitle="Delete release" message="Are you sure you want to delete this release?"
-                handleConfirmDelete={this.handleConfirmDelete.bind(this)}
-                handleConfirmDeleteModalClose={this.handleConfirmDeleteModalClose.bind(this)}>
+                handleConfirmDelete={this.handleConfirmDelete.bind(this)}>
                 </SimpleModal>
 
                 <Grid fluid>

@@ -63,7 +63,7 @@ class Config extends Component {
     }));
   }
 
-  onDelete(item) {
+  onConfirmDelete(item) {
     axios.delete(TENKAI_API_URL + "/repositories/" + item.name)
       .then(res => {
         this.getRepositories();
@@ -78,7 +78,7 @@ class Config extends Component {
   }
 
   handleConfirmDelete() {
-    if (this.state.itemToDelete != undefined) {
+    if (this.state.itemToDelete !== undefined) {
       axios.delete(TENKAI_API_URL + "/repositories/" + this.state.itemToDelete.name)
         .then(res => {
           this.getRepositories();
@@ -140,7 +140,9 @@ class Config extends Component {
         <td>{item.name}</td>
         <td>{item.url}</td>
         <td>{item.username}</td>
-        <td><a href="#" onClick={this.onDelete.bind(this, item)}><i className="pe-7s-trash" /></a></td>
+        <td><Button className="link-button"
+                    onClick={this.onDelete.bind(this, item)}><i className="pe-7s-trash"/></Button></td>
+
       </tr>
 
     );
@@ -153,8 +155,7 @@ class Config extends Component {
           showConfirmDeleteModal={this.state.showConfirmDeleteModal}
           handleConfirmDeleteModalClose={this.handleConfirmDeleteModalClose.bind(this)}
           title="Confirm" subTitle="Delete repository" message="Are you sure you want to delete this repository?"
-          handleConfirmDelete={this.handleConfirmDelete.bind(this)}
-          handleConfirmDeleteModalClose={this.handleConfirmDeleteModalClose.bind(this)}>
+          handleConfirmDelete={this.handleConfirmDelete.bind(this)}>
         </SimpleModal>
 
 
