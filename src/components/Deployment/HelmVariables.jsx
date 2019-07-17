@@ -3,28 +3,35 @@ import { Card } from "components/Card/Card.jsx";
 import {
     Row,
     Col,
-    Table
+    Table, FormGroup
 } from "react-bootstrap";
 import axios from 'axios';
 import ArrayVariable from "components/Deployment/ArrayVariable.jsx"
 import IstioVariable from "./IstioVariable";
 import TENKAI_API_URL from 'env.js';
+import { FormInputs } from "components/FormInputs/FormInputs.jsx";
 
 export class HelmVariables extends Component {
 
     state = {
+        chartName: "",
+        ChartVersion: "",
         variables: {},
         values: {},
         defaultApiPath: "",
         injectIstioCar: true,
         enableVirtualService: true,
+        containerImage: "", 
+        containerTag: "",
         hosts: {},
         hostCount: 0
     }
 
     componentDidMount() {
-        this.addHost();
-        this.getVariables();
+        this.setState({chartName: this.props.chartName, chartVersion: this.props.chartVersion}, () => {
+            this.addHost();
+            this.getVariables(this.state.chartName, this.state.chartVersion);
+        })
     }
 
     addDynamicVariableClick(variableName) {
@@ -69,7 +76,7 @@ export class HelmVariables extends Component {
 
     save(callbackFunction) {
 
-        const scope = this.props.name;
+        const scope = this.state.chartName;
         const environmentId = parseInt(this.props.envId);
         let payload = { data: [] };
 
@@ -83,6 +90,9 @@ export class HelmVariables extends Component {
         payload.data.push({ scope: scope, name: "istio.enabled", value: this.state.injectIstioCar ? "true" : "false", environmentId: environmentId });
         payload.data.push({ scope: scope, name: "istio.virtualservices.enabled", value: this.state.enableVirtualService ? "true" : "false", environmentId: environmentId });
         payload.data.push({ scope: scope, name: "istio.virtualservices.apiPath", value: this.state.defaultApiPath, environmentId: environmentId });
+        payload.data.push({ scope: scope, name: "image.repository", value: this.state.containerImage, environmentId: environmentId });
+        payload.data.push({ scope: scope, name: "image.tag", value: this.state.containerTag, environmentId: environmentId });
+
         const hosts =  this.state.hosts;
         Object.keys(hosts).map(function (key, index) {
             payload.data.push({ scope: scope, name: key, value: hosts[key], environmentId: environmentId});
@@ -93,15 +103,13 @@ export class HelmVariables extends Component {
 
         axios.post(TENKAI_API_URL + '/saveVariableValues', { data }).then(res => {
 
-               
-
                 let installPayload = {};
 
                 const environmentId = parseInt(this.props.envId);
                 var n = scope.indexOf("/");
-                installPayload.name = scope.substring(n + 1)
+                installPayload.name = scope.substring(n + 1);
 
-                installPayload.chart = scope
+                installPayload.chart = scope;
                 installPayload.environmentId = environmentId;
 
                 callbackFunction(installPayload);
@@ -113,11 +121,10 @@ export class HelmVariables extends Component {
 
     }
 
-    getVariables() {
+    getVariables(chartName, chartVersion) {
         this.props.handleLoading(true);
-        axios.get(TENKAI_API_URL + '/getChartVariables/' + this.props.name)
+        axios.post(TENKAI_API_URL + '/getChartVariables', { chartName, chartVersion })
             .then(response => {
-
                 if (response.data.istio != null) {
                     this.setState({ 
                         defaultApiPath: response.data.istio.virtualservices.apiPath,
@@ -125,6 +132,11 @@ export class HelmVariables extends Component {
                         enableVirtualService: response.data.istio.virtualservices.enabled
                      });
                 }
+
+                this.setState({ 
+                    containerImage: response.data.image.repository,
+                    containerTag: response.data.image.tag,
+                 });
                 
                 if (response.data.app != null) {
                     this.setState({ variables: response.data.app });
@@ -132,7 +144,7 @@ export class HelmVariables extends Component {
                     this.setState({ variables: [] });
                 }
 
-                const scope = this.props.name;
+                const scope = this.state.chartName;
                 const environmentId = parseInt(this.props.envId);
 
                 axios.post(TENKAI_API_URL + '/listVariables', { environmentId: environmentId, scope: scope })
@@ -140,6 +152,7 @@ export class HelmVariables extends Component {
 
                         this.addToValues(this, response.data.Variables);
                         this.fillIstioFields(this, response.data.Variables);
+                        this.fillImageFields(this, response.data.Variables);
                         this.props.handleLoading(false);
 
                     }).catch(error => {
@@ -159,6 +172,22 @@ export class HelmVariables extends Component {
         let i = name.indexOf("[");
         return name.substring(0, i);
     }
+
+    fillImageFields(self, variables) {
+        variables.forEach((value, index, array) => {
+
+            switch(value.name) {
+                case "image.repository":
+                    this.setState({containerImage: value.value })
+                    break;
+                case "image.tag":
+                    this.setState({containerTag: value.value })
+                    break;
+                default:
+                    break;
+              }             
+        });
+    }    
 
     fillIstioFields(self, variables) {
         variables.forEach((value, index, array) => {
@@ -202,9 +231,6 @@ export class HelmVariables extends Component {
             }
         });
 
-        console.log(JSON.stringify(dynamicEntries));
-        
-
         Object.keys(dynamicEntries).map(function (key) {
             for (let x = 0; x < (dynamicEntries[key] / 2) - 1; x++) {
                 self.addDynamicVariableClick(key);
@@ -217,6 +243,15 @@ export class HelmVariables extends Component {
         });
     }
 
+    handleContainerImageChange = event => {
+        const value = event.target.value;        
+        this.setState({containerImage: value});
+    }
+
+    handleContainerTagChange = event => {
+        const value = event.target.value;        
+        this.setState({containerTag: value});
+    }
 
     onApiGatewayPathChange(newValue) {
         this.setState({defaultApiPath: newValue});
@@ -281,9 +316,37 @@ export class HelmVariables extends Component {
             <Row>
                 <Col md={12}>
                     <Card
-                        title={this.props.name}
+                        title={this.state.chartName}
                         content={
                             <div>
+                                <div>
+                                    <form>
+                                        <FormGroup>
+                                            <FormInputs
+                                            ncols={["col-md-6", "col-md-2"]}
+                                            properties={[
+                                                {
+                                                    name: "image",
+                                                    label: "Container image",
+                                                    type: "text",
+                                                    bsClass: "form-control",
+                                                    value: this.state.containerImage,
+                                                    onChange: this.handleContainerImageChange
+                                                },
+                                                {
+                                                    name: "tag",
+                                                    label: "Container Tag",
+                                                    type: "text",
+                                                    bsClass: "form-control",
+                                                    value: this.state.containerTag,
+                                                    onChange: this.handleContainerTagChange
+                                                },
+                                            ]}
+                                            />
+                                        </FormGroup>
+                                    </form>
+                                </div>
+
                                 <div>
                                 <IstioVariable 
                                     defaultApiPath={this.state.defaultApiPath}

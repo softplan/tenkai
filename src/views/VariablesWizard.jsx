@@ -12,29 +12,27 @@ import queryString from 'query-string';
 import axios from 'axios';
 import TENKAI_API_URL from 'env.js';
 
-
 class VariablesWizard extends Component {
 
   state = {
     envId: "",
     charts: [],
-    tags:[],
+    chartVersions: new Map(),
   }
-
 
   componentDidMount() {
     let total = this.props.location.state.charts.length;
     let helmCharts = [];
-    let tags = [];
+    let chartVersion = "";
     let value = ""; 
-    let tag = "";
+    let chartVersions = new Map();
     for (let i = 0; i < total; i++) {
       value = this.props.location.state.charts[i].substring(0, this.props.location.state.charts[i].indexOf("@"))
-      tag = this.props.location.state.charts[i].substring(this.props.location.state.charts[i].indexOf("@")+1,this.props.location.state.charts[i].length)
       helmCharts.push(value);
-      tags.push(tag);
+      chartVersion = this.props.location.state.charts[i].substring(this.props.location.state.charts[i].indexOf("@") + 1, this.props.location.state.charts[i].length)
+      chartVersions[value] = chartVersion;
     }
-    this.setState({charts: helmCharts, tags: tags });
+    this.setState({charts: helmCharts, chartVersions: chartVersions });
   }
   
 
@@ -45,15 +43,16 @@ class VariablesWizard extends Component {
   }
 
   onSave = (payload) => {
+    
     this.props.handleLoading(true);
     axios.post(TENKAI_API_URL + '/multipleInstall', payload).then(() => {
         this.props.handleNotification("deployment_ok", "success");
         console.log('OK -> DEPLOYED => After notification');
         this.props.handleLoading(false);
     }).catch(error => {
+        this.props.handleLoading(false);
         console.log("Error deploying: " + error.message);
         this.props.handleNotification("deployment_fail", "error");
-        this.props.handleLoading(false);
     });
 
   }
@@ -84,13 +83,17 @@ class VariablesWizard extends Component {
 
     const envId = this.state.envId;
     const items = this.state.charts.map((item, key) =>
-      <HelmVariables handleLoading={this.props.handleLoading} handleNotification={this.props.handleNotification} key={key} name={item} ref={"h" + key} envId={envId}/>
+
+      <HelmVariables handleLoading={this.props.handleLoading} 
+                    handleNotification={this.props.handleNotification} 
+                    key={key} chartName={item}  chartVersion={this.state.chartVersions[item]}
+                    ref={"h" + key} 
+                    envId={envId}/>
     );     
 
     return (
       <div className="content">
         <Grid fluid>
-
 
           <Row>
 
@@ -114,7 +117,6 @@ class VariablesWizard extends Component {
           </Row>
 
           {items}
-
 
         </Grid>
       </div>

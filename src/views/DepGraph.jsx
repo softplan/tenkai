@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { Graph } from 'react-d3-graph';
 import { retrieveDependency } from 'client-api/apicall.jsx';
-import Button from "components/CustomButton/CustomButton.jsx";
 import queryString from 'query-string';
 
 class DepGraph extends Component {
@@ -21,22 +20,12 @@ class DepGraph extends Component {
         this.state.environmentName = props.location.state.environmentName;
         console.log(props.location.state.environmentName);
     }
-    
 
     componentDidMount() {
-
         const entries = Object.entries(this.state.charts)
         for (const [chartName, versionObject] of entries) {
             retrieveDependency(chartName, versionObject.value, this)    
-            //retrieveDependency("saj6/pd-frontend", "latest", this)    
         }
-
-        
-    }
-
-    analyse() {
-        //retrieveDependency("saj6/pd-frontend", "latest", this)
-        //console.log(this.state.data);
     }
 
     render() {
