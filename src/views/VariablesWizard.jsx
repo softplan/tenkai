@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import {
   Grid,
   Row,
-  Col
+  Col, ButtonToolbar
 } from "react-bootstrap";
 
 import { Card } from "components/Card/Card.jsx";
@@ -57,6 +57,12 @@ class VariablesWizard extends Component {
 
   }
 
+  onSaveVariablesClick = () => {
+    this.state.charts.forEach((item, key) => {
+        this.refs["h" + key].save((data) => {});
+    });    
+  }
+
   onClick = () => {
 
     let payload={deployables:[]};
@@ -103,12 +109,25 @@ class VariablesWizard extends Component {
                 content={
                   <div>
                     <h3>Environment: {this.props.location.state.environment}</h3>
-                    <Button bsStyle="info" 
-                      fill 
-                      pullRight 
-                      type="button"
-                      onClick={this.onClick}
-                      >Install/Update</Button>
+
+                    <ButtonToolbar>
+
+                      <Button bsStyle="primary" 
+                        fill 
+                        pullRight 
+                        type="button"
+                        onClick={this.onClick}
+                        >Install/Update</Button>
+
+                      <Button bsStyle="secondary" 
+                        fill 
+                        pullRight 
+                        type="button"
+                        onClick={this.onSaveVariablesClick}
+                        >Save Variables</Button>
+
+                    </ButtonToolbar>
+
                     <div className="clearfix" />
                   </div>
                 }

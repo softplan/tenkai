@@ -10,7 +10,7 @@ import "./assets/css/demo.css";
 import "./assets/css/pe-icon-7-stroke.css";
 
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faEdit } from '@fortawesome/free-solid-svg-icons'
+import { faEdit, faWindowClose } from '@fortawesome/free-solid-svg-icons'
 import { faMinusCircle } from '@fortawesome/free-solid-svg-icons'
 
 
@@ -18,6 +18,7 @@ import AdminLayout from "layouts/Admin.jsx";
 
 library.add(faEdit)
 library.add(faMinusCircle)
+library.add(faWindowClose)
 
 
 ReactDOM.render(

@@ -56,6 +56,7 @@ class Microservices extends Component {
     }
 
     handleDependenciesClick(id) {
+        console.log(id);
         this.props.history.push({
             pathname: "/admin/microservices-deps",
             search: "?releaseId=" + id,

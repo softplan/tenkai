@@ -156,11 +156,10 @@ function deleteDependency(id, self) {
 }
 
 
-function retrieveDependency(chartName, tag, self) {
-    axios.post(TENKAI_API_URL + "/analyse", { chartName, tag })
+function retrieveDependency(environmentId, chartName, tag, self) {
+    axios.post(TENKAI_API_URL + "/analyse", { environmentId, chartName, tag })
         .then(result => {
             const data = result.data; 
-            console.log("Retorno: " + JSON.stringify(result.data));
             self.setState( {data: data });
         }).catch(error => {
             console.log(error.message);
