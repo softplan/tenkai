@@ -92,6 +92,9 @@ class DepAnalysis extends Component {
                   <div>
                     <h3>Environment: {this.props.location.state.environment}</h3>
                     <Button bsStyle="info"
+                      disabled={(Object.entries(this.state.selectedVersion).length === 0 &&
+                        this.state.selectedVersion.constructor === Object) || this.state.charts.length <= 0}
+                    
                       fill
                       pullRight
                       type="button"

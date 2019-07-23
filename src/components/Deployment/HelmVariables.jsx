@@ -10,28 +10,34 @@ import ArrayVariable from "components/Deployment/ArrayVariable.jsx"
 import IstioVariable from "./IstioVariable";
 import TENKAI_API_URL from 'env.js';
 import { FormInputs } from "components/FormInputs/FormInputs.jsx";
+import { ConfigMap } from "components/Deployment/ConfigMap.jsx";
 
 export class HelmVariables extends Component {
 
     state = {
-        chartName: "",
+        chartName: "x",
         ChartVersion: "",
         variables: {},
         values: {},
         defaultApiPath: "",
         injectIstioCar: true,
         enableVirtualService: true,
-        containerImage: "", 
+        containerImage: "",
         containerTag: "",
         hosts: {},
-        hostCount: 0
+        hostCount: 0,
+        configMapChart: "saj6/dotnet-global-variables",
     }
 
+    constructor(props) {
+        super(props);
+        this.state.chartName = props.chartName;
+        this.state.chartVersion = props.chartVersion;
+     }    
+
     componentDidMount() {
-        this.setState({chartName: this.props.chartName, chartVersion: this.props.chartVersion}, () => {
-            this.addHost();
-            this.getVariables(this.state.chartName, this.state.chartVersion);
-        })
+        this.addHost();
+        this.getVariables(this.state.chartName, this.state.chartVersion);
     }
 
     addDynamicVariableClick(variableName) {
@@ -93,31 +99,36 @@ export class HelmVariables extends Component {
         payload.data.push({ scope: scope, name: "image.repository", value: this.state.containerImage, environmentId: environmentId });
         payload.data.push({ scope: scope, name: "image.tag", value: this.state.containerTag, environmentId: environmentId });
 
-        const hosts =  this.state.hosts;
+        const hosts = this.state.hosts;
         Object.keys(hosts).map(function (key, index) {
-            payload.data.push({ scope: scope, name: key, value: hosts[key], environmentId: environmentId});
+            payload.data.push({ scope: scope, name: key, value: hosts[key], environmentId: environmentId });
             return null;
-        });        
+        });
 
         let data = payload.data;
 
         axios.post(TENKAI_API_URL + '/saveVariableValues', { data }).then(res => {
 
+            this.refs.hConfigMap.save((data) => { 
+                let list = [];
+                //Main
                 let installPayload = {};
-
                 const environmentId = parseInt(this.props.envId);
                 var n = scope.indexOf("/");
                 installPayload.name = scope.substring(n + 1);
-
                 installPayload.chart = scope;
                 installPayload.environmentId = environmentId;
 
-                callbackFunction(installPayload);
-
-            }).catch(error => {
-                this.props.handleNotification("general_fail", "error");
-                console.log("Error saveVariableValues: " + error.message);
+                list.push(installPayload);
+                list.push(data);
+                callbackFunction(list);
             });
+
+
+        }).catch(error => {
+            this.props.handleNotification("general_fail", "error");
+            console.log("Error saveVariableValues: " + error.message);
+        });
 
     }
 
@@ -125,19 +136,22 @@ export class HelmVariables extends Component {
         this.props.handleLoading(true);
         axios.post(TENKAI_API_URL + '/getChartVariables', { chartName, chartVersion })
             .then(response => {
+
                 if (response.data.istio != null) {
-                    this.setState({ 
+                    this.setState({
                         defaultApiPath: response.data.istio.virtualservices.apiPath,
                         injectIstioCar: response.data.istio.enabled,
                         enableVirtualService: response.data.istio.virtualservices.enabled
-                     });
+                    });
                 }
 
-                this.setState({ 
-                    containerImage: response.data.image.repository,
-                    containerTag: response.data.image.tag,
-                 });
-                
+                if (response.data.image !== undefined) {
+                    this.setState({
+                        containerImage: response.data.image.repository,
+                        containerTag: response.data.image.tag,
+                    });
+                }
+
                 if (response.data.app != null) {
                     this.setState({ variables: response.data.app });
                 } else {
@@ -176,31 +190,31 @@ export class HelmVariables extends Component {
     fillImageFields(self, variables) {
         variables.forEach((value, index, array) => {
 
-            switch(value.name) {
+            switch (value.name) {
                 case "image.repository":
-                    this.setState({containerImage: value.value })
+                    this.setState({ containerImage: value.value })
                     break;
                 case "image.tag":
-                    this.setState({containerTag: value.value })
+                    this.setState({ containerTag: value.value })
                     break;
                 default:
                     break;
-              }             
+            }
         });
-    }    
+    }
 
     fillIstioFields(self, variables) {
         variables.forEach((value, index, array) => {
 
-            switch(value.name) {
+            switch (value.name) {
                 case "istio.enabled":
-                    this.setState({injectIstioCar: value.value === "true" ? true : false })
+                    this.setState({ injectIstioCar: value.value === "true" ? true : false })
                     break;
                 case "istio.virtualservices.enabled":
-                    this.setState({enableVirtualService: value.value === "true" ? true : false })
+                    this.setState({ enableVirtualService: value.value === "true" ? true : false })
                     break;
                 case "istio.virtualservices.apiPath":
-                    this.setState({defaultApiPath: value.value })
+                    this.setState({ defaultApiPath: value.value })
                     break;
                 default:
                     if (value.name.indexOf("istio.virtualservices.hosts[") > -1) {
@@ -208,7 +222,7 @@ export class HelmVariables extends Component {
                         let varValue = value.value;
                         this.onHostChange(name, varValue);
                     }
-              }             
+            }
         });
     }
 
@@ -244,32 +258,32 @@ export class HelmVariables extends Component {
     }
 
     handleContainerImageChange = event => {
-        const value = event.target.value;        
-        this.setState({containerImage: value});
+        const value = event.target.value;
+        this.setState({ containerImage: value });
     }
 
     handleContainerTagChange = event => {
-        const value = event.target.value;        
-        this.setState({containerTag: value});
+        const value = event.target.value;
+        this.setState({ containerTag: value });
     }
 
     onApiGatewayPathChange(newValue) {
-        this.setState({defaultApiPath: newValue});
-    }    
+        this.setState({ defaultApiPath: newValue });
+    }
 
     handleOnInjectIstioCar(newValue) {
-        this.setState({injectIstioCar: newValue});
+        this.setState({ injectIstioCar: newValue });
     }
 
     handleEnableVirtualService(newValue) {
-        this.setState({enableVirtualService: newValue});
+        this.setState({ enableVirtualService: newValue });
     }
 
     addHost() {
         let name = "istio.virtualservices.hosts[" + this.state.hostCount + "]";
         this.onHostChange(name, '');
         this.setState({
-           hostCount: this.state.hostCount + 1
+            hostCount: this.state.hostCount + 1
         });
     }
 
@@ -282,10 +296,20 @@ export class HelmVariables extends Component {
         }));
     }
 
+    getConfigMap(value) {
+        let configMapName = value + "-global-configmap";
+        var n = configMapName.indexOf("/");
+        configMapName = configMapName.substring(n + 1);
+        return configMapName
+    }
+
 
     render() {
+        
+        let configMapName = this.getConfigMap(this.state.chartName);
+
         const items = Object.keys(this.state.variables).map(key => {
-            
+
 
             if (typeof this.state.variables[key] == 'object') {
                 return (
@@ -293,7 +317,7 @@ export class HelmVariables extends Component {
                         variables={this.state.variables[key]}
                         values={this.state.values}
                         onCreateDynamicVariable={this.addDynamicVariableClick.bind(this)}
-                        onInputChange={this.onInputChangeFromChild.bind(this)}/>
+                        onInputChange={this.onInputChangeFromChild.bind(this)} />
                 )
             } else {
 
@@ -312,56 +336,67 @@ export class HelmVariables extends Component {
             }
         });
 
+
         return (
+
+            
+
             <Row>
                 <Col md={12}>
                     <Card
                         title={this.state.chartName}
                         content={
                             <div>
+                                {this.state.chartName === "dotnet-global-config" ? 
                                 <div>
                                     <form>
                                         <FormGroup>
                                             <FormInputs
-                                            ncols={["col-md-6", "col-md-2"]}
-                                            properties={[
-                                                {
-                                                    name: "image",
-                                                    label: "Container image",
-                                                    type: "text",
-                                                    bsClass: "form-control",
-                                                    value: this.state.containerImage,
-                                                    onChange: this.handleContainerImageChange
-                                                },
-                                                {
-                                                    name: "tag",
-                                                    label: "Container Tag",
-                                                    type: "text",
-                                                    bsClass: "form-control",
-                                                    value: this.state.containerTag,
-                                                    onChange: this.handleContainerTagChange
-                                                },
-                                            ]}
+                                                ncols={["col-md-6", "col-md-2"]}
+                                                properties={[
+                                                    {
+                                                        name: "image",
+                                                        label: "Container image",
+                                                        type: "text",
+                                                        bsClass: "form-control",
+                                                        value: this.state.containerImage,
+                                                        onChange: this.handleContainerImageChange
+                                                    },
+                                                    {
+                                                        name: "tag",
+                                                        label: "Container Tag",
+                                                        type: "text",
+                                                        bsClass: "form-control",
+                                                        value: this.state.containerTag,
+                                                        onChange: this.handleContainerTagChange
+                                                    },
+                                                ]}
                                             />
                                         </FormGroup>
                                     </form>
                                 </div>
+                                : <div></div> }
 
+
+                                {this.state.chartName === "dotnet-global-config" ? 
                                 <div>
-                                <IstioVariable 
-                                    defaultApiPath={this.state.defaultApiPath}
-                                    injectIstioCar={this.state.injectIstioCar}
-                                    enableVirtualService={this.state.enableVirtualService}
-                                    hosts={this.state.hosts}
-                                    onAddHost={this.addHost.bind(this)}
-                                    onApiGatewayPathChange={this.onApiGatewayPathChange.bind(this)}
-                                    onInjectIstioCar={this.handleOnInjectIstioCar.bind(this)}
-                                    onEnableVirtualService={this.handleEnableVirtualService.bind(this)}
-                                    onHostChange={this.onHostChange.bind(this)}
+                                    <IstioVariable
+                                        defaultApiPath={this.state.defaultApiPath}
+                                        injectIstioCar={this.state.injectIstioCar}
+                                        enableVirtualService={this.state.enableVirtualService}
+                                        hosts={this.state.hosts}
+                                        onAddHost={this.addHost.bind(this)}
+                                        onApiGatewayPathChange={this.onApiGatewayPathChange.bind(this)}
+                                        onInjectIstioCar={this.handleOnInjectIstioCar.bind(this)}
+                                        onEnableVirtualService={this.handleEnableVirtualService.bind(this)}
+                                        onHostChange={this.onHostChange.bind(this)}
                                     />
                                 </div>
+                                : <div></div> }
 
                                 <hr />
+
+
                                 <div>
                                     <Table striped hover>
                                         <thead>
@@ -376,6 +411,18 @@ export class HelmVariables extends Component {
                                         </tbody>
                                     </Table>
                                 </div>
+                                
+                                <hr />
+
+                                {this.state.chartName === "dotnet-global-config" ? 
+                                <ConfigMap handleLoading={this.props.handleLoading} 
+                                    handleNotification={this.props.handleNotification} 
+                                    key="ConfigMap" chartName={this.state.configMapChart}  
+                                    chartVersion={this.state.configMapChartVersion}
+                                    ref="hConfigMap" configMapName={configMapName}
+                                    envId={this.props.envId}/>    
+                                : <div></div> }
+
                             </div>
 
                         }

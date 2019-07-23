@@ -95,6 +95,16 @@ class Environments extends Component {
         }
     }
 
+    duplicateEnvironment(id) {
+        axios.get(TENKAI_API_URL + "/environments/duplicate/" + id)
+            .then(res => {
+                this.getEnvironments();
+            }).catch(error => {
+                console.log(error.message);
+                this.props.handleNotification("general_fail", "error");
+            });
+    }
+
     save(data, uri) {
         axios.post(TENKAI_API_URL + uri, { data })
             .then(res => {
@@ -144,6 +154,9 @@ class Environments extends Component {
                         onClick={this.onDelete.bind(this, item)}><i className="pe-7s-trash" /></Button></td> 
                     <td><Button className="link-button" 
                         onClick={this.navigateToEnvironmentVariables.bind(this, item.ID, item.group, item.name)}><i className="pe-7s-plugin" /></Button></td> 
+                    <td><Button className="link-button" 
+                        onClick={this.duplicateEnvironment.bind(this, item.ID)}><i className="pe-7s-magic-wand" /></Button></td> 
+
                 </tr>
             );
 
@@ -218,6 +231,7 @@ class Environments extends Component {
                                                         <th>Edit</th>
                                                         <th>Delete</th>
                                                         <th>Variables</th>
+                                                        <th>Duplicate</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>

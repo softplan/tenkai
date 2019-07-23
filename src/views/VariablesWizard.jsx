@@ -9,15 +9,14 @@ import { Card } from "components/Card/Card.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
 import HelmVariables from "components/Deployment/HelmVariables.jsx";
 import queryString from 'query-string';
-import axios from 'axios';
-import TENKAI_API_URL from 'env.js';
+import { multipleInstall } from "client-api/apicall.jsx"
 
 class VariablesWizard extends Component {
 
   state = {
     envId: "",
     charts: [],
-    chartVersions: new Map(),
+    chartVersions: new Map()
   }
 
   componentDidMount() {
@@ -34,7 +33,6 @@ class VariablesWizard extends Component {
     }
     this.setState({charts: helmCharts, chartVersions: chartVersions });
   }
-  
 
   constructor(props) {
     super(props);
@@ -43,24 +41,15 @@ class VariablesWizard extends Component {
   }
 
   onSave = (payload) => {
-    
-    this.props.handleLoading(true);
-    axios.post(TENKAI_API_URL + '/multipleInstall', payload).then(() => {
-        this.props.handleNotification("deployment_ok", "success");
-        console.log('OK -> DEPLOYED => After notification');
-        this.props.handleLoading(false);
-    }).catch(error => {
-        this.props.handleLoading(false);
-        console.log("Error deploying: " + error.message);
-        this.props.handleNotification("deployment_fail", "error");
-    });
-
+    multipleInstall(payload, this);
   }
 
   onSaveVariablesClick = () => {
+    this.props.handleLoading(true);
     this.state.charts.forEach((item, key) => {
         this.refs["h" + key].save((data) => {});
     });    
+    this.props.handleLoading(false);
   }
 
   onClick = () => {
@@ -70,9 +59,11 @@ class VariablesWizard extends Component {
     const totalCharts = this.state.charts.length;
 
     this.state.charts.forEach((item, key) => {
-      
-        this.refs["h" + key].save( (data) => {
-          payload.deployables.push(data);
+        this.refs["h" + key].save( (list) => {
+          for (let x = 0; x < list.length; x++) {
+            let data = list[x];
+            payload.deployables.push(data);  
+          }
           count++;
           if (count === totalCharts) {
             this.onSave(payload);
@@ -119,7 +110,7 @@ class VariablesWizard extends Component {
                         onClick={this.onClick}
                         >Install/Update</Button>
 
-                      <Button bsStyle="secondary" 
+                      <Button bsStyle="info" 
                         fill 
                         pullRight 
                         type="button"

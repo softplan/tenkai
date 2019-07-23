@@ -118,6 +118,20 @@ function retrieveDependencies(releaseId, self) {
     });
 }
 
+function multipleInstall(payload, self) {
+    self.props.handleLoading(true);
+    axios.post(TENKAI_API_URL + '/multipleInstall', payload).then(() => {
+        console.log('aqui1');
+        self.props.handleNotification("deployment_ok", "success");
+        self.props.handleLoading(false);
+    }).catch(error => {
+        console.log('aqui2');
+        console.log(error);
+        self.props.handleLoading(false);
+        self.props.handleNotification("deployment_fail", "error");
+    });
+  } 
+
 function saveDependency(data, self) {
 
     let uri = "";
@@ -167,8 +181,11 @@ function retrieveDependency(environmentId, chartName, tag, self) {
         });
 }
 
+
+
+
 export {
     retriveRepo, retrieveCharts, retrieveReleases,
     saveReleases, retrieveDependencies, saveDependency,
-    deleteDependency, deleteRelease, retrieveDependency, retrieveReleasesWithCallBack
+    deleteDependency, deleteRelease, retrieveDependency, retrieveReleasesWithCallBack, multipleInstall
 };

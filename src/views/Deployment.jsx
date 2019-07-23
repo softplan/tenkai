@@ -24,6 +24,7 @@ class Deployment extends Component {
     charts: [],
     repositories: [],
     selectedRepository: {},
+    latestVersionOnly: true,
   }
 
   componentDidMount() {
@@ -33,6 +34,7 @@ class Deployment extends Component {
 
   handleEnvironmentChange = (selectedOption) => {
     this.setState({ selectedOption });
+   
   }
 
   handleRepositoryChange = (selectedRepository) => {
@@ -76,7 +78,10 @@ class Deployment extends Component {
 
   getCharts(repo) {
     this.props.handleLoading(true);
-    let url = "/charts/" + repo;
+    
+    let url = "/charts/" + repo + "?all=" + !this.state.latestVersionOnly;
+    console.log(url);
+
     axios.get(TENKAI_API_URL + url).then(response => {
         this.setState({chartsResult: response.data.charts != null ? response.data : { charts: [] }});
         this.props.handleLoading(false);
@@ -105,6 +110,13 @@ class Deployment extends Component {
     });
   }
 
+  handleLatestVersionOnlyChange(e) {
+    this.setState({ latestVersionOnly: e.target.checked}, () => {
+      if (this.state.selectedRepository !== undefined && this.state.selectedRepository.value !== undefined) {
+        this.getCharts(this.state.selectedRepository.value);
+      }
+    });
+  }
 
   handleCheckboxChange(e) {
 
@@ -199,8 +211,16 @@ class Deployment extends Component {
                           style={{ width: '100%' }} type="text"
                           placeholder="Search using any field"
                           aria-label="Search using any field"></FormControl>
-
                       </FormGroup>
+                    </div>
+
+                    <div className="col-md-2">
+                      <div className="custom-control custom-checkbox">
+                        <input type="checkbox" className="custom-control-input" 
+                          id="latestVersionOnly" checked={this.state.latestVersionOnly === true}
+                          onChange={this.handleLatestVersionOnlyChange.bind(this)}/>
+                        <label className="custom-control-label" htmlFor="latestVersionOnly">LATEST CHART VERSION ONLY</label>
+                      </div>                      
                     </div>
 
                     <div>

@@ -3,10 +3,13 @@ import { Graph } from 'react-d3-graph';
 import { retrieveDependency } from 'client-api/apicall.jsx';
 import queryString from 'query-string';
 import {
-    Tabs, Tab
+    Tabs, Tab, ButtonToolbar
 } from "react-bootstrap";
+import Button from "components/CustomButton/CustomButton.jsx";
 import HelmVariables from "components/Deployment/HelmVariables.jsx";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { Card } from "components/Card/Card.jsx";
+import { multipleInstall } from "client-api/apicall.jsx"
 
 class DepGraph extends Component {
 
@@ -15,7 +18,7 @@ class DepGraph extends Component {
             nodes: [{ id: "default" }],
             links: [],
         },
-        tabs:[],
+        tabs: [],
     }
 
     constructor(props) {
@@ -38,8 +41,57 @@ class DepGraph extends Component {
     onTabClose(index) {
         console.log(index);
         let arr = this.state.tabs;
-        arr.splice(index, 1); 
-        this.setState({tabs:[]}, () => {this.setState({tabs: arr}, () =>{console.log(this.state.tabs)})});
+        arr.splice(index, 1);
+        this.setState({ tabs: [] }, () => { this.setState({ tabs: arr }, () => { console.log(this.state.tabs) }) });
+    }
+
+    onInstallUpdateChartClick(chartName) {
+        let payload={deployables:[]};
+        this.refs["h" + chartName].save( (list) => {
+            for (let x = 0; x < list.length; x++) {
+              let data = list[x];
+              payload.deployables.push(data);
+            }
+            multipleInstall(payload, this);
+        });
+    }
+
+    onSaveVariablesClick(chartName) {
+        this.props.handleLoading(true);
+        this.refs["h" + chartName].save((data) => {});
+        this.props.handleLoading(false);
+    }
+
+    getConfigMap(value) {
+        let configMapName = value + "-global-configmap";
+        var n = configMapName.indexOf("/");
+        configMapName = configMapName.substring(n + 1);
+        return configMapName
+    }
+
+
+    onInstallUpdateAllClick() {
+        let payload={deployables:[]};
+        const totalCharts = this.state.data.nodes.length;
+        for (let x = 0; x < totalCharts; x++) {
+            let scope = this.state.data.nodes[x].id.substring(0, this.state.data.nodes[x].id.indexOf(":"));
+            
+            var n = scope.indexOf("/");
+            let installPayload = {};
+            installPayload.name = scope.substring(n + 1);
+            installPayload.chart = scope;
+            installPayload.environmentId = parseInt(this.state.envId);
+            payload.deployables.push(installPayload);
+
+            let installPayloadConfigMap = {};
+            installPayloadConfigMap.name = this.getConfigMap(scope.substring(n + 1))
+            installPayloadConfigMap.chart = "saj6/dotnet-global-variables";
+            installPayloadConfigMap.environmentId = parseInt(this.state.envId);
+            payload.deployables.push(installPayloadConfigMap);
+
+        }
+        console.log(payload.deployables);
+        multipleInstall(payload, this);
     }
 
     render() {
@@ -107,7 +159,7 @@ class DepGraph extends Component {
 
         // graph event callbacks
         const onClickGraph = function () {
-          
+
         };
 
         const onClickNode = function (nodeId) {
@@ -117,7 +169,7 @@ class DepGraph extends Component {
                     list,
                     value: '',
                 }
-            }, () => {console.log(this.state.tabs)});
+            }, () => { console.log(this.state.tabs) });
 
         };
 
@@ -153,45 +205,95 @@ class DepGraph extends Component {
             <div>
                 <Tabs defaultActiveKey="main" id="uncontrolled-tab-example">
                     <Tab eventKey="main" title="Dependency Analysis">
+
+                        <div>
+                            <Card
+                                title=""
+                                content={
+                                    <div>
+                                        <h3>Environment: {this.state.environmentName}</h3>
+                                        <ButtonToolbar>
+                                            <Button bsStyle="primary"
+                                                fill
+                                                pullRight
+                                                type="button"
+                                                onClick={this.onInstallUpdateAllClick.bind(this)}>Install/Update All</Button>
+                                        </ButtonToolbar>
+
+                                        <div className="clearfix" />
+                                    </div>
+                                }
+                            />
+                        </div>
+
                         <Graph
-                        id="graph-id"
-                        data={data}
-                        config={myConfig}
-                        onClickNode={onClickNode.bind(this)}
-                        onRightClickNode={onRightClickNode}
-                        onClickGraph={onClickGraph}
-                        onClickLink={onClickLink}
-                        onRightClickLink={onRightClickLink}
-                        onMouseOverNode={onMouseOverNode}
-                        onMouseOutNode={onMouseOutNode}
-                        onMouseOverLink={onMouseOverLink}
-                        onMouseOutLink={onMouseOutLink}/>                    
+                            id="graph-id"
+                            data={data}
+                            config={myConfig}
+                            onClickNode={onClickNode.bind(this)}
+                            onRightClickNode={onRightClickNode}
+                            onClickGraph={onClickGraph}
+                            onClickLink={onClickLink}
+                            onRightClickLink={onRightClickLink}
+                            onMouseOverNode={onMouseOverNode}
+                            onMouseOutNode={onMouseOutNode}
+                            onMouseOverLink={onMouseOverLink}
+                            onMouseOutLink={onMouseOutLink} />
+
+
                     </Tab>
                     {this.state.tabs.map((value, index) => {
 
-                        const chartName=value.substring(0, value.indexOf(":"));
-                        const chartVersion="";
+                        const chartName = value.substring(0, value.indexOf(":"));
+                        const chartVersion = "";
 
                         return <Tab key={index} eventKey={chartName} title={<span>{chartName}{" "}
-                        <FontAwesomeIcon onClick={this.onTabClose.bind(this, index)} icon="window-close"/></span>}>
-                            
-                            <div > 
-                                <HelmVariables handleLoading={this.props.handleLoading} 
-                                handleNotification={this.props.handleNotification} 
-                                key={index} chartName={chartName} 
-                                chartVersion={chartVersion}
-                                ref={"h" + index} 
-                                envId={this.state.envId}/>
+                            <FontAwesomeIcon onClick={this.onTabClose.bind(this, index)} icon="window-close" /></span>}>
 
-  
+                            <div>
+                                <Card
+                                    title=""
+                                    content={
+                                        <div>
+                                            <ButtonToolbar>
+                                                <h3>Environment: {this.state.environmentName}</h3>
+                                                <Button bsStyle="primary"
+                                                    fill
+                                                    pullRight
+                                                    type="button"
+                                                    onClick={this.onInstallUpdateChartClick.bind(this, chartName)}
+                                                >Install/Update</Button>
 
+                                                <Button bsStyle="info"
+                                                    fill
+                                                    pullRight
+                                                    type="button"
+                                                    onClick={this.onSaveVariablesClick.bind(this, chartName)}
+                                                >Save Variables</Button>
+
+                                            </ButtonToolbar>
+
+                                            <div className="clearfix" />
+                                        </div>
+                                    }
+                                />
                             </div>
 
-                        </Tab>                            
-                        
-                    })}                
+
+                            <div >
+                                <HelmVariables handleLoading={this.props.handleLoading}
+                                    handleNotification={this.props.handleNotification}
+                                    key={index} chartName={chartName}
+                                    chartVersion={chartVersion}
+                                    ref={"h" + chartName}
+                                    envId={this.state.envId} />
+                            </div>
+
+                        </Tab>
+
+                    })}
                 </Tabs>
-                
+
             </div>
 
         )
