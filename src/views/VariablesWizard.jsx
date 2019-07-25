@@ -57,9 +57,11 @@ class VariablesWizard extends Component {
     let payload={deployables:[]};
     let count = 0;
     const totalCharts = this.state.charts.length;
+    console.log(count);
 
     this.state.charts.forEach((item, key) => {
         this.refs["h" + key].save( (list) => {
+          console.log("aqui");
           for (let x = 0; x < list.length; x++) {
             let data = list[x];
             payload.deployables.push(data);  

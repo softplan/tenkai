@@ -27,6 +27,7 @@ export class HelmVariables extends Component {
         hosts: {},
         hostCount: 0,
         configMapChart: "saj6/dotnet-global-variables",
+        simpleChart: "saj6/dotnet-global-config",
     }
 
     constructor(props) {
@@ -109,7 +110,23 @@ export class HelmVariables extends Component {
 
         axios.post(TENKAI_API_URL + '/saveVariableValues', { data }).then(res => {
 
-            this.refs.hConfigMap.save((data) => { 
+            if (this.refs.hConfigMap !== undefined) {
+                this.refs.hConfigMap.save((data) => { 
+                    let list = [];
+                    //Main
+                    let installPayload = {};
+                    const environmentId = parseInt(this.props.envId);
+                    var n = scope.indexOf("/");
+                    installPayload.name = scope.substring(n + 1);
+                    installPayload.chart = scope;
+                    installPayload.environmentId = environmentId;
+
+                    list.push(installPayload);
+                    list.push(data);
+                    callbackFunction(list);
+                });
+            } else {
+
                 let list = [];
                 //Main
                 let installPayload = {};
@@ -118,12 +135,9 @@ export class HelmVariables extends Component {
                 installPayload.name = scope.substring(n + 1);
                 installPayload.chart = scope;
                 installPayload.environmentId = environmentId;
-
                 list.push(installPayload);
-                list.push(data);
                 callbackFunction(list);
-            });
-
+            }
 
         }).catch(error => {
             this.props.handleNotification("general_fail", "error");
@@ -347,7 +361,7 @@ export class HelmVariables extends Component {
                         title={this.state.chartName}
                         content={
                             <div>
-                                {this.state.chartName === "dotnet-global-config" ? 
+                                {this.state.chartName !== this.state.simpleChart ? 
                                 <div>
                                     <form>
                                         <FormGroup>
@@ -378,7 +392,7 @@ export class HelmVariables extends Component {
                                 : <div></div> }
 
 
-                                {this.state.chartName === "dotnet-global-config" ? 
+                                {this.state.chartName !== this.state.simpleChart ? 
                                 <div>
                                     <IstioVariable
                                         defaultApiPath={this.state.defaultApiPath}
@@ -414,7 +428,7 @@ export class HelmVariables extends Component {
                                 
                                 <hr />
 
-                                {this.state.chartName === "dotnet-global-config" ? 
+                                {this.state.chartName !== this.state.simpleChart ? 
                                 <ConfigMap handleLoading={this.props.handleLoading} 
                                     handleNotification={this.props.handleNotification} 
                                     key="ConfigMap" chartName={this.state.configMapChart}  
