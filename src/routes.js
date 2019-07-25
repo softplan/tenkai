@@ -7,44 +7,15 @@ import Microservices from "views/Microservices";
 import Dependencies from "views/Dependencies";
 import DepAnalysis from "views/DepAnalysis"
 import DepGraph from "views/DepGraph"
+import Solution from "views/Solution"
+import SolutionChart from "views/SolutionChart"
+
 
 /*
 import Dashboard from "views/Dashboard";
 */
 
 const dashboardRoutes = [
-  {
-    path: "/microservices",
-    name: "Releases",
-    icon: "pe-7s-tools",
-    component: Microservices,
-    layout: "/admin",
-    menu: true
-  },
-  {
-    path: "/microservices-deps",
-    name: "Dependencies",
-    icon: "pe-7s-tools",
-    component: Dependencies,
-    layout: "/admin",
-    menu: false
-  },
-  {
-    path: "/environments",
-    name: "Environments",
-    icon: "pe-7s-server",
-    component: Enviroments,
-    layout: "/admin",
-    menu: true
-  },
-  {
-    path: "/environments-envvars",
-    name: "Variables",
-    icon: "pe-7s-server",
-    component: Variables,
-    layout: "/admin",
-    menu: false
-  },
   {
     path: "/deployment",
     name: "Deployment",
@@ -78,14 +49,61 @@ const dashboardRoutes = [
     menu: false
   },
   {
+    path: "/environments",
+    name: "Environments",
+    icon: "pe-7s-server",
+    component: Enviroments,
+    layout: "/admin",
+    menu: true
+  },
+  {
+    path: "/environments-envvars",
+    name: "Variables",
+    icon: "pe-7s-server",
+    component: Variables,
+    layout: "/admin",
+    menu: false
+  },
+  {
     path: "/config",
     name: "Helm Repo",
     icon: "pe-7s-config",
     component: Config,
     layout: "/admin",
     menu: true
+  },
+  {
+    path: "/solution",
+    name: "Solution",
+    icon: "pe-7s-umbrella",
+    component: Solution,
+    layout: "/admin",
+    menu: true
+  },
+  {
+    path: "/solution-deps",
+    name: "Solution",
+    icon: "pe-7s-umbrella",
+    component: SolutionChart,
+    layout: "/admin",
+    menu: false
+  },
+  {
+    path: "/microservices",
+    name: "Releases",
+    icon: "pe-7s-tools",
+    component: Microservices,
+    layout: "/admin",
+    menu: true
+  },
+  {
+    path: "/microservices-deps",
+    name: "Dependencies",
+    icon: "pe-7s-tools",
+    component: Dependencies,
+    layout: "/admin",
+    menu: false
   }
-  
 ];
 
 /*
