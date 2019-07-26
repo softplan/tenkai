@@ -193,15 +193,17 @@ class Deployment extends Component {
                 title="Helm Chart"
                 content={
                   <div>
-
+                    <Row>
                     <div className="col-md-5">
                       <FormGroup>
                         <ControlLabel>Repository</ControlLabel>
                         <Select value={selectedRepository} onChange={this.handleRepositoryChange} options={this.state.repositories} />
                       </FormGroup>
-
                     </div>
 
+                    </Row>
+
+                    <Row>
                     <div className="col-md-8">
                       <FormGroup>
                         <ControlLabel>Chart Search</ControlLabel>
@@ -222,8 +224,10 @@ class Deployment extends Component {
                         <label className="custom-control-label" htmlFor="latestVersionOnly">LATEST CHART VERSION ONLY</label>
                       </div>                      
                     </div>
+                    </Row>
 
-                    <div>
+                    <Row>
+                    <div className="col-md-11">
                       <Table bordered hover size="sm">
                         <thead>
                           <tr>
@@ -240,7 +244,10 @@ class Deployment extends Component {
                       </Table>
 
                     </div>
+                    </Row>
 
+                    <Row>
+                      <Col xs={10}>
                     <ButtonToolbar>
 
                     <Button bsStyle="primary"
@@ -260,7 +267,8 @@ class Deployment extends Component {
                       </Button>
 
                     </ButtonToolbar>
-
+                    </Col>
+                    </Row>
 
                   </div>
                 }

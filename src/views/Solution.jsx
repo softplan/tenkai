@@ -126,6 +126,14 @@ class Solution extends Component {
         this.setState({showConfirmDeleteModal: false, itemToDelete: {}});
     }
 
+    onDeploy(item) {
+
+        this.props.history.push({
+            pathname: "/admin/solution-deploy",
+            search: "?solutionId=" + item.ID
+        });        
+    }
+
     render() {
 
         const items = this.state.list
@@ -140,6 +148,8 @@ class Solution extends Component {
                         onClick={this.onDelete.bind(this, item)}><i className="pe-7s-trash" /></Button></td> 
                     <td><Button className="link-button" 
                         onClick={this.onEditDetails.bind(this, item)}><i className="pe-7s-album" /></Button></td> 
+                    <td><Button className="link-button" 
+                        onClick={this.onDeploy.bind(this, item)}><i className="pe-7s-helm" /></Button></td> 
 
                 </tr>
             );
@@ -213,6 +223,7 @@ class Solution extends Component {
                                                         <th>Edit</th>
                                                         <th>Delete</th>
                                                         <th>Charts</th>
+                                                        <th>Deploy</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>

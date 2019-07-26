@@ -9,7 +9,7 @@ import DepAnalysis from "views/DepAnalysis"
 import DepGraph from "views/DepGraph"
 import Solution from "views/Solution"
 import SolutionChart from "views/SolutionChart"
-
+import DeploySolution from "views/DeploySolution"
 
 /*
 import Dashboard from "views/Dashboard";
@@ -89,6 +89,14 @@ const dashboardRoutes = [
     menu: false
   },
   {
+    path: "/solution-deploy",
+    name: "Solution",
+    icon: "pe-7s-umbrella",
+    component: DeploySolution,
+    layout: "/admin",
+    menu: false
+  },
+    {
     path: "/microservices",
     name: "Releases",
     icon: "pe-7s-tools",

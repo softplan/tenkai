@@ -3,7 +3,7 @@ import {
   Grid,
   Row,
   Col,
-  Table
+  Table, ButtonToolbar
 } from "react-bootstrap";
 
 import { Card } from "components/Card/Card.jsx";
@@ -77,6 +77,20 @@ class Config extends Component {
     this.setState({ itemToDelete: item }, () => { this.handleConfirmDeleteModalShow() });
   }
 
+  onRepoUpdateClick() {
+
+    this.props.handleLoading(true);
+
+    axios.get(TENKAI_API_URL + "/repoUpdate")
+      .then(res => {
+        this.props.handleLoading(false);
+      }).catch(error => {
+        this.props.handleLoading(false);
+        this.props.handleNotification("general_fail", "error");
+      });
+
+  }
+
   handleConfirmDelete() {
     if (this.state.itemToDelete !== undefined) {
       axios.delete(TENKAI_API_URL + "/repositories/" + this.state.itemToDelete.name)
@@ -141,7 +155,7 @@ class Config extends Component {
         <td>{item.url}</td>
         <td>{item.username}</td>
         <td><Button className="link-button"
-                    onClick={this.onDelete.bind(this, item)}><i className="pe-7s-trash"/></Button></td>
+          onClick={this.onDelete.bind(this, item)}><i className="pe-7s-trash" /></Button></td>
 
       </tr>
 
@@ -166,7 +180,13 @@ class Config extends Component {
                 title=""
                 content={
                   <form>
-                    <Button className="pull-right" variant="primary" onClick={this.handleNewRepoClick.bind(this)} >New Repo</Button>
+                    <ButtonToolbar>
+
+                      <Button className="pull-right" variant="info" onClick={this.onRepoUpdateClick.bind(this)} >Repo Update</Button>
+
+                      <Button className="pull-right" variant="primary" onClick={this.handleNewRepoClick.bind(this)} >New Repo</Button>
+
+                    </ButtonToolbar>
                     <div className="clearfix" />
                   </form>
                 }
