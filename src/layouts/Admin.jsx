@@ -12,12 +12,15 @@ import routes from "routes.js";
 
 import image from "assets/img/sidebar-8.jpg";
 import "assets/css/loading.css"
+import Keycloak from 'keycloak-js';
 
 class Admin extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
+      keycloak: null,
+      authenticated: false,
       loading: false,
       _notificationSystem: null,
       image: image,
@@ -28,53 +31,65 @@ class Admin extends Component {
   }
 
   handleLoading = value => {
-    this.setState({loading: value});
+    this.setState({ loading: value });
   }
 
-  handleNotification = (type, level) => {
-
-    switch(type) {
-      case "deployment_ok":
-          this.state._notificationSystem.addNotification({
-            title: <span data-notify="icon" className="pe-7s-gift" />,
-            message: (
-              <div>
-                Deployment <b>successful</b>.<br/>Use "kubectl get pods/services" to check it
-              </div>
-            ),
-            level: level,
-            position: "tr",
-            autoDismiss: 15
-          });    
+  handleNotification = (type, level, message) => {
+    switch (type) {
+      case "custom":
+        this.state._notificationSystem.addNotification({
+          title: <span data-notify="icon" className="pe-7s-gift" />,
+          message: (
+            <div>
+              {message}
+            </div>
+          ),
+          level: level,
+          position: "tr",
+          autoDismiss: 15
+        });
         break;
-        case "deployment_fail":
-            this.state._notificationSystem.addNotification({
-              title: <span data-notify="icon" className="pe-7s-gift" />,
-              message: (
-                <div>
-                  :( Deployment <b>failed</b>!!!
+      case "deployment_ok":
+        this.state._notificationSystem.addNotification({
+          title: <span data-notify="icon" className="pe-7s-gift" />,
+          message: (
+            <div>
+              Deployment <b>successful</b>.<br />Use "kubectl get pods/services" to check it
+              </div>
+          ),
+          level: level,
+          position: "tr",
+          autoDismiss: 15
+        });
+        break;
+      case "deployment_fail":
+        this.state._notificationSystem.addNotification({
+          title: <span data-notify="icon" className="pe-7s-gift" />,
+          message: (
+            <div>
+              :( Deployment <b>failed</b>!!!
                 </div>
-              ),
-              level: level,
-              position: "tr",
-              autoDismiss: 15
-            });    
-          break;
-          case "general_fail":
-              this.state._notificationSystem.addNotification({
-                title: <span data-notify="icon" className="pe-7s-gift" />,
-                message: (
-                  <div>
-                    :( I am sorry,an unexpectect <b>error</b> ocurred! 
+          ),
+          level: level,
+          position: "tr",
+          autoDismiss: 15
+        });
+        break;
+      case "general_fail":
+        this.state._notificationSystem.addNotification({
+          title: <span data-notify="icon" className="pe-7s-gift" />,
+          message: (
+            <div>
+              :( I am sorry,an unexpectect <b>error</b> ocurred!
                   </div>
-                ),
-                level: level,
-                position: "tr",
-                autoDismiss: 15
-              });    
-            break;
+          ),
+          level: level,
+          position: "tr",
+          autoDismiss: 15
+        });
+        break;
       default:
-        break;        
+        break;
     }
 
   }
@@ -109,7 +124,7 @@ class Admin extends Component {
       level: level,
       position: position,
       autoDismiss: 15
-    });    
+    });
   };
 
   getRoutes = routes => {
@@ -162,29 +177,14 @@ class Admin extends Component {
       this.setState({ fixedClasses: "dropdown" });
     }
   };
+
+
   componentDidMount() {
+    const keycloak = Keycloak('/keycloak.json');
+    keycloak.init({ onLoad: 'login-required' }).then(authenticated => {
+      this.setState({ keycloak: keycloak, authenticated: authenticated })
+    });
     this.setState({ _notificationSystem: this.refs.notificationSystem });
-    /*
-    var _notificationSystem = this.refs.notificationSystem;
-    var color = Math.floor(Math.random() * 4 + 1);
-    var level;
-    switch (color) {
-      case 1:
-        level = "success";
-        break;
-      case 2:
-        level = "warning";
-        break;
-      case 3:
-        level = "error";
-        break;
-      case 4:
-        level = "info";
-        break;
-      default:
-        break;
-    }
-    */
   }
 
   componentDidUpdate(e) {
@@ -205,30 +205,38 @@ class Admin extends Component {
 
     let loadingDiv;
     if (this.state.loading) {
-      loadingDiv = <div className="loading"></div> 
+      loadingDiv = <div className="loading"></div>
     } else {
-      loadingDiv = <div></div> 
+      loadingDiv = <div></div>
     }
-    
-    return (
-      <div className="wrapper">
 
-        
-        <NotificationSystem ref="notificationSystem" style={style} />
-        <Sidebar {...this.props} routes={routes} image={this.state.image}
-        color={this.state.color}
-        hasImage={this.state.hasImage}/>
-        <div id="main-panel" className="main-panel" ref="mainPanel">
-          {loadingDiv}
-          <AdminNavbar
-            {...this.props}
-            brandText={this.getBrandText(this.props.location.pathname)}
-          />
-          <Switch>{this.getRoutes(routes)}</Switch>
-          <Footer />
-        </div>
-      </div>
+    if (this.state.keycloak) {
+      if (this.state.authenticated)
+
+        return (
+          <div className="wrapper">
+            <NotificationSystem ref="notificationSystem" style={style} />
+            <Sidebar {...this.props} routes={routes} image={this.state.image}
+              color={this.state.color}
+              hasImage={this.state.hasImage} />
+            <div id="main-panel" className="main-panel" ref="mainPanel">
+              {loadingDiv}
+              <AdminNavbar
+                {...this.props}
+                brandText={this.getBrandText(this.props.location.pathname)}
+                keycloak={this.state.keycloak}
+                history={this.props.history}
+              />
+              <Switch>{this.getRoutes(routes)}</Switch>
+              <Footer />
+            </div>
+          </div>
+        ); else return (<div>Unable to authenticate!</div>)
+    }
+    return (
+      <div>Initializing Keycloak...</div>
     );
+
   }
 }
 

@@ -1,6 +1,14 @@
 import axios from 'axios';
 import TENKAI_API_URL from 'env.js';
 
+function handlerError(self, response) {
+    if (response !== undefined) {
+        self.props.handleNotification("custom", "error", response.data);
+    } else {
+        self.props.handleNotification("deployment_fail", "error");
+    }
+}
+
 function retriveRepo(self) {
     axios.get(TENKAI_API_URL + '/repositories')
         .then(response => {
@@ -12,7 +20,7 @@ function retriveRepo(self) {
             self.setState({ repositories: arr });
         }).catch(error => {
             console.log(error.message);
-            self.props.handleNotification("general_fail", "error");
+            handlerError(self, error.response);
         });
 }
 
@@ -30,7 +38,7 @@ function retrieveCharts(repo, self) {
     }).catch(error => {
         self.props.handleLoading(false);
         console.log(error.message);
-        self.props.handleNotification("general_fail", "error");
+        handlerError(self, error.response);
     });
 }
 
@@ -43,7 +51,7 @@ function retrieveReleases(chartName, self) {
     }).catch(error => {
         self.props.handleLoading(false);
         console.log(error.message);
-        self.props.handleNotification("general_fail", "error");
+        handlerError(self, error.response);
     });
 }
 
@@ -56,7 +64,7 @@ function retrieveReleasesWithCallBack(chartName, self, callback) {
     }).catch(error => {
         self.props.handleLoading(false);
         console.log(error.message);
-        self.props.handleNotification("general_fail", "error");
+        handlerError(self, error.response);
     });
 }
 
@@ -71,7 +79,7 @@ function deleteRelease(id, self) {
             }).catch(error => {
                 self.props.handleLoading(false);
                 console.log(error.message);
-                self.props.handleNotification("general_fail", "error");
+                handlerError(self, error.response);
             });
     }
     self.setState({ showConfirmDeleteModal: false, itemToDelete: {} });
@@ -91,7 +99,7 @@ function saveReleases(data, self) {
         self.setState({ releases: [...self.state.releases, data] });
     }).catch(error => {
         console.log(error.message);
-        self.props.handleNotification("general_fail", "error");
+        handlerError(self, error.response);
     });
 
     self.setState(() => ({
@@ -114,21 +122,20 @@ function retrieveDependencies(releaseId, self) {
     }).catch(error => {
         self.props.handleLoading(false);
         console.log(error.message);
-        self.props.handleNotification("general_fail", "error");
+        handlerError(self, error.response);
     });
 }
+
 
 function multipleInstall(payload, self) {
     self.props.handleLoading(true);
     axios.post(TENKAI_API_URL + '/multipleInstall', payload).then(() => {
-        console.log('aqui1');
         self.props.handleNotification("deployment_ok", "success");
         self.props.handleLoading(false);
     }).catch(error => {
-        console.log('aqui2');
-        console.log(error);
+        console.log("Error Response: " + error.response.data);
         self.props.handleLoading(false);
-        self.props.handleNotification("deployment_fail", "error");
+        handlerError(self, error.response);
     });
   } 
 
@@ -146,7 +153,7 @@ function saveDependency(data, self) {
             self.setState({ list: [...self.state.list, data] });
         }).catch(error => {
             console.log(error.message);
-            self.props.handleNotification("general_fail", "error");
+            handlerError(self, error.response);
         });
 
     self.setState(() => ({
@@ -163,7 +170,7 @@ function deleteDependency(id, self) {
         axios.delete(TENKAI_API_URL + "/dependencies/" + id)
             .then(retrieveDependencies(self.state.releaseId, self)).catch(error => {
                 console.log(error.message);
-                self.props.handleNotification("general_fail", "error");
+                handlerError(self, error.response);
             });
     }
     self.setState({ showConfirmDeleteModal: false, itemToDelete: {} });
@@ -177,12 +184,9 @@ function retrieveDependency(environmentId, chartName, tag, self) {
             self.setState( {data: data });
         }).catch(error => {
             console.log(error.message);
-
+            handlerError(self, error.response);
         });
 }
-
-
-
 
 export {
     retriveRepo, retrieveCharts, retrieveReleases,

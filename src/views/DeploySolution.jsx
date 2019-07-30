@@ -111,7 +111,6 @@ class DeploySolution extends Component {
   render() {
 
     const { selectedOption } = this.state;
-    const { selectedRepository } = this.state;
 
     const items = this.state.chartsResult.charts
       .map((item, key) =>

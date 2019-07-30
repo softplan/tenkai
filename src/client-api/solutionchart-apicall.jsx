@@ -9,7 +9,7 @@ function retrieveSolutionChart(id, self, cb) {
         let list = [];
         list = response.data.list;
         self.setState({list: list});
-        if (cb != undefined) {
+        if (cb !== undefined) {
             cb(self);
         }
         self.props.handleLoading(false);
