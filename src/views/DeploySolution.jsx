@@ -34,20 +34,22 @@ class DeploySolution extends Component {
 
   componentDidMount() {
     this.getEnvironments();
-    retrieveSolutionChart(this.state.solutionId, this, function(self) {
+    retrieveSolutionChart(this.state.solutionId, this, async function(self) {
+        self.props.handleLoading(true);
         for (let x = 0; x < self.state.list.length; x++) {
           let keyword = self.state.list[x].chartName.substr(self.state.list[x].chartName.indexOf("/")+1)
-          console.log(keyword);
-          self.getCharts(keyword);
+          await self.getChartsAsync(keyword);
         }
+        self.props.handleLoading(false);
         
     });
   }
 
   //TODO - CREATE AN ENDPOINT THAT RECEIVE A POST AND ALL REQUESTS SIMULTANEOUS
-  getCharts(searchTerm) {
+  async getChartsAsync(searchTerm) {
         let url = "/charts/" + searchTerm + "?all=false";
-        axios.get(TENKAI_API_URL + url).then(response => {
+        
+        await axios.get(TENKAI_API_URL + url).then(response => {
             if (response.data.charts != null) {
                 let array = this.state.chartsResult.charts;
                 let responseArray = response.data.charts;
@@ -55,10 +57,8 @@ class DeploySolution extends Component {
                 for (let x = 0; x < responseArray.length; x++) {
                     array.push(responseArray[x]);
                 }
-                console.log(array);
-                this.setState({chartsResult: {charts: array}}, () => {
-                  console.log(this.state.chartsResult);
-                });    
+                this.setState({chartsResult: {charts: array}});    
+                
             }
         }).catch(error => {
             console.log(error.message);

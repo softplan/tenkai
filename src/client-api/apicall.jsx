@@ -111,17 +111,34 @@ function saveReleases(data, self) {
 
 }
 
+function saveUsers(data, self, onSuccess) {
+
+    let uri = '/users/createOrUpdate';
+
+    axios.post(TENKAI_API_URL + uri, data).then(res => {
+        onSuccess(self);
+    }).catch(error => {
+        console.log(error.message);
+        handlerError(self, error.response);
+    });
+
+    self.setState(() => ({
+        showInsertUpdateForm: false,
+        editItem: {},
+        editMode: false
+    }));
+
+}
+
 function retrieveDependencies(releaseId, self) {
     self.props.handleLoading(true);
     let url = `/dependencies?releaseId=${releaseId}`;
     console.log(url);
     axios.get(TENKAI_API_URL + url).then(response => {
-        console.log(response.data.dependencies);
         self.setState({ list: response.data.dependencies });
         self.props.handleLoading(false);
     }).catch(error => {
         self.props.handleLoading(false);
-        console.log(error.message);
         handlerError(self, error.response);
     });
 }
@@ -133,7 +150,6 @@ function multipleInstall(payload, self) {
         self.props.handleNotification("deployment_ok", "success");
         self.props.handleLoading(false);
     }).catch(error => {
-        console.log("Error Response: " + error.response.data);
         self.props.handleLoading(false);
         handlerError(self, error.response);
     });
@@ -188,8 +204,19 @@ function retrieveDependency(environmentId, chartName, tag, self) {
         });
 }
 
+
+function getAllEnvironments(self) {
+    axios.get(TENKAI_API_URL + '/environments/all')
+    .then(response => self.setState({ envs: response.data.Envs }))
+    .catch(error => {
+        handlerError(self, error.response);
+    });
+
+}
+
 export {
     retriveRepo, retrieveCharts, retrieveReleases,
     saveReleases, retrieveDependencies, saveDependency,
-    deleteDependency, deleteRelease, retrieveDependency, retrieveReleasesWithCallBack, multipleInstall
+    deleteDependency, deleteRelease, retrieveDependency, retrieveReleasesWithCallBack, 
+    multipleInstall, getAllEnvironments, saveUsers
 };

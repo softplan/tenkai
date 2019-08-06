@@ -3,7 +3,6 @@ import TENKAI_API_URL from 'env.js';
 
 
 function retrieveSolutionChart(id, self, cb) {
-    self.props.handleLoading(true);
     let url = `/solutionCharts?solutionId=${id}`;
     axios.get(TENKAI_API_URL + url).then(response => {
         let list = [];
@@ -12,9 +11,7 @@ function retrieveSolutionChart(id, self, cb) {
         if (cb !== undefined) {
             cb(self);
         }
-        self.props.handleLoading(false);
     }).catch(error => {
-        self.props.handleLoading(false);
         console.log(error.message);
         self.props.handleNotification("general_fail", "error");
     });

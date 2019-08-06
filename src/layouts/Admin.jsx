@@ -13,6 +13,7 @@ import routes from "routes.js";
 import image from "assets/img/sidebar-8.jpg";
 import "assets/css/loading.css"
 import Keycloak from 'keycloak-js';
+import axios from 'axios';
 
 class Admin extends Component {
 
@@ -129,7 +130,8 @@ class Admin extends Component {
 
   getRoutes = routes => {
     return routes.map((prop, key) => {
-      if (prop.layout === "/admin") {
+      let auth = this.state.keycloak.hasRealmRole(prop.role);
+      if (prop.layout === "/admin" && auth) {
         return (
           <Route
             path={prop.layout + prop.path}
@@ -139,6 +141,7 @@ class Admin extends Component {
                 handleClick={this.handleNotificationClick}
                 handleNotification={this.handleNotification}
                 handleLoading={this.handleLoading}
+                keycloak={this.state.keycloak}
               />
             )}
             key={key}
@@ -182,9 +185,12 @@ class Admin extends Component {
   componentDidMount() {
     const keycloak = Keycloak('/keycloak.json');
     keycloak.init({ onLoad: 'login-required' }).then(authenticated => {
-      this.setState({ keycloak: keycloak, authenticated: authenticated })
+      this.setState({ keycloak: keycloak, authenticated: authenticated, _notificationSystem: this.refs.notificationSystem }, () => {
+        
+        axios.defaults.headers.common['Authorization'] = `Bearer ${keycloak.token}` 
+      });
     });
-    this.setState({ _notificationSystem: this.refs.notificationSystem });
+    
   }
 
   componentDidUpdate(e) {
@@ -216,9 +222,12 @@ class Admin extends Component {
         return (
           <div className="wrapper">
             <NotificationSystem ref="notificationSystem" style={style} />
+            
             <Sidebar {...this.props} routes={routes} image={this.state.image}
               color={this.state.color}
-              hasImage={this.state.hasImage} />
+              hasImage={this.state.hasImage} 
+              keycloak={this.state.keycloak} />
+
             <div id="main-panel" className="main-panel" ref="mainPanel">
               {loadingDiv}
               <AdminNavbar
@@ -234,7 +243,11 @@ class Admin extends Component {
         ); else return (<div>Unable to authenticate!</div>)
     }
     return (
-      <div>Initializing Keycloak...</div>
+      
+      <div>
+        <NotificationSystem ref="notificationSystem" style={style} />
+        Initializing Keycloak...
+      </div>
     );
 
   }

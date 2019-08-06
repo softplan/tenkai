@@ -11,11 +11,12 @@ import IstioVariable from "./IstioVariable";
 import TENKAI_API_URL from 'env.js';
 import { FormInputs } from "components/FormInputs/FormInputs.jsx";
 import { ConfigMap } from "components/Deployment/ConfigMap.jsx";
+import { SSL_OP_EPHEMERAL_RSA } from "constants";
 
 export class HelmVariables extends Component {
 
     state = {
-        chartName: "x",
+        chartName: "",
         ChartVersion: "",
         variables: {},
         values: {},
@@ -36,9 +37,9 @@ export class HelmVariables extends Component {
         this.state.chartVersion = props.chartVersion;
      }    
 
-    componentDidMount() {
+    async componentDidMount() {
         this.addHost();
-        this.getVariables(this.state.chartName, this.state.chartVersion);
+        //await this.getVariables(this.state.chartName, this.state.chartVersion);
     }
 
     addDynamicVariableClick(variableName) {
@@ -146,9 +147,11 @@ export class HelmVariables extends Component {
 
     }
 
-    getVariables(chartName, chartVersion) {
-        this.props.handleLoading(true);
-        axios.post(TENKAI_API_URL + '/getChartVariables', { chartName, chartVersion })
+
+    async getVariables(chartName, chartVersion)  {
+        
+        
+        await axios.post(TENKAI_API_URL + '/getChartVariables', { chartName, chartVersion })
             .then(response => {
 
                 if (response.data.istio != null) {
@@ -177,21 +180,16 @@ export class HelmVariables extends Component {
 
                 axios.post(TENKAI_API_URL + '/listVariables', { environmentId: environmentId, scope: scope })
                     .then(response => {
-
                         this.addToValues(this, response.data.Variables);
                         this.fillIstioFields(this, response.data.Variables);
                         this.fillImageFields(this, response.data.Variables);
-                        this.props.handleLoading(false);
-
                     }).catch(error => {
-                        this.props.handleLoading(false);
                         console.log(error.message);
                         this.props.handleNotification("general_fail", "error");
                     });
 
             }).catch(error => {
-                this.props.handleLoading(false);
-                console.log(error.message);
+                console.log("Error here: " + JSON.stringify(error));
                 this.props.handleNotification("general_fail", "error");
             });
     }

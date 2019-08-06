@@ -10,6 +10,7 @@ import DepGraph from "views/DepGraph"
 import Solution from "views/Solution"
 import SolutionChart from "views/SolutionChart"
 import DeploySolution from "views/DeploySolution"
+import Users from "views/Users"
 
 /*
 import Dashboard from "views/Dashboard";
@@ -22,7 +23,8 @@ const dashboardRoutes = [
     icon: "pe-7s-news-paper",
     component: Deployment,
     layout: "/admin",
-    menu: true
+    menu: true,
+    role: "tenkai-user"
   },
   {
     path: "/deployment-wvars",
@@ -30,7 +32,8 @@ const dashboardRoutes = [
     icon: "pe-7s-news-paper",
     component: VariablesWizard,
     layout: "/admin",
-    menu: false
+    menu: false,
+    role: "tenkai-user"
   },
   {
     path: "/deployment-depanalysis",
@@ -38,7 +41,8 @@ const dashboardRoutes = [
     icon: "pepe-7s-news-paper",
     component: DepAnalysis,
     layout: "/admin",
-    menu: false
+    menu: false,
+    role: "tenkai-user"
   },
   {
     path: "/deployment-depgraph",
@@ -46,7 +50,8 @@ const dashboardRoutes = [
     icon: "pepe-7s-news-paper",
     component: DepGraph,
     layout: "/admin",
-    menu: false
+    menu: false,
+    role: "tenkai-user"
   },
   {
     path: "/environments",
@@ -54,7 +59,8 @@ const dashboardRoutes = [
     icon: "pe-7s-server",
     component: Enviroments,
     layout: "/admin",
-    menu: true
+    menu: true,
+    role: "tenkai-admin"
   },
   {
     path: "/environments-envvars",
@@ -62,7 +68,8 @@ const dashboardRoutes = [
     icon: "pe-7s-server",
     component: Variables,
     layout: "/admin",
-    menu: false
+    menu: false,
+    role: "tenkai-admin"
   },
   {
     path: "/config",
@@ -70,7 +77,8 @@ const dashboardRoutes = [
     icon: "pe-7s-config",
     component: Config,
     layout: "/admin",
-    menu: true
+    menu: true,
+    role: "tenkai-admin"
   },
   {
     path: "/solution",
@@ -78,7 +86,8 @@ const dashboardRoutes = [
     icon: "pe-7s-umbrella",
     component: Solution,
     layout: "/admin",
-    menu: true
+    menu: true,
+    role: "tenkai-user"
   },
   {
     path: "/solution-deps",
@@ -86,7 +95,8 @@ const dashboardRoutes = [
     icon: "pe-7s-umbrella",
     component: SolutionChart,
     layout: "/admin",
-    menu: false
+    menu: false,
+    role: "tenkai-user"
   },
   {
     path: "/solution-deploy",
@@ -94,7 +104,8 @@ const dashboardRoutes = [
     icon: "pe-7s-umbrella",
     component: DeploySolution,
     layout: "/admin",
-    menu: false
+    menu: false,
+    role: "tenkai-user"
   },
     {
     path: "/microservices",
@@ -102,7 +113,8 @@ const dashboardRoutes = [
     icon: "pe-7s-tools",
     component: Microservices,
     layout: "/admin",
-    menu: true
+    menu: true,
+    role: "tenkai-user"
   },
   {
     path: "/microservices-deps",
@@ -110,8 +122,19 @@ const dashboardRoutes = [
     icon: "pe-7s-tools",
     component: Dependencies,
     layout: "/admin",
-    menu: false
-  }
+    menu: false,
+    role: "tenkai-user"
+  },
+  {
+    path: "/admin",
+    name: "Users Permissions",
+    icon: "pe-7s-culture",
+    component: Users,
+    layout: "/admin",
+    menu: true,
+    role: "tenkai-admin"
+  },
+
 ];
 
 /*

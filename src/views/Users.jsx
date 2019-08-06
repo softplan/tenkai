@@ -9,24 +9,25 @@ import {
 import Button from "components/CustomButton/CustomButton.jsx";
 import { Card } from "components/Card/Card.jsx";
 import CButton from "components/CustomButton/CustomButton.jsx";
-import EnvironmentForm from "components/Environments/EnvironmentForm.jsx";
-import SimpleModal from 'components/Modal/SimpleModal.jsx';
+import UserForm from "components/Users/UserForm.jsx";
+import SimpleModal from 'components/Modal/SimpleModal.jsx'
 import axios from 'axios';
 import TENKAI_API_URL from 'env.js';
+import { saveUsers  } from 'client-api/apicall.jsx';
 
 
-class Environments extends Component {
+class Users extends Component {
 
     state = {
         showInsertUpdateForm: false,
-        envResult: { Envs: [] },
+        list: [],
         inputFilter: "",
         showConfirmDeleteModal: false,
         itemToDelete: {}, 
     }
 
     componentDidMount() {
-        this.getEnvironments();
+        this.getList()
     }
 
     handleConfirmDeleteModalClose() {
@@ -43,38 +44,17 @@ class Environments extends Component {
         })
     }
 
-    getEnvironments() {
-        axios.get(TENKAI_API_URL + '/environments')
-            .then(response => this.setState({ envResult: response.data }))
+    getList() {
+       axios.get(TENKAI_API_URL + '/users')
+            .then(response => this.setState({ list: response.data.users }))
             .catch(error => {
-                console.log(error);
-                if (error.response !== undefined) {
-                    this.props.handleNotification("custom", "error", error.response.data);
-                } else {
-                    this.props.handleNotification("deployment_fail", "error");
-                }
+                console.log(error.message);
+                this.props.handleNotification("general_fail", "error");
             });
+       
     }
 
-    navigateToEnvironmentVariables(id, group, name) {
-        console.log("id: " + JSON.stringify(id));
-        this.props.history.push({
-            pathname: "/admin/environments-envvars",
-            search: "?id=" + id,
-            state: { item: { group: group, name: name } }
-        });
-    }
-
-    navigateToEditEnvironment(item) {
-    
-        this.setState(() => ({
-            showInsertUpdateForm: true,
-            editItem: item,
-            editMode: true
-        }));
-    }
-
-    handleNewEnvironmentClick(e) {
+    handleNewClick(e) {
         this.setState(() => ({
             showInsertUpdateForm: true,
             editItem: {},
@@ -82,7 +62,7 @@ class Environments extends Component {
         }));
     }
 
-    handleCancelEnvironmentClick(e) {
+    handleCancelClick(e) {
         this.setState(() => ({
             showInsertUpdateForm: false,
             editItem: {},
@@ -91,50 +71,36 @@ class Environments extends Component {
     }
 
     onSaveClick(data) {
-        if (this.state.editMode) {
-            console.log("edit")
-            this.save(data, '/environments/edit')
-        } else {
-            console.log("new")
-            this.save(data, '/environments')
+        let user = {};
+        user.email = data.email;
+        user.environments = [];
+        for (let x = 0; x < data.checkedEnvs.length; x++) {
+            let value = parseInt(data.checkedEnvs[x]);
+            user.environments.push({ID: value});
         }
+        saveUsers(user, this, function(self) {
+            self.getList();
+        });
     }
 
-    duplicateEnvironment(id) {
-        axios.get(TENKAI_API_URL + "/environments/duplicate/" + id)
-            .then(res => {
-                this.getEnvironments();
-            }).catch(error => {
-                console.log(error.message);
-                this.props.handleNotification("general_fail", "error");
-            });
-    }
-
-    save(data, uri) {
-        axios.post(TENKAI_API_URL + uri, { data })
-            .then(res => {
-                this.setState({ envResult: { Envs: [...this.state.envResult.Envs, data] } });
-                this.getEnvironments();
-            }).catch(error => {
-                console.log(error.message);
-                this.props.handleNotification("general_fail", "error");
-            });
+    onSave(item) {
         this.setState(() => ({
-            showInsertUpdateForm: false,
-            editItem: {},
-            editMode: false
+            showInsertUpdateForm: true,
+            editItem: item,
+            editMode: true
         }));
     }
 
+  
     onDelete(item) {
         this.setState({itemToDelete: item}, () => {this.handleConfirmDeleteModalShow()});
     }
 
     handleConfirmDelete() {
         if (this.state.itemToDelete !== undefined) {
-            axios.delete(TENKAI_API_URL + "/environments/delete/" + this.state.itemToDelete.ID)
+            axios.delete(TENKAI_API_URL + "/users/" + this.state.itemToDelete.ID)
             .then(res => {
-                this.getEnvironments();
+                this.getList();
             }).catch(error => {
                 console.log(error.message);
                 this.props.handleNotification("general_fail", "error");
@@ -143,25 +109,19 @@ class Environments extends Component {
         this.setState({showConfirmDeleteModal: false, itemToDelete: {}});
     }
 
+   
+
     render() {
 
-        const items = this.state.envResult.Envs
-            .filter(d => this.state.inputFilter === '' || d.name.includes(this.state.inputFilter)).map((item, key) =>
+        const items = this.state.list
+            .filter(d => this.state.inputFilter === '' || d.email.includes(this.state.inputFilter)).map((item, key) =>
                 <tr key={key}>
                     <td>{item.ID}</td>
-                    <td>{item.group}</td>
-                    <td>{item.name}</td>
-                    <td>{item.cluster_uri}</td>
-                    <td>{item.namespace}</td>
+                    <td>{item.email}</td>
                     <td><Button className="link-button"
-                         onClick={this.navigateToEditEnvironment.bind(this, item)}><i className="pe-7s-edit"/></Button></td>
+                         onClick={this.onSave.bind(this, item)}><i className="pe-7s-edit"/></Button></td>
                     <td><Button className="link-button" 
                         onClick={this.onDelete.bind(this, item)}><i className="pe-7s-trash" /></Button></td> 
-                    <td><Button className="link-button" 
-                        onClick={this.navigateToEnvironmentVariables.bind(this, item.ID, item.group, item.name)}><i className="pe-7s-plugin" /></Button></td> 
-                    <td><Button className="link-button" 
-                        onClick={this.duplicateEnvironment.bind(this, item.ID)}><i className="pe-7s-magic-wand" /></Button></td> 
-
                 </tr>
             );
 
@@ -172,7 +132,7 @@ class Environments extends Component {
                 <SimpleModal 
                     showConfirmDeleteModal={this.state.showConfirmDeleteModal}
                     handleConfirmDeleteModalClose={this.handleConfirmDeleteModalClose.bind(this)}
-                    title="Confirm" subTitle="Delete environment" message="Are you sure you want to delete this environment?"
+                    title="Confirm" subTitle="Delete solution" message="Are you sure you want to delete this solution?"
                     handleConfirmDelete={this.handleConfirmDelete.bind(this)}>  
                 </SimpleModal>
 
@@ -183,7 +143,7 @@ class Environments extends Component {
                                 title=""
                                 content={
                                     <form>
-                                        <CButton className="pull-right" variant="primary" onClick={this.handleNewEnvironmentClick.bind(this)} >New Environment</CButton>
+                                        <CButton className="pull-right" variant="primary" onClick={this.handleNewClick.bind(this)} >New User</CButton>
                                         <div className="clearfix" />
                                     </form>
 
@@ -195,23 +155,22 @@ class Environments extends Component {
                     <Row>
                         <Col md={12}>
                             {this.state.showInsertUpdateForm ?
-                                <EnvironmentForm editMode={this.state.editMode} editItem={this.state.editItem} saveClick={this.onSaveClick.bind(this)} cancelClick={this.handleCancelEnvironmentClick.bind(this)} /> : null
+                                <UserForm editMode={this.state.editMode} editItem={this.state.editItem} saveClick={this.onSaveClick.bind(this)} cancelClick={this.handleCancelClick.bind(this)} /> : null
                             }
                         </Col>
                     </Row>
 
-
                     <Row>
                         <Col md={12}>
                             <Card
-                                title="Environments"
+                                title="Users"
                                 content={
                                     <form>
 
                                         <div className="col-md-8">
 
                                             <FormGroup>
-                                                <ControlLabel>Environment Search</ControlLabel>
+                                                <ControlLabel>User Search</ControlLabel>
                                                 <FormControl
                                                     value={this.state.inputFilter}
                                                     onChange={this.onChangeFilterHandler.bind(this)}
@@ -229,14 +188,9 @@ class Environments extends Component {
                                                 <thead>
                                                     <tr>
                                                         <th>#</th>
-                                                        <th>Group</th>
-                                                        <th>Environment Name</th>
-                                                        <th>Cluster URI</th>
-                                                        <th>Namespace</th>
+                                                        <th>Email</th>
                                                         <th>Edit</th>
                                                         <th>Delete</th>
-                                                        <th>Variables</th>
-                                                        <th>Duplicate</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -256,5 +210,4 @@ class Environments extends Component {
     }
 }
 
-
-export default Environments;
+export default Users;

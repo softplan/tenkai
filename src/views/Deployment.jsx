@@ -71,8 +71,11 @@ class Deployment extends Component {
 
       })
       .catch(error => {
-        console.log(error.message);
-        this.props.handleNotification("general_fail", "error");
+        if (error.response !== undefined) {
+          this.props.handleNotification("custom", "error", error.response.data);
+        } else {
+           this.props.handleNotification("deployment_fail", "error");
+        }
     });
   }
 
@@ -80,7 +83,6 @@ class Deployment extends Component {
     this.props.handleLoading(true);
     
     let url = "/charts/" + repo + "?all=" + !this.state.latestVersionOnly;
-    console.log(url);
 
     axios.get(TENKAI_API_URL + url).then(response => {
         this.setState({chartsResult: response.data.charts != null ? response.data : { charts: [] }});
