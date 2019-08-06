@@ -27,13 +27,10 @@ class DeploySolution extends Component {
       list: [],
       chartsResult: { charts: [] },
       solutionName: "",
-      selectedOption: {},
-      environmentList: [],
     }
   }
 
   componentDidMount() {
-    this.getEnvironments();
     retrieveSolutionChart(this.state.solutionId, this, async function(self) {
         self.props.handleLoading(true);
         for (let x = 0; x < self.state.list.length; x++) {
@@ -71,27 +68,6 @@ class DeploySolution extends Component {
     this.setState({ selectedOption });
   }
 
-
-  getEnvironments() {
-    axios.get(TENKAI_API_URL + '/environments')
-      .then(response => {
-
-        var arr = [];
-        for (var x = 0; x < response.data.Envs.length; x++) {
-          var element = response.data.Envs[x];
-          arr.push({ value: element.ID, label: element.name });
-        }
-        this.setState({ environmentList: arr });
-
-
-      })
-      .catch(error => {
-        console.log(error.message);
-        this.props.handleNotification("general_fail", "error");
-    });
-  }
-
-
   navigateToCheckVariables(charts, selected) {
 
     let selectedCharts = [];
@@ -101,7 +77,7 @@ class DeploySolution extends Component {
 
     this.props.history.push({
       pathname: "/admin/deployment-wvars",
-      search: "?environment=" + selected.value,
+      search: "?environment=" + this.props.selectedEnvironment.value,
       state: { charts: selectedCharts, environment: selected.label }
     });
 
@@ -126,32 +102,6 @@ class DeploySolution extends Component {
     return (
       <div className="content">
         <Grid fluid>
-          <Row>
-
-            <Col md={12}>
-              <Card
-                title=""
-                content={
-                  <div>
-
-                    <Row>
-                      <div className="col-md-5">
-                        <FormGroup>
-                          <ControlLabel>Environment</ControlLabel>
-                          <Select value={selectedOption} onChange={this.handleEnvironmentChange} options={this.state.environmentList} />
-                        </FormGroup>
-
-                      </div>
-
-                    </Row>
-
-                    <div className="clearfix" />
-                  </div>
-                }
-              />
-            </Col>
-          </Row>
-
           <Row>
             <Col md={12}>
 
@@ -184,10 +134,10 @@ class DeploySolution extends Component {
                     <ButtonToolbar>
 
                       <Button bsStyle="default"
-                        disabled={(Object.entries(this.state.selectedOption).length === 0 &&
-                          this.state.selectedOption.constructor === Object) || this.state.chartsResult.charts.length <= 0}
+                        disabled={(Object.entries(this.props.selectedEnvironment).length === 0 &&
+                          this.props.selectedEnvironment.constructor === Object) || this.state.chartsResult.charts.length <= 0}
                         fill type="button"
-                        onClick={this.navigateToCheckVariables.bind(this, this.state.chartsResult.charts, this.state.selectedOption)}>
+                        onClick={this.navigateToCheckVariables.bind(this, this.state.chartsResult.charts, this.props.selectedEnvironment)}>
                         Direct Deploy
                       </Button>
 

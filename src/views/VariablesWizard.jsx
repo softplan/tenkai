@@ -117,7 +117,6 @@ class VariablesWizard extends Component {
                 title=""
                 content={
                   <div>
-                    <h3>Environment: {this.props.location.state.environment}</h3>
 
                     <ButtonToolbar>
 

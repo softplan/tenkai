@@ -14,6 +14,7 @@ import image from "assets/img/sidebar-8.jpg";
 import "assets/css/loading.css"
 import Keycloak from 'keycloak-js';
 import axios from 'axios';
+import TENKAI_API_URL from 'env.js';
 
 class Admin extends Component {
 
@@ -27,9 +28,49 @@ class Admin extends Component {
       image: image,
       color: "black",
       hasImage: true,
-      fixedClasses: "dropdown show-dropdown open"
+      fixedClasses: "dropdown show-dropdown open",
+      environmentList: [],
+      selectedEnvironment: {},
     };
   }
+
+  handleEnvironmentChange = (selectedEnvironment) => {
+    this.setState({ selectedEnvironment }, () => {console.log(selectedEnvironment)});
+  }
+
+  componentDidMount() {
+    const keycloak = Keycloak('/keycloak.json');
+    keycloak.init({ onLoad: 'login-required' }).then(authenticated => {
+      this.setState({ keycloak: keycloak, authenticated: authenticated, _notificationSystem: this.refs.notificationSystem }, () => {
+        axios.defaults.headers.common['Authorization'] = `Bearer ${keycloak.token}`;
+        this.getEnvironments();
+      });
+    });
+  }
+
+
+  getEnvironments() {
+    axios.get(TENKAI_API_URL + '/environments')
+      .then(response => {
+
+        var arr = [];
+        for (var x = 0; x < response.data.Envs.length; x++) {
+          var element = response.data.Envs[x];
+          arr.push({ value: element.ID, label: element.name });
+        }
+        this.setState({ environmentList: arr });
+
+
+      })
+      .catch(error => {
+        if (error.response !== undefined) {
+          this.props.handleNotification("custom", "error", error.response.data);
+        } else {
+           this.props.handleNotification("deployment_fail", "error");
+        }
+    });
+  }
+
 
   handleLoading = value => {
     this.setState({ loading: value });
@@ -142,6 +183,7 @@ class Admin extends Component {
                 handleNotification={this.handleNotification}
                 handleLoading={this.handleLoading}
                 keycloak={this.state.keycloak}
+                selectedEnvironment={this.state.selectedEnvironment}
               />
             )}
             key={key}
@@ -182,16 +224,6 @@ class Admin extends Component {
   };
 
 
-  componentDidMount() {
-    const keycloak = Keycloak('/keycloak.json');
-    keycloak.init({ onLoad: 'login-required' }).then(authenticated => {
-      this.setState({ keycloak: keycloak, authenticated: authenticated, _notificationSystem: this.refs.notificationSystem }, () => {
-        
-        axios.defaults.headers.common['Authorization'] = `Bearer ${keycloak.token}` 
-      });
-    });
-    
-  }
 
   componentDidUpdate(e) {
     if (
@@ -235,6 +267,9 @@ class Admin extends Component {
                 brandText={this.getBrandText(this.props.location.pathname)}
                 keycloak={this.state.keycloak}
                 history={this.props.history}
+                environments={this.state.environmentList}
+                selectedEnvironment={this.state.selectedEnvironment}
+                handleEnvironmentChange={this.handleEnvironmentChange.bind(this)}
               />
               <Switch>{this.getRoutes(routes)}</Switch>
               <Footer />

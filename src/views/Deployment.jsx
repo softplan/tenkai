@@ -8,19 +8,14 @@ import Select from 'react-select';
 import { Card } from "components/Card/Card.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
 
-
 import axios from 'axios';
-
 import TENKAI_API_URL from 'env.js';
-
 
 class Deployment extends Component {
 
   state = {
     inputFilter: "",
-    selectedOption: {},
     chartsResult: { charts: [] },
-    environmentList: [],
     charts: [],
     repositories: [],
     selectedRepository: {},
@@ -28,13 +23,7 @@ class Deployment extends Component {
   }
 
   componentDidMount() {
-    this.getEnvironments();
     this.getRepos();
-  }
-
-  handleEnvironmentChange = (selectedOption) => {
-    this.setState({ selectedOption });
-   
   }
 
   handleRepositoryChange = (selectedRepository) => {
@@ -55,28 +44,6 @@ class Deployment extends Component {
         console.log(error.message);
         this.props.handleNotification("general_fail", "error");
       });
-  }
-
-  getEnvironments() {
-    axios.get(TENKAI_API_URL + '/environments')
-      .then(response => {
-
-        var arr = [];
-        for (var x = 0; x < response.data.Envs.length; x++) {
-          var element = response.data.Envs[x];
-          arr.push({ value: element.ID, label: element.name });
-        }
-        this.setState({ environmentList: arr });
-
-
-      })
-      .catch(error => {
-        if (error.response !== undefined) {
-          this.props.handleNotification("custom", "error", error.response.data);
-        } else {
-           this.props.handleNotification("deployment_fail", "error");
-        }
-    });
   }
 
   getCharts(repo) {
@@ -143,7 +110,6 @@ class Deployment extends Component {
 
   render() {
 
-    const { selectedOption } = this.state;
     const { selectedRepository } = this.state;
 
     const items = this.state.chartsResult.charts
@@ -162,33 +128,7 @@ class Deployment extends Component {
     return (
       <div className="content">
         <Grid fluid>
-          <Row>
-
-            <Col md={12}>
-              <Card
-                title=""
-                content={
-                  <div>
-
-                    <Row>
-                      <div className="col-md-5">
-                        <FormGroup>
-                          <ControlLabel>Environment</ControlLabel>
-                          <Select value={selectedOption} onChange={this.handleEnvironmentChange} options={this.state.environmentList} />
-                        </FormGroup>
-
-                      </div>
-
-                    </Row>
-
-                    <div className="clearfix" />
-                  </div>
-                }
-              />
-            </Col>
-          </Row>
-
-          <Row>
+           <Row>
             <Col md={12}>
 
               <Card
@@ -253,18 +193,18 @@ class Deployment extends Component {
                     <ButtonToolbar>
 
                     <Button bsStyle="primary"
-                        disabled={(Object.entries(this.state.selectedOption).length === 0 &&
-                          this.state.selectedOption.constructor === Object) || this.state.charts.length <= 0}
+                        disabled={(Object.entries(this.props.selectedEnvironment).length === 0 &&
+                          this.props.selectedEnvironment.constructor === Object) || this.state.charts.length <= 0}
                         fill type="button"
-                        onClick={this.navigateToDependencyAnalysis.bind(this, this.state.charts, this.state.selectedOption)}>
+                        onClick={this.navigateToDependencyAnalysis.bind(this, this.state.charts, this.props.selectedEnvironment)}>
                         Analyse Dependencies
                       </Button>
 
                       <Button bsStyle="default"
-                        disabled={(Object.entries(this.state.selectedOption).length === 0 &&
-                          this.state.selectedOption.constructor === Object) || this.state.charts.length <= 0}
+                        disabled={(Object.entries(this.props.selectedEnvironment).length === 0 &&
+                          this.props.selectedEnvironment.constructor === Object) || this.state.charts.length <= 0}
                         fill type="button"
-                        onClick={this.navigateToCheckVariables.bind(this, this.state.charts, this.state.selectedOption)}>
+                        onClick={this.navigateToCheckVariables.bind(this, this.state.charts, this.props.selectedEnvironment)}>
                         Direct Deploy
                       </Button>
 

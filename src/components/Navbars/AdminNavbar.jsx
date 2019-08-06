@@ -36,7 +36,14 @@ class Header extends Component {
           <Navbar.Toggle onClick={this.mobileSidebarToggle} />
         </Navbar.Header>
         <Navbar.Collapse>
-          <AdminNavbarLinks keycloak={this.props.keycloak} history={this.props.history}/>
+          <AdminNavbarLinks 
+            keycloak={this.props.keycloak} 
+            history={this.props.history}
+            environments={this.props.environments}
+            selectedEnvironment={this.props.selectedEnvironment}
+            handleEnvironmentChange={this.props.handleEnvironmentChange.bind(this)}
+          />
+
         </Navbar.Collapse>        
       </Navbar>
     );
