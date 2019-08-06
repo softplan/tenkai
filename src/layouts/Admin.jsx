@@ -35,7 +35,13 @@ class Admin extends Component {
   }
 
   handleEnvironmentChange = (selectedEnvironment) => {
-    this.setState({ selectedEnvironment }, () => {console.log(selectedEnvironment)});
+    this.setState({ selectedEnvironment }, () => {
+    
+      this.props.history.push({
+        pathname: "/admin/deployment"
+      });
+    
+    });
   }
 
   componentDidMount() {
@@ -58,7 +64,11 @@ class Admin extends Component {
           var element = response.data.Envs[x];
           arr.push({ value: element.ID, label: element.name });
         }
-        this.setState({ environmentList: arr });
+        this.setState({ environmentList: arr }, () => {
+          if (arr.length > 0) {
+            this.setState({selectedEnvironment: arr[0]}); 
+          }
+        });
 
 
       })

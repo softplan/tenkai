@@ -17,7 +17,7 @@ export class UserForm extends Component {
     }
 
     componentDidMount() {
-        if (this.props.editItem) {
+        if (this.props.editMode) {
 
             let envs = this.props.editItem.Environments;
 
@@ -33,10 +33,12 @@ export class UserForm extends Component {
                 
             });
 
-
         } else {
             this.setState(() => ({
-                formData: {}
+                formData: {
+                    checkedEnvs: [],
+                    email: '',
+                },
             }));
         }
         getAllEnvironments(this);

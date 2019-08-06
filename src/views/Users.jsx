@@ -132,7 +132,7 @@ class Users extends Component {
                 <SimpleModal 
                     showConfirmDeleteModal={this.state.showConfirmDeleteModal}
                     handleConfirmDeleteModalClose={this.handleConfirmDeleteModalClose.bind(this)}
-                    title="Confirm" subTitle="Delete solution" message="Are you sure you want to delete this solution?"
+                    title="Confirm" subTitle="Delete user" message="Are you sure you want to delete this user?"
                     handleConfirmDelete={this.handleConfirmDelete.bind(this)}>  
                 </SimpleModal>
 

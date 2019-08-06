@@ -48,39 +48,37 @@ class Deployment extends Component {
 
   getCharts(repo) {
     this.props.handleLoading(true);
-    
+
     let url = "/charts/" + repo + "?all=" + !this.state.latestVersionOnly;
 
     axios.get(TENKAI_API_URL + url).then(response => {
-        this.setState({chartsResult: response.data.charts != null ? response.data : { charts: [] }});
-        this.props.handleLoading(false);
-      }).catch(error => {
-        this.props.handleLoading(false);
-        console.log(error.message);
-        this.props.handleNotification("general_fail", "error");
-      });
+      this.setState({ chartsResult: response.data.charts != null ? response.data : { charts: [] } });
+      this.props.handleLoading(false);
+    }).catch(error => {
+      this.props.handleLoading(false);
+      console.log(error.message);
+      this.props.handleNotification("general_fail", "error");
+    });
   }
 
-  navigateToCheckVariables(charts, selected) {
+  navigateToCheckVariables(charts) {
 
     this.props.history.push({
       pathname: "/admin/deployment-wvars",
-      search: "?environment=" + selected.value,
-      state: { charts: charts, environment: selected.label }
+      state: { charts: charts }
     });
 
   }
 
-  navigateToDependencyAnalysis(charts, selected) {
+  navigateToDependencyAnalysis(charts) {
     this.props.history.push({
       pathname: "/admin/deployment-depanalysis",
-      search: "?environment=" + selected.value,
-      state: { charts: charts, environment: selected.label }
+      state: { charts: charts }
     });
   }
 
   handleLatestVersionOnlyChange(e) {
-    this.setState({ latestVersionOnly: e.target.checked}, () => {
+    this.setState({ latestVersionOnly: e.target.checked }, () => {
       if (this.state.selectedRepository !== undefined && this.state.selectedRepository.value !== undefined) {
         this.getCharts(this.state.selectedRepository.value);
       }
@@ -116,7 +114,7 @@ class Deployment extends Component {
       .filter(d => this.state.inputFilter === '' || d.name.includes(this.state.inputFilter)).map((item, key) =>
 
         <tr key={key} >
-          <td><input name={item.name+"@"+item.chartVersion} checked={this.state.charts.indexOf(item.name+"@"+item.chartVersion) !== -1} type="checkbox" className="checkbox" onChange={this.handleCheckboxChange.bind(this)} /></td>
+          <td><input name={item.name + "@" + item.chartVersion} checked={this.state.charts.indexOf(item.name + "@" + item.chartVersion) !== -1} type="checkbox" className="checkbox" onChange={this.handleCheckboxChange.bind(this)} /></td>
           <td>{item.name}</td>
           <td>{item.chartVersion}</td>
           <td>{item.appVersion}</td>
@@ -128,7 +126,48 @@ class Deployment extends Component {
     return (
       <div className="content">
         <Grid fluid>
-           <Row>
+
+
+          <Row>
+
+            <Col md={12}>
+              <Card
+                title=""
+                content={
+                  <div>
+
+                    <ButtonToolbar>
+
+                      <Button bsStyle="primary" pullRight
+                        disabled={(Object.entries(this.props.selectedEnvironment).length === 0 &&
+                          this.props.selectedEnvironment.constructor === Object) || this.state.charts.length <= 0}
+                        fill type="button"
+                        onClick={this.navigateToDependencyAnalysis.bind(this, this.state.charts)}>
+                        Analyse Dependencies
+  </Button>
+
+                      <Button bsStyle="default" pullRight
+                        disabled={(Object.entries(this.props.selectedEnvironment).length === 0 &&
+                          this.props.selectedEnvironment.constructor === Object) || this.state.charts.length <= 0}
+                        fill type="button"
+                        onClick={this.navigateToCheckVariables.bind(this, this.state.charts)}>
+                        Direct Deploy
+  </Button>
+
+                    </ButtonToolbar>
+
+
+
+                    <div className="clearfix" />
+                  </div>
+                }
+              />
+            </Col>
+          </Row>
+
+
+
+          <Row>
             <Col md={12}>
 
               <Card
@@ -136,80 +175,56 @@ class Deployment extends Component {
                 content={
                   <div>
                     <Row>
-                    <div className="col-md-5">
-                      <FormGroup>
-                        <ControlLabel>Repository</ControlLabel>
-                        <Select value={selectedRepository} onChange={this.handleRepositoryChange} options={this.state.repositories} />
-                      </FormGroup>
-                    </div>
+                      <div className="col-md-5">
+                        <FormGroup>
+                          <ControlLabel>Repository</ControlLabel>
+                          <Select value={selectedRepository} onChange={this.handleRepositoryChange} options={this.state.repositories} />
+                        </FormGroup>
+                      </div>
 
                     </Row>
 
                     <Row>
-                    <div className="col-md-8">
-                      <FormGroup>
-                        <ControlLabel>Chart Search</ControlLabel>
-                        <FormControl
-                          value={this.state.inputFilter}
-                          onChange={this.onChangeInputHandler.bind(this)}
-                          style={{ width: '100%' }} type="text"
-                          placeholder="Search using any field"
-                          aria-label="Search using any field"></FormControl>
-                      </FormGroup>
-                    </div>
+                      <div className="col-md-8">
+                        <FormGroup>
+                          <ControlLabel>Chart Search</ControlLabel>
+                          <FormControl
+                            value={this.state.inputFilter}
+                            onChange={this.onChangeInputHandler.bind(this)}
+                            style={{ width: '100%' }} type="text"
+                            placeholder="Search using any field"
+                            aria-label="Search using any field"></FormControl>
+                        </FormGroup>
+                      </div>
 
-                    <div className="col-md-2">
-                      <div className="custom-control custom-checkbox">
-                        <input type="checkbox" className="custom-control-input" 
-                          id="latestVersionOnly" checked={this.state.latestVersionOnly === true}
-                          onChange={this.handleLatestVersionOnlyChange.bind(this)}/>
-                        <label className="custom-control-label" htmlFor="latestVersionOnly">LATEST CHART VERSION ONLY</label>
-                      </div>                      
-                    </div>
+                      <div className="col-md-2">
+                        <div className="custom-control custom-checkbox">
+                          <input type="checkbox" className="custom-control-input"
+                            id="latestVersionOnly" checked={this.state.latestVersionOnly === true}
+                            onChange={this.handleLatestVersionOnlyChange.bind(this)} />
+                          <label className="custom-control-label" htmlFor="latestVersionOnly">LATEST CHART VERSION ONLY</label>
+                        </div>
+                      </div>
                     </Row>
 
                     <Row>
-                    <div className="col-md-11">
-                      <Table bordered hover size="sm">
-                        <thead>
-                          <tr>
-                            <th>#</th>
-                            <th>Helm Chart</th>
-                            <th>Version</th>
-                            <th>App Version</th>
-                            <th>Description</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {items}
-                        </tbody>
-                      </Table>
+                      <div className="col-md-11">
+                        <Table bordered hover size="sm">
+                          <thead>
+                            <tr>
+                              <th>#</th>
+                              <th>Helm Chart</th>
+                              <th>Version</th>
+                              <th>App Version</th>
+                              <th>Description</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {items}
+                          </tbody>
+                        </Table>
 
-                    </div>
-                    </Row>
-
-                    <Row>
-                      <Col xs={10}>
-                    <ButtonToolbar>
-
-                    <Button bsStyle="primary"
-                        disabled={(Object.entries(this.props.selectedEnvironment).length === 0 &&
-                          this.props.selectedEnvironment.constructor === Object) || this.state.charts.length <= 0}
-                        fill type="button"
-                        onClick={this.navigateToDependencyAnalysis.bind(this, this.state.charts, this.props.selectedEnvironment)}>
-                        Analyse Dependencies
-                      </Button>
-
-                      <Button bsStyle="default"
-                        disabled={(Object.entries(this.props.selectedEnvironment).length === 0 &&
-                          this.props.selectedEnvironment.constructor === Object) || this.state.charts.length <= 0}
-                        fill type="button"
-                        onClick={this.navigateToCheckVariables.bind(this, this.state.charts, this.props.selectedEnvironment)}>
-                        Direct Deploy
-                      </Button>
-
-                    </ButtonToolbar>
-                    </Col>
+                      </div>
                     </Row>
 
                   </div>

@@ -58,7 +58,6 @@ class Sidebar extends Component {
           <ul className="nav">
             {this.state.width <= 991 ? <AdminNavbarLinks /> : null}
             {this.props.routes.map((prop, key) => {
-
               if (!prop.redirect && prop.menu && this.props.keycloak.hasRealmRole(prop.role))
                 return (
                   <li

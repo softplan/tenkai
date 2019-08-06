@@ -19,10 +19,8 @@ class DepAnalysis extends Component {
 
   constructor(props) {
     super(props);
-    const values = queryString.parse(props.location.search);
-    this.state.envId = values.environment;
-    this.state.environmentName = this.props.location.state.environment;
-    
+    this.state.envId = this.props.selectedEnvironment.value;
+    this.state.environmentName = this.props.selectedEnvironment.label;
   }
 
   componentDidMount() {
@@ -90,7 +88,7 @@ class DepAnalysis extends Component {
                 title=""
                 content={
                   <div>
-                    <h3>Environment: {this.props.location.state.environment}</h3>
+
                     <Button bsStyle="info"
                       disabled={(Object.entries(this.state.selectedVersion).length === 0 &&
                         this.state.selectedVersion.constructor === Object) || this.state.charts.length <= 0}

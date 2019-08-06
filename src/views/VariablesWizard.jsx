@@ -48,8 +48,7 @@ class VariablesWizard extends Component {
 
   constructor(props) {
     super(props);
-    const values = queryString.parse(props.location.search);
-    this.state.envId = values.environment;
+    this.state.envId = this.props.selectedEnvironment.value;
   }
 
   onSave = (payload) => {
@@ -117,7 +116,6 @@ class VariablesWizard extends Component {
                 title=""
                 content={
                   <div>
-
                     <ButtonToolbar>
 
                       <Button bsStyle="primary"
@@ -125,6 +123,7 @@ class VariablesWizard extends Component {
                         pullRight
                         type="button"
                         onClick={this.onClick}
+                        disabled={!this.props.keycloak.hasRealmRole("tenkai-helm-upgrade")}
                       >Install/Update</Button>
 
                       <Button bsStyle="info"
@@ -132,6 +131,7 @@ class VariablesWizard extends Component {
                         pullRight
                         type="button"
                         onClick={this.onSaveVariablesClick}
+                        disabled={!this.props.keycloak.hasRealmRole("tenkai-variables-save")}
                       >Save Variables</Button>
 
                     </ButtonToolbar>
