@@ -29,12 +29,6 @@ class Header extends Component {
   render() {
     return (
       <Navbar fluid>
-        <Navbar.Header>
-          <Navbar.Brand>
-            <a href="#pablo">{this.props.brandText}</a>
-          </Navbar.Brand>
-          <Navbar.Toggle onClick={this.mobileSidebarToggle} />
-        </Navbar.Header>
         <Navbar.Collapse>
           <AdminNavbarLinks 
             keycloak={this.props.keycloak} 

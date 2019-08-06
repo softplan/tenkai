@@ -34,7 +34,6 @@ class AdminNavbarLinks extends Component {
         
 
         <Nav pullRight>
-    
           <NavDropdown
               eventKey={2}
               title={this.state.name}
