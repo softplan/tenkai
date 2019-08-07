@@ -1,10 +1,10 @@
 import React, { Component } from "react";
 import {
-  Grid, Row, Col, FormGroup, ControlLabel, Table, ButtonToolbar
+  Grid, Row, Col, Table, ButtonToolbar
 } from "react-bootstrap";
 
 
-import Select from 'react-select';
+
 import { Card } from "components/Card/Card.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
 import queryString from 'query-string';
@@ -63,11 +63,6 @@ class DeploySolution extends Component {
         });
     }
 
-
-  handleEnvironmentChange = (selectedOption) => {
-    this.setState({ selectedOption });
-  }
-
   navigateToCheckVariables(charts, selected) {
 
     let selectedCharts = [];
@@ -85,8 +80,6 @@ class DeploySolution extends Component {
 
 
   render() {
-
-    const { selectedOption } = this.state;
 
     const items = this.state.chartsResult.charts
       .map((item, key) =>

@@ -17,6 +17,7 @@ spec:
     metadata:
       annotations:
         sidecar.istio.io/inject: {{ .Values.istio.enabled | quote }}
+        traffic.sidecar.istio.io/excludeOutboundIPRanges: 0.0.0.0/0
       labels:
         app: {{ template "tenkai-web.name" . }}
         release: {{ .Release.Name }}

@@ -11,7 +11,6 @@ import IstioVariable from "./IstioVariable";
 import TENKAI_API_URL from 'env.js';
 import { FormInputs } from "components/FormInputs/FormInputs.jsx";
 import { ConfigMap } from "components/Deployment/ConfigMap.jsx";
-import { SSL_OP_EPHEMERAL_RSA } from "constants";
 
 export class HelmVariables extends Component {
 

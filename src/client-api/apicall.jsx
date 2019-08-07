@@ -214,9 +214,24 @@ function getAllEnvironments(self) {
 
 }
 
+function getDefaultRepo(self, callback) {
+    self.props.handleLoading(true);
+    axios.get(TENKAI_API_URL + "/repo/default")
+    .then(res => {
+      self.setState({defaultRepo: res.data.value});
+      self.props.handleLoading(false);
+      if (callback !== undefined) {
+        callback(self);
+      }
+    }).catch(error => {
+      self.props.handleLoading(false);
+      self.props.handleNotification("general_fail", "error");
+    });
+}
+
 export {
     retriveRepo, retrieveCharts, retrieveReleases,
     saveReleases, retrieveDependencies, saveDependency,
     deleteDependency, deleteRelease, retrieveDependency, retrieveReleasesWithCallBack, 
-    multipleInstall, getAllEnvironments, saveUsers
+    multipleInstall, getAllEnvironments, saveUsers, getDefaultRepo
 };

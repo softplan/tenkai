@@ -8,7 +8,6 @@ import {
 import { Card } from "components/Card/Card.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
 import HelmVariables from "components/Deployment/HelmVariables.jsx";
-import queryString from 'query-string';
 import { multipleInstall } from "client-api/apicall.jsx"
 
 class VariablesWizard extends Component {
@@ -20,15 +19,16 @@ class VariablesWizard extends Component {
   }
 
   componentDidMount() {
-    let total = this.props.location.state.charts.length;
+    let total = this.props.selectedChartsToDeploy.length;
+    let chartsToDeploy = this.props.selectedChartsToDeploy;
     let helmCharts = [];
     let chartVersion = "";
     let value = "";
     let chartVersions = new Map();
     for (let i = 0; i < total; i++) {
-      value = this.props.location.state.charts[i].substring(0, this.props.location.state.charts[i].indexOf("@"))
+      value = chartsToDeploy[i].substring(0, chartsToDeploy[i].indexOf("@"))
       helmCharts.push(value);
-      chartVersion = this.props.location.state.charts[i].substring(this.props.location.state.charts[i].indexOf("@") + 1, this.props.location.state.charts[i].length)
+      chartVersion = chartsToDeploy[i].substring(chartsToDeploy[i].indexOf("@") + 1, chartsToDeploy[i].length)
       chartVersions[value] = chartVersion;
     }
     this.setState({ charts: helmCharts, chartVersions: chartVersions }, async () => {

@@ -3,17 +3,16 @@ import {
     Grid,
     Row,
     Col,
-    FormControl, Table, FormGroup, ControlLabel
+    FormControl, FormGroup, ControlLabel
 } from "react-bootstrap";
 
-import Button from "components/CustomButton/CustomButton.jsx";
 import { Card } from "components/Card/Card.jsx";
 import CButton from "components/CustomButton/CustomButton.jsx";
 import EnvironmentForm from "components/Environments/EnvironmentForm.jsx";
 import SimpleModal from 'components/Modal/SimpleModal.jsx';
+import EnvironmentCard from 'components/Card/EnvironmentCard.jsx';
 import axios from 'axios';
 import TENKAI_API_URL from 'env.js';
-
 
 class Environments extends Component {
 
@@ -22,11 +21,13 @@ class Environments extends Component {
         envResult: { Envs: [] },
         inputFilter: "",
         showConfirmDeleteModal: false,
+        showConfirmDuplicateModal: false,
         itemToDelete: {}, 
+        itemToDuplicate: {},
     }
 
     componentDidMount() {
-        this.getEnvironments();
+        this.getEnvironmentList();
     }
 
     handleConfirmDeleteModalClose() {
@@ -37,13 +38,24 @@ class Environments extends Component {
         this.setState({ showConfirmDeleteModal: true });
     }
 
+    handleConfirmDuplicateModalClose() {
+        this.setState({ showConfirmDuplicateModal: false, itemToDuplicate: {} });
+    }
+
+    handleConfirmDuplicateModalShow() {
+
+        this.setState({ showConfirmDuplicateModal: true }, () => {
+            console.log('showing modal');
+        });
+    }    
+
     onChangeFilterHandler(e) {
         this.setState({
             inputFilter: e.target.value,
         })
     }
 
-    getEnvironments() {
+    getEnvironmentList() {
         axios.get(TENKAI_API_URL + '/environments')
             .then(response => this.setState({ envResult: response.data }))
             .catch(error => {
@@ -66,6 +78,7 @@ class Environments extends Component {
     }
 
     navigateToEditEnvironment(item) {
+        console.log('aqui');
     
         this.setState(() => ({
             showInsertUpdateForm: true,
@@ -99,15 +112,26 @@ class Environments extends Component {
             this.save(data, '/environments')
         }
     }
+    
+    duplicateEnvironment(item) {
+        this.setState({itemToDuplicate: item}, () => {
+            console.log(this.state.itemToDuplicate);
+            this.handleConfirmDuplicateModalShow();
+        
+        });
+    }
 
-    duplicateEnvironment(id) {
-        axios.get(TENKAI_API_URL + "/environments/duplicate/" + id)
-            .then(res => {
-                this.getEnvironments();
-            }).catch(error => {
-                console.log(error.message);
-                this.props.handleNotification("general_fail", "error");
-            });
+    handleConfirmDuplicate() {
+        if (this.state.itemToDuplicate !== undefined) {
+            axios.get(TENKAI_API_URL + "/environments/duplicate/" + this.state.itemToDuplicate.ID)
+                .then(res => {
+                    this.getEnvironments();
+                }).catch(error => {
+                    console.log(error.message);
+                    this.props.handleNotification("general_fail", "error");
+                });
+        }
+        this.setState({showConfirmDuplicateModal: false, itemToDuplicate: {}});
     }
 
     save(data, uri) {
@@ -143,26 +167,45 @@ class Environments extends Component {
         this.setState({showConfirmDeleteModal: false, itemToDelete: {}});
     }
 
+    onExport(item) {
+        axios.get(TENKAI_API_URL + `/environments/export/${item.ID}`).then(function(response) {
+            console.log('aqui X');
+            console.log(response.data);
+
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `environment_${item.group}_${item.name}.txt`);
+            document.body.appendChild(link);
+            link.click();
+
+          }).catch(function(error) {
+            console.log(error.message);
+            this.props.handleNotification("general_fail", "error");
+        });        
+
+    }
+
     render() {
 
         const items = this.state.envResult.Envs
             .filter(d => this.state.inputFilter === '' || d.name.includes(this.state.inputFilter)).map((item, key) =>
-                <tr key={key}>
-                    <td>{item.ID}</td>
-                    <td>{item.group}</td>
-                    <td>{item.name}</td>
-                    <td>{item.cluster_uri}</td>
-                    <td>{item.namespace}</td>
-                    <td><Button className="link-button"
-                         onClick={this.navigateToEditEnvironment.bind(this, item)}><i className="pe-7s-edit"/></Button></td>
-                    <td><Button className="link-button" 
-                        onClick={this.onDelete.bind(this, item)}><i className="pe-7s-trash" /></Button></td> 
-                    <td><Button className="link-button" 
-                        onClick={this.navigateToEnvironmentVariables.bind(this, item.ID, item.group, item.name)}><i className="pe-7s-plugin" /></Button></td> 
-                    <td><Button className="link-button" 
-                        onClick={this.duplicateEnvironment.bind(this, item.ID)}><i className="pe-7s-magic-wand" /></Button></td> 
+ 
+                <EnvironmentCard key={item.ID} id={item.id} 
+                    keycloak={this.props.keycloak}
+                    item={item}
+                    group={item.group} 
+                    name={item.name} 
+                    clusterUri={item.cluster_uri}
+                    namespace={item.namespace}
+                    navigateToEditEnvironment={this.navigateToEditEnvironment.bind(this)}
+                    navigateToEnvironmentVariables={this.navigateToEnvironmentVariables.bind(this)}
+                    duplicateEnvironment={this.duplicateEnvironment.bind(this)}
+                    onDelete={this.onDelete.bind(this)}
+                    onExport={this.onExport.bind(this)}
 
-                </tr>
+                    />
+                
             );
 
         return (
@@ -176,14 +219,22 @@ class Environments extends Component {
                     handleConfirmDelete={this.handleConfirmDelete.bind(this)}>  
                 </SimpleModal>
 
+                <SimpleModal 
+                    showConfirmDeleteModal={this.state.showConfirmDuplicateModal}
+                    handleConfirmDeleteModalClose={this.handleConfirmDuplicateModalClose.bind(this)}
+                    title="Confirm" subTitle="Duplicate environment" message="Are you sure you want to duplicate this environment?"
+                    handleConfirmDelete={this.handleConfirmDuplicate.bind(this)}>  
+                </SimpleModal>
+
+
                 <Grid fluid>
                     <Row>
                         <Col md={12}>
-                            <Card
+                            <Card 
                                 title=""
                                 content={
                                     <form>
-                                        <CButton className="pull-right" variant="primary" onClick={this.handleNewEnvironmentClick.bind(this)} >New Environment</CButton>
+                                        <CButton disabled={!this.props.keycloak.hasRealmRole("tenkai-admin")} className="pull-right" variant="primary" onClick={this.handleNewEnvironmentClick.bind(this)} >New Environment</CButton>
                                         <div className="clearfix" />
                                     </form>
 
@@ -203,47 +254,31 @@ class Environments extends Component {
 
                     <Row>
                         <Col md={12}>
-                            <Card
+                            <Card plain
                                 title="Environments"
                                 content={
                                     <form>
 
-                                        <div className="col-md-8">
-
-                                            <FormGroup>
-                                                <ControlLabel>Environment Search</ControlLabel>
-                                                <FormControl
-                                                    value={this.state.inputFilter}
-                                                    onChange={this.onChangeFilterHandler.bind(this)}
-                                                    style={{ width: '100%' }} type="text"
-                                                    placeholder="Search using any field"
-                                                    aria-label="Search using any field">
-                                                </FormControl>
-                                            </FormGroup>
-
-                                        </div>
-
-
-                                        <div>
-                                            <Table bordered hover size="sm">
-                                                <thead>
-                                                    <tr>
-                                                        <th>#</th>
-                                                        <th>Group</th>
-                                                        <th>Environment Name</th>
-                                                        <th>Cluster URI</th>
-                                                        <th>Namespace</th>
-                                                        <th>Edit</th>
-                                                        <th>Delete</th>
-                                                        <th>Variables</th>
-                                                        <th>Duplicate</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
+                                        <Row>
+                                            <Col xs={8}>
+                                                <FormGroup>
+                                                    <ControlLabel>Environment Search</ControlLabel>
+                                                    <FormControl
+                                                        value={this.state.inputFilter}
+                                                        onChange={this.onChangeFilterHandler.bind(this)}
+                                                        style={{ width: '100%' }} type="text"
+                                                        placeholder="Search using any field"
+                                                        aria-label="Search using any field">
+                                                    </FormControl>
+                                                </FormGroup>
+                                                </Col>
+                                        </Row>
+                                        <Row>
+                                            <Col xs={8}>
                                                     {items}
-                                                </tbody>
-                                            </Table>
-                                        </div>
+                                            </Col>
+                                        </Row>
+
                                     </form>
                                 }
                             />

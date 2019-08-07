@@ -4,7 +4,6 @@ import {
 } from "react-bootstrap";
 import { Card } from "components/Card/Card.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
-import queryString from 'query-string';
 import Select from 'react-select';
 import { retrieveReleasesWithCallBack } from 'client-api/apicall.jsx';
 
@@ -24,17 +23,19 @@ class DepAnalysis extends Component {
   }
 
   componentDidMount() {
-    let total = this.props.location.state.charts.length;
+    
+    let chartsToDeploy = this.props.selectedChartsToDeploy;
+    let total = chartsToDeploy.length;
+
     let helmCharts = [];
     let chartVersions = new Map();
     let value = "";
     let chartVersion = "";
     for (let i = 0; i < total; i++) {
-      value = this.props.location.state.charts[i].substring(0, this.props.location.state.charts[i].indexOf("@"))
-      chartVersion = this.props.location.state.charts[i].substring(this.props.location.state.charts[i].indexOf("@") + 1, this.props.location.state.charts[i].length)
+      value = chartsToDeploy[i].substring(0, chartsToDeploy[i].indexOf("@"))
+      chartVersion = chartsToDeploy[i].substring(chartsToDeploy[i].indexOf("@") + 1, chartsToDeploy.length)
       helmCharts.push(value);
       this.getReleases(value);
-      
       chartVersions[value] = chartVersion;
     }
     this.setState({ charts: helmCharts, chartVersions: chartVersions });

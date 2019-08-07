@@ -10,6 +10,7 @@ import { Card } from "components/Card/Card.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
 import RepoForm from "components/Config/RepoForm.jsx";
 import SimpleModal from 'components/Modal/SimpleModal.jsx'
+import { getDefaultRepo } from 'client-api/apicall.jsx';
 
 import axios from 'axios';
 import TENKAI_API_URL from 'env.js';
@@ -22,6 +23,7 @@ class Config extends Component {
     editItem: {},
     showConfirmDeleteModal: false,
     itemToDelete: {},
+    defaultRepo: "",
 
   }
 
@@ -39,7 +41,9 @@ class Config extends Component {
 
   getRepositories() {
     axios.get(TENKAI_API_URL + '/repositories')
-      .then(response => this.setState({ repoResult: response.data }))
+      .then(response => this.setState({ repoResult: response.data }, () => {
+        getDefaultRepo(this);
+      }))
       .catch(error => {
         console.log(error.message);
         this.props.handleNotification("general_fail", "error");
@@ -75,6 +79,20 @@ class Config extends Component {
 
   onDelete(item) {
     this.setState({ itemToDelete: item }, () => { this.handleConfirmDeleteModalShow() });
+  }
+
+   setDefault(item) {
+    this.props.handleLoading(true);
+    let payload = {reponame: item.name}
+    axios.post(TENKAI_API_URL + "/repo/default", payload)
+    .then(res => {
+      this.getRepositories()
+      this.props.handleLoading(false);
+    }).catch(error => {
+      this.props.handleLoading(false);
+      this.props.handleNotification("general_fail", "error");
+    });
+
   }
 
   onRepoUpdateClick() {
@@ -144,18 +162,33 @@ class Config extends Component {
 
   }
 
+  getHighLight(item) {
+    let result = "";
+    console.log(this.state.defaultRepo);
+    if (item.name === this.state.defaultRepo) {
+      result = "bg-info";
+    } 
+    return result;
+  }
+
 
   render() {
 
 
+
     const items = this.state.repoResult.repositories.map((item, key) =>
 
-      <tr key={key}>
+    
+      <tr key={key} className={this.getHighLight(item)}>
         <td>{item.name}</td>
         <td>{item.url}</td>
         <td>{item.username}</td>
-        <td><Button className="link-button"
+        <td><Button className="link-button" disabled={!this.props.keycloak.hasRealmRole("tenkai-admin")}
+                        
           onClick={this.onDelete.bind(this, item)}><i className="pe-7s-trash" /></Button></td>
+        <td><Button className="link-button"
+          onClick={this.setDefault.bind(this, item)}><i className="pe-7s-arc" /></Button></td>
+
 
       </tr>
 
@@ -182,9 +215,16 @@ class Config extends Component {
                   <form>
                     <ButtonToolbar>
 
-                      <Button className="pull-right" variant="info" onClick={this.onRepoUpdateClick.bind(this)} >Repo Update</Button>
+                      <Button className="pull-right" 
+                        variant="info" 
+                        onClick={this.onRepoUpdateClick.bind(this)} 
+                        disabled={!this.props.keycloak.hasRealmRole("tenkai-admin")}
+                        >Repo Update</Button>
 
-                      <Button className="pull-right" variant="primary" onClick={this.handleNewRepoClick.bind(this)} >New Repo</Button>
+                      <Button className="pull-right" variant="primary" 
+                        onClick={this.handleNewRepoClick.bind(this)} 
+                        disabled={!this.props.keycloak.hasRealmRole("tenkai-admin")}
+                        >New Repo</Button>
 
                     </ButtonToolbar>
                     <div className="clearfix" />
@@ -210,13 +250,14 @@ class Config extends Component {
                 content={
                   <form>
                     <div>
-                      <Table bordered hover size="sm">
+                      <Table bordered size="sm">
                         <thead>
                           <tr>
                             <th>Name</th>
                             <th>URL</th>
                             <th>username</th>
                             <th>Delete</th>
+                            <th>Set Default</th>
                           </tr>
                         </thead>
                         <tbody>

@@ -7,9 +7,7 @@ import Footer from "components/Footer/Footer";
 import Sidebar from "components/Sidebar/Sidebar";
 
 import { style } from "variables/Variables.jsx";
-
 import routes from "routes.js";
-
 import image from "assets/img/sidebar-8.jpg";
 import "assets/css/loading.css"
 import Keycloak from 'keycloak-js';
@@ -31,19 +29,21 @@ class Admin extends Component {
       fixedClasses: "dropdown show-dropdown open",
       environmentList: [],
       selectedEnvironment: {},
+      selectedChartsToDeploy: [],
     };
-  }
 
-  handleEnvironmentChange = (selectedEnvironment) => {
-    this.setState({ selectedEnvironment }, () => {
-    
-      this.props.history.push({
-        pathname: "/admin/deployment"
-      });
-    
+    const keycloak = Keycloak('/keycloak.json');
+    keycloak.init({ onLoad: 'login-required' }).then(authenticated => {
+      this.state.keycloak = keycloak;
+      this.state.authenticated = authenticated;
+      this.state._notificationSystem = this.refs.notificationSystem;
+      axios.defaults.headers.common['Authorization'] = `Bearer ${keycloak.token}`;
+      this.getEnvironments();
     });
+
   }
 
+  /*
   componentDidMount() {
     const keycloak = Keycloak('/keycloak.json');
     keycloak.init({ onLoad: 'login-required' }).then(authenticated => {
@@ -53,12 +53,20 @@ class Admin extends Component {
       });
     });
   }
+  */
 
 
+  handleEnvironmentChange = (selectedEnvironment) => {
+    this.setState({ selectedEnvironment }, () => {
+      this.props.history.push({
+        pathname: "/admin/deployment"
+      });
+    });
+  }
+
+  
   getEnvironments() {
-    axios.get(TENKAI_API_URL + '/environments')
-      .then(response => {
-
+    axios.get(TENKAI_API_URL + '/environments').then(response => {
         var arr = [];
         for (var x = 0; x < response.data.Envs.length; x++) {
           var element = response.data.Envs[x];
@@ -69,10 +77,7 @@ class Admin extends Component {
             this.setState({selectedEnvironment: arr[0]}); 
           }
         });
-
-
-      })
-      .catch(error => {
+      }).catch(error => {
         if (error.response !== undefined) {
           this.props.handleNotification("custom", "error", error.response.data);
         } else {
@@ -146,6 +151,10 @@ class Admin extends Component {
 
   }
 
+  updateSelectedChartsToDeploy(selectedChartsToDeploy) {
+    this.setState({selectedChartsToDeploy});
+  }
+
   handleNotificationClick = position => {
     var color = Math.floor(Math.random() * 4 + 1);
     var level;
@@ -193,7 +202,10 @@ class Admin extends Component {
                 handleNotification={this.handleNotification}
                 handleLoading={this.handleLoading}
                 keycloak={this.state.keycloak}
+                environments={this.state.environmentList}
                 selectedEnvironment={this.state.selectedEnvironment}
+                selectedChartsToDeploy={this.state.selectedChartsToDeploy}
+                updateSelectedChartsToDeploy={this.updateSelectedChartsToDeploy.bind(this)}
               />
             )}
             key={key}

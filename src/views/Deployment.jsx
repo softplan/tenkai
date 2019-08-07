@@ -7,6 +7,7 @@ import {
 import Select from 'react-select';
 import { Card } from "components/Card/Card.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
+import { getDefaultRepo } from 'client-api/apicall.jsx';
 
 import axios from 'axios';
 import TENKAI_API_URL from 'env.js';
@@ -16,13 +17,13 @@ class Deployment extends Component {
   state = {
     inputFilter: "",
     chartsResult: { charts: [] },
-    charts: [],
     repositories: [],
     selectedRepository: {},
     latestVersionOnly: true,
   }
 
   componentDidMount() {
+    this.props.updateSelectedChartsToDeploy([]);
     this.getRepos();
   }
 
@@ -39,7 +40,17 @@ class Deployment extends Component {
           var element = response.data.repositories[x];
           arr.push({ value: element.name, label: element.name });
         }
-        this.setState({ repositories: arr });
+        this.setState({ repositories: arr }, () => {
+          getDefaultRepo(this, (self) => {
+            for (let x = 0; x < this.state.repositories.length; x++) {
+              if (self.state.repositories[x].value === self.state.defaultRepo) {
+                self.handleRepositoryChange(this.state.repositories[x]);
+                break;
+              }
+            }
+
+          });
+        });
       }).catch(error => {
         console.log(error.message);
         this.props.handleNotification("general_fail", "error");
@@ -61,19 +72,15 @@ class Deployment extends Component {
     });
   }
 
-  navigateToCheckVariables(charts) {
-
+  navigateToCheckVariables() {
     this.props.history.push({
-      pathname: "/admin/deployment-wvars",
-      state: { charts: charts }
+      pathname: "/admin/deployment-wvars"
     });
-
   }
 
-  navigateToDependencyAnalysis(charts) {
+  navigateToDependencyAnalysis() {
     this.props.history.push({
-      pathname: "/admin/deployment-depanalysis",
-      state: { charts: charts }
+      pathname: "/admin/deployment-depanalysis"
     });
   }
 
@@ -89,15 +96,14 @@ class Deployment extends Component {
 
     const item = e.target.name;
 
-    let array = this.state.charts;
+    let array = this.props.selectedChartsToDeploy;
     let index = array.indexOf(item)
     if (index !== -1) {
       array.splice(index, 1);
-      this.setState({ charts: array });
     } else {
       array.push(item);
-      this.setState({ charts: array })
     }
+    this.props.updateSelectedChartsToDeploy(array);
   }
 
   onChangeInputHandler(e) {
@@ -114,7 +120,7 @@ class Deployment extends Component {
       .filter(d => this.state.inputFilter === '' || d.name.includes(this.state.inputFilter)).map((item, key) =>
 
         <tr key={key} >
-          <td><input name={item.name + "@" + item.chartVersion} checked={this.state.charts.indexOf(item.name + "@" + item.chartVersion) !== -1} type="checkbox" className="checkbox" onChange={this.handleCheckboxChange.bind(this)} /></td>
+          <td><input name={item.name + "@" + item.chartVersion} checked={this.props.selectedChartsToDeploy.indexOf(item.name + "@" + item.chartVersion) !== -1} type="checkbox" className="checkbox" onChange={this.handleCheckboxChange.bind(this)} /></td>
           <td>{item.name}</td>
           <td>{item.chartVersion}</td>
           <td>{item.appVersion}</td>
@@ -140,17 +146,17 @@ class Deployment extends Component {
 
                       <Button bsStyle="primary" pullRight
                         disabled={(Object.entries(this.props.selectedEnvironment).length === 0 &&
-                          this.props.selectedEnvironment.constructor === Object) || this.state.charts.length <= 0}
+                          this.props.selectedEnvironment.constructor === Object) || this.props.selectedChartsToDeploy.length <= 0}
                         fill type="button"
-                        onClick={this.navigateToDependencyAnalysis.bind(this, this.state.charts)}>
+                        onClick={this.navigateToDependencyAnalysis.bind(this)}>
                         Analyse Dependencies
   </Button>
 
                       <Button bsStyle="default" pullRight
                         disabled={(Object.entries(this.props.selectedEnvironment).length === 0 &&
-                          this.props.selectedEnvironment.constructor === Object) || this.state.charts.length <= 0}
+                          this.props.selectedEnvironment.constructor === Object) || this.props.selectedChartsToDeploy.length <= 0}
                         fill type="button"
-                        onClick={this.navigateToCheckVariables.bind(this, this.state.charts)}>
+                        onClick={this.navigateToCheckVariables.bind(this, this)}>
                         Direct Deploy
   </Button>
 
