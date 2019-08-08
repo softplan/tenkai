@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import {
-  Grid, Row, Col, FormGroup, FormControl, ControlLabel, Table, ButtonToolbar
+  Grid, Row, Col, FormGroup, FormControl, ControlLabel, ButtonToolbar
 } from "react-bootstrap";
 
 
@@ -8,6 +8,7 @@ import Select from 'react-select';
 import { Card } from "components/Card/Card.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
 import { getDefaultRepo } from 'client-api/apicall.jsx';
+import ChartCard from 'components/Card/ChartCard.jsx';
 
 import axios from 'axios';
 import TENKAI_API_URL from 'env.js';
@@ -112,58 +113,69 @@ class Deployment extends Component {
     })
   }
 
+  deployUnit(item) {
+    let array = []
+    console.log(item);
+    array.push(item);
+    this.props.updateSelectedChartsToDeploy(array, () => {
+      this.props.history.push({
+        pathname: "/admin/deployment-wvars"
+      });
+    });
+  }
+
+  analysisUnit(item) {
+    let array = []
+    console.log(item);
+    array.push(item);
+    this.props.updateSelectedChartsToDeploy(array, () => {
+      this.props.history.push({
+        pathname: "/admin/deployment-depanalysis"
+      });
+    });
+  }
+
   render() {
 
     const { selectedRepository } = this.state;
 
     const items = this.state.chartsResult.charts
       .filter(d => this.state.inputFilter === '' || d.name.includes(this.state.inputFilter)).map((item, key) =>
-
-        <tr key={key} >
-          <td><input name={item.name + "@" + item.chartVersion} checked={this.props.selectedChartsToDeploy.indexOf(item.name + "@" + item.chartVersion) !== -1} type="checkbox" className="checkbox" onChange={this.handleCheckboxChange.bind(this)} /></td>
-          <td>{item.name}</td>
-          <td>{item.chartVersion}</td>
-          <td>{item.appVersion}</td>
-          <td>{item.description}</td>
-        </tr>
-
+        <ChartCard key={item.name}
+          item={item}
+          selectedChartsToDeploy={this.props.selectedChartsToDeploy}
+          handleCheckboxChange={this.handleCheckboxChange.bind(this)}
+          deploy={this.deployUnit.bind(this)}
+          analysis={this.analysisUnit.bind(this)}
+        />
       );
 
     return (
       <div className="content">
         <Grid fluid>
-
-
           <Row>
-
             <Col md={12}>
               <Card
                 title=""
                 content={
                   <div>
-
                     <ButtonToolbar>
-
-                      <Button bsStyle="primary" pullRight
+                      <Button className="btn-info pull-right"
                         disabled={(Object.entries(this.props.selectedEnvironment).length === 0 &&
                           this.props.selectedEnvironment.constructor === Object) || this.props.selectedChartsToDeploy.length <= 0}
-                        fill type="button"
+                        fill type="button" 
                         onClick={this.navigateToDependencyAnalysis.bind(this)}>
-                        Analyse Dependencies
-  </Button>
+                        <i className="pe-7s-eyedropper"/>{" "}Analyse Dependencies
+                      </Button>
 
-                      <Button bsStyle="default" pullRight
+                      <Button className="btn-primary pull-right"
                         disabled={(Object.entries(this.props.selectedEnvironment).length === 0 &&
                           this.props.selectedEnvironment.constructor === Object) || this.props.selectedChartsToDeploy.length <= 0}
                         fill type="button"
                         onClick={this.navigateToCheckVariables.bind(this, this)}>
-                        Direct Deploy
-  </Button>
-
+                        <i className="pe-7s-album"/>{" "}Direct Deploy
+                      </Button>
                     </ButtonToolbar>
-
-
-
                     <div className="clearfix" />
                   </div>
                 }
@@ -171,15 +183,14 @@ class Deployment extends Component {
             </Col>
           </Row>
 
-
-
           <Row>
             <Col md={12}>
 
-              <Card
+              <Card plain
                 title="Helm Chart"
                 content={
                   <div>
+
                     <Row>
                       <div className="col-md-5">
                         <FormGroup>
@@ -191,7 +202,7 @@ class Deployment extends Component {
                     </Row>
 
                     <Row>
-                      <div className="col-md-8">
+                      <Col xs={4}>
                         <FormGroup>
                           <ControlLabel>Chart Search</ControlLabel>
                           <FormControl
@@ -201,37 +212,24 @@ class Deployment extends Component {
                             placeholder="Search using any field"
                             aria-label="Search using any field"></FormControl>
                         </FormGroup>
-                      </div>
+                      </Col>
 
-                      <div className="col-md-2">
+                      <Col xs={3}>
                         <div className="custom-control custom-checkbox">
                           <input type="checkbox" className="custom-control-input"
                             id="latestVersionOnly" checked={this.state.latestVersionOnly === true}
                             onChange={this.handleLatestVersionOnlyChange.bind(this)} />
                           <label className="custom-control-label" htmlFor="latestVersionOnly">LATEST CHART VERSION ONLY</label>
                         </div>
-                      </div>
+                      </Col>
                     </Row>
 
                     <Row>
-                      <div className="col-md-11">
-                        <Table bordered hover size="sm">
-                          <thead>
-                            <tr>
-                              <th>#</th>
-                              <th>Helm Chart</th>
-                              <th>Version</th>
-                              <th>App Version</th>
-                              <th>Description</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {items}
-                          </tbody>
-                        </Table>
-
-                      </div>
+                      <Col xs={7}>
+                         {items}
+                      </Col>
                     </Row>
+
 
                   </div>
                 }

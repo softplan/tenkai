@@ -8,6 +8,7 @@ import {
 import { Card } from "components/Card/Card.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
 import HelmVariables from "components/Deployment/HelmVariables.jsx";
+import CopyModal from "components/Modal/CopyModal.jsx";
 import { multipleInstall } from "client-api/apicall.jsx"
 
 class VariablesWizard extends Component {
@@ -15,7 +16,8 @@ class VariablesWizard extends Component {
   state = {
     envId: "",
     charts: [],
-    chartVersions: new Map()
+    chartVersions: new Map(),
+    onShowCopyModal: false,
   }
 
   componentDidMount() {
@@ -82,9 +84,20 @@ class VariablesWizard extends Component {
       });
 
     });
+  }
 
 
+  onCloseCopyModal() {
+    this.setState({ onShowCopyModal: false, chartToManipulate: "" });
+  }
 
+  async onConfirmCopyModal(item) {
+    await this.refs[this.state.chartToManipulate].listVariables(item.value);
+    this.setState({ onShowCopyModal: false, chartToManipulate: "" });
+  }
+
+  showConfirmCopyModal(ref) {
+    this.setState({ onShowCopyModal: true, chartToManipulate: ref });
   }
 
   render() {
@@ -93,20 +106,27 @@ class VariablesWizard extends Component {
     const items = this.state.charts.map((item, key) => {
       return (
         <HelmVariables handleLoading={this.props.handleLoading}
+          copyVariables={this.showConfirmCopyModal.bind(this)}
           handleNotification={this.props.handleNotification}
           key={key} chartName={item} chartVersion={this.state.chartVersions[item]}
+          xref={"h" + key}
           ref={"h" + key}
           envId={envId} />
       )
 
-    }
-
-
-
-    );
+    });
 
     return (
       <div className="content">
+
+        <CopyModal
+              onShow={this.state.onShowCopyModal}
+              onClose={this.onCloseCopyModal.bind(this)}
+              title="Copy config from another environment" subTitle="Select environment" 
+              onConfirm={this.onConfirmCopyModal.bind(this)}
+              environments={this.props.environments}>
+        </CopyModal>
+
         <Grid fluid>
 
           <Row>
@@ -118,17 +138,13 @@ class VariablesWizard extends Component {
                   <div>
                     <ButtonToolbar>
 
-                      <Button bsStyle="primary"
-                        fill
-                        pullRight
+                      <Button className="btn-primary pull-right"
                         type="button"
                         onClick={this.onClick}
                         disabled={!this.props.keycloak.hasRealmRole("tenkai-helm-upgrade")}
                       >Install/Update</Button>
 
-                      <Button bsStyle="info"
-                        fill
-                        pullRight
+                      <Button className="btn-info pull-right"
                         type="button"
                         onClick={this.onSaveVariablesClick}
                         disabled={!this.props.keycloak.hasRealmRole("tenkai-variables-save")}

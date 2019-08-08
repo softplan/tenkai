@@ -76,6 +76,17 @@ export class ConfigMap extends Component {
 
     }
 
+    async listVariables(environmentId) {
+        let scope = this.state.configMapName;
+        axios.post(TENKAI_API_URL + '/listVariables', { environmentId: environmentId, scope: scope })
+        .then(response => {
+            this.addToValues(this, response.data.Variables);
+        }).catch(error => {
+            console.log(error.message);
+            this.props.handleNotification("general_fail", "error");
+        });
+    }
+
     getVariables(chartName, chartVersion) {
         this.props.handleLoading(true);
         axios.post(TENKAI_API_URL + '/getChartVariables', { chartName, chartVersion })

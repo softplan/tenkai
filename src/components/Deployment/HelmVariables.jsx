@@ -11,6 +11,8 @@ import IstioVariable from "./IstioVariable";
 import TENKAI_API_URL from 'env.js';
 import { FormInputs } from "components/FormInputs/FormInputs.jsx";
 import { ConfigMap } from "components/Deployment/ConfigMap.jsx";
+import Button from "components/CustomButton/CustomButton.jsx";
+
 
 export class HelmVariables extends Component {
 
@@ -112,7 +114,9 @@ export class HelmVariables extends Component {
 
             if (this.refs.hConfigMap !== undefined) {
                 this.refs.hConfigMap.save((data) => { 
+
                     let list = [];
+
                     //Main
                     let installPayload = {};
                     const environmentId = parseInt(this.props.envId);
@@ -123,7 +127,9 @@ export class HelmVariables extends Component {
 
                     list.push(installPayload);
                     list.push(data);
+
                     callbackFunction(list);
+
                 });
             } else {
 
@@ -146,6 +152,19 @@ export class HelmVariables extends Component {
 
     }
 
+    async listVariables(environmentId) {
+        console.log(environmentId);
+        axios.post(TENKAI_API_URL + '/listVariables', { environmentId: environmentId, scope: this.state.chartName })
+        .then(response => {
+            this.addToValues(this, response.data.Variables);
+            this.fillIstioFields(this, response.data.Variables);
+            this.fillImageFields(this, response.data.Variables);
+            this.refs["hConfigMap"].listVariables(environmentId);
+        }).catch(error => {
+            console.log(error.message);
+            this.props.handleNotification("general_fail", "error");
+        });
+    }
 
     async getVariables(chartName, chartVersion)  {
         
@@ -358,6 +377,17 @@ export class HelmVariables extends Component {
                         title={this.state.chartName}
                         content={
                             <div>
+                            <div>
+
+                                <Button className="btn-primary" 
+                                 onClick={this.props.copyVariables.bind(this, this.props.xref)}
+                                bsSize="sm" ><i className="pe-7s-magic-wand" />
+                                {" "}Copy config from another environment</Button>
+
+                                <hr/>
+                            </div>
+
+
                                 {this.state.chartName !== this.state.simpleChart ? 
                                 <div>
                                     <form>
@@ -431,7 +461,8 @@ export class HelmVariables extends Component {
                                     key="ConfigMap" chartName={this.state.configMapChart}  
                                     chartVersion={this.state.configMapChartVersion}
                                     ref="hConfigMap" configMapName={configMapName}
-                                    envId={this.props.envId}/>    
+                                    envId={this.props.envId}
+                                    />    
                                 : <div></div> }
 
                             </div>

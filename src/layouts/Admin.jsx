@@ -151,8 +151,12 @@ class Admin extends Component {
 
   }
 
-  updateSelectedChartsToDeploy(selectedChartsToDeploy) {
-    this.setState({selectedChartsToDeploy});
+  updateSelectedChartsToDeploy(selectedChartsToDeploy, callback) {
+    this.setState({selectedChartsToDeploy}, () => {
+      if (callback !== undefined) {
+        callback();
+      }
+    });
   }
 
   handleNotificationClick = position => {
