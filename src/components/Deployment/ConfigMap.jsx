@@ -14,12 +14,12 @@ export class ConfigMap extends Component {
         variables: {},
         values: {},
         configMapChart: "saj6/dotnet-global-variables",
-        configMapName: "",
+        
     }
 
 
     componentDidMount() {
-        this.setState({ configMapName: this.props.configMapName, chartName: this.props.chartName, chartVersion: this.props.chartVersion }, () => {
+        this.setState({ chartName: this.props.chartName, chartVersion: this.props.chartVersion }, () => {
             this.getVariables(this.state.chartName, this.state.chartVersion);
         })
     }
@@ -47,7 +47,7 @@ export class ConfigMap extends Component {
     save(callbackFunction) {
 
 
-        const scope = this.state.configMapName;
+        const scope = this.props.configMapName;
         const chartName = this.state.chartName;
         const environmentId = parseInt(this.props.envId);
         let payload = { data: [] };
@@ -64,7 +64,7 @@ export class ConfigMap extends Component {
         axios.post(TENKAI_API_URL + '/saveVariableValues', { data }).then(res => {
             let installPayload = {};
             const environmentId = parseInt(this.props.envId);
-            installPayload.name = this.state.configMapName
+            installPayload.name = this.props.configMapName
             installPayload.chart = chartName;
             installPayload.environmentId = environmentId;
             callbackFunction(installPayload);
@@ -77,7 +77,7 @@ export class ConfigMap extends Component {
     }
 
     async listVariables(environmentId) {
-        let scope = this.state.configMapName;
+        let scope = this.props.configMapName;
         axios.post(TENKAI_API_URL + '/listVariables', { environmentId: environmentId, scope: scope })
         .then(response => {
             this.addToValues(this, response.data.Variables);
@@ -113,7 +113,7 @@ export class ConfigMap extends Component {
                     this.setState({ variables: [] });
                 }
 
-                const scope = this.state.configMapName;
+                const scope = this.props.configMapName;
                 const environmentId = parseInt(this.props.envId);
 
                 axios.post(TENKAI_API_URL + '/listVariables', { environmentId: environmentId, scope: scope })
@@ -247,7 +247,7 @@ export class ConfigMap extends Component {
                                         label: "Config Map Name",
                                         type: "text",
                                         bsClass: "form-control",
-                                        value: this.state.configMapName,
+                                        value: this.props.configMapName,
                                         onChange: this.handleConfigMapNameChange
                                     }
                                 ]}

@@ -127,6 +127,7 @@ class VariablesWizard extends Component {
               environments={this.props.environments}>
         </CopyModal>
 
+
         <Grid fluid>
 
           <Row>
@@ -154,6 +155,7 @@ class VariablesWizard extends Component {
 
                     <div className="clearfix" />
                   </div>
+
                 }
               />
             </Col>

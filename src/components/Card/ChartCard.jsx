@@ -29,10 +29,10 @@ export class ChartCard extends Component {
             ><i className="pe-7s-album"/>
                 {" "}Direct Deploy</Button>
 
+
           <Button className="btn-info" bsSize="sm" onClick={this.props.analysis.bind(this, this.props.item.name + "@" + this.props.item.chartVersion)}
             ><i className="pe-7s-eyedropper"/>
                 {" "}Dependency Analysis</Button>
-
 
           </ButtonToolbar>
 

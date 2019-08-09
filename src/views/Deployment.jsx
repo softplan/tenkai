@@ -74,6 +74,15 @@ class Deployment extends Component {
   }
 
   navigateToCheckVariables() {
+    //let chartsToDeployJson = JSON.stringify(this.props.selectedChartsToDeploy);
+    //let objJsonB64 = Buffer.from(chartsToDeployJson).toString("base64");
+    //console.log(objJsonB64);
+
+    //let buff = new Buffer(objJsonB64, 'base64');
+    //let text = buff.toString('ascii');
+    //console.log(text);
+    //this.props.selectedChartsToDeploy
+
     this.props.history.push({
       pathname: "/admin/deployment-wvars"
     });
@@ -135,6 +144,17 @@ class Deployment extends Component {
     });
   }
 
+  canary(item) {
+    let array = []
+    array.push(item);
+    this.props.updateSelectedChartsToDeploy(array, () => {
+      this.props.history.push({
+        pathname: "/admin/deployment-wvars",
+        search: "?canary=true",
+      });
+    });
+  }
+
   render() {
 
     const { selectedRepository } = this.state;
@@ -147,6 +167,7 @@ class Deployment extends Component {
           handleCheckboxChange={this.handleCheckboxChange.bind(this)}
           deploy={this.deployUnit.bind(this)}
           analysis={this.analysisUnit.bind(this)}
+          canary={this.canary.bind(this)}
         />
       );
 

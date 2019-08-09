@@ -3,7 +3,7 @@ import { Card } from "components/Card/Card.jsx";
 import {
     Row,
     Col,
-    Table, FormGroup
+    Table, FormGroup, ButtonToolbar
 } from "react-bootstrap";
 import axios from 'axios';
 import ArrayVariable from "components/Deployment/ArrayVariable.jsx"
@@ -12,6 +12,7 @@ import TENKAI_API_URL from 'env.js';
 import { FormInputs } from "components/FormInputs/FormInputs.jsx";
 import { ConfigMap } from "components/Deployment/ConfigMap.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
+import { CanaryCard } from "components/Deployment/CanaryCard.jsx"
 
 
 export class HelmVariables extends Component {
@@ -30,17 +31,25 @@ export class HelmVariables extends Component {
         hostCount: 0,
         configMapChart: "saj6/dotnet-global-variables",
         simpleChart: "saj6/dotnet-global-config",
+        canaryShowing: false,
+        releaseName: "",
+        dontCreateService: false,
+        applyConfigMap: false
     }
 
     constructor(props) {
         super(props);
         this.state.chartName = props.chartName;
         this.state.chartVersion = props.chartVersion;
-     }    
+
+        let scope = this.state.chartName;
+        var n = scope.indexOf("/");
+        let releaseName = scope.substring(n + 1);
+        this.state.releaseName = releaseName;
+    }
 
     async componentDidMount() {
         this.addHost();
-        //await this.getVariables(this.state.chartName, this.state.chartVersion);
     }
 
     addDynamicVariableClick(variableName) {
@@ -101,6 +110,8 @@ export class HelmVariables extends Component {
         payload.data.push({ scope: scope, name: "istio.virtualservices.apiPath", value: this.state.defaultApiPath, environmentId: environmentId });
         payload.data.push({ scope: scope, name: "image.repository", value: this.state.containerImage, environmentId: environmentId });
         payload.data.push({ scope: scope, name: "image.tag", value: this.state.containerTag, environmentId: environmentId });
+        payload.data.push({ scope: scope, name: "service.apply", value: this.state.dontCreateService ? "false" : "true", environmentId: environmentId });
+
 
         const hosts = this.state.hosts;
         Object.keys(hosts).map(function (key, index) {
@@ -112,7 +123,7 @@ export class HelmVariables extends Component {
 
         axios.post(TENKAI_API_URL + '/saveVariableValues', { data }).then(res => {
 
-            if (this.refs.hConfigMap !== undefined) {
+            if (this.state.applyConfigMap && this.refs.hConfigMap !== undefined) {
                 this.refs.hConfigMap.save((data) => { 
 
                     let list = [];
@@ -120,8 +131,8 @@ export class HelmVariables extends Component {
                     //Main
                     let installPayload = {};
                     const environmentId = parseInt(this.props.envId);
-                    var n = scope.indexOf("/");
-                    installPayload.name = scope.substring(n + 1);
+
+                    installPayload.name = this.state.releaseName;
                     installPayload.chart = scope;
                     installPayload.environmentId = environmentId;
 
@@ -137,8 +148,8 @@ export class HelmVariables extends Component {
                 //Main
                 let installPayload = {};
                 const environmentId = parseInt(this.props.envId);
-                var n = scope.indexOf("/");
-                installPayload.name = scope.substring(n + 1);
+
+                installPayload.name = this.state.releaseName;
                 installPayload.chart = scope;
                 installPayload.environmentId = environmentId;
                 list.push(installPayload);
@@ -153,7 +164,6 @@ export class HelmVariables extends Component {
     }
 
     async listVariables(environmentId) {
-        console.log(environmentId);
         axios.post(TENKAI_API_URL + '/listVariables', { environmentId: environmentId, scope: this.state.chartName })
         .then(response => {
             this.addToValues(this, response.data.Variables);
@@ -166,8 +176,23 @@ export class HelmVariables extends Component {
         });
     }
 
+    async hasConfigMap(chartName, chartVersion) {
+
+        await axios.post(TENKAI_API_URL + '/hasConfigMap', { chartName, chartVersion })
+        .then(response => {
+            if (response.data.result === "true") {
+                this.setState({applyConfigMap: true})
+            } else {
+                this.setState({applyConfigMap: false})
+            }
+         });
+
+
+    }
+
     async getVariables(chartName, chartVersion)  {
-        
+
+        await this.hasConfigMap(chartName, chartVersion);
         
         await axios.post(TENKAI_API_URL + '/getChartVariables', { chartName, chartVersion })
             .then(response => {
@@ -176,7 +201,8 @@ export class HelmVariables extends Component {
                     this.setState({
                         defaultApiPath: response.data.istio.virtualservices.apiPath,
                         injectIstioCar: response.data.istio.enabled,
-                        enableVirtualService: response.data.istio.virtualservices.enabled
+                        enableVirtualService: response.data.istio.virtualservices.enabled,
+                        dontCreateService: (response.data.service.apply ? false : true)
                     });
                 }
 
@@ -239,6 +265,9 @@ export class HelmVariables extends Component {
             switch (value.name) {
                 case "istio.enabled":
                     this.setState({ injectIstioCar: value.value === "true" ? true : false })
+                    break;
+                case "service.apply":
+                    this.setState({ dontCreateService: value.value === "true" ? false : true })
                     break;
                 case "istio.virtualservices.enabled":
                     this.setState({ enableVirtualService: value.value === "true" ? true : false })
@@ -326,18 +355,28 @@ export class HelmVariables extends Component {
         }));
     }
 
-    getConfigMap(value) {
-        let configMapName = value + "-global-configmap";
-        var n = configMapName.indexOf("/");
-        configMapName = configMapName.substring(n + 1);
+    getConfigMapName() {
+        let configMapName = this.state.releaseName + "-global-configmap";
+        console.log("ConfigMapName: " + configMapName);
         return configMapName
     }
 
+    showHideCanaryOptions() {
+        let value = !this.state.canaryShowing;
+        this.setState({canaryShowing: value});
+    }
+
+    handleReleaseNameChange = event => {
+        const value = event.target.value;
+        this.setState({ releaseName: value });
+    }
+
+    handleDontCreateServiceChange = value => {
+        this.setState({dontCreateService: value});
+    }
 
     render() {
         
-        let configMapName = this.getConfigMap(this.state.chartName);
-
         const items = Object.keys(this.state.variables).map(key => {
 
 
@@ -369,9 +408,10 @@ export class HelmVariables extends Component {
 
         return (
 
-            
+            <div>
 
             <Row>
+
                 <Col md={12}>
                     <Card
                         title={this.state.chartName}
@@ -379,14 +419,36 @@ export class HelmVariables extends Component {
                             <div>
                             <div>
 
+                                <ButtonToolbar>
+
                                 <Button className="btn-primary" 
                                  onClick={this.props.copyVariables.bind(this, this.props.xref)}
                                 bsSize="sm" ><i className="pe-7s-magic-wand" />
                                 {" "}Copy config from another environment</Button>
 
+                                <Button className="btn-warning" 
+                                    onClick={this.showHideCanaryOptions.bind(this)}
+                                    bsSize="sm" ><i className="pe-7s-magic-wand" />
+                                    {" "}{this.state.canaryShowing ? "Hide Advanved Option" : "Show Advanced Options"}
+                                </Button>
+
+                                </ButtonToolbar>
+
                                 <hr/>
                             </div>
 
+                            
+                            {this.state.canaryShowing ? <div>
+                                <CanaryCard 
+                                    releaseName={this.state.releaseName} 
+                                    handleReleaseNameChange={this.handleReleaseNameChange.bind(this)}
+                                    dontCreateService={this.state.dontCreateService}
+                                    handleDontCreateServiceChange={this.handleDontCreateServiceChange.bind(this)}
+                                /> 
+                                <hr/>
+                            </div> : <div></div>} 
+                                
+                            
 
                                 {this.state.chartName !== this.state.simpleChart ? 
                                 <div>
@@ -455,12 +517,12 @@ export class HelmVariables extends Component {
                                 
                                 <hr />
 
-                                {this.state.chartName !== this.state.simpleChart ? 
+                                {this.state.applyConfigMap && this.state.chartName !== this.state.simpleChart ? 
                                 <ConfigMap handleLoading={this.props.handleLoading} 
                                     handleNotification={this.props.handleNotification} 
                                     key="ConfigMap" chartName={this.state.configMapChart}  
                                     chartVersion={this.state.configMapChartVersion}
-                                    ref="hConfigMap" configMapName={configMapName}
+                                    ref="hConfigMap" configMapName={this.getConfigMapName()}
                                     envId={this.props.envId}
                                     />    
                                 : <div></div> }
@@ -471,6 +533,7 @@ export class HelmVariables extends Component {
                     />
                 </Col>
             </Row>
+            </div>
 
         );
     }
