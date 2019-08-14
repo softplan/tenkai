@@ -129,7 +129,7 @@ class DepGraph extends Component {
             "nodeHighlightBehavior": true,
             "panAndZoom": false,
             "staticGraph": false,
-            "width": 1048,
+            "width": 1000,
             "d3": {
                 "alphaTarget": 0.05,
                 "gravity": -250,
