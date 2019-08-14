@@ -10,6 +10,7 @@ import HelmVariables from "components/Deployment/HelmVariables.jsx";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Card } from "components/Card/Card.jsx";
 import { multipleInstall } from "client-api/apicall.jsx"
+import CopyModal from "components/Modal/CopyModal.jsx";
 
 class DepGraph extends Component {
 
@@ -19,6 +20,7 @@ class DepGraph extends Component {
             links: [],
         },
         tabs: [],
+        onShowCopyModal: false,
     }
 
     constructor(props) {
@@ -37,6 +39,20 @@ class DepGraph extends Component {
             retrieveDependency(environmentId, chartName, versionObject.value, this)
         }
     }
+
+    onCloseCopyModal() {
+        this.setState({ onShowCopyModal: false, chartToManipulate: "" });
+      }
+    
+      async onConfirmCopyModal(item) {
+        await this.refs[this.state.chartToManipulate].listVariables(item.value);
+        this.setState({ onShowCopyModal: false, chartToManipulate: "" });
+      }
+    
+      showConfirmCopyModal(ref) {
+        this.setState({ onShowCopyModal: true, chartToManipulate: ref });
+      }
+    
 
     onTabClose(index) {
         console.log(index);
@@ -113,7 +129,7 @@ class DepGraph extends Component {
             "nodeHighlightBehavior": true,
             "panAndZoom": false,
             "staticGraph": false,
-            "width": 900,
+            "width": 1048,
             "d3": {
                 "alphaTarget": 0.05,
                 "gravity": -250,
@@ -163,13 +179,23 @@ class DepGraph extends Component {
         };
 
         const onClickNode = function (nodeId) {
+            const chartName = nodeId.substring(0, nodeId.indexOf(":"));
+            const chartVersion = "";
+
+            console.log(chartName);
+            console.log(chartVersion);
+
             this.setState(state => {
                 const list = state.tabs.push(nodeId);
                 return {
                     list,
                     value: '',
                 }
-            }, () => { console.log(this.state.tabs) });
+            }, () => { 
+                
+                this.refs["h" + chartName].getVariables(chartName, chartVersion);
+            
+            });
 
         };
 
@@ -205,12 +231,21 @@ class DepGraph extends Component {
             <div>
                 <Tabs defaultActiveKey="main" id="uncontrolled-tab-example">
                     <Tab eventKey="main" title="Dependency Analysis">
-
                         <div>
                             <Card
                                 title=""
                                 content={
                                     <div>
+
+                                    <CopyModal
+                                        onShow={this.state.onShowCopyModal}
+                                        onClose={this.onCloseCopyModal.bind(this)}
+                                        title="Copy config from another environment" subTitle="Select environment" 
+                                        onConfirm={this.onConfirmCopyModal.bind(this)}
+                                        environments={this.props.environments}>
+                                    </CopyModal>
+
+
                                         <h3>Environment: {this.state.environmentName}</h3>
                                         <ButtonToolbar>
                                             <Button bsStyle="primary"
@@ -282,11 +317,17 @@ class DepGraph extends Component {
 
                             <div >
                                 <HelmVariables handleLoading={this.props.handleLoading}
+                                    copyVariables={this.showConfirmCopyModal.bind(this)}
                                     handleNotification={this.props.handleNotification}
                                     key={index} chartName={chartName}
                                     chartVersion={chartVersion}
+                                    xref={"h" + chartName}
                                     ref={"h" + chartName}
                                     envId={this.state.envId} />
+
+
+
+
                             </div>
 
                         </Tab>

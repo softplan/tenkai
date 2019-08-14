@@ -33,7 +33,7 @@ class DepAnalysis extends Component {
     let chartVersion = "";
     for (let i = 0; i < total; i++) {
       value = chartsToDeploy[i].substring(0, chartsToDeploy[i].indexOf("@"))
-      chartVersion = chartsToDeploy[i].substring(chartsToDeploy[i].indexOf("@") + 1, chartsToDeploy.length)
+      chartVersion = chartsToDeploy[i].substring(chartsToDeploy[i].indexOf("@") + 1, chartsToDeploy[i].length)
       helmCharts.push(value);
       this.getReleases(value);
       chartVersions[value] = chartVersion;
