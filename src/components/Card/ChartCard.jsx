@@ -8,12 +8,12 @@ import Button from "components/CustomButton/CustomButton.jsx";
 export class ChartCard extends Component {
   render() {
     return (
-        <div className={"card"}>
+        <div className={"card"} style={{backgroundColor: "#FCFFEC"}}>
         <div className={"header"}>
           
           <h4 className="title">
           <input name={this.props.item.name + "@" + this.props.item.chartVersion} checked={this.props.selectedChartsToDeploy.indexOf(this.props.item.name + "@" + this.props.item.chartVersion) !== -1} type="checkbox" className="checkbox" onChange={this.props.handleCheckboxChange.bind(this)} />
-          {this.props.item.name}</h4>
+          <b>{this.props.item.name}</b></h4>
           <p className="category">{this.props.item.chartVersion}</p>
         </div>
         <div className={"content"}>

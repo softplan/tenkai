@@ -5,7 +5,9 @@ import {
 
 
 import Select from 'react-select';
+import { ActionCard } from "components/Card/ActionCard.jsx";
 import { Card } from "components/Card/Card.jsx";
+
 import Button from "components/CustomButton/CustomButton.jsx";
 import { getDefaultRepo } from 'client-api/apicall.jsx';
 import ChartCard from 'components/Card/ChartCard.jsx';
@@ -74,15 +76,6 @@ class Deployment extends Component {
   }
 
   navigateToCheckVariables() {
-    //let chartsToDeployJson = JSON.stringify(this.props.selectedChartsToDeploy);
-    //let objJsonB64 = Buffer.from(chartsToDeployJson).toString("base64");
-    //console.log(objJsonB64);
-
-    //let buff = new Buffer(objJsonB64, 'base64');
-    //let text = buff.toString('ascii');
-    //console.log(text);
-    //this.props.selectedChartsToDeploy
-
     this.props.history.push({
       pathname: "/admin/deployment-wvars"
     });
@@ -176,38 +169,15 @@ class Deployment extends Component {
         <Grid fluid>
           <Row>
             <Col md={12}>
-              <Card
-                title=""
-                content={
-                  <div>
-                    <ButtonToolbar>
-                      <Button className="btn-info pull-right"
-                        disabled={(Object.entries(this.props.selectedEnvironment).length === 0 &&
-                          this.props.selectedEnvironment.constructor === Object) || this.props.selectedChartsToDeploy.length <= 0}
-                        fill type="button" 
-                        onClick={this.navigateToDependencyAnalysis.bind(this)}>
-                        <i className="pe-7s-eyedropper"/>{" "}Analyse Dependencies
-                      </Button>
 
-                      <Button className="btn-primary pull-right"
-                        disabled={(Object.entries(this.props.selectedEnvironment).length === 0 &&
-                          this.props.selectedEnvironment.constructor === Object) || this.props.selectedChartsToDeploy.length <= 0}
-                        fill type="button"
-                        onClick={this.navigateToCheckVariables.bind(this, this)}>
-                        <i className="pe-7s-album"/>{" "}Direct Deploy
-                      </Button>
-                    </ButtonToolbar>
-                    <div className="clearfix" />
-                  </div>
-                }
-              />
-            </Col>
-          </Row>
+              <ActionCard 
 
-          <Row>
-            <Col md={12}>
-
-              <Card plain
+                buttonsDisabled={(Object.entries(this.props.selectedEnvironment).length === 0 &&
+                  this.props.selectedEnvironment.constructor === Object) || this.props.selectedChartsToDeploy.length <= 0}
+                
+                  directDeployOnClick={this.navigateToCheckVariables.bind(this, this)}
+                analyseOnClick={this.navigateToDependencyAnalysis.bind(this)}
+                
                 title="Helm Chart"
                 content={
                   <div>
@@ -246,7 +216,7 @@ class Deployment extends Component {
                     </Row>
 
                     <Row>
-                      <Col xs={7}>
+                      <Col xs={12}>
                          {items}
                       </Col>
                     </Row>
