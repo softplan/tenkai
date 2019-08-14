@@ -38,7 +38,6 @@ class DeploySolution extends Component {
           await self.getChartsAsync(keyword);
         }
         self.props.handleLoading(false);
-        
     });
   }
 

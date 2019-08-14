@@ -8,11 +8,11 @@ export class ReleaseForm extends Component {
 
     state = {
         formData: {
-            ID: '',
-            chartName: '', 
-            release: '',
+            ID: "",
+            chartName: "",
+            release: "",
         }
-    }    
+    }
 
     componentDidMount() {
         if(this.props.editItem) {
@@ -21,10 +21,14 @@ export class ReleaseForm extends Component {
             }));
         } else {
             this.setState(() => ({
-                formData: {}
+                formData: {
+                    ID: "",
+                    chartName: "",
+                    release: "",
+                }
             }));
         }
-    }    
+    }
 
     handleChange = event => {
         const { value, name } = event.target;

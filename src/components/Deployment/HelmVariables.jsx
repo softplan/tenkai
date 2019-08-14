@@ -31,6 +31,7 @@ export class HelmVariables extends Component {
         hostCount: 0,
         configMapChart: "saj6/dotnet-global-variables",
         simpleChart: "saj6/dotnet-global-config",
+        canaryChart: "saj6/tenkai-canary",
         canaryShowing: false,
         releaseName: "",
         dontCreateService: false,
@@ -446,11 +447,9 @@ export class HelmVariables extends Component {
                                     handleDontCreateServiceChange={this.handleDontCreateServiceChange.bind(this)}
                                 /> 
                                 <hr/>
-                            </div> : <div></div>} 
-                                
+                            </div> : <div></div>}
                             
-
-                                {this.state.chartName !== this.state.simpleChart ? 
+                                {(this.state.chartName !== this.state.simpleChart && this.state.chartName !== this.state.canaryChart) ? 
                                 <div>
                                     <form>
                                         <FormGroup>

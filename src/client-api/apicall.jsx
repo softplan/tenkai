@@ -96,7 +96,7 @@ function saveReleases(data, self) {
     }
 
     axios.post(TENKAI_API_URL + uri, data).then(res => {
-        self.setState({ releases: [...self.state.releases, data] });
+        retrieveReleases(self.state.selectedChart.value, self);
     }).catch(error => {
         console.log(error.message);
         handlerError(self, error.response);
@@ -166,7 +166,7 @@ function saveDependency(data, self) {
     console.log(data);
     axios.post(TENKAI_API_URL + uri, data)
         .then(res => {
-            self.setState({ list: [...self.state.list, data] });
+            retrieveDependencies(self.state.releaseId, self)
         }).catch(error => {
             console.log(error.message);
             handlerError(self, error.response);
