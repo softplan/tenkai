@@ -1,4 +1,4 @@
-IMAGE_REPO=softplan/tenkai
+IMAGE_REPO=softplan/tenkai-web
 TAG=$(TRAVIS_BRANCH)
 
 .DEFAULT_GOAL := build
