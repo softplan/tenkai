@@ -3,7 +3,7 @@ import { NavLink } from "react-router-dom";
 
 import AdminNavbarLinks from "../Navbars/AdminNavbarLinks.jsx";
 
-import logo from "assets/img/delivery-truck.png";
+import logo from "assets/img/ninja.png";
 
 class Sidebar extends Component {
   constructor(props) {

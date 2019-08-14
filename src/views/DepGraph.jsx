@@ -3,7 +3,7 @@ import { Graph } from 'react-d3-graph';
 import { retrieveDependency } from 'client-api/apicall.jsx';
 import queryString from 'query-string';
 import {
-    Tabs, Tab, ButtonToolbar
+    Tabs, Tab, ButtonToolbar, Row, Col
 } from "react-bootstrap";
 import Button from "components/CustomButton/CustomButton.jsx";
 import HelmVariables from "components/Deployment/HelmVariables.jsx";
@@ -30,6 +30,7 @@ class DepGraph extends Component {
         this.state.charts = props.location.state.charts;
         this.state.environmentName = props.location.state.environmentName;
         console.log(props.location.state.environmentName);
+        const width =  window.innerWidth;
     }
 
     componentDidMount() {
@@ -111,7 +112,7 @@ class DepGraph extends Component {
     }
 
     render() {
-
+        
         const { data } = this.state;
 
         const myConfig = {
@@ -120,6 +121,7 @@ class DepGraph extends Component {
             "directed": true,
             "focusAnimationDuration": 0.75,
             "focusZoom": 1,
+            "width": window.innerWidth - 280,
             "height": 800,
             "highlightDegree": 2,
             "highlightOpacity": 0.2,
@@ -129,7 +131,6 @@ class DepGraph extends Component {
             "nodeHighlightBehavior": true,
             "panAndZoom": false,
             "staticGraph": false,
-            "width": 1000,
             "d3": {
                 "alphaTarget": 0.05,
                 "gravity": -250,
@@ -231,7 +232,8 @@ class DepGraph extends Component {
             <div>
                 <Tabs defaultActiveKey="main" id="uncontrolled-tab-example">
                     <Tab eventKey="main" title="Dependency Analysis">
-                        <div>
+                        <Row>
+                            <Col md={12}>
                             <Card
                                 title=""
                                 content={
@@ -244,9 +246,7 @@ class DepGraph extends Component {
                                         onConfirm={this.onConfirmCopyModal.bind(this)}
                                         environments={this.props.environments}>
                                     </CopyModal>
-
-
-                                        <h3>Environment: {this.state.environmentName}</h3>
+                                      
                                         <ButtonToolbar>
                                             <Button bsStyle="primary"
                                                 fill
@@ -259,7 +259,11 @@ class DepGraph extends Component {
                                     </div>
                                 }
                             />
-                        </div>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col md={12}>
+
 
                         <Graph
                             id="graph-id"
@@ -275,6 +279,8 @@ class DepGraph extends Component {
                             onMouseOverLink={onMouseOverLink}
                             onMouseOutLink={onMouseOutLink} />
 
+                            </Col>
+                        </Row>
 
                     </Tab>
                     {this.state.tabs.map((value, index) => {
