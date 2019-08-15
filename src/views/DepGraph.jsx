@@ -30,7 +30,6 @@ class DepGraph extends Component {
         this.state.charts = props.location.state.charts;
         this.state.environmentName = props.location.state.environmentName;
         console.log(props.location.state.environmentName);
-        const width =  window.innerWidth;
     }
 
     componentDidMount() {
