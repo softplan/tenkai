@@ -93,6 +93,7 @@ class VariablesWizard extends Component {
 
   async onConfirmCopyModal(item) {
     await this.refs[this.state.chartToManipulate].listVariables(item.value);
+    console.log('aqui after copy');
     this.setState({ onShowCopyModal: false, chartToManipulate: "" });
   }
 

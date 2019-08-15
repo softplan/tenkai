@@ -11,6 +11,8 @@ import Solution from "views/Solution"
 import SolutionChart from "views/SolutionChart"
 import DeploySolution from "views/DeploySolution"
 import Users from "views/Users"
+import Traffic from "views/Traffic"
+
 
 /*
 import Dashboard from "views/Dashboard";
@@ -130,6 +132,15 @@ const dashboardRoutes = [
     name: "Users Permissions",
     icon: "pe-7s-culture",
     component: Users,
+    layout: "/admin",
+    menu: true,
+    role: "tenkai-admin"
+  }, 
+  {
+    path: "/admin",
+    name: "Traffic Management",
+    icon: "pe-7s-shuffle",
+    component: Traffic,
     layout: "/admin",
     menu: true,
     role: "tenkai-admin"

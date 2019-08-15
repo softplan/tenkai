@@ -47,9 +47,12 @@ export class VariablesForm extends Component {
 
 
     render() {
+
+        const { editMode } = this.props;
+
         return (
             <div>
-                <Card title="New Variable"
+                <Card title={editMode ? "Edit Variable" : "New Variable"}
                     content={
                         <form>
                             <FormInputs

@@ -6,14 +6,17 @@ import {
     FormControl, Table
 } from "react-bootstrap";
 import SimpleModal from 'components/Modal/SimpleModal.jsx'
+import EditModal  from "components/Modal/EditModal.jsx";
 import queryString from 'query-string';
 import axios from 'axios';
 import TENKAI_API_URL from 'env.js';
+import VariableCard from 'components/Card/VariableCard.jsx';
 
 import { Card } from "components/Card/Card.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
 
 import { VariablesForm } from "components/Environments/VariablesForm.jsx";
+
 
 
 class Variables extends Component {
@@ -61,17 +64,19 @@ class Variables extends Component {
         this.setState({ showConfirmDeleteModal: true });
     }
 
-    getScopedVariables() {
+    async getScopedVariables() {
+        this.props.handleLoading(true);
         const values = queryString.parse(this.state.locationSearch);
-        setTimeout( () => {
             axios.get(TENKAI_API_URL + '/variables/' + values.id)
             .then(response =>  {
-                this.setState({ variablesResult: response.data });
+                this.setState({ variablesResult: response.data }, () => {
+                    this.props.handleLoading(false);
+                });
             }).catch(error => {
+                this.props.handleLoading(false);
                 console.log(error.message);
                 this.props.handleNotification("general_fail", "error");
             });
-          }, 1000);
     }
 
     handleNewClick(e) {
@@ -80,7 +85,7 @@ class Variables extends Component {
 
     handleCancelClick(e) {
         this.setState(() => ({
-            showInsertUpdateForm: true,
+            showInsertUpdateForm: false,
             editItem: {},
             editMode: false
         }));
@@ -108,17 +113,13 @@ class Variables extends Component {
         data.environmentId = parseInt(values.id);
         axios.post(TENKAI_API_URL + uri, { data })
           .then(res => {
-            if (this.state.editMode) {
-                this.getScopedVariables();
-            } else {
-                this.setState({variablesResult: {Variables: [...this.state.variablesResult.Variables, data]}});
-            }
+            this.getScopedVariables();
          }).catch(error => {
             console.log(error.message);
             this.props.handleNotification("general_fail", "error");
         });
 
-        this.setState({ showInsertUpdateForm: false });
+        this.setState({ editMode:false, showInsertUpdateForm: false });
     }      
 
     navigateToEditEnvironment(item) {
@@ -146,20 +147,18 @@ class Variables extends Component {
     render() {
 
         const items = this.state.variablesResult.Variables
-            .filter(d => this.state.inputFilter === '' || d.name.includes(this.state.inputFilter)).map((item, key) =>
-            <tr key={key}>
-                <td>{item.scope}</td>
-                <td>{item.name}</td>
-                <td>{item.value}</td>
-                <td>{item.description}</td>
+            .filter(d => this.state.inputFilter === '' ||
+                d.value.includes(this.state.inputFilter) || 
+                d.name.includes(this.state.inputFilter) || 
+                d.scope.includes(this.state.inputFilter)).map((item, key) =>
+            
+            <VariableCard 
+                key={key} 
+                item={item}
+                navigateToEditEnvironment={this.navigateToEditEnvironment.bind(this, item)}
+                onDelete={this.onDelete.bind(this, item)}
+                />
 
-                <td><Button className="link-button"
-                    onClick={this.navigateToEditEnvironment.bind(this, item)}><i className="pe-7s-edit"/></Button></td>
-
-                <td><Button className="link-button"
-                    onClick={this.onDelete.bind(this, item)}><i className="pe-7s-trash"/></Button></td>
-
-            </tr>
 
         );
 
@@ -172,6 +171,17 @@ class Variables extends Component {
                     title="Confirm" subTitle="Delete variable" message="Are you sure you want to delete this variable?"
                     handleConfirmDelete={this.handleConfirmDelete.bind(this)}>  
                 </SimpleModal>
+
+                <EditModal title="Edit Variable"
+                    onClose={this.handleCancelClick.bind(this)}
+                    onShow={this.state.editMode} form={
+                        
+                    <VariablesForm saveClick={this.onSaveClick.bind(this)} 
+                        editItem={this.state.editItem} 
+                        editMode={this.state.editMode}
+                        cancelClick={this.handleCancelClick.bind(this)} /> 
+
+                    } />
          
                 <Grid fluid>
                     <Row>
@@ -181,7 +191,7 @@ class Variables extends Component {
                                 content={
                                     <form>
 
-                                        <h2>{this.state.environmentName}</h2>
+                                        <h3>Variáveis do ambiente {this.state.environmentName}</h3>
                                         <Button className="pull-right" variant="primary" onClick={this.handleNewClick.bind(this)}>New Variable</Button>
                                         <div className="clearfix" />
                                         
@@ -194,8 +204,11 @@ class Variables extends Component {
 
                     <Row>
                         <Col md={12}>
-                            {this.state.showInsertUpdateForm ?
-                                <VariablesForm saveClick={this.onSaveClick.bind(this)} editItem={this.state.editItem} cancelClick={this.handleCancelClick.bind(this)} /> : null
+                            {this.state.showInsertUpdateForm && !this.state.editMode ?
+                                <VariablesForm saveClick={this.onSaveClick.bind(this)} 
+                                    editItem={this.state.editItem} 
+                                    editMode={this.state.editMode}
+                                    cancelClick={this.handleCancelClick.bind(this)} /> : null
                             }
                         </Col>
                     </Row>
@@ -210,7 +223,7 @@ class Variables extends Component {
 
                                             <div className="col-md-8">
                                             <FormGroup>
-                                                <ControlLabel>Variable Search</ControlLabel>
+                                                <ControlLabel>Search by scope, name or value</ControlLabel>
                                                 <FormControl
                                                 value={this.state.inputFilter}
                                                 onChange={this.onChangeFilterHandler.bind(this)}
@@ -221,22 +234,17 @@ class Variables extends Component {
                                             </FormGroup>
                                             </div>
 
-                                            <Table bordered hover size="sm">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Scope</th>
-                                                        <th>Variable Name</th>
-                                                        <th>Value</th>
-                                                        <th>Description</th>
-                                                        <th>Edit</th>
-                                                        <th>Delete</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {items}
-                                                </tbody>
-                                            </Table>
+
                                         </Row>
+
+
+                                        <Row>
+                                            <Col xs={12}>
+                                                    {items}
+                                            </Col>
+                                        </Row>
+
+
                                     </form>
                                 }
                             />
