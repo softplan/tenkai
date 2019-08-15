@@ -3,7 +3,7 @@ import {
     Grid,
     Row,
     Col, FormGroup, ControlLabel,
-    FormControl, Table
+    FormControl
 } from "react-bootstrap";
 import SimpleModal from 'components/Modal/SimpleModal.jsx'
 import EditModal  from "components/Modal/EditModal.jsx";
