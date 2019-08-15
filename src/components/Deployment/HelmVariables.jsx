@@ -170,7 +170,11 @@ export class HelmVariables extends Component {
             this.addToValues(this, response.data.Variables);
             this.fillIstioFields(this, response.data.Variables);
             this.fillImageFields(this, response.data.Variables);
-            this.refs["hConfigMap"].listVariables(environmentId);
+
+            if (this.state.applyConfigMap && this.refs["hConfigMap"] !== undefined) {
+                this.refs["hConfigMap"].listVariables(environmentId);
+            }
+
         }).catch(error => {
             console.log(error.message);
             this.props.handleNotification("general_fail", "error");

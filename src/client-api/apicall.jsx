@@ -205,9 +205,13 @@ function retrieveDependency(environmentId, chartName, tag, self) {
 }
 
 
-function getAllEnvironments(self) {
+function getAllEnvironments(self, callback) {
     axios.get(TENKAI_API_URL + '/environments/all')
-    .then(response => self.setState({ envs: response.data.Envs }))
+    .then(response => self.setState({ envs: response.data.Envs }, () => {
+        if (callback !== undefined) {
+            callback(self);
+        }
+    }))
     .catch(error => {
         handlerError(self, error.response);
     });
