@@ -62,8 +62,9 @@ export class IstioVariable extends Component {
                 properties={[
                     {
                         name: "apiPath",
-                        label: "Gateway Path",
+                        label: "Context Path",
                         type: "text",
+                        placeholder: "/xpto",
                         bsClass: "form-control",
                         value: this.props.defaultApiPath,
                         onChange: this.handleApiGatewayPathChange
@@ -75,12 +76,12 @@ export class IstioVariable extends Component {
             <Row>
                 <Col md={6}>
                     <FormGroup>
-                            <ControlLabel>Gateway URL</ControlLabel>
+                            <ControlLabel>DOMAIN</ControlLabel>
                             {hosts}
                     </FormGroup>                
 
                     <Button bsStyle="info" type="button" onClick={this.addHost.bind(this)}>
-                        Add Host
+                        Add Domain
                     </Button>
                 </Col>
             </Row>            

@@ -137,7 +137,7 @@ const dashboardRoutes = [
     role: "tenkai-admin"
   }, 
   {
-    path: "/admin",
+    path: "/traffic",
     name: "Traffic Management",
     icon: "pe-7s-shuffle",
     component: Traffic,
