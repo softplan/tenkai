@@ -71,7 +71,7 @@ const dashboardRoutes = [
     component: Variables,
     layout: "/admin",
     menu: false,
-    role: "tenkai-admin"
+    role: "tenkai-user"
   },
   {
     path: "/config",
