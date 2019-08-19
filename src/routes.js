@@ -12,11 +12,7 @@ import SolutionChart from "views/SolutionChart"
 import DeploySolution from "views/DeploySolution"
 import Users from "views/Users"
 import Traffic from "views/Traffic"
-
-
-/*
-import Dashboard from "views/Dashboard";
-*/
+import Workload from "views/Workload"
 
 const dashboardRoutes = [
   {
@@ -144,6 +140,15 @@ const dashboardRoutes = [
     layout: "/admin",
     menu: true,
     role: "tenkai-admin"
+  },
+  {
+    path: "/workload",
+    name: "Workload",
+    icon: "pe-7s-share",
+    component: Workload,
+    layout: "/admin",
+    menu: true,
+    role: "tenkai-user"
   },
 
 ];

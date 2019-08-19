@@ -88,7 +88,7 @@ class Traffic extends Component {
         let name = event.target.name;
         let value = 0;
 
-        if (event.target.value != "") {
+        if (event.target.value !== "") {
              value = parseInt(event.target.value, 10);
         }
 

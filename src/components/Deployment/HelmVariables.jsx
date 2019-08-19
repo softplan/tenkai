@@ -19,7 +19,7 @@ export class HelmVariables extends Component {
 
     state = {
         chartName: "",
-        ChartVersion: "",
+        chartVersion: "",
         variables: {},
         values: {},
         defaultApiPath: "",
@@ -165,20 +165,28 @@ export class HelmVariables extends Component {
     }
 
     async listVariables(environmentId) {
-        axios.post(TENKAI_API_URL + '/listVariables', { environmentId: environmentId, scope: this.state.chartName })
-        .then(response => {
-            this.addToValues(this, response.data.Variables);
-            this.fillIstioFields(this, response.data.Variables);
-            this.fillImageFields(this, response.data.Variables);
 
-            if (this.state.applyConfigMap && this.refs["hConfigMap"] !== undefined) {
-                this.refs["hConfigMap"].listVariables(environmentId);
-            }
+        this.setState({values: {}}, () => {
 
-        }).catch(error => {
-            console.log(error.message);
-            this.props.handleNotification("general_fail", "error");
+            axios.post(TENKAI_API_URL + '/listVariables', { environmentId: environmentId, scope: this.state.chartName })
+            .then(response => {
+                
+                this.addToValues(this, response.data.Variables);
+                this.fillIstioFields(this, response.data.Variables);
+                this.fillImageFields(this, response.data.Variables);
+    
+                if (this.state.applyConfigMap && this.refs["hConfigMap"] !== undefined) {
+                    this.refs["hConfigMap"].listVariables(environmentId);
+                }
+    
+            }).catch(error => {
+                console.log(error.message);
+                this.props.handleNotification("general_fail", "error");
+            });
+    
+
         });
+
     }
 
     async hasConfigMap(chartName, chartVersion) {
@@ -245,7 +253,9 @@ export class HelmVariables extends Component {
 
     getRootName(name) {
         let i = name.indexOf("[");
-        return name.substring(0, i);
+        let value = name.substring(0, i);
+        console.log("Root name:" + value);
+        return value;
     }
 
     fillImageFields(self, variables) {
@@ -310,9 +320,16 @@ export class HelmVariables extends Component {
         });
 
         Object.keys(dynamicEntries).map(function (key) {
-            for (let x = 0; x < (dynamicEntries[key] / 2) - 1; x++) {
-                self.addDynamicVariableClick(key);
+
+            let max = (dynamicEntries[key] / 2) - 1;
+            let currentLenght = self.state.variables[key] !== undefined ? self.state.variables[key].length : 0;
+
+            if (max > currentLenght) {
+                for (let x = 0; x < max; x++) {
+                    self.addDynamicVariableClick(key);
+                }
             }
+
             return null
         });
 
@@ -362,7 +379,6 @@ export class HelmVariables extends Component {
 
     getConfigMapName() {
         let configMapName = this.state.releaseName + "-global-configmap";
-        console.log("ConfigMapName: " + configMapName);
         return configMapName
     }
 
