@@ -143,7 +143,7 @@ const dashboardRoutes = [
   },
   {
     path: "/workload",
-    name: "Workload",
+    name: "Workload (Alpha)",
     icon: "pe-7s-share",
     component: Workload,
     layout: "/admin",

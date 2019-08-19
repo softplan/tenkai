@@ -3,62 +3,39 @@ import {
     Tabs, Tab, PanelGroup, Panel, ButtonToolbar
 } from "react-bootstrap";
 import { Card } from "components/Card/Card.jsx";
-import { listHelmDeploymentsByEnvironment } from 'client-api/apicall.jsx';
-import Button from "components/CustomButton/CustomButton.jsx";
+import { listHelmDeploymentsByEnvironment, getReleaseHistory } from 'client-api/apicall.jsx';
+import { ReleasePanel } from 'components/Workload/ReleasePanel.jsx';
 
 class Workload extends Component {
 
     state = {
         list: [],
+        historyList: [],
     }
 
     componentDidMount() {
         listHelmDeploymentsByEnvironment(this, this.props.selectedEnvironment.value, function (self, res) {
-            console.log(res.data.Releases);
             self.setState({ list: res.data.Releases });
+        });
+    }
+
+    showReleaseHistory(releaseName) {
+        console.log(releaseName);
+        getReleaseHistory(this, this.props.selectedEnvironment.value, releaseName, function(self, res) {
+            console.log(res.data);
+            self.setState({historyList: res.data});
         });
     }
 
     render() {
 
         const items = this.state.list.map((item, key) =>
-
-            <Panel eventKey={key} key={key}>
-                <Panel.Heading>
-                    <Panel.Title toggle>{item.Name} - revision {item.Revision}</Panel.Title>
-                </Panel.Heading>
-                <Panel.Body collapsible>
-                    <p>Chart: {item.Chart}</p>
-                    <p>Updated: {item.Updated}</p>
-                    <p>Status: {item.Status}</p>
-
-
-
-                    <ButtonToolbar>
-
-                        <Button className="btn btn-primary" bsSize="sm" 
-                        ><i className="pe-7s-info"/>
-                            {" "}Show History</Button>
-
-                        <Button className="btn btn-danger" bsSize="sm" 
-                        ><i className="pe-7s-less"/>
-                            {" "}Delete</Button>
-
-                            <Button className="btn btn-danger" bsSize="sm" 
-                        ><i className="pe-7s-trash"/>
-                            {" "}Purge</Button>
-
-                    </ButtonToolbar>
-
-
-
-
-                </Panel.Body>
-            </Panel>
-
+            <ReleasePanel eventKey={key} 
+                key={key} 
+                item={item}
+                showReleaseHistory={this.showReleaseHistory.bind(this)}
+                historyList={this.state.historyList} />
         );
-
-
 
         return (
 
@@ -78,22 +55,16 @@ class Workload extends Component {
 
                 </Tab>
                 <Tab eventKey="pods" title="Pods">
-
+                    <p>Not implemented yet</p>
                 </Tab>
                 <Tab eventKey="services" title="Services">
-
+                    <p>Not implemented yet</p>
                 </Tab>
                 <Tab eventKey="vs" title="Virtual Services">
-
+                    <p>Not implemented yet</p>
                 </Tab>
                 <Tab eventKey="dr" title="Destination Rules">
-
-                </Tab>
-                <Tab eventKey="pv" title="Persistent Volumes">
-
-                </Tab>
-                <Tab eventKey="pvc" title="Persistent Volumes Claim">
-
+                    <p>Not implemented yet</p>
                 </Tab>
             </Tabs>
 

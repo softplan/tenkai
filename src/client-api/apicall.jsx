@@ -248,9 +248,25 @@ function listHelmDeploymentsByEnvironment(self, id, callback) {
     });
 }
 
+function getReleaseHistory(self, environmentID, releaseName, callback) {
+    self.props.handleLoading(true);
+    axios.post(TENKAI_API_URL + `/listReleaseHistory`, {environmentID, releaseName})
+    .then(res => {
+      self.props.handleLoading(false);
+      if (callback !== undefined) {
+        callback(self, res);
+      }
+    }).catch(error => {
+      self.props.handleLoading(false);
+      self.props.handleNotification("general_fail", "error");
+    });    
+}
+
 export {
     retriveRepo, retrieveCharts, retrieveReleases,
     saveReleases, retrieveDependencies, saveDependency,
     deleteDependency, deleteRelease, retrieveDependency, retrieveReleasesWithCallBack, 
-    multipleInstall, getAllEnvironments, saveUsers, getDefaultRepo, listHelmDeploymentsByEnvironment
+    multipleInstall, getAllEnvironments, saveUsers, getDefaultRepo, listHelmDeploymentsByEnvironment,
+    getReleaseHistory
+
 };
