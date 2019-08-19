@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import {
-    Tabs, Tab, PanelGroup, Panel, ButtonToolbar
+    Tabs, Tab, PanelGroup
 } from "react-bootstrap";
 import { Card } from "components/Card/Card.jsx";
 import { listHelmDeploymentsByEnvironment, getReleaseHistory } from 'client-api/apicall.jsx';
