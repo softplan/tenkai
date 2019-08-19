@@ -84,8 +84,14 @@ class Traffic extends Component {
     }
 
     handleWeightChanged(event) {
+
         let name = event.target.name;
-        let value = event.target.value;
+        let value = 0;
+
+        if (event.target.value != "") {
+             value = parseInt(event.target.value, 10);
+        }
+
         let releaseName = this.state.releases[name].name;
         this.setState({
             releases: {
@@ -100,6 +106,8 @@ class Traffic extends Component {
 
         let data = {};
         data.environmentId = this.props.selectedEnvironment.value;
+        data.domain = this.state.domain;
+        data.contextPath = this.state.apiPath;
         data.serviceName = this.state.serviceName;
         data.headerName = "";
         data.headerValue = "";
@@ -114,12 +122,13 @@ class Traffic extends Component {
             data.releases.push(value);
         });        
 
-        console.log("aqui: " + JSON.stringify(data.releases));
-
+        this.props.handleLoading(true);
         axios.post(TENKAI_API_URL + "/deployTrafficRule", data)
             .then(res => {
-                console.log('ok');
+                this.props.handleLoading(false);
+                this.props.handleNotification("deployment_ok", "success");
             }).catch(error => {
+                this.props.handleLoading(false);
                 console.log(error.message);
                 this.props.handleNotification("general_fail", "error");
             });        
@@ -139,11 +148,14 @@ class Traffic extends Component {
         data.headerReleaseName = this.state.headerReleaseName;
         data.defaultReleaseName = this.state.defaultReleaseName;
 
+        this.props.handleLoading(true);
         axios.post(TENKAI_API_URL + "/deployTrafficRule", data)
             .then(res => {
-                console.log('ok');
+                this.props.handleLoading(false);
+                this.props.handleNotification("deployment_ok", "success");
             }).catch(error => {
                 console.log(error.message);
+                this.props.handleLoading(false);
                 this.props.handleNotification("general_fail", "error");
             });
     }

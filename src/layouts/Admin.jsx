@@ -111,7 +111,7 @@ class Admin extends Component {
           title: <span data-notify="icon" className="pe-7s-gift" />,
           message: (
             <div>
-              Deployment <b>successful</b>.<br />Use "kubectl get pods/services" to check it
+              Deployment <b>successful</b>.<br />Use "kubectl get [kind]" to check it
               </div>
           ),
           level: level,
