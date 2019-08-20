@@ -3,28 +3,30 @@ import {
     Tabs, Tab, PanelGroup
 } from "react-bootstrap";
 import { Card } from "components/Card/Card.jsx";
-import { listHelmDeploymentsByEnvironment, getReleaseHistory } from 'client-api/apicall.jsx';
+import { listHelmDeploymentsByEnvironment } from 'client-api/apicall.jsx';
 import { ReleasePanel } from 'components/Workload/ReleasePanel.jsx';
 
 class Workload extends Component {
 
     state = {
         list: [],
-        historyList: [],
     }
 
-    componentDidMount() {
+    listDeploymentsByEnv() {
         listHelmDeploymentsByEnvironment(this, this.props.selectedEnvironment.value, function (self, res) {
-            self.setState({ list: res.data.Releases });
+            console.log(res);
+            if (res !== undefined && res.data !== null) {
+                self.setState({ list: res.data.Releases });
+            } else {
+                self.setState({ list: [] });
+            }
         });
     }
 
-    showReleaseHistory(releaseName) {
-        console.log(releaseName);
-        getReleaseHistory(this, this.props.selectedEnvironment.value, releaseName, function(self, res) {
-            console.log(res.data);
-            self.setState({historyList: res.data});
-        });
+    onTabSelect(tabName) {
+        if (tabName === 'helm') {
+            this.listDeploymentsByEnv();
+        }
     }
 
     render() {
@@ -33,13 +35,18 @@ class Workload extends Component {
             <ReleasePanel eventKey={key} 
                 key={key} 
                 item={item}
-                showReleaseHistory={this.showReleaseHistory.bind(this)}
-                historyList={this.state.historyList} />
+                selectedEnvironment={this.props.selectedEnvironment}
+                handleLoading={this.props.handleLoading}
+                handleNotification={this.props.handleNotification}
+                historyList={this.state.historyList} 
+                onTabSelect={this.onTabSelect.bind(this)}
+                refresh={this.listDeploymentsByEnv.bind(this)}
+                />
         );
 
         return (
 
-            <Tabs defaultActiveKey="main" id="workload-tab">
+            <Tabs defaultActiveKey="main" id="workload-tab" onSelect={this.onTabSelect.bind(this)}>
                 <Tab eventKey="helm" title="Helm Releases">
                     <Card
                         title=""

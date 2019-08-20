@@ -324,7 +324,7 @@ export class HelmVariables extends Component {
             let max = (dynamicEntries[key] / 2) - 1;
             let currentLenght = self.state.variables[key] !== undefined ? self.state.variables[key].length : 0;
 
-            if (max > currentLenght) {
+            if (max >= currentLenght) {
                 for (let x = 0; x < max; x++) {
                     self.addDynamicVariableClick(key);
                 }

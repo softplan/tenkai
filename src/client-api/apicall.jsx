@@ -262,11 +262,28 @@ function getReleaseHistory(self, environmentID, releaseName, callback) {
     });    
 }
 
+function deleteHelmRelease(self, environmentID, releaseName, callback) {
+    self.props.handleLoading(true);
+    let purge = true
+    axios.delete(TENKAI_API_URL + `/deleteHelmRelease?environmentID=${environmentID}&releaseName=${releaseName}&purge=${purge}`)
+    .then(res =>
+        {
+            self.props.handleLoading(false);
+            if (callback !== undefined) {
+              callback(self, res);
+            }
+        }
+    ).catch(error => {
+      self.props.handleLoading(false);
+      self.props.handleNotification("general_fail", "error");
+    });    
+}
+
 export {
     retriveRepo, retrieveCharts, retrieveReleases,
     saveReleases, retrieveDependencies, saveDependency,
     deleteDependency, deleteRelease, retrieveDependency, retrieveReleasesWithCallBack, 
     multipleInstall, getAllEnvironments, saveUsers, getDefaultRepo, listHelmDeploymentsByEnvironment,
-    getReleaseHistory
+    getReleaseHistory, deleteHelmRelease
 
 };
