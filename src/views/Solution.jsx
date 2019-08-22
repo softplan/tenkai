@@ -83,6 +83,7 @@ class Solution extends Component {
             editItem: item,
             editMode: true
         }));
+        window.scrollTo(0, 0);
     }
 
     save(data, uri) {

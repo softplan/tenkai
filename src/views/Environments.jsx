@@ -85,6 +85,7 @@ class Environments extends Component {
             editItem: item,
             editMode: true
         }));
+        window.scrollTo(0, 0);
     }
 
     handleNewEnvironmentClick(e) {
@@ -122,12 +123,15 @@ class Environments extends Component {
     }
 
     handleConfirmDuplicate() {
+        this.props.handleLoading(true);
         if (this.state.itemToDuplicate !== undefined) {
             axios.get(TENKAI_API_URL + "/environments/duplicate/" + this.state.itemToDuplicate.ID)
                 .then(res => {
-                    this.getEnvironments();
+                    this.props.handleLoading(false);
+                    this.props.handleNotification("custom", "success", "Duplicated");
+                    this.getEnvironmentList();
                 }).catch(error => {
-                    console.log(error.message);
+                    this.props.handleLoading(false);
                     this.props.handleNotification("general_fail", "error");
                 });
         }
@@ -135,12 +139,16 @@ class Environments extends Component {
     }
 
     save(data, uri) {
+        this.props.handleLoading(true);
         axios.post(TENKAI_API_URL + uri, { data })
             .then(res => {
                 this.setState({ envResult: { Envs: [...this.state.envResult.Envs, data] } });
-                this.getEnvironments();
-            }).catch(error => {
+                this.props.handleLoading(false);
+                this.props.handleNotification("custom", "success", "Saved");
+                this.getEnvironmentList();
+        }).catch(error => {
                 console.log(error.message);
+                this.props.handleLoading(false);
                 this.props.handleNotification("general_fail", "error");
             });
         this.setState(() => ({
@@ -155,12 +163,16 @@ class Environments extends Component {
     }
 
     handleConfirmDelete() {
+        this.props.handleLoading(true);
         if (this.state.itemToDelete !== undefined) {
             axios.delete(TENKAI_API_URL + "/environments/delete/" + this.state.itemToDelete.ID)
             .then(res => {
-                this.getEnvironments();
+                this.props.handleLoading(false);
+                this.props.handleNotification("custom", "success", "Deleted");
+                this.getEnvironmentList();
             }).catch(error => {
                 console.log(error.message);
+                this.props.handleLoading(false);
                 this.props.handleNotification("general_fail", "error");
             });
         }

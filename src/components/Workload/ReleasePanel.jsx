@@ -3,14 +3,18 @@ import {
     Panel, ButtonToolbar, Table
 } from "react-bootstrap";
 import Button from "components/CustomButton/CustomButton.jsx";
-import { getReleaseHistory, deleteHelmRelease } from 'client-api/apicall.jsx';
+import { getReleaseHistory, deleteHelmRelease, getRevisionYaml } from 'client-api/apicall.jsx';
 import SimpleModal from 'components/Modal/SimpleModal.jsx';
+import EditorModal from 'components/Modal/EditorModal.jsx';
 
 export class ReleasePanel extends Component {
 
     state = {
         historyList: [],
         showConfirmDeleteModal: false,
+        showEditorModal: false,
+        historyRecord: {},
+        yaml: "",
     }
 
     showReleaseHistory(releaseName) {
@@ -42,6 +46,20 @@ export class ReleasePanel extends Component {
         this.setState({showConfirmDeleteModal: true, itemToDelete: releaseName});
     }
 
+    closeEditorModal() {
+        this.setState({showEditorModal: false, historyRecord: {}, yaml: ""});
+    }
+
+    showEditorModal(item) {
+        getRevisionYaml(this, this.props.selectedEnvironment.value, this.props.item.Name, item.revision, (self, res) => {
+            console.log(res);
+
+            this.setState({historyRecord: item, yaml: res.data, showEditorModal: true});
+        });
+
+        
+    }
+
     render() {
 
         const historyList = this.state.historyList.map((item, key) =>
@@ -49,8 +67,9 @@ export class ReleasePanel extends Component {
                 <td>{item.revision}</td>
                 <td>{item.updated}</td>
                 <td>{item.status}</td>
-                <td><i className="pe-7s-back-2" /></td>
-                <td><i className="pe-7s-note2" /></td>
+                <td><i className="pe-7s-back-2"/></td>
+                <td><Button className="link-button" onClick={this.showEditorModal.bind(this, item)}><i className="pe-7s-note2"/></Button></td>
+                
             </tr>
         );
 
@@ -65,6 +84,8 @@ export class ReleasePanel extends Component {
                     subTitle="Delete release" 
                     message="Are you sure you want to delete this release?"
                     handleConfirmDelete={this.handleConfirmDelete.bind(this)}/>  
+
+                <EditorModal yaml={this.state.yaml} item={this.state.historyRecord} show={this.state.showEditorModal} close={this.closeEditorModal.bind(this)}/>
 
                 <Panel.Heading>
                     <Panel.Title toggle>{this.props.item.Name} - revision {this.props.item.Revision}</Panel.Title>

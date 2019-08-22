@@ -1,4 +1,4 @@
-.loading{
+.loading {
     display: block;
     visibility: visible;
     position: absolute;
@@ -15,3 +15,9 @@
     background: url(../img/loading.gif) no-repeat center center;
 }
     
+.scroller {
+    margin: 0 auto;
+    height: 400px;
+    width: 100%;
+    overflow: auto;
+}
