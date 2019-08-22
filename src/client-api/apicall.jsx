@@ -133,7 +133,6 @@ function saveUsers(data, self, onSuccess) {
 function retrieveDependencies(releaseId, self) {
     self.props.handleLoading(true);
     let url = `/dependencies?releaseId=${releaseId}`;
-    console.log(url);
     axios.get(TENKAI_API_URL + url).then(response => {
         self.setState({ list: response.data.dependencies });
         self.props.handleLoading(false);
@@ -163,7 +162,6 @@ function saveDependency(data, self) {
     } else {
         uri = '/dependencies';
     }
-    console.log(data);
     axios.post(TENKAI_API_URL + uri, data)
         .then(res => {
             retrieveDependencies(self.state.releaseId, self)
