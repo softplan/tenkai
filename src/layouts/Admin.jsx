@@ -43,28 +43,18 @@ class Admin extends Component {
 
   }
 
-  /*
-  componentDidMount() {
-    const keycloak = Keycloak('/keycloak.json');
-    keycloak.init({ onLoad: 'login-required' }).then(authenticated => {
-      this.setState({ keycloak: keycloak, authenticated: authenticated, _notificationSystem: this.refs.notificationSystem }, () => {
-        axios.defaults.headers.common['Authorization'] = `Bearer ${keycloak.token}`;
-        this.getEnvironments();
-      });
-    });
-  }
-  */
-
-
   handleEnvironmentChange = (selectedEnvironment) => {
     this.setState({ selectedEnvironment }, () => {
+
+      console.log(JSON.stringify(selectedEnvironment));
+      window.localStorage.setItem('currentEnvironment', JSON.stringify(selectedEnvironment));
+
       this.props.history.push({
         pathname: "/admin/deployment"
       });
     });
   }
 
-  
   getEnvironments() {
     axios.get(TENKAI_API_URL + '/environments').then(response => {
         var arr = [];
@@ -74,18 +64,24 @@ class Admin extends Component {
         }
         this.setState({ environmentList: arr }, () => {
           if (arr.length > 0) {
-            this.setState({selectedEnvironment: arr[0]}); 
+            let localEnvironment = JSON.parse(window.localStorage.getItem('currentEnvironment'));
+
+            if (localEnvironment !== null) {
+              this.setState({selectedEnvironment: localEnvironment});   
+            } else {
+              this.setState({selectedEnvironment: arr[0]}); 
+            }
           }
         });
       }).catch(error => {
+        console.log(error);
         if (error.response !== undefined) {
-          this.props.handleNotification("custom", "error", error.response.data);
+          this.handleNotification("custom", "error", error.response.data);
         } else {
-           this.props.handleNotification("deployment_fail", "error");
+           this.handleNotification("deployment_fail", "error");
         }
     });
   }
-
 
   handleLoading = value => {
     this.setState({ loading: value });

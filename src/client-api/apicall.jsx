@@ -274,6 +274,24 @@ function getRevisionYaml(self, environmentID, releaseName, revision, callback) {
     });    
 }
 
+
+function rollbackHelmRelease(self, environmentID, item, callback) {
+    
+    console.log(item);
+
+    self.props.handleLoading(true);
+    axios.post(TENKAI_API_URL + `/rollback`, {environmentID: environmentID, releaseName: item.releaseName, revision: item.revision})
+    .then(res => {
+      self.props.handleLoading(false);
+      if (callback !== undefined) {
+        callback(self, res);
+      }
+    }).catch(error => {
+      self.props.handleLoading(false);
+      self.props.handleNotification("general_fail", "error");
+    });        
+}
+
 function deleteHelmRelease(self, environmentID, releaseName, callback) {
     self.props.handleLoading(true);
     let purge = true
@@ -296,6 +314,6 @@ export {
     saveReleases, retrieveDependencies, saveDependency,
     deleteDependency, deleteRelease, retrieveDependency, retrieveReleasesWithCallBack, 
     multipleInstall, getAllEnvironments, saveUsers, getDefaultRepo, listHelmDeploymentsByEnvironment,
-    getReleaseHistory, deleteHelmRelease, getRevisionYaml
+    getReleaseHistory, deleteHelmRelease, getRevisionYaml, rollbackHelmRelease
 
 };

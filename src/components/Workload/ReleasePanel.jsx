@@ -3,7 +3,7 @@ import {
     Panel, ButtonToolbar, Table
 } from "react-bootstrap";
 import Button from "components/CustomButton/CustomButton.jsx";
-import { getReleaseHistory, deleteHelmRelease, getRevisionYaml } from 'client-api/apicall.jsx';
+import { getReleaseHistory, deleteHelmRelease, getRevisionYaml, rollbackHelmRelease } from 'client-api/apicall.jsx';
 import SimpleModal from 'components/Modal/SimpleModal.jsx';
 import EditorModal from 'components/Modal/EditorModal.jsx';
 
@@ -12,8 +12,10 @@ export class ReleasePanel extends Component {
     state = {
         historyList: [],
         showConfirmDeleteModal: false,
+        showConfirmRollbackModal: false,
         showEditorModal: false,
         historyRecord: {},
+        itemToRollback: {},
         yaml: "",
     }
 
@@ -35,6 +37,10 @@ export class ReleasePanel extends Component {
         this.setState({ showConfirmDeleteModal: false, itemToDelete: {} });
     }
 
+    handleConfirmRollbackClose() {
+        this.setState({ showConfirmRollbackModal: false, itemToRollback: {} });
+    }
+
     handleConfirmDelete() {
         deleteHelmRelease(this, this.props.selectedEnvironment.value, this.state.itemToDelete, (self) => {
             self.props.refresh();
@@ -42,8 +48,21 @@ export class ReleasePanel extends Component {
         });
     }
 
+    handleConfirmRollback() {
+        rollbackHelmRelease(this, this.props.selectedEnvironment.value, this.state.itemToRollback, (self) => {
+            this.setState({ showConfirmRollbackModal: false, itemToRollback: {}}, () => {
+                this.showReleaseHistory(this.props.item.Name);
+            });
+        });
+    }
+
     showDeleteConfirmModal(releaseName) {
         this.setState({showConfirmDeleteModal: true, itemToDelete: releaseName});
+    }
+
+    showRollbackConfirmModal(revision) {
+        let item = {releaseName: this.props.item.Name, revision};
+        this.setState({showConfirmRollbackModal: true, itemToRollback: item});
     }
 
     closeEditorModal() {
@@ -56,8 +75,6 @@ export class ReleasePanel extends Component {
 
             this.setState({historyRecord: item, yaml: res.data, showEditorModal: true});
         });
-
-        
     }
 
     render() {
@@ -67,9 +84,8 @@ export class ReleasePanel extends Component {
                 <td>{item.revision}</td>
                 <td>{item.updated}</td>
                 <td>{item.status}</td>
-                <td><i className="pe-7s-back-2"/></td>
+                <td><Button className="link-button" onClick={this.showRollbackConfirmModal.bind(this, item.revision)}><i className="pe-7s-back-2"/></Button></td>
                 <td><Button className="link-button" onClick={this.showEditorModal.bind(this, item)}><i className="pe-7s-note2"/></Button></td>
-                
             </tr>
         );
 
@@ -84,6 +100,15 @@ export class ReleasePanel extends Component {
                     subTitle="Delete release" 
                     message="Are you sure you want to delete this release?"
                     handleConfirmDelete={this.handleConfirmDelete.bind(this)}/>  
+
+                <SimpleModal 
+                    showConfirmDeleteModal={this.state.showConfirmRollbackModal}
+                    handleConfirmDeleteModalClose={this.handleConfirmRollbackClose.bind(this)}
+                    title="Confirm" 
+                    subTitle="Rollback release" 
+                    message="Are you sure you want to rollback this release?"
+                    handleConfirmDelete={this.handleConfirmRollback.bind(this)}/>  
+
 
                 <EditorModal yaml={this.state.yaml} item={this.state.historyRecord} show={this.state.showEditorModal} close={this.closeEditorModal.bind(this)}/>
 

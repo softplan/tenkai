@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { Modal, Button } from "react-bootstrap";
 import {UnControlled as CodeMirror} from 'react-codemirror2'
 
-
 class EditorModal extends Component {
 
     render() {
