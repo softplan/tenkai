@@ -3,14 +3,28 @@ import {
     Tabs, Tab, PanelGroup, Row,  Col, FormGroup, ControlLabel, FormControl
 } from "react-bootstrap";
 import { Card } from "components/Card/Card.jsx";
-import { listHelmDeploymentsByEnvironment } from 'client-api/apicall.jsx';
+import { listHelmDeploymentsByEnvironment, listPods } from 'client-api/apicall.jsx';
 import { ReleasePanel } from 'components/Workload/ReleasePanel.jsx';
+import { PodPanel } from 'components/Workload/PodPanel.jsx';
 
 class Workload extends Component {
 
     state = {
         list: [],
         inputFilter: "",
+        podInputFilter: "",
+        podList: [],
+    }
+
+    listPods() {
+        listPods(this, this.props.selectedEnvironment.value, function (self, res) {
+            console.log(res.data);
+            if (res !== undefined && res.data !== null) {
+                self.setState({ podList: res.data.pods });
+            } else {
+                self.setState({ podList: [] });
+            }
+        });        
     }
 
     listDeploymentsByEnv() {
@@ -26,7 +40,13 @@ class Workload extends Component {
     onTabSelect(tabName) {
         if (tabName === 'helm') {
             this.listDeploymentsByEnv();
+            return
+        } 
+        
+        if (tabName === "pods") {
+            this.listPods();
         }
+        
     }
 
     onChangeInputHandler(e) {
@@ -34,6 +54,13 @@ class Workload extends Component {
           inputFilter: e.target.value,
         })
       }
+
+
+      onChangePodInputHandler(e) {
+        this.setState({
+          podInputFilter: e.target.value,
+        })
+      }      
     
 
     render() {
@@ -91,7 +118,35 @@ class Workload extends Component {
 
                 </Tab>
                 <Tab eventKey="pods" title="Pods">
-                    <p>Not implemented yet</p>
+                    <Card
+                        title=""
+                        content={
+                            <div>
+
+
+                                <Row>
+                                <Col xs={4}>
+                                    <FormGroup>
+                                    <ControlLabel>Pod Search</ControlLabel>
+                                    <FormControl
+                                        value={this.state.podInputFilter}
+                                        onChange={this.onChangePodInputHandler.bind(this)}
+                                        style={{ width: '100%' }} type="text"
+                                        aria-label="Search"></FormControl>
+                                    </FormGroup>
+                                </Col>
+                                </Row>
+                                <Row>
+                                <Col xs={12}>
+                                    <PodPanel
+                                        list={this.state.podList.filter(d => this.state.podInputFilter === '' || d.name.includes(this.state.podInputFilter))}
+                                    />
+                                </Col>
+
+                                </Row>
+                            </div>
+
+                        } />
                 </Tab>
                 <Tab eventKey="services" title="Services">
                     <p>Not implemented yet</p>
