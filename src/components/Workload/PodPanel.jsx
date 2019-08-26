@@ -10,7 +10,6 @@ export class PodPanel extends Component {
     
 
     state = {
-        showConfirmDeleteModal: false,
         itemToDelete: {},
         showConfirmDeleteModal: false,
     }

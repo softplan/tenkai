@@ -3,7 +3,7 @@ import {
     Tabs, Tab, PanelGroup, Row,  Col, FormGroup, ControlLabel, FormControl
 } from "react-bootstrap";
 import { Card } from "components/Card/Card.jsx";
-import { listHelmDeploymentsByEnvironment, listPods, deletePod } from 'client-api/apicall.jsx';
+import { listHelmDeploymentsByEnvironment, listPods } from 'client-api/apicall.jsx';
 import { ReleasePanel } from 'components/Workload/ReleasePanel.jsx';
 import { PodPanel } from 'components/Workload/PodPanel.jsx';
 
