@@ -9,9 +9,9 @@
     height: 100%;
     background-color: #ccc;
     text-align: center;
-    padding-top: 20%;
-    filter: alpha(opacity=75);
-    opacity: 0.75;
+    padding-top: 10%;
+    filter: alpha(opacity=65);
+    opacity: 0.65;
     background: url(../img/loading.gif) no-repeat center center;
 }
     

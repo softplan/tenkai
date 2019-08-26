@@ -3,11 +3,12 @@ import {
     Tabs, Tab, PanelGroup, Row,  Col, FormGroup, ControlLabel, FormControl
 } from "react-bootstrap";
 import { Card } from "components/Card/Card.jsx";
-import { listHelmDeploymentsByEnvironment, listPods } from 'client-api/apicall.jsx';
+import { listHelmDeploymentsByEnvironment, listPods, deletePod } from 'client-api/apicall.jsx';
 import { ReleasePanel } from 'components/Workload/ReleasePanel.jsx';
 import { PodPanel } from 'components/Workload/PodPanel.jsx';
 
 class Workload extends Component {
+
 
     state = {
         list: [],
@@ -16,9 +17,17 @@ class Workload extends Component {
         podList: [],
     }
 
+    componentDidMount() {
+        this.listPods();
+        this.timer = setInterval(()=> this.listPods(), 5000);
+    }
+      
+    componentWillUnmount() {
+        clearInterval(this.timer);
+    }    
+
     listPods() {
         listPods(this, this.props.selectedEnvironment.value, function (self, res) {
-            console.log(res.data);
             if (res !== undefined && res.data !== null) {
                 self.setState({ podList: res.data.pods });
             } else {
@@ -53,15 +62,14 @@ class Workload extends Component {
         this.setState({
           inputFilter: e.target.value,
         })
-      }
+    }
 
-
-      onChangePodInputHandler(e) {
+    onChangePodInputHandler(e) {
         this.setState({
           podInputFilter: e.target.value,
         })
-      }      
-    
+    }     
+      
 
     render() {
 
@@ -139,6 +147,9 @@ class Workload extends Component {
                                 <Row>
                                 <Col xs={12}>
                                     <PodPanel
+                                        selectedEnvironment={this.props.selectedEnvironment}
+                                        handleLoading={this.props.handleLoading}
+                                        handleNotification={this.props.handleNotification}
                                         list={this.state.podList.filter(d => this.state.podInputFilter === '' || d.name.includes(this.state.podInputFilter))}
                                     />
                                 </Col>

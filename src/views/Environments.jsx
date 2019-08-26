@@ -78,14 +78,13 @@ class Environments extends Component {
     }
 
     navigateToEditEnvironment(item) {
-        console.log('aqui');
-    
+        console.log('navigateToEditEnvironment');
         this.setState(() => ({
             showInsertUpdateForm: true,
             editItem: item,
             editMode: true
         }));
-        window.scrollTo(0, 0);
+        //window.scrollTo(0, 0);
     }
 
     handleNewEnvironmentClick(e) {
