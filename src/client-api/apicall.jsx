@@ -325,7 +325,6 @@ function deleteHelmRelease(self, environmentID, releaseName, callback) {
 
 function deletePod(self, environmentID, podName, callback) {
     self.props.handleLoading(true);
-    let purge = true
     axios.delete(TENKAI_API_URL + `/deletePod?environmentID=${environmentID}&podName=${podName}`)
     .then(res =>
         {
