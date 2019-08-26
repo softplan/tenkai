@@ -35,6 +35,10 @@ spec:
           env:
             - name: API_URL
               value: {{ .Values.app.apiUrl }}
+            - name: KEYCLOAK_URL
+              value: {{ .Values.app.keycloakUrl }}
+            - name: KEYCLOAK_REALM
+              value: {{ .Values.app.keycloakRealm }}
           resources:
 {{ toYaml .Values.resources | indent 12 }}
     {{- with .Values.nodeSelector }}

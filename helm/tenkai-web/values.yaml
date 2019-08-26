@@ -18,6 +18,8 @@ service:
 app:
   pullSecret: unjregistry
   apiUrl: http://tenkai-api.saj6.softplan.com.br
+  keycloakUrl: http://keycloak-tools.saj6.softplan.com.br/auth
+  keycloakReam: tenkai
   
 istio:
   enabled: true
