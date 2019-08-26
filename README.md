@@ -1,70 +1,59 @@
-[![Build Status](https://travis-ci.org/softplan/tenkai.svg?branch=dev)](https://travis-ci.org/softplan/tenkai)
+# Tenkai
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+An open platform to configure, deploy and manage microservices based on Helm Charts.
 
-## Available Scripts
+In this README:
 
-In the project directory, you can run:
+- [Introduction](#introduction)
+- [A demo deployment](#demo-deployment)
+- [A production deployment](#production-deployment)
 
-### `npm start`
+## Introduction
 
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Configure the relationships between hundreads of microservices is always a headache.
+In this context Tenkai comes to help you to configure and centralize your environment's variables. Tenkai is using the best of Helm tool, bring us a Web GUI interface that show us our Helm Charts from our repositories and allow us to easy configure and deploy them.
+Besides that, Tenkai has a strong integration with Istio Service Mesh, abstracting the process of defining a virtualservices, injecting istiocar and handle traffic management rules (as canary deployments). If you need to handle dependencies between services, Tenkay could help you to track your services versions and to verify which of them are already deployed and which of them are in old versions and depending of deployment.
 
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
 
-### `npm test`
+## Demo Deployment
 
-Launches the test runner in the interactive watch mode.<br>
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Pre-requirements
 
-### `npm run build`
+- Keycloak
 
-Builds the app for production to the `build` folder.<br>
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Tenkai is integrate to keycloak, for tests purposes you need only to run a simple keycloak docker container:
 
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
+```
+docker run -d -p 8180:8080 -e KEYCLOAK_USER=admin -e \
+KEYCLOAK_PASSWORD=admin -v $(pwd):/tmp --name kc \
+jboss/keycloak
+```
+Inside keycloak dashboard, you must create a Realm called "tenkai" as well a  Client called "tenkai". 
+For demo purposes, you should create 2 roles:
+* tenkai-admin
+* tenkai-user
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+So, create you user and associate them to this roles.
 
-### `npm run eject`
+### Deployment of Tenkai-api
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+In a demo environment, you should only run the container without any adicional parameters.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```
+docker run --name tenkai-api -p 8080:8080 -d softplan/tenkai-api:dev
+```
+### Deployment of Tenkai GUI
 
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+You must pass the API_URL, KEYCLOAK_URL and KEYCLOAK_REAML environment variables.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+```
+docker run --name tenkai-web -p 3001:80 -e API_URL=http://localhost:8080 -e KEYCLOAK_URL=http://localhost:8180/auth -e KEYCLOAK_REALM=tenkai -d softplan/tenkai-web:dev
+```
 
-## Learn More
+## Production Deployment
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+=> In construction.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
 
-### Code Splitting
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
 
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
