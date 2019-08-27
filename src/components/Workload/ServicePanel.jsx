@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import {
     Table
 } from "react-bootstrap";
-import Button from "components/CustomButton/CustomButton.jsx";
 import SimpleModal from 'components/Modal/SimpleModal.jsx';
 import { deletePod } from 'client-api/apicall.jsx';
 
