@@ -9,6 +9,7 @@ export class VariablesForm extends Component {
 
     state = {
         formData: {
+            secret: false,
             scope: '',
             name: '',
             value: '',
@@ -24,7 +25,14 @@ export class VariablesForm extends Component {
             }));
         } else {
             this.setState(() => ({
-                formData: {}
+                formData: {
+                    secret: false,
+                    scope: '',
+                    name: '',
+                    value: '',
+                    description: '',
+                    environmentId: -1,
+                }
             }));
         }
     }    
@@ -35,6 +43,16 @@ export class VariablesForm extends Component {
             formData: {
                 ...state.formData,
                 [name]: value
+            }
+        }));
+    }
+
+    handleBoolChange = event => {
+        const { name, checked } = event.target;
+        this.setState(state => ({
+            formData: {
+                ...state.formData,
+                [name]: checked
             }
         }));
     }
@@ -90,7 +108,7 @@ export class VariablesForm extends Component {
                             />
 
                             <FormInputs
-                                ncols={["col-md-8"]}
+                                ncols={["col-md-8", "col-md-2" ]}
                                 properties={[
                                     {
                                         name: "description",
@@ -101,7 +119,18 @@ export class VariablesForm extends Component {
                                         onChange: this.handleChange
 
                                         
+                                    },
+                                    {
+                                        name: "secret",
+                                        label: "Secret",
+                                        type: "checkbox",
+                                        bsClass: "form-control",
+                                        checked: this.state.formData.secret,
+                                        onChange: this.handleBoolChange
+
+                                        
                                     }
+
                                 ]}
                             />
                                                      

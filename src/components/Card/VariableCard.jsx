@@ -6,12 +6,23 @@ import {
 import Button from "components/CustomButton/CustomButton.jsx";
 
 export class HelmCard extends Component {
+
+
+ 
     render() {
+ 
+        function Header(props) {
+            if (props.item.secret) {
+                return <h4 className="title"><b>{props.item.name} = ************************ </b></h4>;
+            }
+            return <h4 className="title"><b>{props.item.name} = {props.item.value} </b></h4>;
+        }
+      
+ 
         return (
             <div className={"card"} style={{ backgroundColor: "#FCFFEC" }}>
                 <div className={"header"}>
-
-                    <h4 className="title"><b>{this.props.item.name} = {this.props.item.value} </b></h4>
+                    <Header item={this.props.item}/>
                     <p className="category">{this.props.item.scope}</p>
                 </div>
                 <div className={"content"}>

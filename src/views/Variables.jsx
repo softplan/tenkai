@@ -93,10 +93,8 @@ class Variables extends Component {
 
     onSaveClick(data) {
         if (this.state.editMode) {
-            console.log("edit")
             this.save(data, '/variables/edit')
         } else {
-            console.log("new")
             this.save(data, '/variables')
         }
     }
