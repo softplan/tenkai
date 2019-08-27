@@ -242,7 +242,8 @@ function listHelmDeploymentsByEnvironment(self, id, callback) {
       }
     }).catch(error => {
       self.props.handleLoading(false);
-      self.props.handleNotification("general_fail", "error");
+      console.log("error: " + error);
+      //self.props.handleNotification("general_fail", "error");
     });
 
 }
@@ -257,7 +258,8 @@ function listPods(self, id, callback) {
       }
     }).catch(error => {
       self.props.handleLoading(false);
-      self.props.handleNotification("general_fail", "error");
+      console.log("error: " + error);
+      //self.props.handleNotification("general_fail", "error");
     });
 }
 
@@ -271,7 +273,8 @@ function listServices(self, id, callback) {
       }
     }).catch(error => {
       self.props.handleLoading(false);
-      self.props.handleNotification("general_fail", "error");
+      console.log("error: " + error);
+      //self.props.handleNotification("general_fail", "error");
     });
 }
 

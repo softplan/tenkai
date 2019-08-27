@@ -30,7 +30,7 @@ class Workload extends Component {
             this.listPods();
             this.listDeploymentsByEnv();
             this.listServices();
-        }, 5000);
+        }, 10000);
     }
 
     componentWillUnmount() {
