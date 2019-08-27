@@ -261,6 +261,20 @@ function listPods(self, id, callback) {
     });
 }
 
+function listServices(self, id, callback) {
+    self.props.handleLoading(true);
+    axios.get(TENKAI_API_URL + `/listServices/${id}`)
+    .then(res => {
+      self.props.handleLoading(false);
+      if (callback !== undefined) {
+        callback(self, res);
+      }
+    }).catch(error => {
+      self.props.handleLoading(false);
+      self.props.handleNotification("general_fail", "error");
+    });
+}
+
 
 function getReleaseHistory(self, environmentID, releaseName, callback) {
     self.props.handleLoading(true);
@@ -344,6 +358,7 @@ export {
     saveReleases, retrieveDependencies, saveDependency,
     deleteDependency, deleteRelease, retrieveDependency, retrieveReleasesWithCallBack, 
     multipleInstall, getAllEnvironments, saveUsers, getDefaultRepo, listHelmDeploymentsByEnvironment,
-    getReleaseHistory, deleteHelmRelease, getRevisionYaml, rollbackHelmRelease, listPods, deletePod
+    getReleaseHistory, deleteHelmRelease, getRevisionYaml, rollbackHelmRelease, listPods, deletePod,
+    listServices
 
 };
