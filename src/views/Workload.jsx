@@ -10,8 +10,7 @@ import { ServicePanel } from 'components/Workload/ServicePanel.jsx';
 
 
 class Workload extends Component {
-
-
+    
     state = {
         list: [],
         inputFilter: "",
@@ -22,6 +21,7 @@ class Workload extends Component {
     }
 
     componentDidMount() {
+        console.log(this.props.selectedEnvironment.value);
         this.listDeploymentsByEnv();
         this.listPods();
         this.listServices();
@@ -30,7 +30,7 @@ class Workload extends Component {
             this.listPods();
             this.listDeploymentsByEnv();
             this.listServices();
-        }, 10000);
+        }, 25000);
     }
 
     componentWillUnmount() {
