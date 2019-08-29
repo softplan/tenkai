@@ -1,12 +1,14 @@
 import React, { Component } from "react";
 import {
-    Tabs, Tab, PanelGroup, Row, Col, FormGroup, ControlLabel, FormControl
+    Tabs, Tab, PanelGroup, Row, Col, FormGroup, ControlLabel, FormControl, ButtonToolbar
 } from "react-bootstrap";
 import { Card } from "components/Card/Card.jsx";
-import { listHelmDeploymentsByEnvironment, listPods, listServices } from 'client-api/apicall.jsx';
+import { listHelmDeploymentsByEnvironment, listPods, listServices, promote } from 'client-api/apicall.jsx';
 import { ReleasePanel } from 'components/Workload/ReleasePanel.jsx';
 import { PodPanel } from 'components/Workload/PodPanel.jsx';
 import { ServicePanel } from 'components/Workload/ServicePanel.jsx';
+import Button from "components/CustomButton/CustomButton.jsx";
+import CopyModal from "components/Modal/CopyModal.jsx";
 
 
 class Workload extends Component {
@@ -18,6 +20,7 @@ class Workload extends Component {
         serviceInputFilter: "",
         podList: [],
         serviceList: [],
+        onShowCopyModal: false,
     }
 
     componentDidMount() {
@@ -31,6 +34,19 @@ class Workload extends Component {
             this.listDeploymentsByEnv();
             this.listServices();
         }, 25000);
+    }
+
+    onCloseCopyModal() {
+        this.setState({ onShowCopyModal: false});
+    }
+    
+    async onConfirmCopyModal(item) {
+        promote(this, this.props.selectedEnvironment.value, item.value);
+        this.setState({ onShowCopyModal: false});
+    }
+    
+    showConfirmCopyModal(ref) {
+        this.setState({ onShowCopyModal: true});
     }
 
     componentWillUnmount() {
@@ -91,6 +107,7 @@ class Workload extends Component {
         })
     }
 
+    
     render() {
 
         const items = this.state.list.filter(d => this.state.inputFilter === '' || d.Name.includes(this.state.inputFilter)).map((item, key) =>
@@ -117,9 +134,18 @@ class Workload extends Component {
                         content={
                             <div>
 
+                                    <CopyModal
+                                        onShow={this.state.onShowCopyModal}
+                                        onClose={this.onCloseCopyModal.bind(this)}
+                                        title="Select target environment (it will be destroyed)" 
+                                        onConfirm={this.onConfirmCopyModal.bind(this)}
+                                        environments={this.props.environments}
+                                        onlyMyEnvironments={true}>
+                                    </CopyModal>                                
+
 
                                 <Row>
-                                    <Col xs={4}>
+                                    <Col xs={8}>
                                         <FormGroup>
                                             <ControlLabel>Release Search</ControlLabel>
                                             <FormControl
@@ -128,6 +154,13 @@ class Workload extends Component {
                                                 style={{ width: '100%' }} type="text"
                                                 aria-label="Search"></FormControl>
                                         </FormGroup>
+                                    </Col>
+                                    <Col xs={4}>
+                                    <ButtonToolbar>
+                                        <Button className="btn btn-danger btn-fill pull-right" bsSize="sm" 
+                                            onClick={this.showConfirmCopyModal.bind(this)}><i className="pe-7s-smile" />
+                                        {" "}Copy Releases to another namespace</Button>
+                                    </ButtonToolbar>
                                     </Col>
                                 </Row>
                                 <Row>

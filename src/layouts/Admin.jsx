@@ -50,7 +50,7 @@ class Admin extends Component {
       window.localStorage.setItem('currentEnvironment', JSON.stringify(selectedEnvironment));
 
       this.props.history.push({
-        pathname: "/admin/workload"
+        pathname: "/admin/deployment"
       });
     });
   }

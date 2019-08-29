@@ -42,7 +42,6 @@ export class EnvironmentCard extends Component {
                         {" "}Delete</Button>
 
 
-
           </ButtonToolbar>
 
         </div>

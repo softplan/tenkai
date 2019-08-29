@@ -22,13 +22,19 @@ class CopyModal extends Component {
     
     getEnvironments() {
 
-        getAllEnvironments(this, function(self) {
-            let options = [];
-            for (let x = 0; x < self.state.envs.length; x++) {
-                options.push({label:self.state.envs[x].name, value:self.state.envs[x].ID});
-            }
-            self.setState({envsOptions:options});
-        });
+        if (this.props.onlyMyEnvironments) {
+            this.setState({envsOptions:this.props.environments});
+        } else {
+
+            getAllEnvironments(this, function(self) {
+                let options = [];
+                for (let x = 0; x < self.state.envs.length; x++) {
+                    options.push({label:self.state.envs[x].name, value:self.state.envs[x].ID});
+                }
+                self.setState({envsOptions:options});
+            });
+
+        }
     }
     
     render() {

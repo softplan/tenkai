@@ -356,12 +356,26 @@ function deletePod(self, environmentID, podName, callback) {
     });    
 }
 
+function promote(self, srcEnvID, targetEnvID) {
+    self.props.handleLoading(true);
+    axios.get(TENKAI_API_URL + `/promote?srcEnvID=${srcEnvID}&targetEnvID=${targetEnvID}`)
+    .then(res =>
+        {
+            self.props.handleNotification("custom", "success", "Done!");      
+            self.props.handleLoading(false);
+        }
+    ).catch(error => {
+      self.props.handleLoading(false);
+      self.props.handleNotification("general_fail", "error");
+    });    
+}
+
 export {
     retriveRepo, retrieveCharts, retrieveReleases,
     saveReleases, retrieveDependencies, saveDependency,
     deleteDependency, deleteRelease, retrieveDependency, retrieveReleasesWithCallBack, 
     multipleInstall, getAllEnvironments, saveUsers, getDefaultRepo, listHelmDeploymentsByEnvironment,
     getReleaseHistory, deleteHelmRelease, getRevisionYaml, rollbackHelmRelease, listPods, deletePod,
-    listServices
+    listServices, promote
 
 };

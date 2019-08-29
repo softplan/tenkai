@@ -16,15 +16,6 @@ import Workload from "views/Workload"
 
 const dashboardRoutes = [
   {
-    path: "/workload",
-    name: "Workload",
-    icon: "pe-7s-share",
-    component: Workload,
-    layout: "/admin",
-    menu: true,
-    role: "tenkai-user"
-  },
-  {
     path: "/deployment",
     name: "Deployment",
     icon: "pe-7s-news-paper",
@@ -33,6 +24,15 @@ const dashboardRoutes = [
     menu: true,
     role: "tenkai-user"
   },
+  {
+    path: "/workload",
+    name: "Workload",
+    icon: "pe-7s-share",
+    component: Workload,
+    layout: "/admin",
+    menu: true,
+    role: "tenkai-user"
+  },  
   {
     path: "/deployment-wvars",
     name: "Deployment Variables Review ",

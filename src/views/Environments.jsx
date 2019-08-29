@@ -84,7 +84,7 @@ class Environments extends Component {
             editItem: item,
             editMode: true
         }));
-        //window.scrollTo(0, 0);
+        window.scrollTo(0, 0);
     }
 
     handleNewEnvironmentClick(e) {
@@ -197,6 +197,7 @@ class Environments extends Component {
 
     }
 
+
     render() {
 
         const items = this.state.envResult.Envs
@@ -214,7 +215,6 @@ class Environments extends Component {
                     duplicateEnvironment={this.duplicateEnvironment.bind(this)}
                     onDelete={this.onDelete.bind(this)}
                     onExport={this.onExport.bind(this)}
-
                     />
                 
             );
