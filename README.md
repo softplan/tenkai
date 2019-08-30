@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/softplan/tenkai.svg?branch=dev)](https://travis-ci.org/softplan/tenkai)
+
 # Tenkai
 
 An open platform to configure, deploy and manage microservices based on Helm Charts.
