@@ -28,16 +28,21 @@ class Workload extends Component {
     }
 
     componentDidMount() {
-        console.log(this.props.selectedEnvironment.value);
         this.listDeploymentsByEnv();
         this.listPods();
         this.listServices();
-        this.timer = setInterval(() => 
-        { 
-            this.listPods();
-            this.listDeploymentsByEnv();
-            this.listServices();
-        }, 10000);
+    }
+
+    refreshPods() {
+        this.listPods();
+    }
+
+    refreshServices() {
+        this.listServices();
+    }
+
+    refreshReleases() {
+        this.listDeploymentsByEnv();
     }
 
     onCloseCopyModal() {
@@ -60,7 +65,7 @@ class Workload extends Component {
     }
 
     componentWillUnmount() {
-        clearInterval(this.timer);
+        //clearInterval(this.timer);
     }
 
     listPods() {
@@ -127,6 +132,11 @@ class Workload extends Component {
     }
 
     
+    
+    
+
+
+    
     render() {
 
         const items = this.state.list.filter(d => this.state.inputFilter === '' || d.Name.includes(this.state.inputFilter)).map((item, key) =>
@@ -150,8 +160,6 @@ class Workload extends Component {
                         title=""
                         content={
                             <div>
-
-
                                 <Row>
                                     <Col xs={4}>
                                         <FormGroup>
@@ -163,6 +171,15 @@ class Workload extends Component {
                                                 aria-label="Search"></FormControl>
                                         </FormGroup>
                                     </Col>
+
+                                    <Col xs={8}>
+                                        <Button className="btn btn-info pull-right" bsSize="sm"  
+                                            onClick={this.refreshPods.bind(this)}><i className="pe-7s-refresh-2" 
+                                        />
+                                        {" "}Refresh</Button>
+                                    </Col>
+
+
                                 </Row>
                                 <Row>
                                     <Col xs={12}>
@@ -198,6 +215,15 @@ class Workload extends Component {
                                                 aria-label="Search"></FormControl>
                                         </FormGroup>
                                     </Col>
+
+                                    <Col xs={8}>
+                                        <Button className="btn btn-info pull-right" bsSize="sm"  
+                                            onClick={this.refreshServices.bind(this)}><i className="pe-7s-refresh-2" 
+                                        />
+                                        {" "}Refresh</Button>
+                                    </Col>
+
+
                                 </Row>
                                 <Row>
                                     <Col xs={12}>
@@ -260,7 +286,7 @@ class Workload extends Component {
                                 
 
                                 <Row>
-                                    <Col xs={8}>
+                                    <Col xs={4}>
                                         <FormGroup>
                                             <ControlLabel>Release Search</ControlLabel>
                                             <FormControl
@@ -270,6 +296,14 @@ class Workload extends Component {
                                                 aria-label="Search"></FormControl>
                                         </FormGroup>
                                     </Col>
+
+                                    <Col xs={4}>
+                                        <Button className="btn btn-info pull-right" bsSize="sm"  
+                                            onClick={this.refreshReleases.bind(this)}><i className="pe-7s-refresh-2" 
+                                        />
+                                        {" "}Refresh</Button>
+                                    </Col>
+
                                     <Col xs={4}>
                                     <ButtonToolbar>
                                         <Button className="btn btn-danger btn-fill pull-right" bsSize="sm" 
