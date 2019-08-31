@@ -79,7 +79,7 @@ class DepGraph extends Component {
     }
 
     getConfigMap(value) {
-        let configMapName = value + "-global-configmap";
+        let configMapName = value + "-gcm";
         var n = configMapName.indexOf("/");
         configMapName = configMapName.substring(n + 1);
         return configMapName

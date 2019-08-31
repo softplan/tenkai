@@ -378,7 +378,7 @@ export class HelmVariables extends Component {
     }
 
     getConfigMapName() {
-        let configMapName = this.state.releaseName + "-global-configmap";
+        let configMapName = this.state.releaseName + "-gcm";
         return configMapName
     }
 
