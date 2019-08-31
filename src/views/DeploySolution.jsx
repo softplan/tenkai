@@ -63,16 +63,18 @@ class DeploySolution extends Component {
     }
 
   navigateToCheckVariables(charts, selected) {
+    
+    this.props.updateSelectedChartsToDeploy([]);
 
     let selectedCharts = [];
     for (let x=0; x < charts.length; x++) {
       selectedCharts.push(charts[x].name + "@" + charts[x].chartVersion);
     }
 
+    this.props.updateSelectedChartsToDeploy(selectedCharts);
+
     this.props.history.push({
-      pathname: "/admin/deployment-wvars",
-      search: "?environment=" + this.props.selectedEnvironment.value,
-      state: { charts: selectedCharts, environment: selected.label }
+      pathname: "/admin/deployment-wvars"
     });
 
   }
