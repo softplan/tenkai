@@ -77,6 +77,10 @@ export class ReleasePanel extends Component {
         });
     }
 
+    navigateToBlueGreenWizard(item) {
+        this.props.navigateToBlueGreenWizard(item);
+    }
+    
     render() {
 
         const historyList = this.state.historyList.map((item, key) =>
@@ -131,6 +135,9 @@ export class ReleasePanel extends Component {
                                 <i className="pe-7s-less" />{" "}Delete Purge
                             </Button>
 
+                            <Button className="btn btn-info btn-fill" bsSize="sm" onClick={this.navigateToBlueGreenWizard.bind(this, this.props.item)}>
+                                <i className="pe-7s-keypad" />{" "}Blue/Green or Canary Strategy Wizard
+                            </Button>
 
                         </ButtonToolbar>
 

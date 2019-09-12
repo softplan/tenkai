@@ -106,6 +106,7 @@ class VariablesWizard extends Component {
     const items = this.state.charts.map((item, key) => {
       return (
         <HelmVariables handleLoading={this.props.handleLoading}
+          canary={false}
           copyVariables={this.showConfirmCopyModal.bind(this)}
           handleNotification={this.props.handleNotification}
           key={key} chartName={item} chartVersion={this.state.chartVersions[item]}

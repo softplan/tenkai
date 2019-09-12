@@ -14,7 +14,6 @@ import { ConfigMap } from "components/Deployment/ConfigMap.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
 import { CanaryCard } from "components/Deployment/CanaryCard.jsx"
 
-
 export class HelmVariables extends Component {
 
     state = {
@@ -47,6 +46,13 @@ export class HelmVariables extends Component {
         var n = scope.indexOf("/");
         let releaseName = scope.substring(n + 1);
         this.state.releaseName = releaseName;
+
+        if (this.props.canary) {
+            this.state.releaseName = this.state.releaseName + "-beta"
+            this.state.dontCreateService = true;
+            this.state.canaryShowing = true;
+        }
+
     }
 
     async componentDidMount() {
@@ -254,7 +260,6 @@ export class HelmVariables extends Component {
     getRootName(name) {
         let i = name.indexOf("[");
         let value = name.substring(0, i);
-        console.log("Root name:" + value);
         return value;
     }
 
@@ -282,7 +287,7 @@ export class HelmVariables extends Component {
                     this.setState({ injectIstioCar: value.value === "true" ? true : false })
                     break;
                 case "service.apply":
-                    this.setState({ dontCreateService: value.value === "true" ? false : true })
+                    this.setState({ dontCreateService: value.value === "true" && !this.props.canary  ? false : true })
                     break;
                 case "istio.virtualservices.enabled":
                     this.setState({ enableVirtualService: value.value === "true" ? true : false })
@@ -379,6 +384,9 @@ export class HelmVariables extends Component {
 
     getConfigMapName() {
         let configMapName = this.state.releaseName + "-gcm";
+        if (this.props.canary) {
+            configMapName = configMapName + '-beta';
+        }
         return configMapName
     }
 
@@ -442,12 +450,12 @@ export class HelmVariables extends Component {
 
                                 <ButtonToolbar>
 
-                                <Button className="btn-primary" 
+                                <Button className="btn-primary" disabled={this.props.canary}
                                  onClick={this.props.copyVariables.bind(this, this.props.xref)}
-                                bsSize="sm" ><i className="pe-7s-magic-wand" />
+                                  bsSize="sm" ><i className="pe-7s-magic-wand" />
                                 {" "}Copy config from another environment</Button>
 
-                                <Button className="btn-warning" 
+                                <Button className="btn-warning" disabled={this.props.canary}
                                     onClick={this.showHideCanaryOptions.bind(this)}
                                     bsSize="sm" ><i className="pe-7s-magic-wand" />
                                     {" "}{this.state.canaryShowing ? "Hide Advanved Option" : "Show Advanced Options"}

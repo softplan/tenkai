@@ -27,6 +27,20 @@ class Workload extends Component {
         confirmInput: "",
     }
 
+    navigateToBlueGreenWizard(item) {
+        let chartsToDeploy = [];
+        let chartName =  item.Chart;
+        let chartVersion = item.Chart;
+        chartName = chartName.substring(0, chartName.lastIndexOf("-"));
+        chartVersion = chartVersion.substring(chartVersion.lastIndexOf("-")+1);
+        chartsToDeploy.push(chartName + "@" + chartVersion);
+        this.props.updateSelectedChartsToDeploy(chartsToDeploy);
+
+        this.props.history.push({
+            pathname: "/admin/blueGreenWizard"
+        });
+    }
+
     componentDidMount() {
         this.listDeploymentsByEnv();
         this.listPods();
@@ -62,10 +76,6 @@ class Workload extends Component {
     
     showConfirmCopyModal(ref) {
         this.setState({ onShowCopyModal: true});
-    }
-
-    componentWillUnmount() {
-        //clearInterval(this.timer);
     }
 
     listPods() {
@@ -130,12 +140,6 @@ class Workload extends Component {
         let value = e.target.value;
         this.setState({confirmInput: value});
     }
-
-    
-    
-    
-
-
     
     render() {
 
@@ -148,6 +152,7 @@ class Workload extends Component {
                 handleNotification={this.props.handleNotification}
                 historyList={this.state.historyList}
                 onTabSelect={this.onTabSelect.bind(this)}
+                navigateToBlueGreenWizard={this.navigateToBlueGreenWizard.bind(this, item)}
                 refresh={this.listDeploymentsByEnv.bind(this)}
             />
         );
@@ -202,8 +207,6 @@ class Workload extends Component {
                         title=""
                         content={
                             <div>
-
-
                                 <Row>
                                     <Col xs={4}>
                                         <FormGroup>
@@ -237,9 +240,7 @@ class Workload extends Component {
 
                                 </Row>
                             </div>
-
                         } />
-
                 </Tab>
 
                 <Tab eventKey="helm" title="Helm Releases">

@@ -11,8 +11,10 @@ import Solution from "views/Solution"
 import SolutionChart from "views/SolutionChart"
 import DeploySolution from "views/DeploySolution"
 import Users from "views/Users"
-import Traffic from "views/Traffic"
 import Workload from "views/Workload"
+import BlueGreenWizard from "views/BlueGreenWizard"
+import DockerRepo from "views/DockerRepo";
+
 
 const dashboardRoutes = [
   {
@@ -88,6 +90,15 @@ const dashboardRoutes = [
     role: "tenkai-user"
   },
   {
+    path: "/dockerRepo",
+    name: "Docker Repo",
+    icon: "pe-7s-albums",
+    component: DockerRepo,
+    layout: "/admin",
+    menu: true,
+    role: "tenkai-admin"
+  },
+  {
     path: "/solution",
     name: "Solution",
     icon: "pe-7s-umbrella",
@@ -142,15 +153,14 @@ const dashboardRoutes = [
     role: "tenkai-admin"
   }, 
   {
-    path: "/traffic",
-    name: "Traffic Management",
+    path: "/blueGreenWizard",
+    name: "Blue Green Wizard",
     icon: "pe-7s-shuffle",
-    component: Traffic,
+    component: BlueGreenWizard,
     layout: "/admin",
-    menu: true,
+    menu: false,
     role: "tenkai-admin"
   },
-
 
 ];
 

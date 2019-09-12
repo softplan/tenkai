@@ -322,6 +322,7 @@ class DepGraph extends Component {
 
                             <div >
                                 <HelmVariables handleLoading={this.props.handleLoading}
+                                    canary={false}
                                     copyVariables={this.showConfirmCopyModal.bind(this)}
                                     handleNotification={this.props.handleNotification}
                                     key={index} chartName={chartName}
