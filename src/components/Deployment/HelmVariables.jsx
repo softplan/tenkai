@@ -3,7 +3,7 @@ import { Card } from "components/Card/Card.jsx";
 import {
     Row,
     Col,
-    Table, FormGroup, ButtonToolbar
+    Table, FormGroup, ButtonToolbar, ControlLabel
 } from "react-bootstrap";
 import axios from 'axios';
 import ArrayVariable from "components/Deployment/ArrayVariable.jsx"
@@ -13,6 +13,8 @@ import { FormInputs } from "components/FormInputs/FormInputs.jsx";
 import { ConfigMap } from "components/Deployment/ConfigMap.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
 import { CanaryCard } from "components/Deployment/CanaryCard.jsx"
+import { getTagsOfImage } from 'client-api/apicall.jsx';
+import Select from 'react-select';
 
 export class HelmVariables extends Component {
 
@@ -26,6 +28,7 @@ export class HelmVariables extends Component {
         enableVirtualService: true,
         containerImage: "",
         containerTag: "",
+        selectedTag: {},
         hosts: {},
         hostCount: 0,
         configMapChart: "saj6/dotnet-global-variables",
@@ -34,7 +37,8 @@ export class HelmVariables extends Component {
         canaryShowing: false,
         releaseName: "",
         dontCreateService: false,
-        applyConfigMap: false
+        applyConfigMap: false,
+        tags: [],
     }
 
     constructor(props) {
@@ -170,6 +174,18 @@ export class HelmVariables extends Component {
 
     }
 
+    async retrieveTagsOfImage(imageName) {
+        getTagsOfImage(this, imageName, (self, data) => {
+            var arr = [];
+            for (var x = 0; x < data.tags.length; x++) {
+                var element = data.tags[x];
+                arr.push({ value: element.tag, label: element.tag });
+            }
+            this.setState({tags: arr});
+            console.log(data);
+        })
+    }
+
     async listVariables(environmentId) {
 
         this.setState({values: {}}, () => {
@@ -229,6 +245,9 @@ export class HelmVariables extends Component {
                     this.setState({
                         containerImage: response.data.image.repository,
                         containerTag: response.data.image.tag,
+                        selectedTag: {value: response.data.image.tag, label: response.data.image.tag},
+                    }, () => {
+                        this.retrieveTagsOfImage(this.state.containerImage);
                     });
                 }
 
@@ -268,10 +287,17 @@ export class HelmVariables extends Component {
 
             switch (value.name) {
                 case "image.repository":
-                    this.setState({ containerImage: value.value })
+                    if (this.state.containerImage !== value.value ) {
+                        this.setState({ containerImage: value.value }, () => {
+                            this.retrieveTagsOfImage(this.state.containerImage);
+                        })
+                    }
                     break;
                 case "image.tag":
-                    this.setState({ containerTag: value.value })
+                    if (this.state.containerTag !== value.value ) {
+                        this.setState({ containerTag: value.value,  
+                            selectedTag: {value: value.value, label: value.value}});
+                    }
                     break;
                 default:
                     break;
@@ -303,6 +329,10 @@ export class HelmVariables extends Component {
                     }
             }
         });
+    }
+
+    getTagsOfImage(imageName) {
+
     }
 
 
@@ -345,12 +375,13 @@ export class HelmVariables extends Component {
 
     handleContainerImageChange = event => {
         const value = event.target.value;
-        this.setState({ containerImage: value });
+        this.setState({ containerImage: value}, () => {
+            this.retrieveTagsOfImage(this.state.containerImage);
+        });
     }
 
-    handleContainerTagChange = event => {
-        const value = event.target.value;
-        this.setState({ containerTag: value });
+    handleContainerTagChange = (selectedTag) => {
+        this.setState({ selectedTag: selectedTag, containerTag: selectedTag.value });
     }
 
     onApiGatewayPathChange(newValue) {
@@ -478,11 +509,12 @@ export class HelmVariables extends Component {
                             </div> : <div></div>}
                             
                                 {(this.state.chartName !== this.state.simpleChart && this.state.chartName !== this.state.canaryChart) ? 
-                                <div>
-                                    <form>
+                                <form>
+                                <Row>
+                                        <Col xs={8}>
                                         <FormGroup>
                                             <FormInputs
-                                                ncols={["col-md-6", "col-md-2"]}
+                                                ncols={["col-md-8"]}
                                                 properties={[
                                                     {
                                                         name: "image",
@@ -492,19 +524,20 @@ export class HelmVariables extends Component {
                                                         value: this.state.containerImage,
                                                         onChange: this.handleContainerImageChange
                                                     },
-                                                    {
-                                                        name: "tag",
-                                                        label: "Container Tag",
-                                                        type: "text",
-                                                        bsClass: "form-control",
-                                                        value: this.state.containerTag,
-                                                        onChange: this.handleContainerTagChange
-                                                    },
                                                 ]}
                                             />
                                         </FormGroup>
-                                    </form>
-                                </div>
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col xs={4}>
+                                        <FormGroup>
+                                            <ControlLabel>Container Tag</ControlLabel>
+                                            <Select value={this.state.selectedTag} onChange={this.handleContainerTagChange} options={this.state.tags} />
+                                        </FormGroup>
+                                        </Col>
+                                    </Row>
+                                </form>
                                 : <div></div> }
 
 

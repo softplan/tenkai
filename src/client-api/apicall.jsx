@@ -376,12 +376,29 @@ function promote(self, srcEnvID, targetEnvID, full) {
     });    
 }
 
+function getTagsOfImage(self, imageName, callback) {
+    self.props.handleLoading(true);
+    let url = TENKAI_API_URL + "/listDockerTags"
+    axios.post(url, { imageName })
+    .then(res =>
+        {
+            if (callback !== undefined) {
+                callback(self, res.data);
+            }
+            self.props.handleLoading(false);
+        }
+    ).catch(error => {
+      self.props.handleLoading(false);
+      self.props.handleNotification("general_fail", "error");
+    });    
+}
+
 export {
     retriveRepo, retrieveCharts, retrieveReleases,
     saveReleases, retrieveDependencies, saveDependency,
     deleteDependency, deleteRelease, retrieveDependency, retrieveReleasesWithCallBack, 
     multipleInstall, getAllEnvironments, saveUsers, getDefaultRepo, listHelmDeploymentsByEnvironment,
     getReleaseHistory, deleteHelmRelease, getRevisionYaml, rollbackHelmRelease, listPods, deletePod,
-    listServices, promote
+    listServices, promote, getTagsOfImage
 
 };
