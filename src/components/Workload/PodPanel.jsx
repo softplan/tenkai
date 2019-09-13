@@ -34,6 +34,7 @@ export class PodPanel extends Component {
         const list = this.props.list.map((item, key) =>
             <tr key={key}>
                 <td>{item.name}</td>
+                <td>{item.image}</td>
                 <td>{item.ready}</td>
                 <td>{item.status}</td>
                 <td>{item.restarts}</td>
@@ -57,6 +58,7 @@ export class PodPanel extends Component {
             <thead>
                 <tr>
                     <th>Name</th>
+                    <th>Image</th>
                     <th>Ready</th>
                     <th>Status</th>
                     <th>Restarts</th>
