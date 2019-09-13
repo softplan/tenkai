@@ -123,7 +123,6 @@ class Config extends Component {
   }
 
   onSaveClick(data) {
-    console.log(data)
 
     if (this.state.editMode) {
 
@@ -164,7 +163,6 @@ class Config extends Component {
 
   getHighLight(item) {
     let result = "";
-    console.log(this.state.defaultRepo);
     if (item.name === this.state.defaultRepo) {
       result = "bg-info";
     } 

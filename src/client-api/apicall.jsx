@@ -356,9 +356,15 @@ function deletePod(self, environmentID, podName, callback) {
     });    
 }
 
-function promote(self, srcEnvID, targetEnvID) {
+function promote(self, srcEnvID, targetEnvID, full) {
     self.props.handleLoading(true);
-    axios.get(TENKAI_API_URL + `/promote?srcEnvID=${srcEnvID}&targetEnvID=${targetEnvID}`)
+    let url = TENKAI_API_URL + `/promote?srcEnvID=${srcEnvID}&targetEnvID=${targetEnvID}`
+    if (full) {
+        url = url + "&mode=full"
+    } else {
+        url = url + "&mode=workload"
+    }
+    axios.get(url)
     .then(res =>
         {
             self.props.handleNotification("custom", "success", "Done!");      

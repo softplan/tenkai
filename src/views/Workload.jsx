@@ -22,6 +22,7 @@ class Workload extends Component {
         podList: [],
         serviceList: [],
         onShowCopyModal: false,
+        mode: "workload",
         onShowConfirmModal: false,
         targetEnvToPromote: {},
         confirmInput: "",
@@ -64,18 +65,31 @@ class Workload extends Component {
     }
     
     async onConfirmCopyModal(item) {
-        this.setState({ onShowCopyModal: false, onShowConfirmModal: true, targetEnvToPromote: item});
+
+        if (this.state.mode === "full") {
+            this.setState({ onShowCopyModal: false, onShowConfirmModal: true, targetEnvToPromote: item});
+        } else {
+            this.setState({ targetEnvToPromote: item}, () => {
+                promote(this, this.props.selectedEnvironment.value, this.state.targetEnvToPromote.value, false);
+                this.setState({ onShowCopyModal: false, onShowConfirmModal: false, targetEnvToPromote: {} });
+            });
+        }
+        
     }
 
     async doPromote() {
         if (this.state.confirmInput === this.state.targetEnvToPromote.label) {
-            promote(this, this.props.selectedEnvironment.value, this.state.targetEnvToPromote.value);
+            promote(this, this.props.selectedEnvironment.value, this.state.targetEnvToPromote.value, true);
             this.setState({ onShowConfirmModal: false, targetEnvToPromote: {} });
         }
     }
-    
+
     showConfirmCopyModal(ref) {
-        this.setState({ onShowCopyModal: true});
+        this.setState({mode:"workload", onShowCopyModal: true});
+    }
+
+    showConfirmCopyModalFull(ref) {
+        this.setState({mode:"full", onShowCopyModal: true});
     }
 
     listPods() {
@@ -251,7 +265,7 @@ class Workload extends Component {
                                 <CopyModal
                                     onShow={this.state.onShowCopyModal}
                                     onClose={this.onCloseCopyModal.bind(this)}
-                                    title="Select target environment (it will be destroyed)" 
+                                    title="Select target environment" 
                                     onConfirm={this.onConfirmCopyModal.bind(this)}
                                     environments={this.props.environments}
                                     onlyMyEnvironments={true}>
@@ -298,20 +312,31 @@ class Workload extends Component {
                                         </FormGroup>
                                     </Col>
 
-                                    <Col xs={4}>
+                                    <Col xs={2}>
                                         <Button className="btn btn-info pull-right" bsSize="sm"  
                                             onClick={this.refreshReleases.bind(this)}><i className="pe-7s-refresh-2" 
                                         />
                                         {" "}Refresh</Button>
                                     </Col>
 
-                                    <Col xs={4}>
+                                    <Col xs={6}>
+
                                     <ButtonToolbar>
-                                        <Button className="btn btn-danger btn-fill pull-right" bsSize="sm" 
+                                        
+                                        <Button className="btn btn-success btn-fill pull-right" bsSize="sm" 
                                             onClick={this.showConfirmCopyModal.bind(this)}
                                             disabled={!this.props.keycloak.hasRealmRole("tenkai-admin")}>
                                             <i className="pe-7s-smile" />
                                         {" "}Copy Releases to another namespace</Button>
+
+                                        <Button className="btn btn-danger btn-fill pull-right" bsSize="sm" 
+                                            onClick={this.showConfirmCopyModalFull.bind(this)}
+                                            disabled={!this.props.keycloak.hasRealmRole("tenkai-admin")}>
+                                            <i className="pe-7s-smile" />
+                                        {" "}Replicate full environment</Button>
+
+
+
                                     </ButtonToolbar>
                                     </Col>
                                 </Row>
