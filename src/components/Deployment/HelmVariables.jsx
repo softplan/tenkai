@@ -424,9 +424,9 @@ export class HelmVariables extends Component {
 
                 return (
                     <tr key={key}>
-                        <td>{key}</td>
-                        <td>{keyValue}</td>
-                        <td><input name={key} value={value}
+                        <td className="col-md-2">{key}</td>
+                        <td className="col-md-5 word-wrap">{keyValue}</td>
+                        <td className="col-md-5" ><input name={key} value={value}
                             onChange={this.onInputChange}
                             type="text" style={{ width: "100%" }} /></td>
                     </tr>
@@ -531,9 +531,9 @@ export class HelmVariables extends Component {
                                     <Table striped hover>
                                         <thead>
                                             <tr>
-                                                <th style={{ width: "10%" }}>Variable</th>
-                                                <th style={{ width: "40%" }}>Chart Default Value</th>
-                                                <th style={{ width: "40%" }}>Environment Value</th>
+                                                <th>Variable</th>
+                                                <th>Chart Default Value</th>
+                                                <th>Environment Value</th>
                                             </tr>
                                         </thead>
                                         <tbody>
