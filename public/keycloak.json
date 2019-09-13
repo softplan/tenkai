@@ -1,6 +1,6 @@
 {
     "realm": "tenkai",
-    "auth-server-url": "http://keycloak-tools/auth",
+    "auth-server-url": "http://keycloaktools/auth",
     "ssl-required": "external",
     "resource": "tenkai",
     "public-client": true,
