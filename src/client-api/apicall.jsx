@@ -227,7 +227,7 @@ function getDefaultRepo(self, callback) {
       }
     }).catch(error => {
       self.props.handleLoading(false);
-      self.props.handleNotification("general_fail", "error");
+      handlerError(self, error.response);
     });
 }
 
@@ -289,7 +289,7 @@ function getReleaseHistory(self, environmentID, releaseName, callback) {
       }
     }).catch(error => {
       self.props.handleLoading(false);
-      self.props.handleNotification("general_fail", "error");
+      handlerError(self, error.response);
     });    
 }
 
@@ -303,7 +303,7 @@ function getRevisionYaml(self, environmentID, releaseName, revision, callback) {
       }
     }).catch(error => {
       self.props.handleLoading(false);
-      self.props.handleNotification("general_fail", "error");
+      handlerError(self, error.response);
     });    
 }
 
@@ -319,7 +319,7 @@ function rollbackHelmRelease(self, environmentID, item, callback) {
       }
     }).catch(error => {
       self.props.handleLoading(false);
-      self.props.handleNotification("general_fail", "error");
+      handlerError(self, error.response);
     });        
 }
 
@@ -336,7 +336,7 @@ function deleteHelmRelease(self, environmentID, releaseName, callback) {
         }
     ).catch(error => {
       self.props.handleLoading(false);
-      self.props.handleNotification("general_fail", "error");
+      handlerError(self, error.response);
     });    
 }
 
@@ -352,7 +352,7 @@ function deletePod(self, environmentID, podName, callback) {
         }
     ).catch(error => {
       self.props.handleLoading(false);
-      self.props.handleNotification("general_fail", "error");
+      handlerError(self, error.response);
     });    
 }
 
@@ -372,7 +372,8 @@ function promote(self, srcEnvID, targetEnvID, full) {
         }
     ).catch(error => {
       self.props.handleLoading(false);
-      self.props.handleNotification("general_fail", "error");
+      handlerError(self, error.response);
+      
     });    
 }
 
@@ -389,7 +390,7 @@ function getTagsOfImage(self, imageName, callback) {
         }
     ).catch(error => {
       self.props.handleLoading(false);
-      self.props.handleNotification("general_fail", "error");
+      handlerError(self, error.response);
     });    
 }
 

@@ -88,8 +88,16 @@ export class ReleasePanel extends Component {
                 <td>{item.revision}</td>
                 <td>{item.updated}</td>
                 <td>{item.status}</td>
-                <td><Button className="link-button" onClick={this.showRollbackConfirmModal.bind(this, item.revision)}><i className="pe-7s-back-2"/></Button></td>
-                <td><Button className="link-button" onClick={this.showEditorModal.bind(this, item)}><i className="pe-7s-note2"/></Button></td>
+
+                <td><Button className="link-button" 
+                        disabled={!this.props.keycloak.hasRealmRole("tenkai-promote")}
+                        onClick={this.showRollbackConfirmModal.bind(this, item.revision)}>
+                    <i className="pe-7s-back-2"/></Button></td>
+
+                <td><Button className="link-button" 
+                        disabled={!this.props.keycloak.hasRealmRole("tenkai-promote")}
+                        onClick={this.showEditorModal.bind(this, item)}>
+                    <i className="pe-7s-note2"/></Button></td>
             </tr>
         );
 

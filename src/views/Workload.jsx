@@ -159,6 +159,7 @@ class Workload extends Component {
 
         const items = this.state.list.filter(d => this.state.inputFilter === '' || d.Name.includes(this.state.inputFilter)).map((item, key) =>
             <ReleasePanel eventKey={key}
+                keycloak={this.props.keycloak}
                 key={key}
                 item={item}
                 selectedEnvironment={this.props.selectedEnvironment}

@@ -3,13 +3,12 @@ import { Card } from "components/Card/Card.jsx";
 import {
     Row,
     Col,
-    Table, FormGroup, ButtonToolbar, ControlLabel
+    Table, FormGroup, ButtonToolbar, ControlLabel, FormControl
 } from "react-bootstrap";
 import axios from 'axios';
 import ArrayVariable from "components/Deployment/ArrayVariable.jsx"
 import IstioVariable from "./IstioVariable";
 import TENKAI_API_URL from 'env.js';
-import { FormInputs } from "components/FormInputs/FormInputs.jsx";
 import { ConfigMap } from "components/Deployment/ConfigMap.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
 import { CanaryCard } from "components/Deployment/CanaryCard.jsx"
@@ -511,26 +510,19 @@ export class HelmVariables extends Component {
                                 {(this.state.chartName !== this.state.simpleChart && this.state.chartName !== this.state.canaryChart) ? 
                                 <form>
                                 <Row>
-                                        <Col xs={8}>
+                                        <Col xs={6}>
                                         <FormGroup>
-                                            <FormInputs
-                                                ncols={["col-md-8"]}
-                                                properties={[
-                                                    {
-                                                        name: "image",
-                                                        label: "Container image",
-                                                        type: "text",
-                                                        bsClass: "form-control",
-                                                        value: this.state.containerImage,
-                                                        onChange: this.handleContainerImageChange
-                                                    },
-                                                ]}
+                                            <ControlLabel>Container image</ControlLabel>
+                                            <FormControl 
+                                                            name="image"
+                                                            type="text"
+                                                            bsClass="form-control"
+                                                            value={this.state.containerImage}
+                                                            onChange={this.handleContainerImageChange}
                                             />
-                                        </FormGroup>
+                                        </FormGroup>    
                                         </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col xs={4}>
+                                        <Col xs={3}>
                                         <FormGroup>
                                             <ControlLabel>Container Tag</ControlLabel>
                                             <Select value={this.state.selectedTag} onChange={this.handleContainerTagChange} options={this.state.tags} />
