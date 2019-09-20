@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import {
   Grid, Row, Col, FormGroup, FormControl, ControlLabel, Panel
 } from "react-bootstrap";
+import ReactDOM from 'react-dom';
 
 
 import Select from 'react-select';
@@ -93,6 +94,7 @@ class Deployment extends Component {
   }
 
   addToDeployList(item) {
+    
     let array = this.props.selectedChartsToDeploy;
     let index = array.indexOf(item)
     if (index !== -1) {
@@ -101,8 +103,19 @@ class Deployment extends Component {
       array.push(item);
     }
     this.props.updateSelectedChartsToDeploy(array);
+
+    this.focusToInput();
+
   }
 
+  
+  focusToInput() {
+    let node = ReactDOM.findDOMNode(this.refs.inputNode);
+    if (node && node.focus instanceof Function) {
+        this.setState({inputFilter:""});
+        node.focus();
+    }
+  }
 
   handleCheckboxChange(e) {
 
@@ -126,7 +139,6 @@ class Deployment extends Component {
 
   deployUnit(item) {
     let array = []
-    console.log(item);
     array.push(item);
     this.props.updateSelectedChartsToDeploy(array, () => {
       this.props.history.push({
@@ -137,7 +149,6 @@ class Deployment extends Component {
 
   analysisUnit(item) {
     let array = []
-    console.log(item);
     array.push(item);
     this.props.updateSelectedChartsToDeploy(array, () => {
       this.props.history.push({
@@ -162,7 +173,7 @@ class Deployment extends Component {
     const { selectedRepository } = this.state;
 
     const multipleDeployList = this.props.selectedChartsToDeploy.map((item, key) =>  
-      <span class="badge badge-primary left-space">{item}</span>
+      <span key={key} className="badge badge-primary left-space">{item}</span>
     );
 
     const items = this.state.chartsResult.charts
@@ -213,6 +224,8 @@ class Deployment extends Component {
                         <FormGroup>
                           <ControlLabel>Chart Search</ControlLabel>
                           <FormControl
+                            ref="inputNode"
+                            name="inputFilter"
                             value={this.state.inputFilter}
                             onChange={this.onChangeInputHandler.bind(this)}
                             style={{ width: '100%' }} type="text"
@@ -222,11 +235,11 @@ class Deployment extends Component {
                       </Col>
 
                       <Col xs={3}>
-                        <div className="custom-control custom-checkbox">
-                          <input type="checkbox" className="custom-control-input"
-                            id="latestVersionOnly" checked={this.state.latestVersionOnly === true}
-                            onChange={this.handleLatestVersionOnlyChange.bind(this)} />
-                          <label className="custom-control-label" htmlFor="latestVersionOnly">LATEST CHART VERSION ONLY</label>
+                        <div>
+                            <input type="checkbox" 
+                              id="latestVersionOnly" checked={this.state.latestVersionOnly === true}
+                              onChange={this.handleLatestVersionOnlyChange.bind(this)} />{" "}
+                            <label for="latestVersionOnly" >LATEST CHART VERSION ONLY</label>
                         </div>
                       </Col>
                     </Row>
@@ -242,8 +255,6 @@ class Deployment extends Component {
                         {multipleDeployList}
                         </Panel.Body>
                       </Panel>
-
-                        
 
                       </Col>
                     </Row>
