@@ -9,7 +9,7 @@ COPY build/. /var/www/localhost/htdocs
 
 RUN apk add nginx && mkdir /run/nginx 
 
-CMD ["/bin/sh", "-c", "/tmp/config.sh /var/www/localhost/htdocs && exec nginx -g 'daemon off;'"]
-
 WORKDIR /var/www/localhost/htdocs
+
+CMD ["/bin/sh", "-c", "/tmp/config.sh /var/www/localhost/htdocs && exec nginx -g 'daemon off;'"]
 

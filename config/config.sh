@@ -1,5 +1,8 @@
 #!/bin/sh
 
+echo "$1" >> /tmp/variables.txt
+ls -al $1 >> /tmp/variables.txt
+
 echo $API_URL >> /tmp/variables.txt
 
 if [ "$API_URL" ]; then
