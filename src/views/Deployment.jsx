@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import {
-  Grid, Row, Col, FormGroup, FormControl, ControlLabel
+  Grid, Row, Col, FormGroup, FormControl, ControlLabel, Panel
 } from "react-bootstrap";
 
 
@@ -49,7 +49,6 @@ class Deployment extends Component {
                 break;
               }
             }
-
           });
         });
       }).catch(error => {
@@ -92,6 +91,18 @@ class Deployment extends Component {
       }
     });
   }
+
+  addToDeployList(item) {
+    let array = this.props.selectedChartsToDeploy;
+    let index = array.indexOf(item)
+    if (index !== -1) {
+      array.splice(index, 1);
+    } else {
+      array.push(item);
+    }
+    this.props.updateSelectedChartsToDeploy(array);
+  }
+
 
   handleCheckboxChange(e) {
 
@@ -150,16 +161,23 @@ class Deployment extends Component {
 
     const { selectedRepository } = this.state;
 
+    const multipleDeployList = this.props.selectedChartsToDeploy.map((item, key) =>  
+      <span class="badge badge-primary left-space">{item}</span>
+    );
+
     const items = this.state.chartsResult.charts
       .filter(d => this.state.inputFilter === '' || d.name.includes(this.state.inputFilter)).map((item, key) =>
-        <ChartCard key={item.name}
-          item={item}
-          selectedChartsToDeploy={this.props.selectedChartsToDeploy}
-          handleCheckboxChange={this.handleCheckboxChange.bind(this)}
-          deploy={this.deployUnit.bind(this)}
-          analysis={this.analysisUnit.bind(this)}
-          canary={this.canary.bind(this)}
-        />
+
+          <ChartCard key={item.name} 
+            item={item}
+            selectedChartsToDeploy={this.props.selectedChartsToDeploy}
+            handleCheckboxChange={this.handleCheckboxChange.bind(this)}
+            addToDeployList={this.addToDeployList.bind(this)}
+            deploy={this.deployUnit.bind(this)}
+            analysis={this.analysisUnit.bind(this)}
+            canary={this.canary.bind(this)}
+          />
+
       );
 
     return (
@@ -215,11 +233,33 @@ class Deployment extends Component {
 
                     <Row>
                       <Col xs={12}>
-                         {items}
+                        
+                      <Panel>
+                        <Panel.Heading>
+                          Multiple deployment selection
+                        </Panel.Heading>
+                        <Panel.Body>
+                        {multipleDeployList}
+                        </Panel.Body>
+                      </Panel>
+
+                        
+
                       </Col>
                     </Row>
 
-
+                    <Row>
+                      <Col xs={12}>
+                      <Panel bsStyle="primary">
+                        <Panel.Heading>
+                          <Panel.Title componentClass="h3">Charts</Panel.Title>
+                        </Panel.Heading>
+                        <Panel.Body>
+                          {items}
+                        </Panel.Body>
+                      </Panel>
+                      </Col>
+                    </Row>
                   </div>
                 }
               />

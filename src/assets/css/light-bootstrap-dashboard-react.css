@@ -1794,6 +1794,7 @@ body > .navbar-collapse[data-color="purple"]:after {
     color: #333; }
   .card .footer {
     padding: 0;
+    vertical-align: bottom;
     background-color: transparent;
     line-height: 30px; }
     .card .footer .legend {

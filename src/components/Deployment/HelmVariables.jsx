@@ -176,12 +176,14 @@ export class HelmVariables extends Component {
     async retrieveTagsOfImage(imageName) {
         getTagsOfImage(this, imageName, (self, data) => {
             var arr = [];
-            for (var x = 0; x < data.tags.length; x++) {
-                var element = data.tags[x];
-                arr.push({ value: element.tag, label: element.tag });
+            console.log(data.tags);
+            if (data.tags != null) {
+                for (var x = 0; x < data.tags.length; x++) {
+                    var element = data.tags[x];
+                    arr.push({ value: element.tag, label: element.tag });
+                }
             }
             this.setState({tags: arr});
-            console.log(data);
         })
     }
 

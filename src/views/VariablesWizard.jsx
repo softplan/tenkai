@@ -59,10 +59,19 @@ class VariablesWizard extends Component {
 
   onSaveVariablesClick = () => {
     this.props.handleLoading(true);
+    let count = this.state.charts.length;
+    let index = 0;
+
     this.state.charts.forEach((item, key) => {
-      this.refs["h" + key].save((data) => { });
+      this.refs["h" + key].save((data) => {
+        index++;
+        if (index >= count) {
+          this.props.handleNotification("custom", "success", "Variables saved!");
+          this.props.handleLoading(false);
+        }
+      });
     });
-    this.props.handleLoading(false);
+    
   }
 
   onClick = () => {

@@ -128,6 +128,19 @@ class Admin extends Component {
           autoDismiss: 15
         });
         break;
+        case "fail":
+          this.state._notificationSystem.addNotification({
+            title: <span data-notify="icon" className="pe-7s-gift" />,
+            message: (
+              <div>
+                :( Something wrong has happend <b>I'm sorry</b>!!!
+                  </div>
+            ),
+            level: level,
+            position: "tr",
+            autoDismiss: 15
+          });
+          break;
       case "general_fail":
         this.state._notificationSystem.addNotification({
           title: <span data-notify="icon" className="pe-7s-gift" />,

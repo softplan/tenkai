@@ -86,3 +86,18 @@
 .fixed {
     table-layout: fixed;
 }
+
+.chart{
+    position:relative;
+    background:#f9fbf4;    
+    float:left;
+    width:317px;
+    height: 300px;
+    margin-right:20px;
+    margin-bottom:20px;
+    padding-bottom:10px;
+}
+
+.left-space {
+    margin-left: 1em;
+}

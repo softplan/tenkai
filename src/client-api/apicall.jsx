@@ -5,7 +5,7 @@ function handlerError(self, response) {
     if (response !== undefined) {
         self.props.handleNotification("custom", "error", response.data);
     } else {
-        self.props.handleNotification("deployment_fail", "error");
+        self.props.handleNotification("fail", "error");
     }
 }
 
