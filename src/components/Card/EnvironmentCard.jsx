@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import { ButtonToolbar } from "react-bootstrap";
 import Button from "components/CustomButton/CustomButton.jsx";
 
