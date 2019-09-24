@@ -22,7 +22,7 @@ export class ActionCard extends Component {
                         disabled={this.props.buttonsDisabled}
                         onClick={this.props.analyseOnClick}>
                         
-                        <i className="pe-7s-eyedropper"/>{" "}Analyse Dependencies
+                        <i className="pe-7s-eyedropper"/>{" "}Analyse
                       </Button>
 
                       <Button className="btn btn-primary pull-right btn-fill"
@@ -30,7 +30,7 @@ export class ActionCard extends Component {
                         disabled={this.props.buttonsDisabled}
                         onClick={this.props.directDeployOnClick}>
                         
-                        <i className="pe-7s-album"/>{" "}Direct Deploy
+                        <i className="pe-7s-album"/>{" "}Deploy
                       </Button>
                     </ButtonToolbar>
 

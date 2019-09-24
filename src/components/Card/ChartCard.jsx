@@ -15,15 +15,15 @@ export class ChartCard extends Component {
             <ButtonToolbar>
 
               <Button className="btn-primary btn-fill" bsSize="sm"onClick={this.props.deploy.bind(this, this.props.item.name + "@" + this.props.item.chartVersion)}
-                ><i className="pe-7s-album"/>
+                ><i className="pe-7s-album"/>{" "}Deploy
                     </Button>
 
               <Button className="btn-info btn-fill" bsSize="sm" onClick={this.props.analysis.bind(this, this.props.item.name + "@" + this.props.item.chartVersion)}
-                ><i className="pe-7s-eyedropper"/>
+                ><i className="pe-7s-eyedropper"/>{" "}Analyse
                     </Button>
 
               <Button className="btn" bsSize="sm" onClick={this.props.addToDeployList.bind(this, this.props.item.name + "@" + this.props.item.chartVersion)}
-                ><i className="pe-7s-angle-right-circle"/>
+                ><i className="pe-7s-angle-right-circle"/>{" "}Multiple deploy
                     </Button>
 
             </ButtonToolbar>
