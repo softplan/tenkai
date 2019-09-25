@@ -33,24 +33,16 @@ class Sidebar extends Component {
         data-color={this.props.color}
         data-image={this.props.image}
       >
-          {this.props.hasImage ? (
-            <div className="sidebar-background" style={sidebarBackground} />
-          ) : (
-            null
-          )}
+        {this.props.hasImage ? (
+          <div className="sidebar-background" style={sidebarBackground} />
+        ) : null}
         <div className="logo">
-          <a
-            href="http://tenkai.saj6.softplan.com.br"
-            className="simple-text logo-mini"
-          >
+          <a href="/" className="simple-text logo-mini">
             <div className="logo-img">
               <img src={logo} alt="logo_image" />
             </div>
           </a>
-          <a
-            href="http://tenkai.saj6.softplan.com.br"
-            className="simple-text logo-normal"
-          >
+          <a href="/" className="simple-text logo-normal">
             Tenkai
           </a>
         </div>
@@ -58,12 +50,14 @@ class Sidebar extends Component {
           <ul className="nav">
             {this.state.width <= 991 ? <AdminNavbarLinks /> : null}
             {this.props.routes.map((prop, key) => {
-              if (!prop.redirect && prop.menu && this.props.keycloak.hasRealmRole(prop.role))
+              if (
+                !prop.redirect &&
+                prop.menu &&
+                this.props.keycloak.hasRealmRole(prop.role)
+              )
                 return (
                   <li
-                    className={
-                      this.activeRoute(prop.layout + prop.path)
-                    }
+                    className={this.activeRoute(prop.layout + prop.path)}
                     key={key}
                   >
                     <NavLink
