@@ -3,15 +3,40 @@ import { Table, FormGroup } from "react-bootstrap";
 import axios from "axios";
 import TENKAI_API_URL from "env.js";
 import { FormInputs } from "components/FormInputs/FormInputs.jsx";
+import { retrieveSettings } from "client-api/apicall.jsx";
 
 export class ConfigMap extends Component {
   state = {
     chartName: "",
+    chartName: "",
     ChartVersion: "",
     variables: {},
     values: {},
-    configMapChart: "saj6/dotnet-global-variables"
+    configMapChart: ""
   };
+
+  constructor(props) {
+    super(props);
+
+    let data = [];
+    data.push("commonValuesConfigMapChart");
+
+    retrieveSettings({ list: data }, this, (result, self) => {
+      let vCommonValuesConfigMapChart = "";
+
+      for (let x = 0; x < result.List.length; x++) {
+        let field = result.List[x].name;
+        let value = result.List[x].value;
+        if (field === "commonValuesConfigMapChart") {
+          vCommonValuesConfigMapChart = value;
+        }
+      }
+
+      this.setState({
+        configMapChart: vCommonValuesConfigMapChart
+      });
+    });
+  }
 
   componentDidMount() {
     this.setState(

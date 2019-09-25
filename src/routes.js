@@ -14,7 +14,7 @@ import Users from "views/Users"
 import Workload from "views/Workload"
 import BlueGreenWizard from "views/BlueGreenWizard"
 import DockerRepo from "views/DockerRepo";
-
+import GlobalConfig from "views/GlobalConfig";
 
 const dashboardRoutes = [
   {
@@ -161,6 +161,15 @@ const dashboardRoutes = [
     menu: false,
     role: "tenkai-admin"
   },
+  {
+    path: "/globalConfig",
+    name: "Settings",
+    icon: "pe-7s-settings",
+    component: GlobalConfig,
+    layout: "/admin",
+    menu: true,
+    role: "tenkai-admin"
+  },  
 
 ];
 
