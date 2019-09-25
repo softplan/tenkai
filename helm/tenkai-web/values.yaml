@@ -5,8 +5,6 @@
 replicaCount: 1
 
 image:
-  # Just a dummy API for test: /xapi/hello
-  #repository: docker-unj-repo.softplan.com.br/unj/tenkai-web
   repository: softplan/tenkai-web
   tag: latest
   pullPolicy: Always
@@ -17,8 +15,8 @@ service:
 
 app:
   pullSecret: unjregistry
-  apiUrl: http://tenkai-api.saj6.softplan.com.br
-  keycloakUrl: http://keycloak-tools.saj6.softplan.com.br/auth
+  apiUrl: http://tenkai-api.host.com.br
+  keycloakUrl: http://keycloak-tools.host.com.br/auth
   keycloakReam: tenkai
   
 istio:
@@ -28,7 +26,7 @@ istio:
     gateways:
     - tj-istio-gateway.istio-system.svc.cluster.local
     hosts:
-    - "tenkai.saj6.softplan.com.br"
+    - "tenkai.host.com.br"
     apiPath: /
 
 ingress:
@@ -38,7 +36,7 @@ ingress:
     # kubernetes.io/tls-acme: "true"
   path: /
   hosts:
-    - chart-example.saj6.softplan.com.br
+    - chart-example.host.com.br
   tls: []
   #  - secretName: chart-example-tls
   #    hosts:

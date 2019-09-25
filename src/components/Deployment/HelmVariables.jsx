@@ -12,7 +12,7 @@ import TENKAI_API_URL from 'env.js';
 import { ConfigMap } from "components/Deployment/ConfigMap.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
 import { CanaryCard } from "components/Deployment/CanaryCard.jsx"
-import { getTagsOfImage } from 'client-api/apicall.jsx';
+import { getTagsOfImage, retrieveSettings } from 'client-api/apicall.jsx';
 import Select from 'react-select';
 
 export class HelmVariables extends Component {
@@ -30,9 +30,9 @@ export class HelmVariables extends Component {
         selectedTag: {},
         hosts: {},
         hostCount: 0,
-        configMapChart: "saj6/dotnet-global-variables",
-        simpleChart: "saj6/dotnet-global-config",
-        canaryChart: "saj6/tenkai-canary",
+        configMapChart: "",
+        simpleChart: "",
+        canaryChart: "",
         canaryShowing: false,
         releaseName: "",
         dontCreateService: false,
@@ -42,6 +42,42 @@ export class HelmVariables extends Component {
 
     constructor(props) {
         super(props);
+
+        let data = [];
+        data.push("commonValuesConfigMapChart");
+        data.push("commonVariablesConfigMapChart");
+        data.push("canaryChart");
+    
+        retrieveSettings({ list: data }, this, (result, self) => {
+          let vCommonValuesConfigMapChart = "";
+          let vCommonVariablesConfigMapChart = "";
+          let vCanaryChart = "";
+    
+          for (let x = 0; x < result.List.length; x++) {
+            let field = result.List[x].name;
+            let value = result.List[x].value;
+    
+            if (field === "commonValuesConfigMapChart") {
+              vCommonValuesConfigMapChart = value;
+            } else {
+              if (field === "commonVariablesConfigMapChart") {
+                vCommonVariablesConfigMapChart = value;
+              } else {
+                if (field === "canaryChart") {
+                  vCanaryChart = value;
+                }
+              }
+            }
+          }
+
+          this.setState({configMapChart: vCommonValuesConfigMapChart, 
+            simpleChart: vCommonVariablesConfigMapChart,
+            canaryChart: vCanaryChart
+          });
+
+        });
+
+
         this.state.chartName = props.chartName;
         this.state.chartVersion = props.chartVersion;
 
@@ -55,7 +91,6 @@ export class HelmVariables extends Component {
             this.state.dontCreateService = true;
             this.state.canaryShowing = true;
         }
-
     }
 
     async componentDidMount() {
@@ -176,7 +211,6 @@ export class HelmVariables extends Component {
     async retrieveTagsOfImage(imageName) {
         getTagsOfImage(this, imageName, (self, data) => {
             var arr = [];
-            console.log(data.tags);
             if (data.tags != null) {
                 for (var x = 0; x < data.tags.length; x++) {
                     var element = data.tags[x];

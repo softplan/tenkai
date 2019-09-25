@@ -1,24 +1,19 @@
 import React, { Component } from "react";
-import {
-  Grid,
-  Row,
-  Col, ButtonToolbar
-} from "react-bootstrap";
+import { Grid, Row, Col, ButtonToolbar } from "react-bootstrap";
 
 import { Card } from "components/Card/Card.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
 import HelmVariables from "components/Deployment/HelmVariables.jsx";
 import CopyModal from "components/Modal/CopyModal.jsx";
-import { multipleInstall } from "client-api/apicall.jsx"
+import { multipleInstall } from "client-api/apicall.jsx";
 
 class VariablesWizard extends Component {
-
   state = {
     envId: "",
     charts: [],
     chartVersions: new Map(),
-    onShowCopyModal: false,
-  }
+    onShowCopyModal: false
+  };
 
   componentDidMount() {
     let total = this.props.selectedChartsToDeploy.length;
@@ -28,23 +23,31 @@ class VariablesWizard extends Component {
     let value = "";
     let chartVersions = new Map();
     for (let i = 0; i < total; i++) {
-      value = chartsToDeploy[i].substring(0, chartsToDeploy[i].indexOf("@"))
+      value = chartsToDeploy[i].substring(0, chartsToDeploy[i].indexOf("@"));
       helmCharts.push(value);
-      chartVersion = chartsToDeploy[i].substring(chartsToDeploy[i].indexOf("@") + 1, chartsToDeploy[i].length)
+      chartVersion = chartsToDeploy[i].substring(
+        chartsToDeploy[i].indexOf("@") + 1,
+        chartsToDeploy[i].length
+      );
       chartVersions[value] = chartVersion;
     }
-    this.setState({ charts: helmCharts, chartVersions: chartVersions }, async () => {
-      this.props.handleLoading(true);
-      await this.getChildVariables();
-      this.props.handleLoading(false);
-    });
-
+    this.setState(
+      { charts: helmCharts, chartVersions: chartVersions },
+      async () => {
+        this.props.handleLoading(true);
+        await this.getChildVariables();
+        this.props.handleLoading(false);
+      }
+    );
   }
 
   async getChildVariables() {
     for (let x = 0; x < this.state.charts.length; x++) {
       let chartName = this.state.charts[x];
-      await this.refs["h" + x].getVariables(chartName, this.state.chartVersions[chartName]);
+      await this.refs["h" + x].getVariables(
+        chartName,
+        this.state.chartVersions[chartName]
+      );
     }
   }
 
@@ -53,9 +56,9 @@ class VariablesWizard extends Component {
     this.state.envId = this.props.selectedEnvironment.value;
   }
 
-  onSave = (payload) => {
+  onSave = payload => {
     multipleInstall(payload, this);
-  }
+  };
 
   onSaveVariablesClick = () => {
     this.props.handleLoading(true);
@@ -63,25 +66,27 @@ class VariablesWizard extends Component {
     let index = 0;
 
     this.state.charts.forEach((item, key) => {
-      this.refs["h" + key].save((data) => {
+      this.refs["h" + key].save(data => {
         index++;
         if (index >= count) {
-          this.props.handleNotification("custom", "success", "Variables saved!");
+          this.props.handleNotification(
+            "custom",
+            "success",
+            "Variables saved!"
+          );
           this.props.handleLoading(false);
         }
       });
     });
-    
-  }
+  };
 
   onClick = () => {
-
     let payload = { deployables: [] };
     let count = 0;
     const totalCharts = this.state.charts.length;
 
     this.state.charts.forEach((item, key) => {
-      this.refs["h" + key].save((list) => {
+      this.refs["h" + key].save(list => {
         for (let x = 0; x < list.length; x++) {
           let data = list[x];
           payload.deployables.push(data);
@@ -91,10 +96,8 @@ class VariablesWizard extends Component {
           this.onSave(payload);
         }
       });
-
     });
-  }
-
+  };
 
   onCloseCopyModal() {
     this.setState({ onShowCopyModal: false, chartToManipulate: "" });
@@ -110,69 +113,78 @@ class VariablesWizard extends Component {
   }
 
   render() {
-
     const envId = this.state.envId;
     const items = this.state.charts.map((item, key) => {
       return (
-        <HelmVariables handleLoading={this.props.handleLoading}
+        <HelmVariables
+          handleLoading={this.props.handleLoading}
           canary={false}
           copyVariables={this.showConfirmCopyModal.bind(this)}
           handleNotification={this.props.handleNotification}
-          key={key} chartName={item} chartVersion={this.state.chartVersions[item]}
+          key={key}
+          chartName={item}
+          chartVersion={this.state.chartVersions[item]}
           xref={"h" + key}
           ref={"h" + key}
-          envId={envId} />
-      )
-
+          envId={envId}
+        />
+      );
     });
 
     return (
       <div className="content">
-
         <CopyModal
-              onShow={this.state.onShowCopyModal}
-              onClose={this.onCloseCopyModal.bind(this)}
-              title="Copy config from another environment" subTitle="Select environment" 
-              onConfirm={this.onConfirmCopyModal.bind(this)}
-              environments={this.props.environments}>
-        </CopyModal>
-
+          onShow={this.state.onShowCopyModal}
+          onClose={this.onCloseCopyModal.bind(this)}
+          title="Copy config from another environment"
+          subTitle="Select environment"
+          onConfirm={this.onConfirmCopyModal.bind(this)}
+          environments={this.props.environments}
+        ></CopyModal>
 
         <Grid fluid>
-
           <Row>
-
             <Col md={12}>
               <Card
                 title=""
                 content={
                   <div>
                     <ButtonToolbar>
-
-                      <Button className="btn-primary pull-right"
+                      <Button
+                        className="btn-primary pull-right"
                         type="button"
                         onClick={this.onClick}
-                        disabled={!this.props.keycloak.hasRealmRole("tenkai-helm-upgrade")}
-                      >Install/Update</Button>
+                        disabled={
+                          !this.props.keycloak.hasRealmRole(
+                            "tenkai-helm-upgrade"
+                          )
+                        }
+                      >
+                        Install/Update
+                      </Button>
 
-                      <Button className="btn-info pull-right"
+                      <Button
+                        className="btn-info pull-right"
                         type="button"
                         onClick={this.onSaveVariablesClick}
-                        disabled={!this.props.keycloak.hasRealmRole("tenkai-variables-save")}
-                      >Save Variables</Button>
-
+                        disabled={
+                          !this.props.keycloak.hasRealmRole(
+                            "tenkai-variables-save"
+                          )
+                        }
+                      >
+                        Save Variables
+                      </Button>
                     </ButtonToolbar>
 
                     <div className="clearfix" />
                   </div>
-
                 }
               />
             </Col>
           </Row>
 
           {items}
-
         </Grid>
       </div>
     );
