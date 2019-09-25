@@ -1,6 +1,6 @@
 {
   "realm": "tenkai",
-  "auth-server-url": "http://localhost:5180/auth",
+  "auth-server-url": "http://localhost:8180/auth",
   "ssl-required": "external",
   "resource": "tenkai",
   "public-client": true,
