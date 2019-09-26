@@ -16,7 +16,6 @@ Configure the relationships between hundreads of microservices is always a heada
 In this context Tenkai comes to help you to configure and centralize your environment's variables. Tenkai is using the best of Helm tool, bring us a Web GUI interface that show us our Helm Charts from our repositories and allow us to easy configure and deploy them.
 Besides that, Tenkai has a strong integration with Istio Service Mesh, abstracting the process of defining a virtualservices, injecting istiocar and handle traffic management rules (as canary deployments). If you need to handle dependencies between services, Tenkay could help you to track your services versions and to verify which of them are already deployed and which of them are in old versions and depending of deployment.
 
-
 ## Demo Deployment
 
 ### Pre-requirements
@@ -30,12 +29,16 @@ docker run -d -p 8180:8080 -e KEYCLOAK_USER=admin -e \
 KEYCLOAK_PASSWORD=admin -v $(pwd):/tmp --name kc \
 jboss/keycloak
 ```
-Inside keycloak dashboard, you must create a Realm called "tenkai" as well a  Client called "tenkai". 
-For demo purposes, you should create 2 roles:
-* tenkai-admin
-* tenkai-user
 
-So, create you user and associate them to this roles.
+Inside keycloak dashboard, you must create a Realm called "tenkai" as well a Client called "tenkai".
+For demo purposes, you should create 2 roles:
+
+- tenkai-admin
+- tenkai-user
+
+So, create you user and associate them to this roles. Also enter a valid redirect URI:
+
+- http://localhost:3000/admin/workload
 
 ### Deployment of Tenkai-api
 
@@ -44,6 +47,7 @@ In a demo environment, you should only run the container without any adicional p
 ```
 docker run --name tenkai-api -p 8080:8080 -d softplan/tenkai-api:dev
 ```
+
 ### Deployment of Tenkai GUI
 
 You must pass the API_URL, KEYCLOAK_URL and KEYCLOAK_REAML environment variables.
@@ -55,7 +59,3 @@ docker run --name tenkai-web -p 3001:80 -e API_URL=http://localhost:8080 -e KEYC
 ## Production Deployment
 
 => In construction.
-
-
-
-
