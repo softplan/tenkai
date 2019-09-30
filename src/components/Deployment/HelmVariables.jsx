@@ -223,6 +223,7 @@ export class HelmVariables extends Component {
 
     async listVariables(environmentId) {
 
+        this.props.handleLoading(true);
         this.setState({values: {}}, () => {
 
             axios.post(TENKAI_API_URL + '/listVariables', { environmentId: environmentId, scope: this.state.chartName })
@@ -235,8 +236,10 @@ export class HelmVariables extends Component {
                 if (this.state.applyConfigMap && this.refs["hConfigMap"] !== undefined) {
                     this.refs["hConfigMap"].listVariables(environmentId);
                 }
+                this.props.handleLoading(false);
     
             }).catch(error => {
+                this.props.handleLoading(false);
                 console.log(error.message);
                 this.props.handleNotification("general_fail", "error");
             });
@@ -263,10 +266,12 @@ export class HelmVariables extends Component {
     async getVariables(chartName, chartVersion)  {
 
         await this.hasConfigMap(chartName, chartVersion);
+
+        this.props.handleLoading(true);
         
         await axios.post(TENKAI_API_URL + '/getChartVariables', { chartName, chartVersion })
             .then(response => {
-
+                this.props.handleLoading(false);
                 if (response.data.istio != null) {
                     this.setState({
                         defaultApiPath: response.data.istio.virtualservices.apiPath,
@@ -295,17 +300,21 @@ export class HelmVariables extends Component {
                 const scope = this.state.chartName;
                 const environmentId = parseInt(this.props.envId);
 
+                this.props.handleLoading(true);
                 axios.post(TENKAI_API_URL + '/listVariables', { environmentId: environmentId, scope: scope })
                     .then(response => {
+                        this.props.handleLoading(false);
                         this.addToValues(this, response.data.Variables);
                         this.fillIstioFields(this, response.data.Variables);
                         this.fillImageFields(this, response.data.Variables);
                     }).catch(error => {
                         console.log(error.message);
                         this.props.handleNotification("general_fail", "error");
+                        this.props.handleLoading(false);
                     });
 
             }).catch(error => {
+                this.props.handleLoading(false);
                 console.log("Error here: " + JSON.stringify(error));
                 this.props.handleNotification("general_fail", "error");
             });
