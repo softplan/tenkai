@@ -260,18 +260,16 @@ function retrieveDependency(environmentId, chartName, tag, self) {
     });
 }
 
-function getAllEnvironments(self, callback) {
+function getAllEnvironments(callback) {
   axios
     .get(TENKAI_API_URL + "/environments/all")
-    .then(response =>
-      self.setState({ envs: response.data.Envs }, () => {
-        if (callback !== undefined) {
-          callback(self);
-        }
-      })
-    )
+    .then(response => {
+      if (callback !== undefined) {
+        callback(response.data.Envs);
+      }
+    })
     .catch(error => {
-      handlerError(self, error.response);
+      handlerError(error.response);
     });
 }
 

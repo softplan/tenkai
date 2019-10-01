@@ -1,60 +1,52 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
 import { Modal, Button } from "react-bootstrap";
-import Select from 'react-select';
-import { getAllEnvironments } from 'client-api/apicall.jsx';
+import Select from "react-select";
+import { getAllEnvironments } from "client-api/apicall.jsx";
 
+const CopyModal = props => {
+  const [selectedEnvironment, setSelectedEnvironment] = useState({});
+  const [envsOptions, setEnvsOptions] = useState([]);
 
-class CopyModal extends Component {
-
-    state = {
-        selectedEnvironment: {},
-        envs:[],
-        envsOptions: [],
-    }
-
-    componentDidMount() {
-        this.getEnvironments();
-    }
-
-    handleEnvironmentChange = (selectedEnvironment) => {
-        this.setState({ selectedEnvironment });
-    }
-    
-    getEnvironments() {
-
-        if (this.props.onlyMyEnvironments) {
-            this.setState({envsOptions:this.props.environments});
-        } else {
-
-            getAllEnvironments(this, function(self) {
-                let options = [];
-                for (let x = 0; x < self.state.envs.length; x++) {
-                    options.push({label:self.state.envs[x].name, value:self.state.envs[x].ID});
-                }
-                self.setState({envsOptions:options});
-            });
-
+  useEffect(() => {
+    if (props.onlyMyEnvironments) {
+      setEnvsOptions(props.environments);
+    } else {
+      getAllEnvironments(envs => {
+        let options = [];
+        for (let x = 0; x < envs.length; x++) {
+          options.push({ label: envs[x].name, value: envs[x].ID });
         }
+        setEnvsOptions(options);
+      });
     }
-    
-    render() {
-        
-        return (
-            <Modal show={this.props.onShow} onHide={this.props.onClose.bind(this)}>
-                <Modal.Header closeButton>
-                    <Modal.Title>{this.props.title}</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <p>Environments:</p>
-                    <Select  value={this.state.selectedEnvironment} onChange={this.handleEnvironmentChange} 
-                        options={this.state.envsOptions} />
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button style={{marginBottom: 0 }} onClick={this.props.onConfirm.bind(this, this.state.selectedEnvironment)}>Yes</Button>
-                    <Button onClick={this.props.onClose.bind(this)}>No</Button>
-                </Modal.Footer>
-            </Modal>
-        );
-    }
-}
+  });
+
+  return (
+    <Modal show={props.onShow} onHide={e => props.onClose(e)}>
+      <Modal.Header closeButton>
+        <Modal.Title>{props.title}</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <p>Environments:</p>
+        <Select
+          value={selectedEnvironment}
+          onChange={selectedEnvironment =>
+            setSelectedEnvironment(selectedEnvironment)
+          }
+          options={envsOptions}
+        />
+      </Modal.Body>
+      <Modal.Footer>
+        <Button
+          style={{ marginBottom: 0 }}
+          onClick={() => props.onConfirm(selectedEnvironment)}
+        >
+          Yes
+        </Button>
+        <Button onClick={e => props.onClose(e)}>No</Button>
+      </Modal.Footer>
+    </Modal>
+  );
+};
+
 export default CopyModal;
