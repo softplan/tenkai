@@ -34,9 +34,7 @@ class VariablesWizard extends Component {
     this.setState(
       { charts: helmCharts, chartVersions: chartVersions },
       async () => {
-        this.props.handleLoading(true);
         await this.getChildVariables();
-        this.props.handleLoading(false);
       }
     );
   }
