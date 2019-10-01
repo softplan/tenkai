@@ -9,16 +9,16 @@ import Sidebar from "components/Sidebar/Sidebar";
 import { style } from "variables/Variables.jsx";
 import routes from "routes.js";
 import image from "assets/img/sidebar-8.jpg";
-import "assets/css/loading.css"
-import Keycloak from 'keycloak-js';
-import axios from 'axios';
-import TENKAI_API_URL from 'env.js';
+import "assets/css/loading.css";
+import Keycloak from "keycloak-js";
+import axios from "axios";
+import TENKAI_API_URL from "env.js";
 
 class Admin extends Component {
-
   constructor(props) {
     super(props);
     this.state = {
+      loadingCount: 0,
       keycloak: null,
       authenticated: false,
       loading: false,
@@ -29,34 +29,39 @@ class Admin extends Component {
       fixedClasses: "dropdown show-dropdown open",
       environmentList: [],
       selectedEnvironment: {},
-      selectedChartsToDeploy: [],
+      selectedChartsToDeploy: []
     };
 
-    const keycloak = Keycloak('/keycloak.json');
-    keycloak.init({ onLoad: 'login-required' }).then(authenticated => {
+    const keycloak = Keycloak("/keycloak.json");
+    keycloak.init({ onLoad: "login-required" }).then(authenticated => {
       this.state.keycloak = keycloak;
       this.state.authenticated = authenticated;
       this.state._notificationSystem = this.refs.notificationSystem;
-      axios.defaults.headers.common['Authorization'] = `Bearer ${keycloak.token}`;
+      axios.defaults.headers.common[
+        "Authorization"
+      ] = `Bearer ${keycloak.token}`;
       this.getEnvironments();
     });
-
   }
 
-  handleEnvironmentChange = (selectedEnvironment) => {
+  handleEnvironmentChange = selectedEnvironment => {
     this.setState({ selectedEnvironment }, () => {
-
       console.log(JSON.stringify(selectedEnvironment));
-      window.localStorage.setItem('currentEnvironment', JSON.stringify(selectedEnvironment));
+      window.localStorage.setItem(
+        "currentEnvironment",
+        JSON.stringify(selectedEnvironment)
+      );
 
       this.props.history.push({
         pathname: "/admin/deployment"
       });
     });
-  }
+  };
 
   getEnvironments() {
-    axios.get(TENKAI_API_URL + '/environments').then(response => {
+    axios
+      .get(TENKAI_API_URL + "/environments")
+      .then(response => {
         var arr = [];
         for (var x = 0; x < response.data.Envs.length; x++) {
           var element = response.data.Envs[x];
@@ -64,39 +69,51 @@ class Admin extends Component {
         }
         this.setState({ environmentList: arr }, () => {
           if (arr.length > 0) {
-            let localEnvironment = JSON.parse(window.localStorage.getItem('currentEnvironment'));
+            let localEnvironment = JSON.parse(
+              window.localStorage.getItem("currentEnvironment")
+            );
 
             if (localEnvironment !== null) {
-              this.setState({selectedEnvironment: localEnvironment});   
+              this.setState({ selectedEnvironment: localEnvironment });
             } else {
-              this.setState({selectedEnvironment: arr[0]}); 
+              this.setState({ selectedEnvironment: arr[0] });
             }
           }
         });
-      }).catch(error => {
+      })
+      .catch(error => {
         console.log(error);
         if (error.response !== undefined) {
           this.handleNotification("custom", "error", error.response.data);
         } else {
-           this.handleNotification("deployment_fail", "error");
+          this.handleNotification("deployment_fail", "error");
         }
-    });
+      });
   }
 
   handleLoading = value => {
-    this.setState({ loading: value });
-  }
+    if (value) {
+      this.setState({
+        loading: true,
+        loadingCount: this.state.loadingCount + 1
+      });
+    } else {
+      let theCount = this.state.loadingCount - 1;
+      if (theCount <= 0) {
+        this.setState({ loading: false, loadingCount: 0 });
+      } else {
+        this.setState({ loadingCount: theCount });
+      }
+    }
+    //
+  };
 
   handleNotification = (type, level, message) => {
     switch (type) {
       case "custom":
         this.state._notificationSystem.addNotification({
           title: <span data-notify="icon" className="pe-7s-gift" />,
-          message: (
-            <div>
-              {message}
-            </div>
-          ),
+          message: <div>{message}</div>,
           level: level,
           position: "tr",
           autoDismiss: 15
@@ -107,8 +124,9 @@ class Admin extends Component {
           title: <span data-notify="icon" className="pe-7s-gift" />,
           message: (
             <div>
-              Deployment <b>successful</b>.<br />Use "kubectl get [kind]" to check it
-              </div>
+              Deployment <b>successful</b>.<br />
+              Use "kubectl get [kind]" to check it
+            </div>
           ),
           level: level,
           position: "tr",
@@ -121,33 +139,33 @@ class Admin extends Component {
           message: (
             <div>
               :( Deployment <b>failed</b>!!!
-                </div>
+            </div>
           ),
           level: level,
           position: "tr",
           autoDismiss: 15
         });
         break;
-        case "fail":
-          this.state._notificationSystem.addNotification({
-            title: <span data-notify="icon" className="pe-7s-gift" />,
-            message: (
-              <div>
-                :( Something wrong has happend <b>I'm sorry</b>!!!
-                  </div>
-            ),
-            level: level,
-            position: "tr",
-            autoDismiss: 15
-          });
-          break;
+      case "fail":
+        this.state._notificationSystem.addNotification({
+          title: <span data-notify="icon" className="pe-7s-gift" />,
+          message: (
+            <div>
+              :( Something wrong has happend <b>I'm sorry</b>!!!
+            </div>
+          ),
+          level: level,
+          position: "tr",
+          autoDismiss: 15
+        });
+        break;
       case "general_fail":
         this.state._notificationSystem.addNotification({
           title: <span data-notify="icon" className="pe-7s-gift" />,
           message: (
             <div>
               :( I am sorry,an unexpectect <b>error</b> ocurred!
-                  </div>
+            </div>
           ),
           level: level,
           position: "tr",
@@ -157,11 +175,10 @@ class Admin extends Component {
       default:
         break;
     }
-
-  }
+  };
 
   updateSelectedChartsToDeploy(selectedChartsToDeploy, callback) {
-    this.setState({selectedChartsToDeploy}, () => {
+    this.setState({ selectedChartsToDeploy }, () => {
       if (callback !== undefined) {
         callback();
       }
@@ -189,11 +206,7 @@ class Admin extends Component {
     }
     this.state._notificationSystem.addNotification({
       title: <span data-notify="icon" className="pe-7s-gift" />,
-      message: (
-        <div>
-          Demo Message
-        </div>
-      ),
+      message: <div>Demo Message</div>,
       level: level,
       position: position,
       autoDismiss: 15
@@ -217,7 +230,9 @@ class Admin extends Component {
                 environments={this.state.environmentList}
                 selectedEnvironment={this.state.selectedEnvironment}
                 selectedChartsToDeploy={this.state.selectedChartsToDeploy}
-                updateSelectedChartsToDeploy={this.updateSelectedChartsToDeploy.bind(this)}
+                updateSelectedChartsToDeploy={this.updateSelectedChartsToDeploy.bind(
+                  this
+                )}
               />
             )}
             key={key}
@@ -257,8 +272,6 @@ class Admin extends Component {
     }
   };
 
-
-
   componentDidUpdate(e) {
     if (
       window.innerWidth < 993 &&
@@ -275,25 +288,27 @@ class Admin extends Component {
     }
   }
   render() {
-
     let loadingDiv;
     if (this.state.loading) {
-      loadingDiv = <div className="loading"></div>
+      loadingDiv = <div className="loading"></div>;
     } else {
-      loadingDiv = <div></div>
+      loadingDiv = <div></div>;
     }
 
     if (this.state.keycloak) {
       if (this.state.authenticated)
-
         return (
           <div className="wrapper">
             <NotificationSystem ref="notificationSystem" style={style} />
-            
-            <Sidebar {...this.props} routes={routes} image={this.state.image}
+
+            <Sidebar
+              {...this.props}
+              routes={routes}
+              image={this.state.image}
               color={this.state.color}
-              hasImage={this.state.hasImage} 
-              keycloak={this.state.keycloak} />
+              hasImage={this.state.hasImage}
+              keycloak={this.state.keycloak}
+            />
 
             <div id="main-panel" className="main-panel" ref="mainPanel">
               {loadingDiv}
@@ -304,22 +319,23 @@ class Admin extends Component {
                 history={this.props.history}
                 environments={this.state.environmentList}
                 selectedEnvironment={this.state.selectedEnvironment}
-                handleEnvironmentChange={this.handleEnvironmentChange.bind(this)}
+                handleEnvironmentChange={this.handleEnvironmentChange.bind(
+                  this
+                )}
               />
               <Switch>{this.getRoutes(routes)}</Switch>
               <Footer />
             </div>
           </div>
-        ); else return (<div>Unable to authenticate!</div>)
+        );
+      else return <div>Unable to authenticate!</div>;
     }
     return (
-      
       <div>
         <NotificationSystem ref="notificationSystem" style={style} />
         Initializing Keycloak...
       </div>
     );
-
   }
 }
 
