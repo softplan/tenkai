@@ -5,16 +5,19 @@ import Variables from "views/Variables";
 import VariablesWizard from "views/VariablesWizard";
 import Microservices from "views/Microservices";
 import Dependencies from "views/Dependencies";
-import DepAnalysis from "views/DepAnalysis"
-import DepGraph from "views/DepGraph"
-import Solution from "views/Solution"
-import SolutionChart from "views/SolutionChart"
-import DeploySolution from "views/DeploySolution"
-import Users from "views/Users"
-import Workload from "views/Workload"
-import BlueGreenWizard from "views/BlueGreenWizard"
+import DepAnalysis from "views/DepAnalysis";
+import DepGraph from "views/DepGraph";
+import Solution from "views/Solution";
+import SolutionChart from "views/SolutionChart";
+import DeploySolution from "views/DeploySolution";
+import Users from "views/Users";
+import Workload from "views/Workload";
+import BlueGreenWizard from "views/BlueGreenWizard";
 import DockerRepo from "views/DockerRepo";
+import Product from "views/Product";
 import GlobalConfig from "views/GlobalConfig";
+import ProductRelease from "views/ProductReleases";
+import ProductReleaseService from "views/ProductReleaseService";
 
 const dashboardRoutes = [
   {
@@ -34,7 +37,7 @@ const dashboardRoutes = [
     layout: "/admin",
     menu: true,
     role: "tenkai-user"
-  },  
+  },
   {
     path: "/deployment-wvars",
     name: "Deployment Variables Review ",
@@ -99,6 +102,33 @@ const dashboardRoutes = [
     role: "tenkai-admin"
   },
   {
+    path: "/product",
+    name: "Product",
+    icon: "pe-7s-umbrella",
+    component: Product,
+    layout: "/admin",
+    menu: true,
+    role: "tenkai-user"
+  },
+  {
+    path: "/product-version",
+    name: "Product",
+    icon: "pe-7s-umbrella",
+    component: ProductRelease,
+    layout: "/admin",
+    menu: false,
+    role: "tenkai-user"
+  },
+  {
+    path: "/product-version-service",
+    name: "Product",
+    icon: "pe-7s-umbrella",
+    component: ProductReleaseService,
+    layout: "/admin",
+    menu: false,
+    role: "tenkai-user"
+  },
+  {
     path: "/solution",
     name: "Solution",
     icon: "pe-7s-umbrella",
@@ -125,7 +155,7 @@ const dashboardRoutes = [
     menu: false,
     role: "tenkai-user"
   },
-    {
+  {
     path: "/microservices",
     name: "Releases",
     icon: "pe-7s-tools",
@@ -151,7 +181,7 @@ const dashboardRoutes = [
     layout: "/admin",
     menu: true,
     role: "tenkai-admin"
-  }, 
+  },
   {
     path: "/blueGreenWizard",
     name: "Blue Green Wizard",
@@ -169,9 +199,7 @@ const dashboardRoutes = [
     layout: "/admin",
     menu: true,
     role: "tenkai-admin"
-  },  
-
+  }
 ];
-
 
 export default dashboardRoutes;
