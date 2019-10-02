@@ -5,17 +5,10 @@ import { Button } from "react-bootstrap";
 
 export const RepoForm = ({ editMode, editItem, ...props }) => {
   const [formData, setFormData] = useState(
-    editItem
-      ? editItem
-      : {
-          name: "",
-          url: "",
-          password: "",
-          username: ""
-        }
+    editItem ? editItem : { name: "", url: "", password: "", username: "" }
   );
 
-  const handleChange = ({ value, name }) =>
+  const handleChange = ({ target: { value, name } }) =>
     setFormData(formData => ({ ...formData, [name]: value }));
 
   return (

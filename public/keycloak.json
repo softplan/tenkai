@@ -1,8 +1,8 @@
 {
-    "realm": "tenkai",
-    "auth-server-url": "http://keycloaktools/auth",
-    "ssl-required": "external",
-    "resource": "tenkai",
-    "public-client": true,
-    "confidential-port": 0
-  }
+  "realm": "tenkai",
+  "auth-server-url": "http://keycloaktools/auth",
+  "ssl-required": "external",
+  "resource": "tenkai",
+  "public-client": true,
+  "confidential-port": 0
+}
