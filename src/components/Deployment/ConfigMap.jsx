@@ -8,7 +8,6 @@ import { retrieveSettings } from "client-api/apicall.jsx";
 export class ConfigMap extends Component {
   state = {
     chartName: "",
-    chartName: "",
     ChartVersion: "",
     variables: {},
     values: {},
