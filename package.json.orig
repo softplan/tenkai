@@ -3,11 +3,18 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+<<<<<<< HEAD
+    "@fortawesome/fontawesome-svg-core": "^1.2.25",
+    "@fortawesome/free-solid-svg-icons": "^5.11.2",
+    "@fortawesome/react-fontawesome": "^0.1.5",
+    "axios": "^0.18.1",
+=======
     "@fortawesome/fontawesome-svg-core": "^1.2.18",
     "@fortawesome/free-solid-svg-icons": "^5.8.2",
     "@fortawesome/react-fontawesome": "^0.1.4",
     "@testing-library/react": "^9.2.0",
     "axios": "^0.18.0",
+>>>>>>> bdb1140757d77d08359f72ba325682a96fbbe4ad
     "bootstrap": "3.4.1",
     "chartist": "0.10.1",
     "codemirror": "^5.49.0",
