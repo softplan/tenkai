@@ -18,6 +18,7 @@ import Product from "views/Product";
 import GlobalConfig from "views/GlobalConfig";
 import ProductRelease from "views/ProductReleases";
 import ProductReleaseService from "views/ProductReleaseService";
+import VariablesNotUsed from "views/VariablesNotUsed";
 
 const dashboardRoutes = [
   {
@@ -108,7 +109,7 @@ const dashboardRoutes = [
     component: Product,
     layout: "/admin",
     menu: true,
-    role: "tenkai-user"
+    role: "tenkai-beta"
   },
   {
     path: "/product-version",
@@ -198,6 +199,15 @@ const dashboardRoutes = [
     component: GlobalConfig,
     layout: "/admin",
     menu: true,
+    role: "tenkai-admin"
+  },
+  {
+    path: "/variablesNotUsed",
+    name: "Settings",
+    icon: "pe-7s-settings",
+    component: VariablesNotUsed,
+    layout: "/admin",
+    menu: false,
     role: "tenkai-admin"
   }
 ];

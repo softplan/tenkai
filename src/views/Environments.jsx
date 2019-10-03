@@ -70,7 +70,6 @@ class Environments extends Component {
   }
 
   navigateToEnvironmentVariables(id, group, name) {
-    console.log("id: " + JSON.stringify(id));
     this.props.history.push({
       pathname: "/admin/environments-envvars",
       search: "?id=" + id,

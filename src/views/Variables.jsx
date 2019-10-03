@@ -5,7 +5,8 @@ import {
   Col,
   FormGroup,
   ControlLabel,
-  FormControl
+  FormControl,
+  Table
 } from "react-bootstrap";
 import SimpleModal from "components/Modal/SimpleModal.jsx";
 import EditModal from "components/Modal/EditModal.jsx";
@@ -17,7 +18,6 @@ import { ButtonToolbar } from "react-bootstrap";
 
 import { Card } from "components/Card/Card.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
-
 import { VariablesForm } from "components/Environments/VariablesForm.jsx";
 
 class Variables extends Component {
@@ -29,7 +29,9 @@ class Variables extends Component {
     locationSearch: "",
     showConfirmDeleteModal: false,
     itemToDelete: {},
-    inputFilter: ""
+    inputFilter: "",
+    showVariablesNotUsedModal: false,
+    variablesNotUsed: []
   };
 
   componentDidMount() {
@@ -55,6 +57,16 @@ class Variables extends Component {
         this.getScopedVariables();
       }
     );
+  }
+
+  navigateToNotUsedVariables() {
+    const values = queryString.parse(this.state.locationSearch);
+
+    this.props.history.push({
+      pathname: "/admin/variablesNotUsed",
+      search: "?id=" + values.id,
+      state: { item: { name: this.state.environmentName } }
+    });
   }
 
   handleConfirmDeleteModalClose() {
@@ -84,11 +96,6 @@ class Variables extends Component {
 
   handleNewClick(e) {
     this.setState({ showInsertUpdateForm: true });
-  }
-
-  handleClearVariables(e) {
-    console.log(this.props.selectedEnvironment);
-    //clearVariablesNotUsed()
   }
 
   handleCancelClick(e) {
@@ -143,6 +150,10 @@ class Variables extends Component {
     });
   }
 
+  handleVariablesNotUsedModal() {
+    this.setState({ showVariablesNotUsedModal: false });
+  }
+
   handleConfirmDelete() {
     if (this.state.itemToDelete !== undefined) {
       axios
@@ -159,6 +170,16 @@ class Variables extends Component {
   }
 
   render() {
+    const notUsedRender = this.state.variablesNotUsed.map((item, key) => {
+      return (
+        <tr key={key}>
+          <td>{item.scope}</td>
+          <td>{item.name}</td>
+          <td>{item.value}</td>
+        </tr>
+      );
+    });
+
     const items = this.state.variablesResult.Variables.filter(
       d =>
         this.state.inputFilter === "" ||
@@ -204,6 +225,24 @@ class Variables extends Component {
           }
         />
 
+        <EditModal
+          title="Variables in down services"
+          onClose={this.handleVariablesNotUsedModal.bind(this)}
+          onShow={this.state.showVariablesNotUsedModal}
+          form={
+            <Table striped hover>
+              <thead>
+                <tr>
+                  <th>Scope</th>
+                  <th>Variable</th>
+                  <th>Value</th>
+                </tr>
+              </thead>
+              <tbody>{notUsedRender}</tbody>
+            </Table>
+          }
+        />
+
         <Grid fluid>
           <Row>
             <Col md={12}>
@@ -211,7 +250,7 @@ class Variables extends Component {
                 title=""
                 content={
                   <form>
-                    <h3>Variáveis do ambiente {this.state.environmentName}</h3>
+                    <h3>Environment: {this.state.environmentName}</h3>
 
                     <ButtonToolbar>
                       <Button
@@ -225,9 +264,9 @@ class Variables extends Component {
                       <Button
                         className="btn-danger pull-right"
                         variant="primary"
-                        onClick={this.handleClearVariables.bind(this)}
+                        onClick={this.navigateToNotUsedVariables.bind(this)}
                       >
-                        Clear not used variables
+                        List variables in down services (not used)
                       </Button>
                     </ButtonToolbar>
 

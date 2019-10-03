@@ -65,14 +65,17 @@ function retrieveSettings(list, self, callback) {
     });
 }
 
-function clearVariablesNotUsed(envId, self) {
+function getVariablesNotUsed(envId, self, callback) {
   self.props.handleLoading(true);
-  let url = `/clearVariablesNotUsed/${envId}`;
+  let url = `/getVariablesNotUsed/${envId}`;
+
   axios
     .get(TENKAI_API_URL + url)
     .then(response => {
       self.props.handleLoading(false);
-      self.props.handleNotification("custom", "success", "Done!");
+      if (callback !== undefined) {
+        callback(response.data, self);
+      }
     })
     .catch(error => {
       self.props.handleLoading(false);
@@ -519,5 +522,6 @@ export {
   promote,
   getTagsOfImage,
   saveSettings,
-  retrieveSettings
+  retrieveSettings,
+  getVariablesNotUsed
 };

@@ -29,13 +29,17 @@ export const HelmCard = props => (
       </div>
 
       <ButtonToolbar>
-        <Button
-          className="btn btn-primary"
-          size="sm"
-          onClick={() => props.navigateToEditEnvironment(props.item)}
-        >
-          <i className="pe-7s-edit" /> Edit
-        </Button>
+        {props.navigateToEditEnvironment ? (
+          <Button
+            className="btn btn-primary"
+            size="sm"
+            onClick={() => props.navigateToEditEnvironment(props.item)}
+          >
+            <i className="pe-7s-edit" /> Edit
+          </Button>
+        ) : (
+          <div></div>
+        )}
 
         <Button
           className="btn btn-danger"
