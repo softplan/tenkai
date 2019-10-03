@@ -11,12 +11,16 @@ const CopyModal = props => {
     if (props.onlyMyEnvironments) {
       setEnvsOptions(props.environments);
     } else {
-      getAllEnvironments(envs => {
-        let options = [];
-        for (let x = 0; x < envs.length; x++) {
-          options.push({ label: envs[x].name, value: envs[x].ID });
+      getAllEnvironments((envs, error) => {
+        if (error) {
+          props.handleNotification("custom", "error", response.data);
+        } else {
+          let options = [];
+          for (let x = 0; x < envs.length; x++) {
+            options.push({ label: envs[x].name, value: envs[x].ID });
+          }
+          setEnvsOptions(options);
         }
-        setEnvsOptions(options);
       });
     }
   });

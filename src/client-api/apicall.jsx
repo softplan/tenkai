@@ -269,7 +269,7 @@ function getAllEnvironments(callback) {
       }
     })
     .catch(error => {
-      handlerError(error.response);
+      callback(null, error);
     });
 }
 
