@@ -1,5 +1,5 @@
 import React from "react";
-import Proptypes from 'prop-types';
+import Proptypes from "prop-types";
 
 export const Card = props => (
   <div className={"card" + (props.plain ? " card-plain" : "")}>
@@ -30,14 +30,14 @@ export const Card = props => (
 );
 
 Card.propTypes = {
-  plain: Proptypes.string,
+  plain: Proptypes.bool,
   ctAllIcons: Proptypes.bool,
   ctTableFullWidth: Proptypes.bool,
   ctTableResponsive: Proptypes.bool,
   ctTableUpgrade: Proptypes.bool,
   statsIcon: Proptypes.string,
   stats: Proptypes.func,
-  content: Proptypes.func
-}
+  content: Proptypes.object
+};
 
 export default Card;

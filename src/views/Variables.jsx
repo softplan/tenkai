@@ -13,6 +13,7 @@ import queryString from "query-string";
 import axios from "axios";
 import TENKAI_API_URL from "env.js";
 import VariableCard from "components/Card/VariableCard.jsx";
+import { ButtonToolbar } from "react-bootstrap";
 
 import { Card } from "components/Card/Card.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
@@ -83,6 +84,11 @@ class Variables extends Component {
 
   handleNewClick(e) {
     this.setState({ showInsertUpdateForm: true });
+  }
+
+  handleClearVariables(e) {
+    console.log(this.props.selectedEnvironment);
+    //clearVariablesNotUsed()
   }
 
   handleCancelClick(e) {
@@ -206,13 +212,25 @@ class Variables extends Component {
                 content={
                   <form>
                     <h3>Variáveis do ambiente {this.state.environmentName}</h3>
-                    <Button
-                      className="pull-right"
-                      variant="primary"
-                      onClick={this.handleNewClick.bind(this)}
-                    >
-                      New Variable
-                    </Button>
+
+                    <ButtonToolbar>
+                      <Button
+                        className="pull-right"
+                        variant="primary"
+                        onClick={this.handleNewClick.bind(this)}
+                      >
+                        New Variable
+                      </Button>
+
+                      <Button
+                        className="btn-danger pull-right"
+                        variant="primary"
+                        onClick={this.handleClearVariables.bind(this)}
+                      >
+                        Clear not used variables
+                      </Button>
+                    </ButtonToolbar>
+
                     <div className="clearfix" />
                   </form>
                 }

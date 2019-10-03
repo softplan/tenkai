@@ -65,6 +65,22 @@ function retrieveSettings(list, self, callback) {
     });
 }
 
+function clearVariablesNotUsed(envId, self) {
+  self.props.handleLoading(true);
+  let url = `/clearVariablesNotUsed/${envId}`;
+  axios
+    .get(TENKAI_API_URL + url)
+    .then(response => {
+      self.props.handleLoading(false);
+      self.props.handleNotification("custom", "success", "Done!");
+    })
+    .catch(error => {
+      self.props.handleLoading(false);
+      console.log(error.message);
+      handlerError(self, error.response);
+    });
+}
+
 function retrieveReleases(chartName, self) {
   self.props.handleLoading(true);
   let url = `/releases?chartName=${chartName}`;

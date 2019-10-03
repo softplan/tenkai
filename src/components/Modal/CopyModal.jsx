@@ -13,7 +13,7 @@ const CopyModal = props => {
     } else {
       getAllEnvironments((envs, error) => {
         if (error) {
-          props.handleNotification("custom", "error", response.data);
+          props.handleNotification("custom", "error", error.message);
         } else {
           let options = [];
           for (let x = 0; x < envs.length; x++) {
@@ -23,7 +23,7 @@ const CopyModal = props => {
         }
       });
     }
-  });
+  }, [props]);
 
   return (
     <Modal show={props.onShow} onHide={e => props.onClose(e)}>

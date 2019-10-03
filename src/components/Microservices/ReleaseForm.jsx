@@ -14,7 +14,7 @@ export const ReleaseForm = props => {
     if (props.editItem) {
       setFormData(props.editItem);
     }
-  }, []);
+  }, [props.editItem]);
 
   return (
     <div>
