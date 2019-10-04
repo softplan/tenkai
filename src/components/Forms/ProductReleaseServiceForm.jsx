@@ -3,7 +3,6 @@ import { Card } from "components/Card/Card.jsx";
 import { FormGroup, ControlLabel, Button } from "react-bootstrap";
 import Select from "react-select";
 import { retriveRepo, retrieveCharts, getTagsOfImage, getDockerImageFromHelmChart } from "client-api/apicall.jsx";
-import { FormInputs } from "components/FormInputs/FormInputs.jsx";
 
 export class ProductReleaseServiceForm extends Component {
   state = {
