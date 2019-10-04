@@ -1,7 +1,10 @@
 language: node_js
 
 node_js:
-  - "9"
+  - '9'
+
+cache:
+  npm: false
 
 services:
   - docker
