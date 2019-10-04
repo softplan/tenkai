@@ -6,7 +6,8 @@ import {
   FormGroup,
   ControlLabel,
   FormControl,
-  Table
+  Table,
+  ButtonToolbar
 } from "react-bootstrap";
 import SimpleModal from "components/Modal/SimpleModal.jsx";
 
@@ -91,6 +92,10 @@ class ProductReleaseService extends Component {
     });
   }
 
+  onEdit(item) {}
+
+  goToDeploy(item) {}
+
   render() {
     const items = this.state.list
       .filter(
@@ -102,6 +107,15 @@ class ProductReleaseService extends Component {
         <tr key={key}>
           <td>{item.serviceName}</td>
           <td>{item.dockerImageTag}</td>
+          <td>
+            <Button
+              className="link-button"
+              onClick={this.onEdit.bind(this, item)}
+            >
+              <i className="pe-7s-edit" />
+            </Button>
+          </td>
+
           <td>
             <Button
               className="link-button"
@@ -134,13 +148,25 @@ class ProductReleaseService extends Component {
                 content={
                   <form>
                     <h2>{this.state.solutionName}</h2>
-                    <Button
-                      className="pull-right"
-                      variant="primary"
-                      onClick={this.handleNewClick.bind(this)}
-                    >
-                      Associate Chart
-                    </Button>
+
+                    <ButtonToolbar>
+                      <Button
+                        className="btn-primary pull-right"
+                        variant="primary"
+                        onClick={this.goToDeploy.bind(this)}
+                      >
+                        Go to deploy
+                      </Button>
+
+                      <Button
+                        className="pull-right"
+                        variant="primary"
+                        onClick={this.handleNewClick.bind(this)}
+                      >
+                        Associate Chart
+                      </Button>
+                    </ButtonToolbar>
+
                     <div className="clearfix" />
                   </form>
                 }
@@ -189,6 +215,7 @@ class ProductReleaseService extends Component {
                             <tr>
                               <th>Helm Chart</th>
                               <th>Docker Image Tag</th>
+                              <th>Edit</th>
                               <th>Delete</th>
                             </tr>
                           </thead>
