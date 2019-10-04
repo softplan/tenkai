@@ -496,6 +496,24 @@ function getTagsOfImage(self, imageName, callback) {
     });
 }
 
+function getDockerImageFromHelmChart(self, payload, callback) {
+  self.props.handleLoading(true);
+
+  let url = TENKAI_API_URL + "/getChartVariables";
+
+  axios.post(url, payload)
+    .then(res => {
+      if (callback !== undefined) {
+        callback(self, res.data.image.repository);
+      }
+      self.props.handleLoading(false);
+    })
+    .catch(error => {
+      self.props.handleLoading(false);
+      handlerError(self, error.response);
+    });
+}
+
 export {
   retriveRepo,
   retrieveCharts,
@@ -523,5 +541,6 @@ export {
   getTagsOfImage,
   saveSettings,
   retrieveSettings,
-  getVariablesNotUsed
+  getVariablesNotUsed,
+  getDockerImageFromHelmChart
 };
