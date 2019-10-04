@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Card } from "components/Card/Card.jsx";
 import { FormGroup, ControlLabel, Button } from "react-bootstrap";
 import Select from "react-select";
-import { retriveRepo, retrieveCharts } from "client-api/apicall.jsx";
+import { retriveRepo, retrieveCharts, getTagsOfImage, getDockerImageFromHelmChart } from "client-api/apicall.jsx";
 import { FormInputs } from "components/FormInputs/FormInputs.jsx";
 
 export class ProductReleaseServiceForm extends Component {
@@ -53,8 +53,40 @@ export class ProductReleaseServiceForm extends Component {
     retrieveCharts(selectedRepository.value, this);
   };
 
+  async retrieveTagsOfImage(imageName) {
+    getTagsOfImage(this, imageName, (self, data) => {
+      var arr = [];
+      if (data.tags != null) {
+        for (var x = 0; x < data.tags.length; x++) {
+          var element = data.tags[x];
+          arr.push({ value: element.tag, label: element.tag });
+        }
+      }
+      this.setState({ tags: arr });
+    });
+  }
+
   handleChartChange = selectedChart => {
     this.setState({ selectedChart });
+
+    let payload = {
+      chartName: selectedChart.value,
+      chartVersion: ""
+    };
+    getDockerImageFromHelmChart(this, payload, (self, dockerImage) => {
+      if(dockerImage) {
+        this.retrieveTagsOfImage(dockerImage);
+      }
+    });
+  };
+
+  handleContainerTagChange = selectedTag => {
+    this.setState(state => ({
+      formData: {
+        ...state.formData,
+        dockerImageTag: selectedTag.value
+      }
+    }));
   };
 
   render() {
@@ -86,19 +118,14 @@ export class ProductReleaseServiceForm extends Component {
                 />
               </FormGroup>
 
-              <FormInputs
-                ncols={["col-md-3"]}
-                properties={[
-                  {
-                    name: "dockerImageTag",
-                    label: "Docker Image Tag",
-                    type: "text",
-                    bsClass: "form-control",
-                    value: this.state.formData.dockerImageTag,
-                    onChange: this.handleChange
-                  }
-                ]}
-              />
+              <FormGroup>
+                <ControlLabel>Docker Image Tag</ControlLabel>
+                <Select
+                  value={this.state.selectedTag}
+                  onChange={this.handleContainerTagChange}
+                  options={this.state.tags}
+                />
+              </FormGroup>
 
               <div className="btn-toolbar">
                 <div className="btn-group">
