@@ -2,7 +2,9 @@ import React, { Component } from "react";
 import { Card } from "components/Card/Card.jsx";
 import { FormGroup, ControlLabel, Button } from "react-bootstrap";
 import Select from "react-select";
-import { retriveRepo, retrieveCharts, getTagsOfImage, getDockerImageFromHelmChart } from "client-api/apicall.jsx";
+import { retrieveCharts, getTagsOfImage, getDockerImageFromHelmChart, getDefaultRepo } from "client-api/apicall.jsx";
+import axios from "axios";
+import TENKAI_API_URL from "env.js";
 
 export class ProductReleaseServiceForm extends Component {
   state = {
@@ -27,7 +29,33 @@ export class ProductReleaseServiceForm extends Component {
         formData: {}
       }));
     }
-    retriveRepo(this);
+    this.getRepos();
+  }
+
+  getRepos() {
+    axios
+      .get(TENKAI_API_URL + "/repositories")
+      .then(response => {
+        var arr = [];
+        for (var x = 0; x < response.data.repositories.length; x++) {
+          var element = response.data.repositories[x];
+          arr.push({ value: element.name, label: element.name });
+        }
+        this.setState({ repositories: arr }, () => {
+          getDefaultRepo(this, self => {
+            for (let x = 0; x < this.state.repositories.length; x++) {
+              if (self.state.repositories[x].value === self.state.defaultRepo) {
+                self.handleRepositoryChange(this.state.repositories[x]);
+                break;
+              }
+            }
+          });
+        });
+      })
+      .catch(error => {
+        console.log(error.message);
+        this.props.handleNotification("general_fail", "error");
+      });
   }
 
   handleChange = event => {
