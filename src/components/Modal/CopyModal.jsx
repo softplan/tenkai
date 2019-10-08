@@ -11,7 +11,7 @@ const CopyModal = props => {
     if (props.onlyMyEnvironments) {
       setEnvsOptions(props.environments);
     } else {
-      getAllEnvironments((envs, error) => {
+      getAllEnvironments(this, (envs, error) => {
         if (error) {
           props.handleNotification("custom", "error", error.message);
         } else {
