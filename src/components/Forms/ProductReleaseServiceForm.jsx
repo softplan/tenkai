@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Card } from "components/Card/Card.jsx";
 import { FormGroup, ControlLabel, Button } from "react-bootstrap";
 import Select from "react-select";
-import { retrieveCharts, getTagsOfImage, getDockerImageFromHelmChart, getDefaultRepo } from "client-api/apicall.jsx";
+import { retrieveCharts2, getTagsOfImage, getDockerImageFromHelmChart, getDefaultRepo } from "client-api/apicall.jsx";
 import axios from "axios";
 import TENKAI_API_URL from "env.js";
 
@@ -20,6 +20,7 @@ export class ProductReleaseServiceForm extends Component {
   };
 
   componentDidMount() {
+    this.getRepos();
     if (this.props.editItem) {
       this.setState(() => ({
         formData: this.props.editItem
@@ -29,7 +30,6 @@ export class ProductReleaseServiceForm extends Component {
         formData: {}
       }));
     }
-    this.getRepos();
   }
 
   getRepos() {
@@ -75,9 +75,24 @@ export class ProductReleaseServiceForm extends Component {
     this.props.saveClick(data);
   };
 
+  chartCallback = (self, charts) => {
+    if (self.props.editItem) {
+      for (var x = 0; x < charts.length; x++) {
+        var element = charts[x];
+        if (element.name == self.props.editItem.serviceName) {
+          const selectedChart = {
+            value: element.name,
+            label: element.name
+          }
+          this.setState({ selectedChart });
+        }
+      }
+    }
+  }
+
   handleRepositoryChange = selectedRepository => {
     this.setState({ selectedRepository });
-    retrieveCharts(selectedRepository.value, this);
+    retrieveCharts2(selectedRepository.value, this, this.chartCallback);
   };
 
   async retrieveTagsOfImage(imageName) {

@@ -92,7 +92,13 @@ class ProductReleaseService extends Component {
     });
   }
 
-  onEdit(item) {}
+  onEdit(item) {
+    this.setState(() => ({
+      showInsertUpdateForm: true,
+      editItem: item,
+      editMode: true,
+    }));
+  }
 
   goToDeploy(item) {}
 
@@ -180,6 +186,7 @@ class ProductReleaseService extends Component {
                 <ProductReleaseServiceForm
                   editMode={this.state.editMode}
                   handleLoading={this.props.handleLoading}
+                  handleNotification={this.props.handleNotification}
                   editItem={this.state.editItem}
                   saveClick={this.onSaveClick.bind(this)}
                   cancelClick={this.handleCancelClick.bind(this)}
