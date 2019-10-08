@@ -279,7 +279,7 @@ function retrieveDependency(environmentId, chartName, tag, self) {
     });
 }
 
-function getAllEnvironments(callback) {
+function getAllEnvironments(self, callback) {
   axios
     .get(TENKAI_API_URL + "/environments/all")
     .then(response => {
@@ -288,7 +288,7 @@ function getAllEnvironments(callback) {
       }
     })
     .catch(error => {
-      callback(null, error);
+      handlerError(self, error.response);
     });
 }
 

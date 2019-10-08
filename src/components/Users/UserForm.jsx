@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Card } from "components/Card/Card.jsx";
 import { FormInputs } from "components/FormInputs/FormInputs.jsx";
 import { Button, FormGroup, Checkbox } from "react-bootstrap";
+import { getAllEnvironments } from 'client-api/apicall.jsx';
 
 export class UserForm extends Component {
   state = {
@@ -25,6 +26,13 @@ export class UserForm extends Component {
         formData: { checkedEnvs: [], email: "" }
       }));
     }
+    getAllEnvironments(this, envs => {
+      let environments = [];
+      envs.forEach(e => {
+        environments.push({ ID: e.ID, name: e.name })
+      });
+      this.setState({ envs: environments });
+    });
   }
 
   handleChange = event => {
