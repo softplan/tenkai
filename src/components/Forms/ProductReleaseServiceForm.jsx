@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Card } from "components/Card/Card.jsx";
 import { FormGroup, ControlLabel, Button } from "react-bootstrap";
 import Select from "react-select";
-import { retrieveCharts2, getTagsOfImage, getDockerImageFromHelmChart, getDefaultRepo } from "client-api/apicall.jsx";
+import { retrieveCharts, getTagsOfImage, getDockerImageFromHelmChart, getDefaultRepo } from "client-api/apicall.jsx";
 import axios from "axios";
 import TENKAI_API_URL from "env.js";
 
@@ -16,7 +16,8 @@ export class ProductReleaseServiceForm extends Component {
     charts: [],
     repositories: [],
     selectedRepository: {},
-    selectedChart: {}
+    selectedChart: {},
+    selectedTag: {}
   };
 
   componentDidMount() {
@@ -85,17 +86,33 @@ export class ProductReleaseServiceForm extends Component {
             label: element.name
           }
           this.setState({ selectedChart });
+          self.handleChartChange(selectedChart);
         }
       }
     }
   }
 
+  tagCallback = (self, tags) => {
+    if (self.props.editItem) {
+      tags.forEach(tag => {
+        console.log(tag)
+        if (tag.tag == self.props.editItem.dockerImageTag) {
+          const selectedTag = {
+            value: tag.tag,
+            label: tag.tag
+          }
+          self.setState({ selectedTag });
+        }
+      })
+    }
+  }
+
   handleRepositoryChange = selectedRepository => {
     this.setState({ selectedRepository });
-    retrieveCharts2(selectedRepository.value, this, this.chartCallback);
+    retrieveCharts(this, selectedRepository.value, this.chartCallback);
   };
 
-  async retrieveTagsOfImage(imageName) {
+  async retrieveTagsOfImage(imageName, callback) {
     getTagsOfImage(this, imageName, (self, data) => {
       var arr = [];
       if (data.tags != null) {
@@ -105,6 +122,10 @@ export class ProductReleaseServiceForm extends Component {
         }
       }
       this.setState({ tags: arr });
+
+      if(callback) {
+        callback(this, data.tags);
+      }
     });
   }
 
@@ -117,7 +138,7 @@ export class ProductReleaseServiceForm extends Component {
     };
     getDockerImageFromHelmChart(this, payload, (self, dockerImage) => {
       if(dockerImage) {
-        this.retrieveTagsOfImage(dockerImage);
+        this.retrieveTagsOfImage(dockerImage, this.tagCallback);
       }
     });
   };
@@ -135,6 +156,7 @@ export class ProductReleaseServiceForm extends Component {
     const { editMode } = this.props;
     const { selectedChart } = this.state;
     const { selectedRepository } = this.state;
+    const { selectedTag } = this.state;
 
     return (
       <div>
@@ -163,7 +185,7 @@ export class ProductReleaseServiceForm extends Component {
               <FormGroup>
                 <ControlLabel>Docker Image Tag</ControlLabel>
                 <Select
-                  value={this.state.selectedTag}
+                  value={selectedTag}
                   onChange={this.handleContainerTagChange}
                   options={this.state.tags}
                 />

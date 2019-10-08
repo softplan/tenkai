@@ -49,7 +49,7 @@ export class SolutionChartForm extends Component {
 
     handleRepositoryChange = (selectedRepository) => {
         this.setState({ selectedRepository });
-        retrieveCharts(selectedRepository.value, this);
+        retrieveCharts(this, selectedRepository.value);
     }
 
     handleChartChange = (selectedChart) => {
