@@ -52,7 +52,7 @@ export class DepForm extends Component {
 
     handleRepositoryChange = (selectedRepository) => {
         this.setState({ selectedRepository });
-        retrieveCharts(this, selectedRepository.value);
+        retrieveCharts(selectedRepository.value, this);
     }
 
     handleChartChange = (selectedChart) => {
