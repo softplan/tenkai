@@ -105,7 +105,7 @@ const dashboardRoutes = [
   {
     path: "/product",
     name: "Product",
-    icon: "pe-7s-umbrella",
+    icon: "pe-7s-box1",
     component: Product,
     layout: "/admin",
     menu: true,

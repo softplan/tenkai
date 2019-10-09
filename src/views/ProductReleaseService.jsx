@@ -96,7 +96,7 @@ class ProductReleaseService extends Component {
     this.setState(() => ({
       showInsertUpdateForm: true,
       editItem: item,
-      editMode: true,
+      editMode: true
     }));
   }
 
@@ -113,6 +113,7 @@ class ProductReleaseService extends Component {
         <tr key={key}>
           <td>{item.serviceName}</td>
           <td>{item.dockerImageTag}</td>
+          <td>{item.latestVersion}</td>
           <td>
             <Button
               className="link-button"
@@ -221,7 +222,8 @@ class ProductReleaseService extends Component {
                           <thead>
                             <tr>
                               <th>Helm Chart</th>
-                              <th>Docker Image Tag</th>
+                              <th>Current Image Tag</th>
+                              <th>Latest Image Tag Available</th>
                               <th>Edit</th>
                               <th>Delete</th>
                             </tr>
