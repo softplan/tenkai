@@ -80,7 +80,7 @@ export class ProductReleaseServiceForm extends Component {
     if (self.props.editItem) {
       for (var x = 0; x < charts.length; x++) {
         var element = charts[x];
-        if (element.name == self.props.editItem.serviceName) {
+        if (element.name === self.props.editItem.serviceName) {
           const selectedChart = {
             value: element.name,
             label: element.name
@@ -96,7 +96,7 @@ export class ProductReleaseServiceForm extends Component {
     if (self.props.editItem) {
       tags.forEach(tag => {
         console.log(tag)
-        if (tag.tag == self.props.editItem.dockerImageTag) {
+        if (tag.tag === self.props.editItem.dockerImageTag) {
           const selectedTag = {
             value: tag.tag,
             label: tag.tag
