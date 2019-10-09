@@ -26,7 +26,7 @@ function retriveRepo(self) {
     });
 }
 
-function retrieveCharts(repo, self) {
+function retrieveCharts(self, repo, callback) {
   self.props.handleLoading(true);
   let url = "/charts/" + repo + "?all=false";
   axios
@@ -38,6 +38,9 @@ function retrieveCharts(repo, self) {
         arr.push({ value: element.name, label: element.name });
       }
       self.setState({ charts: arr });
+      if (callback) {
+        callback(self, response.data.charts);
+      }
       self.props.handleLoading(false);
     })
     .catch(error => {
@@ -517,6 +520,7 @@ function getDockerImageFromHelmChart(self, payload, callback) {
 export {
   retriveRepo,
   retrieveCharts,
+  // retrieveCharts2,
   retrieveReleases,
   saveReleases,
   retrieveDependencies,
