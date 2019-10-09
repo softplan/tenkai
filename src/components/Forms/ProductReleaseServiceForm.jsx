@@ -148,7 +148,8 @@ export class ProductReleaseServiceForm extends Component {
       formData: {
         ...state.formData,
         dockerImageTag: selectedTag.value
-      }
+      },
+      selectedTag: selectedTag
     }));
   };
 
