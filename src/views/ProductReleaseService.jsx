@@ -101,6 +101,7 @@ class ProductReleaseService extends Component {
   }
 
   goToDeploy(item) {}
+  goToServiceDeploy(item) {}
 
   render() {
     const items = this.state.list
@@ -129,6 +130,14 @@ class ProductReleaseService extends Component {
               onClick={this.onDelete.bind(this, item)}
             >
               <i className="pe-7s-trash" />
+            </Button>
+          </td>
+          <td>
+            <Button
+              className="link-button"
+              onClick={this.goToServiceDeploy.bind(this, item)}
+            >
+              <i className="pe-7s-news-paper" />
             </Button>
           </td>
         </tr>
@@ -222,10 +231,11 @@ class ProductReleaseService extends Component {
                           <thead>
                             <tr>
                               <th>Helm Chart</th>
-                              <th>Current Image Tag</th>
+                              <th>Desired Image Tag</th>
                               <th>Latest Image Tag Available</th>
                               <th>Edit</th>
                               <th>Delete</th>
+                              <th>Go Deploy</th>
                             </tr>
                           </thead>
                           <tbody>{items}</tbody>

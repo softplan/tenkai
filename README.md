@@ -10,6 +10,8 @@ In this README:
 - [A demo deployment](#demo-deployment)
 - [A production deployment](#production-deployment)
 
+![alt text](https://raw.githubusercontent.com/softplan/tenkai/dev/screenshots/tenkai_helm.png)
+
 ## Introduction
 
 Configure the relationships between hundreads of microservices is always a headache.
