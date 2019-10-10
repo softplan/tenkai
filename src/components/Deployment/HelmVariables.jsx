@@ -632,6 +632,7 @@ export class HelmVariables extends Component {
                             <ControlLabel>Container image</ControlLabel>
                             <FormControl
                               name="image"
+                              readOnly={true}
                               type="text"
                               bsClass="form-control"
                               value={this.state.containerImage}
