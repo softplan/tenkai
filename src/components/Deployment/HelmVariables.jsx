@@ -383,12 +383,25 @@ export class HelmVariables extends Component {
           }
           break;
         case "image.tag":
-          if (this.state.containerTag !== value.value) {
-            this.setState({
-              containerTag: value.value,
-              selectedTag: { value: value.value, label: value.value }
-            });
+          if (this.props.desiredTag !== "") {
+            if (this.state.containerTag !== this.props.desiredTag) {
+              this.setState({
+                containerTag: this.props.desiredTag,
+                selectedTag: {
+                  value: this.props.desiredTag,
+                  label: this.props.desiredTag
+                }
+              });
+            }
+          } else {
+            if (this.state.containerTag !== value.value) {
+              this.setState({
+                containerTag: value.value,
+                selectedTag: { value: value.value, label: value.value }
+              });
+            }
           }
+
           break;
         default:
           break;

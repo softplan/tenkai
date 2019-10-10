@@ -101,7 +101,24 @@ class ProductReleaseService extends Component {
   }
 
   goToDeploy(item) {}
-  goToServiceDeploy(item) {}
+
+  goToServiceDeploy(item) {
+    let serviceVersion =
+      item.serviceVersion !== undefined && item.serviceVersion !== ""
+        ? item.serviceVersion
+        : "0";
+
+    let chart =
+      item.serviceName + "@" + serviceVersion + "#" + item.dockerImageTag;
+
+    let array = [];
+    array.push(chart);
+    this.props.updateSelectedChartsToDeploy(array, () => {
+      this.props.history.push({
+        pathname: "/admin/deployment-wvars"
+      });
+    });
+  }
 
   render() {
     const items = this.state.list
@@ -113,6 +130,7 @@ class ProductReleaseService extends Component {
       .map((item, key) => (
         <tr key={key}>
           <td>{item.serviceName}</td>
+          <td>{item.serviceVersion}</td>
           <td>{item.dockerImageTag}</td>
           <td>{item.latestVersion}</td>
           <td>
@@ -230,7 +248,8 @@ class ProductReleaseService extends Component {
                         <Table bordered hover size="sm">
                           <thead>
                             <tr>
-                              <th>Helm Chart</th>
+                              <th>Chart Name</th>
+                              <th>Chart Version</th>
                               <th>Desired Image Tag</th>
                               <th>Latest Image Tag Available</th>
                               <th>Edit</th>

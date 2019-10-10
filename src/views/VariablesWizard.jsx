@@ -12,7 +12,8 @@ class VariablesWizard extends Component {
     envId: "",
     charts: [],
     chartVersions: new Map(),
-    onShowCopyModal: false
+    onShowCopyModal: false,
+    desiredTags: new Map()
   };
 
   componentDidMount() {
@@ -22,17 +23,38 @@ class VariablesWizard extends Component {
     let chartVersion = "";
     let value = "";
     let chartVersions = new Map();
+    let desiredTags = new Map();
     for (let i = 0; i < total; i++) {
       value = chartsToDeploy[i].substring(0, chartsToDeploy[i].indexOf("@"));
       helmCharts.push(value);
-      chartVersion = chartsToDeploy[i].substring(
-        chartsToDeploy[i].indexOf("@") + 1,
-        chartsToDeploy[i].length
-      );
-      chartVersions[value] = chartVersion;
+
+      if (chartsToDeploy[i].indexOf("#") > 0) {
+        let dockerImage = chartsToDeploy[i].substring(
+          chartsToDeploy[i].indexOf("#") + 1,
+          chartsToDeploy[i].length
+        );
+        desiredTags[value] = dockerImage;
+
+        chartVersion = chartsToDeploy[i].substring(
+          chartsToDeploy[i].indexOf("@") + 1,
+          chartsToDeploy[i].indexOf("#")
+        );
+        chartVersions[value] = chartVersion;
+      } else {
+        chartVersion = chartsToDeploy[i].substring(
+          chartsToDeploy[i].indexOf("@") + 1,
+          chartsToDeploy[i].length
+        );
+        chartVersions[value] = chartVersion;
+      }
     }
+
     this.setState(
-      { charts: helmCharts, chartVersions: chartVersions },
+      {
+        charts: helmCharts,
+        chartVersions: chartVersions,
+        desiredTags: desiredTags
+      },
       async () => {
         await this.getChildVariables();
       }
@@ -122,6 +144,7 @@ class VariablesWizard extends Component {
           key={key}
           chartName={item}
           chartVersion={this.state.chartVersions[item]}
+          desiredTag={this.state.desiredTags[item]}
           xref={"h" + key}
           ref={"h" + key}
           envId={envId}
