@@ -396,7 +396,7 @@ export class HelmVariables extends Component {
           break;
         case "image.tag":
           console.log("desiredTag=" + this.props.desiredTag);
-          if (this.props.desiredTag && this.props.desiredTag != "") {
+          if (this.props.desiredTag && this.props.desiredTag !== "") {
             if (this.state.containerTag !== this.props.desiredTag) {
               this.setState({
                 containerTag: this.props.desiredTag,
