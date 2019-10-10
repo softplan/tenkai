@@ -7,18 +7,24 @@ export class ProductReleaseForm extends Component {
   state = {
     formData: {
       ID: "",
-      version: ""
+      version: "",
+      copyLatestRelease: false
     }
   };
 
   componentDidMount() {
-    if (this.props.editItem) {
+    if (this.props.editMode) {
       this.setState(() => ({
-        formData: this.props.editItem
+        formData: {
+          ...this.props.editItem,
+          copyLatestRelease: false
+        }
       }));
     } else {
       this.setState(() => ({
-        formData: {}
+        formData: {
+          copyLatestRelease: true
+        }
       }));
     }
   }
@@ -32,6 +38,16 @@ export class ProductReleaseForm extends Component {
       }
     }));
   };
+
+  handleChangeCopyRelease = event => {
+    const { checked } = event.target;
+    this.setState(state => ({
+      formData: {
+        ...state.formData,
+        copyLatestRelease: checked
+      }
+    }))
+  }
 
   saveClick = event => {
     event.preventDefault();
@@ -68,9 +84,14 @@ export class ProductReleaseForm extends Component {
 
               <Row>
                 <Col md={6}>
-                  <Checkbox inline>
+                  <Checkbox
+                    name="handleChangeCopyRelease"
+                    inline
+                    checked={this.state.formData.copyLatestRelease}
+                    onChange={this.handleChangeCopyRelease}
+                  >
                     Associate services from latest version
-                  </Checkbox>{" "}
+                  </Checkbox>
                 </Col>
               </Row>
               <Row>
