@@ -20,10 +20,12 @@ function retrieveProductVersions(id, self, cb) {
 }
 
 function retrieveProductVersionServices(id, self, cb) {
+  self.props.handleLoading(true);
   let url = `/productVersionServices?productVersionId=${id}`;
   axios
     .get(TENKAI_API_URL + url)
     .then(response => {
+      self.props.handleLoading(false);
       let list = [];
       list = response.data.list;
       self.setState({ list: list });
@@ -32,12 +34,14 @@ function retrieveProductVersionServices(id, self, cb) {
       }
     })
     .catch(error => {
+      self.props.handleLoading(false);
       console.log(error.message);
       self.props.handleNotification("general_fail", "error");
     });
 }
 
 function saveProductRelease(data, self, callback) {
+  self.props.handleLoading(true);
   let uri = "";
   if (self.state.editMode) {
     uri = "/productVersions/edit";
@@ -48,17 +52,20 @@ function saveProductRelease(data, self, callback) {
   axios
     .post(TENKAI_API_URL + uri, data)
     .then(res => {
+      self.props.handleLoading(false);
       if (callback !== undefined) {
         callback(self);
       }
     })
     .catch(error => {
+      self.props.handleLoading(false);
       console.log(error.message);
       self.props.handleNotification("general_fail", "error");
     });
 }
 
 function saveProductVersionService(data, self, callback) {
+  self.props.handleLoading(true);
   let uri = "";
   if (self.state.editMode) {
     uri = "/productVersionServices/edit";
@@ -69,11 +76,13 @@ function saveProductVersionService(data, self, callback) {
   axios
     .post(TENKAI_API_URL + uri, data)
     .then(res => {
+      self.props.handleLoading(false);
       if (callback !== undefined) {
         callback(self);
       }
     })
     .catch(error => {
+      self.props.handleLoading(false);
       console.log(error.message);
       self.props.handleNotification("general_fail", "error");
     });

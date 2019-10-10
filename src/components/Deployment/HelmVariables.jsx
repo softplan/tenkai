@@ -316,20 +316,32 @@ export class HelmVariables extends Component {
           });
         }
 
-        if (response.data.image !== undefined) {
-          this.setState(
-            {
-              containerImage: response.data.image.repository,
-              containerTag: response.data.image.tag,
-              selectedTag: {
-                value: response.data.image.tag,
-                label: response.data.image.tag
-              }
-            },
-            () => {
-              this.retrieveTagsOfImage(this.state.containerImage);
+        if (response.data.image) {
+          if (this.props.desiredTag && this.props.desiredTag !== "") {
+            if (this.state.containerTag !== this.props.desiredTag) {
+              this.setState({
+                containerTag: this.props.desiredTag,
+                selectedTag: {
+                  value: this.props.desiredTag,
+                  label: this.props.desiredTag
+                }
+              });
             }
-          );
+          } else {
+            this.setState(
+              {
+                containerImage: response.data.image.repository,
+                containerTag: response.data.image.tag,
+                selectedTag: {
+                  value: response.data.image.tag,
+                  label: response.data.image.tag
+                }
+              },
+              () => {
+                this.retrieveTagsOfImage(this.state.containerImage);
+              }
+            );
+          }
         }
 
         if (response.data.app != null) {
@@ -383,7 +395,8 @@ export class HelmVariables extends Component {
           }
           break;
         case "image.tag":
-          if (this.props.desiredTag !== "") {
+          console.log("desiredTag=" + this.props.desiredTag);
+          if (this.props.desiredTag && this.props.desiredTag != "") {
             if (this.state.containerTag !== this.props.desiredTag) {
               this.setState({
                 containerTag: this.props.desiredTag,
