@@ -100,7 +100,27 @@ class ProductReleaseService extends Component {
     }));
   }
 
-  goToDeploy(item) {}
+  goToDeploy() {
+    this.props.handleLoading(true);
+    let array = [];
+    let services = this.state.list;
+    for (var i = 0; i < services.length; i++) {
+      let item = services[i];
+      let serviceVersion =
+        item.serviceVersion !== undefined && item.serviceVersion !== ""
+          ? item.serviceVersion
+          : "0";
+      let chart =
+        item.serviceName + "@" + serviceVersion + "#" + item.dockerImageTag;
+      array.push(chart);
+    }
+    this.props.handleLoading(false);
+    this.props.updateSelectedChartsToDeploy(array, () => {
+      this.props.history.push({
+        pathname: "/admin/deployment-wvars"
+      });
+    });
+  }
 
   goToServiceDeploy(item) {
     let serviceVersion =
@@ -113,10 +133,18 @@ class ProductReleaseService extends Component {
 
     let array = [];
     array.push(chart);
+
     this.props.updateSelectedChartsToDeploy(array, () => {
       this.props.history.push({
         pathname: "/admin/deployment-wvars"
       });
+    });
+  }
+
+  setVersion(item) {
+    item.dockerImageTag = item.latestVersion;
+    this.setState({ editMode: true, editItem: item }, () => {
+      this.onSaveClick(item);
     });
   }
 
@@ -132,7 +160,20 @@ class ProductReleaseService extends Component {
           <td>{item.serviceName}</td>
           <td>{item.serviceVersion}</td>
           <td>{item.dockerImageTag}</td>
-          <td>{item.latestVersion}</td>
+          <td>
+            {item.latestVersion !== "" ? (
+              <Button
+                className="link-button"
+                onClick={this.setVersion.bind(this, item)}
+              >
+                <i className="pe-7s-left-arrow" />
+              </Button>
+            ) : (
+              ""
+            )}
+            {"   "}
+            {item.latestVersion}
+          </td>
           <td>
             <Button
               className="link-button"

@@ -17,6 +17,7 @@ class VariablesWizard extends Component {
   };
 
   componentDidMount() {
+    this.props.handleLoading(true);
     let total = this.props.selectedChartsToDeploy.length;
     let chartsToDeploy = this.props.selectedChartsToDeploy;
     let helmCharts = [];
@@ -48,7 +49,6 @@ class VariablesWizard extends Component {
         chartVersions[value] = chartVersion;
       }
     }
-
     this.setState(
       {
         charts: helmCharts,
@@ -57,6 +57,7 @@ class VariablesWizard extends Component {
       },
       async () => {
         await this.getChildVariables();
+        this.props.handleLoading(false);
       }
     );
   }
