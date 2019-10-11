@@ -54,7 +54,7 @@ class Microservices extends Component {
 
   handleRepositoryChange = selectedRepository => {
     this.setState({ selectedRepository });
-    retrieveCharts(this, selectedRepository.value);
+    retrieveCharts(this, selectedRepository.value, false);
   };
 
   handleChartChange = selectedChart => {

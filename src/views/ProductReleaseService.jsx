@@ -96,7 +96,7 @@ class ProductReleaseService extends Component {
     this.setState(() => ({
       showInsertUpdateForm: true,
       editItem: item,
-      editMode: true
+      editMode: true,
     }));
   }
 
