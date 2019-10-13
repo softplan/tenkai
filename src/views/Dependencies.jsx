@@ -15,11 +15,7 @@ import { Card } from "components/Card/Card.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
 import DepForm from "components/Dependencies/DepForm.jsx";
 import queryString from "query-string";
-import {
-  retrieveDependencies,
-  saveDependency,
-  deleteDependency
-} from "client-api/apicall.jsx";
+import { saveDependency, deleteDependency } from "client-api/apicall.jsx";
 
 import * as dependencieActions from "stores/dependencie/actions";
 import * as dependencieSelectors from "stores/dependencie/reducer";
