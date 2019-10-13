@@ -7,7 +7,7 @@ export function allDependencies(releaseId) {
       dispatch(types.allDependenciesBegin());
 
       const result = await services.allDependencies(releaseId);
-      let dependencies = result.data;
+      let dependencies = result.data.dependencies;
 
       dispatch(types.allDependenciesSuccess(dependencies));
     } catch (error) {

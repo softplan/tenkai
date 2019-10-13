@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { connect } from "react-redux";
 import {
   Grid,
   Row,
@@ -14,8 +15,14 @@ import { Card } from "components/Card/Card.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
 import DepForm from "components/Dependencies/DepForm.jsx";
 import queryString from "query-string";
-import { retrieveDependencies, saveDependency } from "client-api/apicall.jsx";
-import { deleteDependency } from "client-api/apicall";
+import {
+  retrieveDependencies,
+  saveDependency,
+  deleteDependency
+} from "client-api/apicall.jsx";
+
+import * as dependencieActions from "stores/dependencie/actions";
+import * as dependencieSelectors from "stores/dependencie/reducer";
 
 class Dependencies extends Component {
   constructor(props) {
@@ -27,7 +34,6 @@ class Dependencies extends Component {
       item: {},
       showInsertUpdateForm: false,
       list: [],
-      header: "",
       showConfirmDeleteModal: false,
       itemToDelete: {},
       inputFilter: "",
@@ -38,21 +44,9 @@ class Dependencies extends Component {
   }
 
   componentDidMount() {
-    retrieveDependencies(this.state.releaseId, this);
-  }
-
-  handleConfirmDeleteModalClose() {
-    this.setState({ showConfirmDeleteModal: false, itemToDelete: {} });
-  }
-
-  handleNewClick(e) {
-    this.setState({ showInsertUpdateForm: true });
-  }
-
-  onChangeFilterHandler(e) {
-    this.setState({
-      inputFilter: e.target.value
-    });
+    this.props.dispatch(
+      dependencieActions.allDependencies(this.state.releaseId)
+    );
   }
 
   handleConfirmDelete() {
@@ -64,26 +58,8 @@ class Dependencies extends Component {
     saveDependency(data, this);
   }
 
-  handleCancelClick(e) {
-    this.setState(() => ({
-      showInsertUpdateForm: false,
-      editItem: {},
-      editMode: false
-    }));
-  }
-
-  handleConfirmDeleteModalShow() {
-    this.setState({ showConfirmDeleteModal: true });
-  }
-
-  onDelete(item) {
-    this.setState({ itemToDelete: item }, () => {
-      this.handleConfirmDeleteModalShow();
-    });
-  }
-
   render() {
-    const items = this.state.list
+    const items = this.props.dependencies
       .filter(
         d =>
           this.state.inputFilter === "" ||
@@ -97,7 +73,12 @@ class Dependencies extends Component {
           <td>
             <Button
               className="link-button"
-              onClick={this.onDelete.bind(this, item)}
+              onClick={() =>
+                this.setState({
+                  itemToDelete: item,
+                  showConfirmDeleteModal: true
+                })
+              }
             >
               <i className="pe-7s-trash" />
             </Button>
@@ -109,14 +90,14 @@ class Dependencies extends Component {
       <div className="content">
         <SimpleModal
           showConfirmDeleteModal={this.state.showConfirmDeleteModal}
-          handleConfirmDeleteModalClose={this.handleConfirmDeleteModalClose.bind(
-            this
-          )}
+          handleConfirmDeleteModalClose={() =>
+            this.setState({ showConfirmDeleteModal: false, itemToDelete: {} })
+          }
           title="Confirm"
           subTitle="Delete dependency"
           message="Are you sure you want to delete this dependency?"
           handleConfirmDelete={this.handleConfirmDelete.bind(this)}
-        ></SimpleModal>
+        />
 
         <Grid fluid>
           <Row>
@@ -129,7 +110,9 @@ class Dependencies extends Component {
                     <Button
                       className="pull-right"
                       variant="primary"
-                      onClick={this.handleNewClick.bind(this)}
+                      onClick={() =>
+                        this.setState({ showInsertUpdateForm: true })
+                      }
                     >
                       New Dependency
                     </Button>
@@ -148,7 +131,13 @@ class Dependencies extends Component {
                   handleLoading={this.props.handleLoading}
                   editItem={this.state.editItem}
                   saveClick={this.onSaveClick.bind(this)}
-                  cancelClick={this.handleCancelClick.bind(this)}
+                  cancelClick={() =>
+                    this.setState({
+                      showInsertUpdateForm: false,
+                      editItem: {},
+                      editMode: false
+                    })
+                  }
                 />
               ) : null}
             </Col>
@@ -166,7 +155,9 @@ class Dependencies extends Component {
                           <ControlLabel>Dependency Search</ControlLabel>
                           <FormControl
                             value={this.state.inputFilter}
-                            onChange={this.onChangeFilterHandler.bind(this)}
+                            onChange={e =>
+                              this.setState({ inputFilter: e.target.value })
+                            }
                             style={{ width: "100%" }}
                             type="text"
                             placeholder="Search using any field"
@@ -199,4 +190,10 @@ class Dependencies extends Component {
   }
 }
 
-export default Dependencies;
+const mapStateToProps = state => ({
+  loading: dependencieSelectors.getLoading(state),
+  dependencies: dependencieSelectors.getDependencies(state),
+  error: dependencieSelectors.getError(state)
+});
+
+export default connect(mapStateToProps)(Dependencies);

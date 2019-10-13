@@ -35,5 +35,13 @@ export default function reduce(state = initialState, action = {}) {
 }
 
 export function getDependencies(state) {
-  return state.dependencies.dependencies;
+  return state.dependencie.dependencies;
+}
+
+export function getLoading(state) {
+  return state.dependencie.loading;
+}
+
+export function getError(state) {
+  return state.dependencie.error;
 }
