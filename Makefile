@@ -7,8 +7,8 @@ TAG=$(TRAVIS_BRANCH)
 #Build the binary
 build: pre-build
 	@echo "Building tenkai"
-	npm install
-	npm run build
+	yarn install
+	yarn build
 
 #Pre-build checks
 pre-build:
