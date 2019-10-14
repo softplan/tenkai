@@ -26,16 +26,17 @@ function retriveRepo(self) {
     });
 }
 
-function retrieveCharts(self, repo, callback) {
+function retrieveCharts(self, repo, allVersions, callback) {
   self.props.handleLoading(true);
-  let url = "/charts/" + repo + "?all=false";
+  let url = "/charts/" + repo + "?all=" + allVersions;
   axios
     .get(TENKAI_API_URL + url)
     .then(response => {
-      var arr = [];
-      for (var x = 0; x < response.data.charts.length; x++) {
-        var element = response.data.charts[x];
-        arr.push({ value: element.name, label: element.name });
+      let arr = [];
+      for (let x = 0; x < response.data.charts.length; x++) {
+        let element = response.data.charts[x];
+        let nameVersion = element.name + " - " + element.chartVersion
+        arr.push({ value: nameVersion, label: nameVersion });
       }
       self.setState({ charts: arr });
       if (callback) {
@@ -537,7 +538,6 @@ function getDockerImageFromHelmChart(self, payload, callback) {
 export {
   retriveRepo,
   retrieveCharts,
-  // retrieveCharts2,
   retrieveReleases,
   saveReleases,
   retrieveDependencies,
