@@ -232,6 +232,22 @@ function multipleInstall(payload, self) {
     });
 }
 
+function getHelmCommand(payload, self, callback) {
+  self.props.handleLoading(true);
+  axios
+    .post(TENKAI_API_URL + "/getHelmCommand", payload)
+    .then(data => {
+      self.props.handleLoading(false);
+      if (callback !== undefined) {
+        callback(data);
+      }
+    })
+    .catch(error => {
+      self.props.handleLoading(false);
+      handlerError(self, error.response);
+    });
+}
+
 function saveDependency(data, self) {
   let uri = "";
   if (self.state.editMode) {
@@ -504,7 +520,8 @@ function getDockerImageFromHelmChart(self, payload, callback) {
 
   let url = TENKAI_API_URL + "/getChartVariables";
 
-  axios.post(url, payload)
+  axios
+    .post(url, payload)
     .then(res => {
       if (callback !== undefined) {
         callback(self, res.data.image.repository);
@@ -546,5 +563,6 @@ export {
   saveSettings,
   retrieveSettings,
   getVariablesNotUsed,
-  getDockerImageFromHelmChart
+  getDockerImageFromHelmChart,
+  getHelmCommand
 };
