@@ -18,7 +18,7 @@ export class ProductReleaseServiceForm extends Component {
     selectedRepository: {},
     selectedChart: {},
     selectedTag: {},
-    allVersions: false
+    allVersions: this.props.editItem
   };
 
   componentDidMount() {

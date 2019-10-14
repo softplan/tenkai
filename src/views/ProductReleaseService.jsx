@@ -158,7 +158,6 @@ class ProductReleaseService extends Component {
       .map((item, key) => (
         <tr key={key}>
           <td>{item.serviceName}</td>
-          <td>{item.serviceVersion}</td>
           <td>{item.dockerImageTag}</td>
           <td>
             {item.latestVersion !== "" ? (
@@ -290,7 +289,6 @@ class ProductReleaseService extends Component {
                           <thead>
                             <tr>
                               <th>Chart Name</th>
-                              <th>Chart Version</th>
                               <th>Desired Image Tag</th>
                               <th>Latest Image Tag Available</th>
                               <th>Edit</th>
