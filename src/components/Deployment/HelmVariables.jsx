@@ -234,6 +234,7 @@ export class HelmVariables extends Component {
           installPayload.name = this.state.releaseName;
           installPayload.chart = scope;
           installPayload.environmentId = environmentId;
+          installPayload.chartVersion = this.state.chartVersion
           list.push(installPayload);
           callbackFunction(list);
         }

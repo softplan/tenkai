@@ -17,7 +17,8 @@ import ProductReleaseServiceForm from "components/Forms/ProductReleaseServiceFor
 import queryString from "query-string";
 import {
   saveProductVersionService,
-  retrieveProductVersionServices
+  retrieveProductVersionServices,
+  deleteProductVersionService
 } from "client-api/product-apicall";
 
 class ProductReleaseService extends Component {
@@ -59,7 +60,12 @@ class ProductReleaseService extends Component {
   }
 
   handleConfirmDelete() {
-    //deleteSolutionChart(this.state.itemToDelete.ID, this);
+    if (this.state.itemToDelete !== undefined) {
+      deleteProductVersionService(this.state.itemToDelete.ID, this, (self) => {
+        retrieveProductVersionServices(this.state.productVersionId, self);
+        this.setState({ showConfirmDeleteModal: false, itemToDelete: {} });
+      });
+    }
   }
 
   onSaveClick(data) {

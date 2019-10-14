@@ -23,7 +23,7 @@ export class ProductReleaseServiceForm extends Component {
 
   componentDidMount() {
     this.getRepos();
-    if (this.props.editItem === true) {
+    if (this.props.editMode) {
       this.setState(() => ({
         formData: this.props.editItem,
         allVersions: true
