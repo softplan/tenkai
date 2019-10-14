@@ -18,18 +18,20 @@ export class ProductReleaseServiceForm extends Component {
     selectedRepository: {},
     selectedChart: {},
     selectedTag: {},
-    allVersions: this.props.editItem
+    allVersions: false
   };
 
   componentDidMount() {
     this.getRepos();
-    if (this.props.editItem) {
+    if (this.props.editItem === true) {
       this.setState(() => ({
-        formData: this.props.editItem
+        formData: this.props.editItem,
+        allVersions: true
       }));
     } else {
       this.setState(() => ({
-        formData: {}
+        formData: {},
+        allVersions: false
       }));
     }
   }
@@ -109,7 +111,16 @@ export class ProductReleaseServiceForm extends Component {
 
   handleRepositoryChange = selectedRepository => {
     this.setState({ selectedRepository });
-    retrieveCharts(this, selectedRepository.value, this.props.editMode, this.chartCallback);
+
+    if(this.props.editMode) {
+      retrieveCharts(this, selectedRepository.value, true, this.chartCallback);
+      this.setState(() => ({
+        allVersions: true
+      }));
+    } else {
+      retrieveCharts(this, selectedRepository.value, false, this.chartCallback);
+    }
+
   };
 
   async retrieveTagsOfImage(imageName, callback) {
