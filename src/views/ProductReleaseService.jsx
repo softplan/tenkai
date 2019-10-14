@@ -17,7 +17,8 @@ import ProductReleaseServiceForm from "components/Forms/ProductReleaseServiceFor
 import queryString from "query-string";
 import {
   saveProductVersionService,
-  retrieveProductVersionServices
+  retrieveProductVersionServices,
+  deleteProductVersionService
 } from "client-api/product-apicall";
 
 class ProductReleaseService extends Component {
@@ -59,7 +60,12 @@ class ProductReleaseService extends Component {
   }
 
   handleConfirmDelete() {
-    //deleteSolutionChart(this.state.itemToDelete.ID, this);
+    if (this.state.itemToDelete !== undefined) {
+      deleteProductVersionService(this.state.itemToDelete.ID, this, (self) => {
+        retrieveProductVersionServices(this.state.productVersionId, self);
+        this.setState({ showConfirmDeleteModal: false, itemToDelete: {} });
+      });
+    }
   }
 
   onSaveClick(data) {
@@ -96,7 +102,7 @@ class ProductReleaseService extends Component {
     this.setState(() => ({
       showInsertUpdateForm: true,
       editItem: item,
-      editMode: true
+      editMode: true,
     }));
   }
 
@@ -106,12 +112,9 @@ class ProductReleaseService extends Component {
     let services = this.state.list;
     for (var i = 0; i < services.length; i++) {
       let item = services[i];
-      let serviceVersion =
-        item.serviceVersion !== undefined && item.serviceVersion !== ""
-          ? item.serviceVersion
-          : "0";
-      let chart =
-        item.serviceName + "@" + serviceVersion + "#" + item.dockerImageTag;
+      let serviceName = this.getChartName(item.serviceName)
+      let serviceVersion = this.getChartVersion(item.serviceName)
+      let chart = serviceName + "@" + serviceVersion + "#" + item.dockerImageTag;
       array.push(chart);
     }
     this.props.handleLoading(false);
@@ -123,13 +126,9 @@ class ProductReleaseService extends Component {
   }
 
   goToServiceDeploy(item) {
-    let serviceVersion =
-      item.serviceVersion !== undefined && item.serviceVersion !== ""
-        ? item.serviceVersion
-        : "0";
-
-    let chart =
-      item.serviceName + "@" + serviceVersion + "#" + item.dockerImageTag;
+    let serviceName = this.getChartName(item.serviceName)
+    let serviceVersion = this.getChartVersion(item.serviceName)
+    let chart = serviceName + "@" + serviceVersion + "#" + item.dockerImageTag;
 
     let array = [];
     array.push(chart);
@@ -148,6 +147,16 @@ class ProductReleaseService extends Component {
     });
   }
 
+  getChartName(chartNameVersion) {
+    let splited = chartNameVersion.split(' - ')
+    return splited.length >= 1 ? splited[0] : ""
+  }
+
+  getChartVersion(chartNameVersion) {
+    let splited = chartNameVersion.split(' - ')
+    return splited.length === 2 ? splited[1] : ""
+  }
+
   render() {
     const items = this.state.list
       .filter(
@@ -158,7 +167,6 @@ class ProductReleaseService extends Component {
       .map((item, key) => (
         <tr key={key}>
           <td>{item.serviceName}</td>
-          <td>{item.serviceVersion}</td>
           <td>{item.dockerImageTag}</td>
           <td>
             {item.latestVersion !== "" ? (
@@ -290,7 +298,6 @@ class ProductReleaseService extends Component {
                           <thead>
                             <tr>
                               <th>Chart Name</th>
-                              <th>Chart Version</th>
                               <th>Desired Image Tag</th>
                               <th>Latest Image Tag Available</th>
                               <th>Edit</th>

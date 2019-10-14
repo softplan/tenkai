@@ -26,16 +26,17 @@ function retriveRepo(self) {
     });
 }
 
-function retrieveCharts(self, repo, callback) {
+function retrieveCharts(self, repo, allVersions, callback) {
   self.props.handleLoading(true);
-  let url = "/charts/" + repo + "?all=false";
+  let url = "/charts/" + repo + "?all=" + allVersions;
   axios
     .get(TENKAI_API_URL + url)
     .then(response => {
-      var arr = [];
-      for (var x = 0; x < response.data.charts.length; x++) {
-        var element = response.data.charts[x];
-        arr.push({ value: element.name, label: element.name });
+      let arr = [];
+      for (let x = 0; x < response.data.charts.length; x++) {
+        let element = response.data.charts[x];
+        let nameVersion = element.name + " - " + element.chartVersion
+        arr.push({ value: nameVersion, label: nameVersion });
       }
       self.setState({ charts: arr });
       if (callback) {
@@ -225,6 +226,22 @@ function multipleInstall(payload, self) {
     .then(() => {
       self.props.handleNotification("deployment_ok", "success");
       self.props.handleLoading(false);
+    })
+    .catch(error => {
+      self.props.handleLoading(false);
+      handlerError(self, error.response);
+    });
+}
+
+function getHelmCommand(payload, self, callback) {
+  self.props.handleLoading(true);
+  axios
+    .post(TENKAI_API_URL + "/getHelmCommand", payload)
+    .then(data => {
+      self.props.handleLoading(false);
+      if (callback !== undefined) {
+        callback(data);
+      }
     })
     .catch(error => {
       self.props.handleLoading(false);
@@ -504,7 +521,8 @@ function getDockerImageFromHelmChart(self, payload, callback) {
 
   let url = TENKAI_API_URL + "/getChartVariables";
 
-  axios.post(url, payload)
+  axios
+    .post(url, payload)
     .then(res => {
       if (callback !== undefined) {
         callback(self, res.data.image.repository);
@@ -520,7 +538,6 @@ function getDockerImageFromHelmChart(self, payload, callback) {
 export {
   retriveRepo,
   retrieveCharts,
-  // retrieveCharts2,
   retrieveReleases,
   saveReleases,
   retrieveDependencies,
@@ -546,5 +563,6 @@ export {
   saveSettings,
   retrieveSettings,
   getVariablesNotUsed,
-  getDockerImageFromHelmChart
+  getDockerImageFromHelmChart,
+  getHelmCommand
 };

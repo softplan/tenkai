@@ -5,7 +5,8 @@ import { Card } from "components/Card/Card.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
 import HelmVariables from "components/Deployment/HelmVariables.jsx";
 import CopyModal from "components/Modal/CopyModal.jsx";
-import { multipleInstall } from "client-api/apicall.jsx";
+import { multipleInstall, getHelmCommand } from "client-api/apicall.jsx";
+import HelmCommandModal from "components/Modal/HelmCommandModal.jsx";
 
 class VariablesWizard extends Component {
   state = {
@@ -13,7 +14,9 @@ class VariablesWizard extends Component {
     charts: [],
     chartVersions: new Map(),
     onShowCopyModal: false,
-    desiredTags: new Map()
+    desiredTags: new Map(),
+    showEditorModal: false,
+    helmValue: ""
   };
 
   componentDidMount() {
@@ -101,6 +104,25 @@ class VariablesWizard extends Component {
     });
   };
 
+  onHelmCommand = () => {
+    let payload = { deployables: [] };
+    let count = 0;
+    const totalCharts = this.state.charts.length;
+
+    this.state.charts.forEach((item, key) => {
+      this.refs["h" + key].save(list => {
+        for (let x = 0; x < list.length; x++) {
+          let data = list[x];
+          payload.deployables.push(data);
+        }
+        count++;
+        if (count === totalCharts) {
+          this.onSaveHelmCommand(payload);
+        }
+      });
+    });
+  };
+
   onClick = () => {
     let payload = { deployables: [] };
     let count = 0;
@@ -133,6 +155,16 @@ class VariablesWizard extends Component {
     this.setState({ onShowCopyModal: true, chartToManipulate: ref });
   }
 
+  closeEditorModal() {
+    this.setState({ showEditorModal: false, yaml: "" });
+  }
+
+  onSaveHelmCommand = payload => {
+    getHelmCommand(payload, this, res => {
+      this.setState({ helmValue: res.data, showEditorModal: true });
+    });
+  };
+
   render() {
     const envId = this.state.envId;
     const items = this.state.charts.map((item, key) => {
@@ -155,6 +187,12 @@ class VariablesWizard extends Component {
 
     return (
       <div className="content">
+        <HelmCommandModal
+          value={this.state.helmValue}
+          show={this.state.showEditorModal}
+          close={this.closeEditorModal.bind(this)}
+        />
+
         <CopyModal
           onShow={this.state.onShowCopyModal}
           onClose={this.onCloseCopyModal.bind(this)}
@@ -196,6 +234,19 @@ class VariablesWizard extends Component {
                         }
                       >
                         Save Variables
+                      </Button>
+
+                      <Button
+                        className="btn-primary pull-right"
+                        type="button"
+                        onClick={this.onHelmCommand}
+                        disabled={
+                          !this.props.keycloak.hasRealmRole(
+                            "tenkai-helm-upgrade"
+                          )
+                        }
+                      >
+                        Show Helm Command
                       </Button>
                     </ButtonToolbar>
 

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Card } from "components/Card/Card.jsx";
-import { FormGroup, ControlLabel, Button } from "react-bootstrap";
+import { FormGroup, ControlLabel, Button, Checkbox } from "react-bootstrap";
 import Select from "react-select";
 import { retrieveCharts, getTagsOfImage, getDockerImageFromHelmChart, getDefaultRepo } from "client-api/apicall.jsx";
 import axios from "axios";
@@ -11,24 +11,27 @@ export class ProductReleaseServiceForm extends Component {
     formData: {
       productVersionId: "",
       serviceName: "",
-      dockerImageTag: ""
+      dockerImageTag: "",
     },
     charts: [],
     repositories: [],
     selectedRepository: {},
     selectedChart: {},
-    selectedTag: {}
+    selectedTag: {},
+    allVersions: false
   };
 
   componentDidMount() {
     this.getRepos();
-    if (this.props.editItem) {
+    if (this.props.editMode) {
       this.setState(() => ({
-        formData: this.props.editItem
+        formData: this.props.editItem,
+        allVersions: true
       }));
     } else {
       this.setState(() => ({
-        formData: {}
+        formData: {},
+        allVersions: false
       }));
     }
   }
@@ -78,14 +81,14 @@ export class ProductReleaseServiceForm extends Component {
 
   chartCallback = (self, charts) => {
     if (self.props.editItem) {
-      for (var x = 0; x < charts.length; x++) {
-        var element = charts[x];
-        if (element.name === self.props.editItem.serviceName) {
+      for (let x = 0; x < charts.length; x++) {
+        let element = charts[x];
+        let chartNameVersion = element.name + " - " + element.chartVersion 
+        if (chartNameVersion === self.props.editItem.serviceName) {
           const selectedChart = {
-            value: element.name,
-            label: element.name
+            value: chartNameVersion,
+            label: chartNameVersion
           }
-          this.setState({ selectedChart });
           self.handleChartChange(selectedChart);
         }
       }
@@ -95,7 +98,6 @@ export class ProductReleaseServiceForm extends Component {
   tagCallback = (self, tags) => {
     if (self.props.editItem) {
       tags.forEach(tag => {
-        console.log(tag)
         if (tag.tag === self.props.editItem.dockerImageTag) {
           const selectedTag = {
             value: tag.tag,
@@ -109,7 +111,16 @@ export class ProductReleaseServiceForm extends Component {
 
   handleRepositoryChange = selectedRepository => {
     this.setState({ selectedRepository });
-    retrieveCharts(this, selectedRepository.value, this.chartCallback);
+
+    if(this.props.editMode) {
+      retrieveCharts(this, selectedRepository.value, true, this.chartCallback);
+      this.setState(() => ({
+        allVersions: true
+      }));
+    } else {
+      retrieveCharts(this, selectedRepository.value, false, this.chartCallback);
+    }
+
   };
 
   async retrieveTagsOfImage(imageName, callback) {
@@ -133,8 +144,8 @@ export class ProductReleaseServiceForm extends Component {
     this.setState({ selectedChart });
 
     let payload = {
-      chartName: selectedChart.value,
-      chartVersion: ""
+      chartName: this.getChartName(selectedChart.value),
+      chartVersion: selectedChart.version
     };
     getDockerImageFromHelmChart(this, payload, (self, dockerImage) => {
       if(dockerImage) {
@@ -153,12 +164,23 @@ export class ProductReleaseServiceForm extends Component {
     }));
   };
 
+  handleAllVersions = event => {
+    this.setState({allVersions: event.target.checked})
+    const { selectedRepository } = this.state;
+    retrieveCharts(this, selectedRepository.value, event.target.checked, this.chartCallback);
+  }
+
+  getChartName(chartNameWithVersion) {
+    return chartNameWithVersion.split(' - ')[0]
+  }
+
   render() {
     const { editMode } = this.props;
     const { selectedChart } = this.state;
     const { selectedRepository } = this.state;
     const { selectedTag } = this.state;
-
+    const { allVersions } = this.state;
+  
     return (
       <div>
         <Card
@@ -181,6 +203,13 @@ export class ProductReleaseServiceForm extends Component {
                   onChange={this.handleChartChange}
                   options={this.state.charts}
                 />
+                <Checkbox
+                  inline
+                  checked={allVersions}
+                  onChange={this.handleAllVersions}
+                >
+                  Show all versions
+                </Checkbox>
               </FormGroup>
 
               <FormGroup>

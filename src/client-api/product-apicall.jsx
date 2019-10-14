@@ -88,9 +88,43 @@ function saveProductVersionService(data, self, callback) {
     });
 }
 
+function deleteProductVersionService(id, self, callback) {
+  self.props.handleLoading(true);
+  axios.delete(TENKAI_API_URL + "/productVersionServices/" + id)
+    .then(response => {
+      self.props.handleLoading(false);
+      if (callback) {
+        callback(self);
+      }
+    })
+    .catch(error => {
+      self.props.handleLoading(false);
+      console.log(error.message);
+      self.props.handleNotification("general_fail", "error");
+    });
+}
+
+function deleteProductRelease(id, self, callback) {
+  self.props.handleLoading(true);
+  axios.delete(TENKAI_API_URL + "/productVersions/" + id)
+    .then(response => {
+      self.props.handleLoading(false);
+      if (callback) {
+        callback(self);
+      }
+    })
+    .catch(error => {
+      self.props.handleLoading(false);
+      console.log(error.message);
+      self.props.handleNotification("general_fail", "error");
+    });
+}
+
 export {
   saveProductRelease,
   retrieveProductVersions,
   saveProductVersionService,
+  deleteProductVersionService,
+  deleteProductRelease,
   retrieveProductVersionServices
 };
