@@ -106,12 +106,9 @@ class ProductReleaseService extends Component {
     let services = this.state.list;
     for (var i = 0; i < services.length; i++) {
       let item = services[i];
-      let serviceVersion =
-        item.serviceVersion !== undefined && item.serviceVersion !== ""
-          ? item.serviceVersion
-          : "0";
-      let chart =
-        item.serviceName + "@" + serviceVersion + "#" + item.dockerImageTag;
+      let serviceName = this.getChartName(item.serviceName)
+      let serviceVersion = this.getChartVersion(item.serviceName)
+      let chart = serviceName + "@" + serviceVersion + "#" + item.dockerImageTag;
       array.push(chart);
     }
     this.props.handleLoading(false);
@@ -123,13 +120,9 @@ class ProductReleaseService extends Component {
   }
 
   goToServiceDeploy(item) {
-    let serviceVersion =
-      item.serviceVersion !== undefined && item.serviceVersion !== ""
-        ? item.serviceVersion
-        : "0";
-
-    let chart =
-      item.serviceName + "@" + serviceVersion + "#" + item.dockerImageTag;
+    let serviceName = this.getChartName(item.serviceName)
+    let serviceVersion = this.getChartVersion(item.serviceName)
+    let chart = serviceName + "@" + serviceVersion + "#" + item.dockerImageTag;
 
     let array = [];
     array.push(chart);
@@ -146,6 +139,16 @@ class ProductReleaseService extends Component {
     this.setState({ editMode: true, editItem: item }, () => {
       this.onSaveClick(item);
     });
+  }
+
+  getChartName(chartNameVersion) {
+    let splited = chartNameVersion.split(' - ')
+    return splited.length >= 1 ? splited[0] : ""
+  }
+
+  getChartVersion(chartNameVersion) {
+    let splited = chartNameVersion.split(' - ')
+    return splited.length === 2 ? splited[1] : ""
   }
 
   render() {
