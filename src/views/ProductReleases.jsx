@@ -112,6 +112,7 @@ class ProductRelease extends Component {
       )
       .map((item, key) => (
         <tr key={key}>
+          <td>{item.ID}</td>
           <td>{item.date}</td>
           <td>{item.version}</td>
           <td>
@@ -207,6 +208,7 @@ class ProductRelease extends Component {
                         <Table bordered hover size="sm">
                           <thead>
                             <tr>
+                              <th>#</th>
                               <th>Date</th>
                               <th>Version</th>
                               <th>Delete</th>

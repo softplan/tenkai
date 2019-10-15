@@ -166,6 +166,7 @@ class ProductReleaseService extends Component {
       )
       .map((item, key) => (
         <tr key={key}>
+          <td>{item.ID}</td>
           <td>{item.serviceName}</td>
           <td>{item.dockerImageTag}</td>
           <td>
@@ -297,6 +298,7 @@ class ProductReleaseService extends Component {
                         <Table bordered hover size="sm">
                           <thead>
                             <tr>
+                              <th>#</th>
                               <th>Chart Name</th>
                               <th>Desired Image Tag</th>
                               <th>Latest Image Tag Available</th>
