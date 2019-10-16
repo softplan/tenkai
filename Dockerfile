@@ -11,5 +11,4 @@ RUN apk add nginx && mkdir /run/nginx
 
 WORKDIR /var/www/localhost/htdocs
 
-CMD ["/bin/sh", "-c", "/tmp/config.sh /var/www/localhost/htdocs && exec nginx -g 'daemon off;'"]
-
+ENTRYPOINT [ "./run.sh" ]
