@@ -8,6 +8,9 @@ echo "KEYCLOAK_URL $KEYCLOAK_URL"
 echo "KEYCLOAK_REALM $KEYCLOAK_REALM"
 echo "######################"
 
+echo "Before: ${HTDOCS_FOLDER}/keycloak.json"
+cat ${HTDOCS_FOLDER}/keycloak.json
+
 if [ "$API_URL" ]; then
     echo find "$1" -type f -name '*.js' -exec sed -i 's~http:\/\/localhost\:8080~'"$API_URL"'~g' {} \;
     find "$1" -type f -name '*.js' -exec sed -i 's~http:\/\/localhost\:8080~'"$API_URL"'~g' {} \;
@@ -22,3 +25,9 @@ if [ "$KEYCLOAK_REALM" ]; then
     echo sed -i 's~tenkai~'"$KEYCLOAK_REALM"'~g' ${HTDOCS_FOLDER}/keycloak.json
     sed -i 's~tenkai~'"$KEYCLOAK_REALM"'~g' ${HTDOCS_FOLDER}/keycloak.json
 fi
+
+
+echo "After: ${HTDOCS_FOLDER}/keycloak.json"
+cat ${HTDOCS_FOLDER}/keycloak.json
+
+echo "Up and running!"
