@@ -1,10 +1,11 @@
 #!/bin/sh
+HTDOCS_FOLDER=$1
 
-echo "###### variaveis #####"
-echo "$1"
-echo "$API_URL"
-echo "$KEYCLOAK_URL"
-echo "$KEYCLOAK_REALM"
+echo "###### Variables #####"
+echo "HTDOCS_FOLDER $HTDOCS_FOLDER"
+echo "API_URL $API_URL"
+echo "KEYCLOAK_URL $KEYCLOAK_URL"
+echo "KEYCLOAK_REALM $KEYCLOAK_REALM"
 echo "######################"
 
 if [ "$API_URL" ]; then
@@ -12,15 +13,12 @@ if [ "$API_URL" ]; then
     find "$1" -type f -name '*.js' -exec sed -i 's~http:\/\/localhost\:8080~'"$API_URL"'~g' {} \;
 fi
 
-echo $KEYCLOAK_URL >> /tmp/variables.txt
-
 if [ "$KEYCLOAK_URL" ]; then
-    echo sed -i 's~http:\/\/keycloaktools\/auth~'"$KEYCLOAK_URL"'~g' /var/www/localhost/htdocs/keycloak.json
-    sed -i 's~http:\/\/keycloaktools\/auth~'"$KEYCLOAK_URL"'~g' /var/www/localhost/htdocs/keycloak.json
-    cat /var/www/localhost/htdocs/keycloak.json
+    echo sed -i 's~http:\/\/keycloaktools\/auth~'"$KEYCLOAK_URL"'~g' ${HTDOCS_FOLDER}/keycloak.json
+    sed -i 's~http:\/\/keycloaktools\/auth~'"$KEYCLOAK_URL"'~g' ${HTDOCS_FOLDER}/keycloak.json
 fi
 
 if [ "$KEYCLOAK_REALM" ]; then
-    echo find "$1" -type f -name 'keycloak.json' -exec sed -i 's~tenkai~'"$KEYCLOAK_REALM"'~g' {} \;
-    find "$1" -type f -name 'keycloak.json' -exec sed -i 's~tenkai~'"$KEYCLOAK_REALM"'~g' {} \;
+    echo sed -i 's~tenkai~'"$KEYCLOAK_REALM"'~g' ${HTDOCS_FOLDER}/keycloak.json
+    sed -i 's~tenkai~'"$KEYCLOAK_REALM"'~g' ${HTDOCS_FOLDER}/keycloak.json
 fi
