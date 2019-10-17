@@ -35,7 +35,7 @@ function retrieveCharts(self, repo, allVersions, callback) {
       let arr = [];
       for (let x = 0; x < response.data.charts.length; x++) {
         let element = response.data.charts[x];
-        let nameVersion = element.name + " - " + element.chartVersion
+        let nameVersion = element.name + " - " + element.chartVersion;
         arr.push({ value: nameVersion, label: nameVersion });
       }
       self.setState({ charts: arr });
@@ -271,19 +271,6 @@ function saveDependency(data, self) {
     editItem: {},
     editMode: false
   }));
-}
-
-function deleteDependency(id, self) {
-  if (self.state.itemToDelete !== undefined) {
-    axios
-      .delete(TENKAI_API_URL + "/dependencies/" + id)
-      .then(retrieveDependencies(self.state.releaseId, self))
-      .catch(error => {
-        console.log(error.message);
-        handlerError(self, error.response);
-      });
-  }
-  self.setState({ showConfirmDeleteModal: false, itemToDelete: {} });
 }
 
 function retrieveDependency(environmentId, chartName, tag, self) {
@@ -542,7 +529,6 @@ export {
   saveReleases,
   retrieveDependencies,
   saveDependency,
-  deleteDependency,
   deleteRelease,
   retrieveDependency,
   retrieveReleasesWithCallBack,

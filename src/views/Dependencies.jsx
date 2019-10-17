@@ -15,10 +15,10 @@ import { Card } from "components/Card/Card.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
 import DepForm from "components/Dependencies/DepForm.jsx";
 import queryString from "query-string";
-import { saveDependency, deleteDependency } from "client-api/apicall.jsx";
+import { saveDependency } from "client-api/apicall.jsx";
 
-import * as dependencieActions from "stores/dependencie/actions";
-import * as dependencieSelectors from "stores/dependencie/reducer";
+import * as dependencyActions from "stores/dependency/actions";
+import * as dependencySelectors from "stores/dependency/reducer";
 
 class Dependencies extends Component {
   constructor(props) {
@@ -41,12 +41,17 @@ class Dependencies extends Component {
 
   componentDidMount() {
     this.props.dispatch(
-      dependencieActions.allDependencies(this.state.releaseId)
+      dependencyActions.allDependencies(this.state.releaseId)
     );
   }
 
   handleConfirmDelete() {
-    deleteDependency(this.state.itemToDelete.ID, this);
+    this.props.dispatch(
+      dependencyActions.deleteDependency(
+        this.state.itemToDelete.ID,
+        this.state.releaseId
+      )
+    );
   }
 
   onSaveClick(data) {
@@ -187,9 +192,9 @@ class Dependencies extends Component {
 }
 
 const mapStateToProps = state => ({
-  loading: dependencieSelectors.getLoading(state),
-  dependencies: dependencieSelectors.getDependencies(state),
-  error: dependencieSelectors.getError(state)
+  loading: dependencySelectors.getLoading(state),
+  dependencies: dependencySelectors.getDependencies(state),
+  error: dependencySelectors.getError(state)
 });
 
 export default connect(mapStateToProps)(Dependencies);

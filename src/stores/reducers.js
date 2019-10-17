@@ -1,3 +1,3 @@
-import dependencie from "./dependencie/reducer";
+import dependency from "./dependency/reducer";
 
-export { dependencie };
+export { dependency };

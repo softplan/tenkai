@@ -6,3 +6,7 @@ export async function allDependencies(releaseId) {
     `${TENKAI_API_URL}/dependencies?releaseId=${releaseId}`
   );
 }
+
+export async function deleteDependency(dependencieId) {
+  return await axios.delete(`${TENKAI_API_URL}/dependencies/${dependencieId}`);
+}
