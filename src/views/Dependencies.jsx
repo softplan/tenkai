@@ -52,6 +52,7 @@ class Dependencies extends Component {
         this.state.releaseId
       )
     );
+    this.setState({ showConfirmDeleteModal: false, itemToDelete: {} });
   }
 
   onSaveClick(data) {
