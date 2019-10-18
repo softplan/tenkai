@@ -204,21 +204,6 @@ function saveUsers(data, self, onSuccess) {
   }));
 }
 
-function retrieveDependencies(releaseId, self) {
-  self.props.handleLoading(true);
-  let url = `/dependencies?releaseId=${releaseId}`;
-  axios
-    .get(TENKAI_API_URL + url)
-    .then(response => {
-      self.setState({ list: response.data.dependencies });
-      self.props.handleLoading(false);
-    })
-    .catch(error => {
-      self.props.handleLoading(false);
-      handlerError(self, error.response);
-    });
-}
-
 function multipleInstall(payload, self) {
   self.props.handleLoading(true);
   axios
@@ -247,30 +232,6 @@ function getHelmCommand(payload, self, callback) {
       self.props.handleLoading(false);
       handlerError(self, error.response);
     });
-}
-
-function saveDependency(data, self) {
-  let uri = "";
-  if (self.state.editMode) {
-    uri = "/dependencies/edit";
-  } else {
-    uri = "/dependencies";
-  }
-  axios
-    .post(TENKAI_API_URL + uri, data)
-    .then(res => {
-      retrieveDependencies(self.state.releaseId, self);
-    })
-    .catch(error => {
-      console.log(error.message);
-      handlerError(self, error.response);
-    });
-
-  self.setState(() => ({
-    showInsertUpdateForm: false,
-    editItem: {},
-    editMode: false
-  }));
 }
 
 function retrieveDependency(environmentId, chartName, tag, self) {
@@ -527,8 +488,6 @@ export {
   retrieveCharts,
   retrieveReleases,
   saveReleases,
-  retrieveDependencies,
-  saveDependency,
   deleteRelease,
   retrieveDependency,
   retrieveReleasesWithCallBack,

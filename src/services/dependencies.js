@@ -11,7 +11,7 @@ export async function deleteDependency(dependencieId) {
   return await axios.delete(`${TENKAI_API_URL}/dependencies/${dependencieId}`);
 }
 
-export async function saveDependency(data) {
+export async function createDependency(data) {
   return await axios.post(`${TENKAI_API_URL}/dependencies`, data);
 }
 

@@ -15,7 +15,6 @@ import { Card } from "components/Card/Card.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
 import DepForm from "components/Dependencies/DepForm.jsx";
 import queryString from "query-string";
-import { saveDependency } from "client-api/apicall.jsx";
 
 import * as dependencyActions from "stores/dependency/actions";
 import * as dependencySelectors from "stores/dependency/reducer";
@@ -57,7 +56,18 @@ class Dependencies extends Component {
 
   onSaveClick(data) {
     data.release_id = parseInt(this.state.releaseId);
-    saveDependency(data, this);
+
+    if (this.state.editMode) {
+      this.props.dispatch(dependencyActions.editDependency(data));
+    } else {
+      this.props.dispatch(dependencyActions.createDependency(data));
+    }
+
+    this.setState({
+      showInsertUpdateForm: false,
+      editItem: {},
+      editMode: false
+    });
   }
 
   render() {

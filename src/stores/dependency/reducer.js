@@ -4,6 +4,7 @@ const initialState = {
   dependencies: [],
   loading: false,
   loadingDelete: false,
+  loadingSave: false,
   error: null
 };
 
@@ -22,21 +23,35 @@ export default function reduce(state = initialState, action = {}) {
         ...state
       };
 
+    case types.CREATE_DEPENDENCY_BEGIN:
+    case types.EDIT_DEPENDENCY_BEGIN:
+      return {
+        ...state,
+        loadingSave: true,
+        error: null
+      };
+
     case types.ALL_DEPENDENCY_ERROR:
     case types.DELETE_DEPENDENCY_ERROR:
+    case types.CREATE_DEPENDENCY_ERROR:
+    case types.EDIT_DEPENDENCY_ERROR:
       return {
         ...state,
         loading: false,
         loadingDelete: false,
+        loadingSave: false,
         error: action.payload.error
       };
 
     case types.ALL_DEPENDENCY_SUCCESS:
     case types.DELETE_DEPENDENCY_SUCCESS:
+    case types.CREATE_DEPENDENCY_SUCCESS:
+    case types.EDIT_DEPENDENCY_SUCCESS:
       return {
         ...state,
         loading: false,
         loadingDelete: false,
+        loadingSave: false,
         dependencies: action.payload.dependencies
       };
 

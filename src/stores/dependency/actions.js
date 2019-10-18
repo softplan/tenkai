@@ -31,3 +31,35 @@ export function deleteDependency(dependencieId, releaseId) {
     }
   };
 }
+
+export function createDependency(data, releaseId) {
+  return async dispatch => {
+    try {
+      dispatch(types.createDependencyBegin());
+
+      await services.createDependency(data);
+      const result = await services.allDependencies(releaseId);
+      let dependencies = result.data.dependencies;
+
+      dispatch(types.createDependencySuccess(dependencies));
+    } catch (error) {
+      dispatch(types.createDependencyError(error));
+    }
+  };
+}
+
+export function editDependency(data, releaseId) {
+  return async dispatch => {
+    try {
+      dispatch(types.editDependencyBegin());
+
+      await services.editDependency(data);
+      const result = await services.allDependencies(releaseId);
+      let dependencies = result.data.dependencies;
+
+      dispatch(types.editDependencySuccess(dependencies));
+    } catch (error) {
+      dispatch(types.editDependencyError(error));
+    }
+  };
+}
