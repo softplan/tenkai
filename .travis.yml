@@ -13,4 +13,4 @@ script:
   - make build
   - make container-image
   - make tag-image
-  - if [ "$TRAVIS_BRANCH" = "master" ]; then make publish; fi
+  - if [ "$TRAVIS_BRANCH" = "dev" ]; then make publish; fi
