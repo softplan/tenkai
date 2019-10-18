@@ -35,7 +35,7 @@ function retrieveCharts(self, repo, allVersions, callback) {
       let arr = [];
       for (let x = 0; x < response.data.charts.length; x++) {
         let element = response.data.charts[x];
-        let nameVersion = element.name + " - " + element.chartVersion
+        let nameVersion = element.name + " - " + element.chartVersion;
         arr.push({ value: nameVersion, label: nameVersion });
       }
       self.setState({ charts: arr });
@@ -204,21 +204,6 @@ function saveUsers(data, self, onSuccess) {
   }));
 }
 
-function retrieveDependencies(releaseId, self) {
-  self.props.handleLoading(true);
-  let url = `/dependencies?releaseId=${releaseId}`;
-  axios
-    .get(TENKAI_API_URL + url)
-    .then(response => {
-      self.setState({ list: response.data.dependencies });
-      self.props.handleLoading(false);
-    })
-    .catch(error => {
-      self.props.handleLoading(false);
-      handlerError(self, error.response);
-    });
-}
-
 function multipleInstall(payload, self) {
   self.props.handleLoading(true);
   axios
@@ -247,43 +232,6 @@ function getHelmCommand(payload, self, callback) {
       self.props.handleLoading(false);
       handlerError(self, error.response);
     });
-}
-
-function saveDependency(data, self) {
-  let uri = "";
-  if (self.state.editMode) {
-    uri = "/dependencies/edit";
-  } else {
-    uri = "/dependencies";
-  }
-  axios
-    .post(TENKAI_API_URL + uri, data)
-    .then(res => {
-      retrieveDependencies(self.state.releaseId, self);
-    })
-    .catch(error => {
-      console.log(error.message);
-      handlerError(self, error.response);
-    });
-
-  self.setState(() => ({
-    showInsertUpdateForm: false,
-    editItem: {},
-    editMode: false
-  }));
-}
-
-function deleteDependency(id, self) {
-  if (self.state.itemToDelete !== undefined) {
-    axios
-      .delete(TENKAI_API_URL + "/dependencies/" + id)
-      .then(retrieveDependencies(self.state.releaseId, self))
-      .catch(error => {
-        console.log(error.message);
-        handlerError(self, error.response);
-      });
-  }
-  self.setState({ showConfirmDeleteModal: false, itemToDelete: {} });
 }
 
 function retrieveDependency(environmentId, chartName, tag, self) {
@@ -540,9 +488,6 @@ export {
   retrieveCharts,
   retrieveReleases,
   saveReleases,
-  retrieveDependencies,
-  saveDependency,
-  deleteDependency,
   deleteRelease,
   retrieveDependency,
   retrieveReleasesWithCallBack,
