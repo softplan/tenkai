@@ -22,14 +22,13 @@ import * as productSelectors from "stores/product/reducer";
 class Product extends Component {
   state = {
     showInsertUpdateForm: false,
-    list: [],
     inputFilter: "",
     showConfirmDeleteModal: false,
     itemToDelete: {}
   };
 
   componentDidMount() {
-    this.props.dispatch(productActions.allProducts(this.state.releaseId));
+    this.props.dispatch(productActions.allProducts());
   }
 
   handleCancelClick(e) {
@@ -63,7 +62,7 @@ class Product extends Component {
   }
 
   render() {
-    const items = this.state.list
+    const items = this.props.products
       .filter(
         d =>
           this.state.inputFilter === "" ||
