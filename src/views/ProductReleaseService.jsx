@@ -147,6 +147,13 @@ class ProductReleaseService extends Component {
     });
   }
 
+  setChartLatestVersion(item) {
+    item.serviceName = this.getChartName(item.serviceName) + " - " + item.chartLatestVersion
+    this.setState({ editMode: true, editItem: item }, () => {
+      this.onSaveClick(item);
+    });
+  }
+
   getChartName(chartNameVersion) {
     let splited = chartNameVersion.split(' - ')
     return splited.length >= 1 ? splited[0] : ""
@@ -168,6 +175,20 @@ class ProductReleaseService extends Component {
         <tr key={key}>
           <td>{item.ID}</td>
           <td>{item.serviceName}</td>
+          <td>
+            {item.chartLatestVersion !== "" ? (
+              <Button
+                className="link-button"
+                onClick={this.setChartLatestVersion.bind(this, item)}
+              >
+                <i className="pe-7s-left-arrow" />
+              </Button>
+            ) : (
+                ""
+              )}
+            {"   "}
+            {item.chartLatestVersion}
+          </td>
           <td>{item.dockerImageTag}</td>
           <td>
             {item.latestVersion !== "" ? (
@@ -300,8 +321,9 @@ class ProductReleaseService extends Component {
                             <tr>
                               <th>#</th>
                               <th>Chart Name</th>
+                              <th>Latest Chart</th>
                               <th>Desired Image Tag</th>
-                              <th>Latest Image Tag Available</th>
+                              <th>Latest Image Tag</th>
                               <th>Edit</th>
                               <th>Delete</th>
                               <th>Go Deploy</th>
