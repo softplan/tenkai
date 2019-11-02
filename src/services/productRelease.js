@@ -7,8 +7,10 @@ export async function allProductReleases(productId) {
   );
 }
 
-export async function deleteProductRelease(productId) {
-  return await axios.delete(`${TENKAI_API_URL}/productVersions/${productId}`);
+export async function deleteProductRelease(productReleaseId) {
+  return await axios.delete(
+    `${TENKAI_API_URL}/productVersions/${productReleaseId}`
+  );
 }
 
 export async function createProcutRelease(data) {
