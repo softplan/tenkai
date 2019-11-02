@@ -13,7 +13,7 @@ export async function deleteProductRelease(productReleaseId) {
   );
 }
 
-export async function createProcutRelease(data) {
+export async function createProductRelease(data) {
   return await axios.post(`${TENKAI_API_URL}/productVersions`, data);
 }
 
