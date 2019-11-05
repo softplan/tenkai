@@ -31,14 +31,6 @@ class Product extends Component {
     this.props.dispatch(productActions.allProducts());
   }
 
-  handleCancelClick(e) {
-    this.setState(() => ({
-      showInsertUpdateForm: false,
-      editItem: {},
-      editMode: false
-    }));
-  }
-
   onSaveClick(data) {
     if (this.state.editMode) {
       this.props.dispatch(productActions.editProduct(data));
