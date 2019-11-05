@@ -1,5 +1,5 @@
-import axios from "axios";
-import TENKAI_API_URL from "env.js";
+import axios from 'axios';
+import TENKAI_API_URL from 'env.js';
 
 export async function allProductReleaseServices(productReleaseId) {
   return await axios.get(

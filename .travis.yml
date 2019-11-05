@@ -1,13 +1,13 @@
 language: node_js
 
 node_js:
-  - "10"
+  - '10'
 
 branches:
   only:
-  - dev
-  - master
-  - /^\d{2}\.\d\.\d+(-\d+)?$/
+    - dev
+    - master
+    - /^\d{2}\.\d\.\d+(-\d+)?$/
 
 cache:
   npm: false
@@ -17,6 +17,7 @@ services:
 
 script:
   - make build
+  - make lint
   - make container-image
   - make tag-image
   - make publish
