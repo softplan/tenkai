@@ -27,7 +27,6 @@ class SolutionChart extends Component {
       solutionId: values.solutionId,
       item: {},
       showInsertUpdateForm: false,
-      list: [],
       header: "",
       showConfirmDeleteModal: false,
       itemToDelete: {},
