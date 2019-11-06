@@ -3,7 +3,7 @@ import Deployment from "views/Deployment";
 import Config from "views/Config";
 import Variables from "views/Variables";
 import VariablesWizard from "views/VariablesWizard";
-import Microservices from "views/Microservices";
+// import Microservices from "views/Microservices";
 import Dependencies from "views/Dependencies";
 import DepAnalysis from "views/DepAnalysis";
 import DepGraph from "views/DepGraph";
