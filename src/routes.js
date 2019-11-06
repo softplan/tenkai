@@ -156,15 +156,15 @@ const dashboardRoutes = [
     menu: false,
     role: "tenkai-user"
   },
-  {
-    path: "/microservices",
-    name: "Releases",
-    icon: "pe-7s-tools",
-    component: Microservices,
-    layout: "/admin",
-    menu: true,
-    role: "tenkai-user"
-  },
+  // {
+  //   path: "/microservices",
+  //   name: "Releases",
+  //   icon: "pe-7s-tools",
+  //   component: Microservices,
+  //   layout: "/admin",
+  //   menu: true,
+  //   role: "tenkai-user"
+  // },
   {
     path: "/microservices-deps",
     name: "Dependencies",
