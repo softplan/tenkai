@@ -99,7 +99,8 @@ class ProductReleaseService extends Component {
     this.props.handleLoading(false);
     this.props.updateSelectedChartsToDeploy(array, () => {
       this.props.history.push({
-        pathname: "/admin/deployment-wvars"
+        pathname: "/admin/deployment-wvars",
+        search: "?productVersionId=" + this.state.productVersionId
       });
     });
   }

@@ -7,6 +7,7 @@ import HelmVariables from "components/Deployment/HelmVariables.jsx";
 import CopyModal from "components/Modal/CopyModal.jsx";
 import { multipleInstall, getHelmCommand } from "client-api/apicall.jsx";
 import HelmCommandModal from "components/Modal/HelmCommandModal.jsx";
+import queryString from "query-string";
 
 class VariablesWizard extends Component {
   state = {
@@ -78,6 +79,8 @@ class VariablesWizard extends Component {
   constructor(props) {
     super(props);
     this.state.envId = this.props.selectedEnvironment.value;
+    const values = queryString.parse(props.location.search);
+    this.state.productVersionId = values.productVersionId
   }
 
   onSave = payload => {
@@ -124,7 +127,12 @@ class VariablesWizard extends Component {
   };
 
   onClick = () => {
-    let payload = { deployables: [] };
+    let payload = {
+      productVersionId: parseInt(this.state.productVersionId),
+      environmentId: parseInt(this.state.envId),
+      deployables: []
+    };
+
     let count = 0;
     const totalCharts = this.state.charts.length;
 

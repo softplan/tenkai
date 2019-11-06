@@ -17,7 +17,7 @@ export const ChartCard = props => (
           <i className="pe-7s-album" /> Deploy
         </Button>
 
-        <Button
+        {/* <Button
           className="btn-info btn-fill"
           bsSize="sm"
           onClick={() =>
@@ -25,7 +25,7 @@ export const ChartCard = props => (
           }
         >
           <i className="pe-7s-eyedropper" /> Analyse
-        </Button>
+        </Button> */}
 
         <Button
           className="btn"
