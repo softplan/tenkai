@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Nav, Navbar, NavDropdown, MenuItem } from "react-bootstrap";
+import { Nav, Navbar, NavDropdown, MenuItem, FormGroup, Button, NavItem, FormControl } from "react-bootstrap";
 import Select from 'react-select';
 
 class AdminNavbarLinks extends Component {
@@ -12,9 +12,11 @@ class AdminNavbarLinks extends Component {
       id: "",
       selectedOption: {},
     };
-    this.props.keycloak.loadUserInfo().then(userInfo => {
-        this.setState({name: userInfo.name, email: userInfo.email, id: userInfo.sub})
-    });
+    if (this.props.keycloak !== undefined) {
+      this.props.keycloak.loadUserInfo().then(userInfo => {
+          this.setState({name: userInfo.name, email: userInfo.email, id: userInfo.sub})
+      });
+    }
   }  
 
 
@@ -27,20 +29,27 @@ class AdminNavbarLinks extends Component {
 
     return (
       <div>
-
-        <Navbar.Form style={{width: "200px"}} pullLeft> 
-            <Select  value={this.props.selectedEnvironment} onChange={this.props.handleEnvironmentChange} options={this.props.environments} />
-        </Navbar.Form>
-        
-
+        <Navbar.Text>
+          Environment:
+        </Navbar.Text>
+        <Nav>
+          <Navbar.Form style={{ width: "200px", marginTop: "8px"}} pullLeft>
+            <Select value={this.props.selectedEnvironment} onChange={this.props.handleEnvironmentChange} options={this.props.environments} />
+          </Navbar.Form>
+        </Nav>
+        {this.props.selectedEnvironment && this.props.selectedEnvironment.productVersion &&
+          <Navbar.Text>
+            Product Version: {this.props.selectedEnvironment.productVersion}
+          </Navbar.Text>
+        }
         <Nav pullRight>
           <NavDropdown
-              eventKey={2}
-              title={this.state.name}
-              id="basic-nav-dropdown-right"
-            >
-              <MenuItem eventKey={2.1} onClick={ () => this.logout()}>Logout</MenuItem>
-            </NavDropdown>          
+            eventKey={2}
+            title={this.state.name}
+            id="basic-nav-dropdown-right"
+          >
+            <MenuItem eventKey={2.1} onClick={() => this.logout()}>Logout</MenuItem>
+          </NavDropdown>
         </Nav>
       </div>
     );
