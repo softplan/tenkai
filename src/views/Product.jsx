@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { connect } from "react-redux";
 import {
   Grid,
   Row,
@@ -14,129 +15,46 @@ import { Card } from "components/Card/Card.jsx";
 import CButton from "components/CustomButton/CustomButton.jsx";
 import ProductForm from "components/Forms/ProductForm.jsx";
 import SimpleModal from "components/Modal/SimpleModal.jsx";
-import axios from "axios";
-import TENKAI_API_URL from "env.js";
+
+import * as productActions from "stores/product/actions";
+import * as productSelectors from "stores/product/reducer";
 
 class Product extends Component {
   state = {
     showInsertUpdateForm: false,
-    list: [],
     inputFilter: "",
     showConfirmDeleteModal: false,
     itemToDelete: {}
   };
 
   componentDidMount() {
-    this.getList();
-  }
-
-  handleConfirmDeleteModalClose() {
-    this.setState({ showConfirmDeleteModal: false, itemToDelete: {} });
-  }
-
-  handleConfirmDeleteModalShow() {
-    this.setState({ showConfirmDeleteModal: true });
-  }
-
-  onChangeFilterHandler(e) {
-    this.setState({
-      inputFilter: e.target.value
-    });
-  }
-
-  getList() {
-    axios
-      .get(TENKAI_API_URL + "/products")
-      .then(response => this.setState({ list: response.data.list }))
-      .catch(error => {
-        console.log(error.message);
-        this.props.handleNotification("general_fail", "error");
-      });
-  }
-
-  handleNewClick(e) {
-    this.setState(() => ({
-      showInsertUpdateForm: true,
-      editItem: {},
-      editMode: false
-    }));
-  }
-
-  handleCancelClick(e) {
-    this.setState(() => ({
-      showInsertUpdateForm: false,
-      editItem: {},
-      editMode: false
-    }));
+    this.props.dispatch(productActions.allProducts());
   }
 
   onSaveClick(data) {
     if (this.state.editMode) {
-      console.log("edit");
-      this.save(data, "/products/edit");
+      this.props.dispatch(productActions.editProduct(data));
     } else {
-      console.log("new");
-      this.save(data, "/products");
+      this.props.dispatch(productActions.createProduct(data));
     }
-  }
 
-  onSave(item) {
-    this.setState(() => ({
-      showInsertUpdateForm: true,
-      editItem: item,
-      editMode: true
-    }));
-    window.scrollTo(0, 0);
-  }
-
-  save(data, uri) {
-    axios
-      .post(TENKAI_API_URL + uri, data)
-      .then(res => {
-        this.setState({ list: [...this.state.list], data });
-        this.getList();
-      })
-      .catch(error => {
-        console.log(error.message);
-        this.props.handleNotification("general_fail", "error");
-      });
-    this.setState(() => ({
+    this.setState({
       showInsertUpdateForm: false,
       editItem: {},
       editMode: false
-    }));
-  }
-
-  onDelete(item) {
-    this.setState({ itemToDelete: item }, () => {
-      this.handleConfirmDeleteModalShow();
-    });
-  }
-
-  onEditDetails(item) {
-    this.props.history.push({
-      pathname: "/admin/product-version",
-      search: "?productId=" + item.ID
     });
   }
 
   handleConfirmDelete() {
-    if (this.state.itemToDelete !== undefined) {
-      axios
-        .delete(TENKAI_API_URL + "/products/" + this.state.itemToDelete.ID)
-        .then(res => {
-          this.getList();
-        })
-        .catch(error => {
-          console.log(error.message);
-          this.props.handleNotification("general_fail", "error");
-        });
-    }
+    this.props.dispatch(
+      productActions.deleteProduct(this.state.itemToDelete.ID)
+    );
+
     this.setState({ showConfirmDeleteModal: false, itemToDelete: {} });
   }
 
   render() {
-    const items = this.state.list
+    const items = this.props.products
       .filter(
         d =>
           this.state.inputFilter === "" ||
@@ -149,7 +67,14 @@ class Product extends Component {
           <td>
             <Button
               className="link-button"
-              onClick={this.onSave.bind(this, item)}
+              onClick={() => {
+                this.setState({
+                  showInsertUpdateForm: true,
+                  editItem: item,
+                  editMode: true
+                });
+                window.scrollTo(0, 0);
+              }}
             >
               <i className="pe-7s-edit" />
             </Button>
@@ -157,7 +82,11 @@ class Product extends Component {
           <td>
             <Button
               className="link-button"
-              onClick={this.onDelete.bind(this, item)}
+              onClick={() =>
+                this.setState({ itemToDelete: item }, () => {
+                  this.setState({ showConfirmDeleteModal: true });
+                })
+              }
             >
               <i className="pe-7s-trash" />
             </Button>
@@ -165,7 +94,12 @@ class Product extends Component {
           <td>
             <Button
               className="link-button"
-              onClick={this.onEditDetails.bind(this, item)}
+              onClick={() =>
+                this.props.history.push({
+                  pathname: "/admin/product-version",
+                  search: "?productId=" + item.ID
+                })
+              }
             >
               <i className="pe-7s-album" />
             </Button>
@@ -177,9 +111,9 @@ class Product extends Component {
       <div className="content">
         <SimpleModal
           showConfirmDeleteModal={this.state.showConfirmDeleteModal}
-          handleConfirmDeleteModalClose={this.handleConfirmDeleteModalClose.bind(
-            this
-          )}
+          handleConfirmDeleteModalClose={() =>
+            this.setState({ showConfirmDeleteModal: false, itemToDelete: {} })
+          }
           title="Confirm"
           subTitle="Delete product"
           message="Are you sure you want to delete this product?"
@@ -196,7 +130,13 @@ class Product extends Component {
                     <CButton
                       className="pull-right"
                       variant="primary"
-                      onClick={this.handleNewClick.bind(this)}
+                      onClick={() =>
+                        this.setState({
+                          showInsertUpdateForm: true,
+                          editItem: {},
+                          editMode: false
+                        })
+                      }
                     >
                       New Product
                     </CButton>
@@ -214,7 +154,13 @@ class Product extends Component {
                   editMode={this.state.editMode}
                   editItem={this.state.editItem}
                   saveClick={this.onSaveClick.bind(this)}
-                  cancelClick={this.handleCancelClick.bind(this)}
+                  cancelClick={() =>
+                    this.setState({
+                      showInsertUpdateForm: false,
+                      editItem: {},
+                      editMode: false
+                    })
+                  }
                 />
               ) : null}
             </Col>
@@ -231,7 +177,11 @@ class Product extends Component {
                         <ControlLabel>Product Search</ControlLabel>
                         <FormControl
                           value={this.state.inputFilter}
-                          onChange={this.onChangeFilterHandler.bind(this)}
+                          onChange={e =>
+                            this.setState({
+                              inputFilter: e.target.value
+                            })
+                          }
                           style={{ width: "100%" }}
                           type="text"
                           placeholder="Search using any field"
@@ -265,4 +215,10 @@ class Product extends Component {
   }
 }
 
-export default Product;
+const mapStateToProps = state => ({
+  loading: productSelectors.getLoading(state),
+  products: productSelectors.getProducts(state),
+  error: productSelectors.getError(state)
+});
+
+export default connect(mapStateToProps)(Product);

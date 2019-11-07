@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { connect } from "react-redux";
 import {
   Grid,
   Row,
@@ -14,11 +15,9 @@ import { Card } from "components/Card/Card.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
 import SolutionChartForm from "components/Solution/SolutionChartForm.jsx";
 import queryString from "query-string";
-import {
-  retrieveSolutionChart,
-  saveSolutionChart,
-  deleteSolutionChart
-} from "client-api/solutionchart-apicall.jsx";
+
+import * as solutionChartActions from "stores/solutionChart/actions";
+import * as solutionChartSelectors from "stores/solutionChart/reducer";
 
 class SolutionChart extends Component {
   constructor(props) {
@@ -28,7 +27,6 @@ class SolutionChart extends Component {
       solutionId: values.solutionId,
       item: {},
       showInsertUpdateForm: false,
-      list: [],
       header: "",
       showConfirmDeleteModal: false,
       itemToDelete: {},
@@ -40,52 +38,44 @@ class SolutionChart extends Component {
   }
 
   componentDidMount() {
-    retrieveSolutionChart(this.state.solutionId, this);
-  }
-
-  handleConfirmDeleteModalClose() {
-    this.setState({ showConfirmDeleteModal: false, itemToDelete: {} });
-  }
-
-  handleNewClick(e) {
-    this.setState({ showInsertUpdateForm: true });
-  }
-
-  onChangeFilterHandler(e) {
-    this.setState({
-      inputFilter: e.target.value
-    });
+    this.props.dispatch(
+      solutionChartActions.allSolutionCharts(this.state.solutionId)
+    );
   }
 
   handleConfirmDelete() {
-    deleteSolutionChart(this.state.itemToDelete.ID, this);
+    this.props.dispatch(
+      solutionChartActions.deleteSolutionChart(
+        this.state.itemToDelete.ID,
+        this.state.solutionId
+      )
+    );
+
+    this.setState({ showConfirmDeleteModal: false, itemToDelete: {} });
   }
 
   onSaveClick(data) {
     data.solution_id = parseInt(this.state.solutionId);
-    saveSolutionChart(data, this);
-  }
 
-  handleCancelClick(e) {
-    this.setState(() => ({
+    if (this.state.editMode) {
+      this.props.dispatch(
+        solutionChartActions.editSolutionChart(data, this.state.solutionId)
+      );
+    } else {
+      this.props.dispatch(
+        solutionChartActions.createSolutionChart(data, this.state.solutionId)
+      );
+    }
+
+    this.setState({
       showInsertUpdateForm: false,
       editItem: {},
       editMode: false
-    }));
-  }
-
-  handleConfirmDeleteModalShow() {
-    this.setState({ showConfirmDeleteModal: true });
-  }
-
-  onDelete(item) {
-    this.setState({ itemToDelete: item }, () => {
-      this.handleConfirmDeleteModalShow();
     });
   }
 
   render() {
-    const items = this.state.list
+    const items = this.props.solutionCharts
       .filter(
         d =>
           this.state.inputFilter === "" ||
@@ -97,7 +87,11 @@ class SolutionChart extends Component {
           <td>
             <Button
               className="link-button"
-              onClick={this.onDelete.bind(this, item)}
+              onClick={() =>
+                this.setState({ itemToDelete: item }, () => {
+                  this.setState({ showConfirmDeleteModal: true });
+                })
+              }
             >
               <i className="pe-7s-trash" />
             </Button>
@@ -109,9 +103,9 @@ class SolutionChart extends Component {
       <div className="content">
         <SimpleModal
           showConfirmDeleteModal={this.state.showConfirmDeleteModal}
-          handleConfirmDeleteModalClose={this.handleConfirmDeleteModalClose.bind(
-            this
-          )}
+          handleConfirmDeleteModalClose={() =>
+            this.setState({ showConfirmDeleteModal: false, itemToDelete: {} })
+          }
           title="Confirm"
           subTitle="Delete chart association"
           message="Are you sure you want to delete this chart association?"
@@ -129,7 +123,9 @@ class SolutionChart extends Component {
                     <Button
                       className="pull-right"
                       variant="primary"
-                      onClick={this.handleNewClick.bind(this)}
+                      onClick={() =>
+                        this.setState({ showInsertUpdateForm: true })
+                      }
                     >
                       Associate Chart
                     </Button>
@@ -148,7 +144,13 @@ class SolutionChart extends Component {
                   handleLoading={this.props.handleLoading}
                   editItem={this.state.editItem}
                   saveClick={this.onSaveClick.bind(this)}
-                  cancelClick={this.handleCancelClick.bind(this)}
+                  cancelClick={() =>
+                    this.setState({
+                      showInsertUpdateForm: false,
+                      editItem: {},
+                      editMode: false
+                    })
+                  }
                 />
               ) : null}
             </Col>
@@ -166,7 +168,9 @@ class SolutionChart extends Component {
                           <ControlLabel>Charts Search</ControlLabel>
                           <FormControl
                             value={this.state.inputFilter}
-                            onChange={this.onChangeFilterHandler.bind(this)}
+                            onChange={e =>
+                              this.setState({ inputFilter: e.target.value })
+                            }
                             style={{ width: "100%" }}
                             type="text"
                             placeholder="Search using any field"
@@ -198,4 +202,10 @@ class SolutionChart extends Component {
   }
 }
 
-export default SolutionChart;
+const mapStateToProps = state => ({
+  loading: solutionChartSelectors.getLoading(state),
+  solutionCharts: solutionChartSelectors.getSolutionCharts(state),
+  error: solutionChartSelectors.getError(state)
+});
+
+export default connect(mapStateToProps)(SolutionChart);

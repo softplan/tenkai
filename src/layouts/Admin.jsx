@@ -65,7 +65,7 @@ class Admin extends Component {
         var arr = [];
         for (var x = 0; x < response.data.Envs.length; x++) {
           var element = response.data.Envs[x];
-          arr.push({ value: element.ID, label: element.name });
+          arr.push({ value: element.ID, label: element.name, productVersion: element.productVersion });
         }
         this.setState({ environmentList: arr }, () => {
           if (arr.length > 0) {

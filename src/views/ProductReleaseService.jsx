@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { connect } from "react-redux";
 import {
   Grid,
   Row,
@@ -15,11 +16,9 @@ import { Card } from "components/Card/Card.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
 import ProductReleaseServiceForm from "components/Forms/ProductReleaseServiceForm.jsx";
 import queryString from "query-string";
-import {
-  saveProductVersionService,
-  retrieveProductVersionServices,
-  deleteProductVersionService
-} from "client-api/product-apicall";
+
+import * as productReleaseServiceActions from "stores/productReleaseService/actions";
+import * as productReleaseServiceSelectors from "stores/productReleaseService/reducer";
 
 class ProductReleaseService extends Component {
   constructor(props) {
@@ -29,7 +28,6 @@ class ProductReleaseService extends Component {
       productVersionId: values.productVersionId,
       item: {},
       showInsertUpdateForm: false,
-      list: [],
       header: "",
       showConfirmDeleteModal: false,
       itemToDelete: {},
@@ -42,92 +40,74 @@ class ProductReleaseService extends Component {
   }
 
   componentDidMount() {
-    retrieveProductVersionServices(this.state.productVersionId, this);
-  }
-
-  handleConfirmDeleteModalClose() {
-    this.setState({ showConfirmDeleteModal: false, itemToDelete: {} });
-  }
-
-  handleNewClick(e) {
-    this.setState({ showInsertUpdateForm: true });
-  }
-
-  onChangeFilterHandler(e) {
-    this.setState({
-      inputFilter: e.target.value
-    });
+    this.props.dispatch(
+      productReleaseServiceActions.allProductReleaseServices(
+        this.state.productVersionId
+      )
+    );
   }
 
   handleConfirmDelete() {
-    if (this.state.itemToDelete !== undefined) {
-      deleteProductVersionService(this.state.itemToDelete.ID, this, (self) => {
-        retrieveProductVersionServices(this.state.productVersionId, self);
-        this.setState({ showConfirmDeleteModal: false, itemToDelete: {} });
-      });
-    }
+    this.props.dispatch(
+      productReleaseServiceActions.deleteProductReleaseService(
+        this.state.itemToDelete.ID,
+        this.state.productVersionId
+      )
+    );
+
+    this.setState({ showConfirmDeleteModal: false, itemToDelete: {} });
   }
 
   onSaveClick(data) {
     data.productVersionId = parseInt(this.state.productVersionId);
-    saveProductVersionService(data, this, self => {
-      retrieveProductVersionServices(this.state.productVersionId, this);
-      self.setState(() => ({
-        showInsertUpdateForm: false,
-        editItem: {},
-        editMode: false
-      }));
-    });
-  }
 
-  handleCancelClick(e) {
-    this.setState(() => ({
+    if (this.state.editMode) {
+      this.props.dispatch(
+        productReleaseServiceActions.editProductReleaseService(
+          data,
+          this.state.productVersionId
+        )
+      );
+    } else {
+      this.props.dispatch(
+        productReleaseServiceActions.createProductReleaseService(
+          data,
+          this.state.productVersionId
+        )
+      );
+    }
+
+    this.setState({
       showInsertUpdateForm: false,
       editItem: {},
       editMode: false
-    }));
-  }
-
-  handleConfirmDeleteModalShow() {
-    this.setState({ showConfirmDeleteModal: true });
-  }
-
-  onDelete(item) {
-    this.setState({ itemToDelete: item }, () => {
-      this.handleConfirmDeleteModalShow();
     });
-  }
-
-  onEdit(item) {
-    this.setState(() => ({
-      showInsertUpdateForm: true,
-      editItem: item,
-      editMode: true,
-    }));
   }
 
   goToDeploy() {
     this.props.handleLoading(true);
     let array = [];
-    let services = this.state.list;
+    let services = this.props.productReleaseServices;
     for (var i = 0; i < services.length; i++) {
       let item = services[i];
-      let serviceName = this.getChartName(item.serviceName)
-      let serviceVersion = this.getChartVersion(item.serviceName)
-      let chart = serviceName + "@" + serviceVersion + "#" + item.dockerImageTag;
+      let serviceName = this.getChartName(item.serviceName);
+      let serviceVersion = this.getChartVersion(item.serviceName);
+      let chart =
+        serviceName + "@" + serviceVersion + "#" + item.dockerImageTag;
       array.push(chart);
     }
     this.props.handleLoading(false);
     this.props.updateSelectedChartsToDeploy(array, () => {
       this.props.history.push({
-        pathname: "/admin/deployment-wvars"
+        pathname: "/admin/deployment-wvars",
+        search: "?productVersionId=" + this.state.productVersionId
       });
     });
   }
 
   goToServiceDeploy(item) {
-    let serviceName = this.getChartName(item.serviceName)
-    let serviceVersion = this.getChartVersion(item.serviceName)
+    let serviceName = this.getChartName(item.serviceName);
+    let serviceVersion = this.getChartVersion(item.serviceName);
     let chart = serviceName + "@" + serviceVersion + "#" + item.dockerImageTag;
 
     let array = [];
@@ -148,24 +128,25 @@ class ProductReleaseService extends Component {
   }
 
   setChartLatestVersion(item) {
-    item.serviceName = this.getChartName(item.serviceName) + " - " + item.chartLatestVersion
+    item.serviceName =
+      this.getChartName(item.serviceName) + " - " + item.chartLatestVersion;
     this.setState({ editMode: true, editItem: item }, () => {
       this.onSaveClick(item);
     });
   }
 
   getChartName(chartNameVersion) {
-    let splited = chartNameVersion.split(' - ')
-    return splited.length >= 1 ? splited[0] : ""
+    let splited = chartNameVersion.split(" - ");
+    return splited.length >= 1 ? splited[0] : "";
   }
 
   getChartVersion(chartNameVersion) {
-    let splited = chartNameVersion.split(' - ')
-    return splited.length === 2 ? splited[1] : ""
+    let splited = chartNameVersion.split(" - ");
+    return splited.length === 2 ? splited[1] : "";
   }
 
   render() {
-    const items = this.state.list
+    const items = this.props.productReleaseServices
       .filter(
         d =>
           this.state.inputFilter === "" ||
@@ -184,8 +165,8 @@ class ProductReleaseService extends Component {
                 <i className="pe-7s-left-arrow" />
               </Button>
             ) : (
-                ""
-              )}
+              ""
+            )}
             {"   "}
             {item.chartLatestVersion}
           </td>
@@ -207,7 +188,13 @@ class ProductReleaseService extends Component {
           <td>
             <Button
               className="link-button"
-              onClick={this.onEdit.bind(this, item)}
+              onClick={() =>
+                this.setState({
+                  showInsertUpdateForm: true,
+                  editItem: item,
+                  editMode: true
+                })
+              }
             >
               <i className="pe-7s-edit" />
             </Button>
@@ -216,7 +203,11 @@ class ProductReleaseService extends Component {
           <td>
             <Button
               className="link-button"
-              onClick={this.onDelete.bind(this, item)}
+              onClick={() =>
+                this.setState({ itemToDelete: item }, () => {
+                  this.setState({ showConfirmDeleteModal: true });
+                })
+              }
             >
               <i className="pe-7s-trash" />
             </Button>
@@ -236,9 +227,9 @@ class ProductReleaseService extends Component {
       <div className="content">
         <SimpleModal
           showConfirmDeleteModal={this.state.showConfirmDeleteModal}
-          handleConfirmDeleteModalClose={this.handleConfirmDeleteModalClose.bind(
-            this
-          )}
+          handleConfirmDeleteModalClose={() =>
+            this.setState({ showConfirmDeleteModal: false, itemToDelete: {} })
+          }
           title="Confirm"
           subTitle="Delete chart association"
           message="Are you sure you want to delete this chart association?"
@@ -266,7 +257,9 @@ class ProductReleaseService extends Component {
                       <Button
                         className="pull-right"
                         variant="primary"
-                        onClick={this.handleNewClick.bind(this)}
+                        onClick={() =>
+                          this.setState({ showInsertUpdateForm: true })
+                        }
                       >
                         Associate Chart
                       </Button>
@@ -288,7 +281,13 @@ class ProductReleaseService extends Component {
                   handleNotification={this.props.handleNotification}
                   editItem={this.state.editItem}
                   saveClick={this.onSaveClick.bind(this)}
-                  cancelClick={this.handleCancelClick.bind(this)}
+                  cancelClick={() =>
+                    this.setState({
+                      showInsertUpdateForm: false,
+                      editItem: {},
+                      editMode: false
+                    })
+                  }
                 />
               ) : null}
             </Col>
@@ -306,7 +305,9 @@ class ProductReleaseService extends Component {
                           <ControlLabel>Charts Search</ControlLabel>
                           <FormControl
                             value={this.state.inputFilter}
-                            onChange={this.onChangeFilterHandler.bind(this)}
+                            onChange={e =>
+                              this.setState({ inputFilter: e.target.value })
+                            }
                             style={{ width: "100%" }}
                             type="text"
                             placeholder="Search using any field"
@@ -344,4 +345,12 @@ class ProductReleaseService extends Component {
   }
 }
 
-export default ProductReleaseService;
+const mapStateToProps = state => ({
+  loading: productReleaseServiceSelectors.getLoading(state),
+  productReleaseServices: productReleaseServiceSelectors.getProductReleaseServices(
+    state
+  ),
+  error: productReleaseServiceSelectors.getError(state)
+});
+
+export default connect(mapStateToProps)(ProductReleaseService);

@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { connect } from "react-redux";
 import {
   Grid,
   Row,
@@ -14,11 +15,9 @@ import { Card } from "components/Card/Card.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
 import ProductReleaseForm from "components/Forms/ProductReleaseForm.jsx";
 import queryString from "query-string";
-import {
-  saveProductRelease,
-  retrieveProductVersions,
-  deleteProductRelease,
-} from "client-api/product-apicall";
+
+import * as productReleaseActions from "stores/productRelease/actions";
+import * as productReleaseSelectors from "stores/productRelease/reducer";
 
 class ProductRelease extends Component {
   constructor(props) {
@@ -28,7 +27,6 @@ class ProductRelease extends Component {
       productId: values.productId,
       item: {},
       showInsertUpdateForm: false,
-      list: [],
       header: "",
       showConfirmDeleteModal: false,
       itemToDelete: {},
@@ -40,71 +38,44 @@ class ProductRelease extends Component {
   }
 
   componentDidMount() {
-    retrieveProductVersions(this.state.productId, this);
-  }
-
-  handleConfirmDeleteModalClose() {
-    this.setState({ showConfirmDeleteModal: false, itemToDelete: {} });
-  }
-
-  handleNewClick(e) {
-    this.setState({ showInsertUpdateForm: true });
-  }
-
-  onChangeFilterHandler(e) {
-    this.setState({
-      inputFilter: e.target.value
-    });
+    this.props.dispatch(
+      productReleaseActions.allProductReleases(this.state.productId)
+    );
   }
 
   handleConfirmDelete() {
-    if (this.state.itemToDelete !== undefined) {
-      deleteProductRelease(this.state.itemToDelete.ID, this, (self) => {
-        retrieveProductVersions(this.state.productId, self);
-        this.setState({ showConfirmDeleteModal: false, itemToDelete: {} });
-      });
-    }    
+    this.props.dispatch(
+      productReleaseActions.deleteProductRelease(
+        this.state.itemToDelete.ID,
+        this.state.productId
+      )
+    );
+
+    this.setState({ showConfirmDeleteModal: false, itemToDelete: {} });
   }
 
   onSaveClick(data) {
     data.productId = parseInt(this.state.productId);
-    saveProductRelease(data, this, self => {
-      retrieveProductVersions(self.state.productId, self);
-      self.setState(() => ({
-        showInsertUpdateForm: false,
-        editItem: {},
-        editMode: false
-      }));
-    });
-  }
 
-  handleCancelClick(e) {
-    this.setState(() => ({
+    if (this.state.editMode) {
+      this.props.dispatch(
+        productReleaseActions.editProductRelease(data, this.state.productId)
+      );
+    } else {
+      this.props.dispatch(
+        productReleaseActions.createProductRelease(data, this.state.productId)
+      );
+    }
+
+    this.setState({
       showInsertUpdateForm: false,
       editItem: {},
       editMode: false
-    }));
-  }
-
-  handleConfirmDeleteModalShow() {
-    this.setState({ showConfirmDeleteModal: true });
-  }
-
-  onDelete(item) {
-    this.setState({ itemToDelete: item }, () => {
-      this.handleConfirmDeleteModalShow();
-    });
-  }
-
-  onEditDetails(item) {
-    this.props.history.push({
-      pathname: "/admin/product-version-service",
-      search: "?productVersionId=" + item.ID
     });
   }
 
   render() {
-    const items = this.state.list
+    const items = this.props.productReleases
       .filter(
         d =>
           this.state.inputFilter === "" ||
@@ -118,7 +89,11 @@ class ProductRelease extends Component {
           <td>
             <Button
               className="link-button"
-              onClick={this.onDelete.bind(this, item)}
+              onClick={() =>
+                this.setState({ itemToDelete: item }, () => {
+                  this.setState({ showConfirmDeleteModal: true });
+                })
+              }
             >
               <i className="pe-7s-trash" />
             </Button>
@@ -126,7 +101,12 @@ class ProductRelease extends Component {
           <td>
             <Button
               className="link-button"
-              onClick={this.onEditDetails.bind(this, item)}
+              onClick={() =>
+                this.props.history.push({
+                  pathname: "/admin/product-version-service",
+                  search: "?productVersionId=" + item.ID
+                })
+              }
             >
               <i className="pe-7s-news-paper" />
             </Button>
@@ -138,9 +118,9 @@ class ProductRelease extends Component {
       <div className="content">
         <SimpleModal
           showConfirmDeleteModal={this.state.showConfirmDeleteModal}
-          handleConfirmDeleteModalClose={this.handleConfirmDeleteModalClose.bind(
-            this
-          )}
+          handleConfirmDeleteModalClose={() =>
+            this.setState({ showConfirmDeleteModal: false, itemToDelete: {} })
+          }
           title="Confirm"
           subTitle="Delete release"
           message="Are you sure you want to delete this release?"
@@ -158,7 +138,9 @@ class ProductRelease extends Component {
                     <Button
                       className="pull-right"
                       variant="primary"
-                      onClick={this.handleNewClick.bind(this)}
+                      onClick={() =>
+                        this.setState({ showInsertUpdateForm: true })
+                      }
                     >
                       New Release
                     </Button>
@@ -177,7 +159,13 @@ class ProductRelease extends Component {
                   handleLoading={this.props.handleLoading}
                   editItem={this.state.editItem}
                   saveClick={this.onSaveClick.bind(this)}
-                  cancelClick={this.handleCancelClick.bind(this)}
+                  cancelClick={() =>
+                    this.setState({
+                      showInsertUpdateForm: false,
+                      editItem: {},
+                      editMode: false
+                    })
+                  }
                 />
               ) : null}
             </Col>
@@ -195,7 +183,9 @@ class ProductRelease extends Component {
                           <ControlLabel>Release Search</ControlLabel>
                           <FormControl
                             value={this.state.inputFilter}
-                            onChange={this.onChangeFilterHandler.bind(this)}
+                            onChange={e =>
+                              this.setState({ inputFilter: e.target.value })
+                            }
                             style={{ width: "100%" }}
                             type="text"
                             placeholder="Search using any field"
@@ -230,4 +220,10 @@ class ProductRelease extends Component {
   }
 }
 
-export default ProductRelease;
+const mapStateToProps = state => ({
+  loading: productReleaseSelectors.getLoading(state),
+  productReleases: productReleaseSelectors.getProductReleases(state),
+  error: productReleaseSelectors.getError(state)
+});
+
+export default connect(mapStateToProps)(ProductRelease);
