@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { connect } from "react-redux";
 import {
   Grid,
   Row,
@@ -14,136 +15,46 @@ import { Card } from "components/Card/Card.jsx";
 import CButton from "components/CustomButton/CustomButton.jsx";
 import SolutionForm from "components/Solution/SolutionForm.jsx";
 import SimpleModal from "components/Modal/SimpleModal.jsx";
-import axios from "axios";
-import TENKAI_API_URL from "env.js";
+
+import * as solutionActions from "stores/solution/actions";
+import * as solutionSelectors from "stores/solution/reducer";
 
 class Solution extends Component {
   state = {
     showInsertUpdateForm: false,
-    list: [],
     inputFilter: "",
     showConfirmDeleteModal: false,
     itemToDelete: {}
   };
 
   componentDidMount() {
-    this.getList();
-  }
-
-  handleConfirmDeleteModalClose() {
-    this.setState({ showConfirmDeleteModal: false, itemToDelete: {} });
-  }
-
-  handleConfirmDeleteModalShow() {
-    this.setState({ showConfirmDeleteModal: true });
-  }
-
-  onChangeFilterHandler(e) {
-    this.setState({
-      inputFilter: e.target.value
-    });
-  }
-
-  getList() {
-    axios
-      .get(TENKAI_API_URL + "/solutions")
-      .then(response => this.setState({ list: response.data.list }))
-      .catch(error => {
-        console.log(error.message);
-        this.props.handleNotification("general_fail", "error");
-      });
-  }
-
-  handleNewClick(e) {
-    this.setState(() => ({
-      showInsertUpdateForm: true,
-      editItem: {},
-      editMode: false
-    }));
-  }
-
-  handleCancelClick(e) {
-    this.setState(() => ({
-      showInsertUpdateForm: false,
-      editItem: {},
-      editMode: false
-    }));
+    this.props.dispatch(solutionActions.allSolutions());
   }
 
   onSaveClick(data) {
     if (this.state.editMode) {
-      console.log("edit");
-      this.save(data, "/solutions/edit");
+      this.props.dispatch(solutionActions.editSolution(data));
     } else {
-      console.log("new");
-      this.save(data, "/solutions");
+      this.props.dispatch(solutionActions.createSolution(data));
     }
-  }
 
-  onSave(item) {
-    this.setState(() => ({
-      showInsertUpdateForm: true,
-      editItem: item,
-      editMode: true
-    }));
-    window.scrollTo(0, 0);
-  }
-
-  save(data, uri) {
-    axios
-      .post(TENKAI_API_URL + uri, data)
-      .then(res => {
-        this.setState({ list: [...this.state.list], data });
-        this.getList();
-      })
-      .catch(error => {
-        console.log(error.message);
-        this.props.handleNotification("general_fail", "error");
-      });
-    this.setState(() => ({
+    this.setState({
       showInsertUpdateForm: false,
       editItem: {},
       editMode: false
-    }));
-  }
-
-  onDelete(item) {
-    this.setState({ itemToDelete: item }, () => {
-      this.handleConfirmDeleteModalShow();
-    });
-  }
-
-  onEditDetails(item) {
-    this.props.history.push({
-      pathname: "/admin/solution-deps",
-      search: "?solutionId=" + item.ID
     });
   }
 
   handleConfirmDelete() {
-    if (this.state.itemToDelete !== undefined) {
-      axios
-        .delete(TENKAI_API_URL + "/solutions/" + this.state.itemToDelete.ID)
-        .then(res => {
-          this.getList();
-        })
-        .catch(error => {
-          console.log(error.message);
-          this.props.handleNotification("general_fail", "error");
-        });
-    }
+    this.props.dispatch(
+      solutionActions.deleteSolution(this.state.itemToDelete.ID)
+    );
+
     this.setState({ showConfirmDeleteModal: false, itemToDelete: {} });
   }
 
-  onDeploy(item) {
-    this.props.history.push({
-      pathname: "/admin/solution-deploy",
-      search: "?solutionId=" + item.ID
-    });
-  }
-
   render() {
-    const items = this.state.list
+    const items = this.props.solutions
       .filter(
         d =>
           this.state.inputFilter === "" ||
@@ -157,7 +68,14 @@ class Solution extends Component {
           <td>
             <Button
               className="link-button"
-              onClick={this.onSave.bind(this, item)}
+              onClick={() => {
+                this.setState(() => ({
+                  showInsertUpdateForm: true,
+                  editItem: item,
+                  editMode: true
+                }));
+                window.scrollTo(0, 0);
+              }}
             >
               <i className="pe-7s-edit" />
             </Button>
@@ -165,7 +83,11 @@ class Solution extends Component {
           <td>
             <Button
               className="link-button"
-              onClick={this.onDelete.bind(this, item)}
+              onClick={() =>
+                this.setState({ itemToDelete: item }, () => {
+                  this.setState({ showConfirmDeleteModal: true });
+                })
+              }
             >
               <i className="pe-7s-trash" />
             </Button>
@@ -173,7 +95,12 @@ class Solution extends Component {
           <td>
             <Button
               className="link-button"
-              onClick={this.onEditDetails.bind(this, item)}
+              onClick={() =>
+                this.props.history.push({
+                  pathname: "/admin/solution-deps",
+                  search: "?solutionId=" + item.ID
+                })
+              }
             >
               <i className="pe-7s-album" />
             </Button>
@@ -181,7 +108,12 @@ class Solution extends Component {
           <td>
             <Button
               className="link-button"
-              onClick={this.onDeploy.bind(this, item)}
+              onClick={() =>
+                this.props.history.push({
+                  pathname: "/admin/solution-deploy",
+                  search: "?solutionId=" + item.ID
+                })
+              }
             >
               <i className="pe-7s-helm" />
             </Button>
@@ -193,9 +125,9 @@ class Solution extends Component {
       <div className="content">
         <SimpleModal
           showConfirmDeleteModal={this.state.showConfirmDeleteModal}
-          handleConfirmDeleteModalClose={this.handleConfirmDeleteModalClose.bind(
-            this
-          )}
+          handleConfirmDeleteModalClose={() =>
+            this.setState({ showConfirmDeleteModal: false, itemToDelete: {} })
+          }
           title="Confirm"
           subTitle="Delete solution"
           message="Are you sure you want to delete this solution?"
@@ -212,7 +144,13 @@ class Solution extends Component {
                     <CButton
                       className="pull-right"
                       variant="primary"
-                      onClick={this.handleNewClick.bind(this)}
+                      onClick={() =>
+                        this.setState({
+                          showInsertUpdateForm: true,
+                          editItem: {},
+                          editMode: false
+                        })
+                      }
                     >
                       New Solution
                     </CButton>
@@ -230,7 +168,13 @@ class Solution extends Component {
                   editMode={this.state.editMode}
                   editItem={this.state.editItem}
                   saveClick={this.onSaveClick.bind(this)}
-                  cancelClick={this.handleCancelClick.bind(this)}
+                  cancelClick={() =>
+                    this.setState({
+                      showInsertUpdateForm: false,
+                      editItem: {},
+                      editMode: false
+                    })
+                  }
                 />
               ) : null}
             </Col>
@@ -247,7 +191,9 @@ class Solution extends Component {
                         <ControlLabel>Solution Search</ControlLabel>
                         <FormControl
                           value={this.state.inputFilter}
-                          onChange={this.onChangeFilterHandler.bind(this)}
+                          onChange={e =>
+                            this.setState({ inputFilter: e.target.value })
+                          }
                           style={{ width: "100%" }}
                           type="text"
                           placeholder="Search using any field"
@@ -283,4 +229,10 @@ class Solution extends Component {
   }
 }
 
-export default Solution;
+const mapStateToProps = state => ({
+  loading: solutionSelectors.getLoading(state),
+  solutions: solutionSelectors.getSolutions(state),
+  error: solutionSelectors.getError(state)
+});
+
+export default connect(mapStateToProps)(Solution);
