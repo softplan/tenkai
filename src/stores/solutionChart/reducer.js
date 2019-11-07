@@ -61,7 +61,7 @@ export default function reduce(state = initialState, action = {}) {
 }
 
 export function getSolutionCharts(state) {
-  return state.solutionChart.solutionChart;
+  return state.solutionChart.solutionCharts;
 }
 
 export function getLoading(state) {
