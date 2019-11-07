@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
 import {
   Grid,
   Row,
@@ -7,21 +7,20 @@ import {
   FormControl,
   ControlLabel,
   Panel
-} from "react-bootstrap";
-import ReactDOM from "react-dom";
+} from 'react-bootstrap';
 
-import Select from "react-select";
-import { ActionCard } from "components/Card/ActionCard.jsx";
+import Select from 'react-select';
+import { ActionCard } from 'components/Card/ActionCard.jsx';
 
-import { getDefaultRepo } from "client-api/apicall.jsx";
-import ChartCard from "components/Card/ChartCard.jsx";
+import { getDefaultRepo } from 'client-api/apicall.jsx';
+import ChartCard from 'components/Card/ChartCard.jsx';
 
-import axios from "axios";
-import TENKAI_API_URL from "env.js";
+import axios from 'axios';
+import TENKAI_API_URL from 'env.js';
 
 class Deployment extends Component {
   state = {
-    inputFilter: "",
+    inputFilter: '',
     chartsResult: { charts: [] },
     repositories: [],
     selectedRepository: {},
@@ -40,7 +39,7 @@ class Deployment extends Component {
 
   getRepos() {
     axios
-      .get(TENKAI_API_URL + "/repositories")
+      .get(TENKAI_API_URL + '/repositories')
       .then(response => {
         var arr = [];
         for (var x = 0; x < response.data.repositories.length; x++) {
@@ -60,14 +59,14 @@ class Deployment extends Component {
       })
       .catch(error => {
         console.log(error.message);
-        this.props.handleNotification("general_fail", "error");
+        this.props.handleNotification('general_fail', 'error');
       });
   }
 
   getCharts(repo) {
     this.props.handleLoading(true);
 
-    let url = "/charts/" + repo + "?all=" + !this.state.latestVersionOnly;
+    let url = '/charts/' + repo + '?all=' + !this.state.latestVersionOnly;
 
     axios
       .get(TENKAI_API_URL + url)
@@ -81,19 +80,19 @@ class Deployment extends Component {
       .catch(error => {
         this.props.handleLoading(false);
         console.log(error.message);
-        this.props.handleNotification("general_fail", "error");
+        this.props.handleNotification('general_fail', 'error');
       });
   }
 
   navigateToCheckVariables() {
     this.props.history.push({
-      pathname: "/admin/deployment-wvars"
+      pathname: '/admin/deployment-wvars'
     });
   }
 
   navigateToDependencyAnalysis() {
     this.props.history.push({
-      pathname: "/admin/deployment-depanalysis"
+      pathname: '/admin/deployment-depanalysis'
     });
   }
 
@@ -117,16 +116,6 @@ class Deployment extends Component {
       array.push(item);
     }
     this.props.updateSelectedChartsToDeploy(array);
-
-    this.focusToInput();
-  }
-
-  focusToInput() {
-    let node = ReactDOM.findDOMNode(this.refs.inputNode);
-    if (node && node.focus instanceof Function) {
-      this.setState({ inputFilter: "" });
-      node.focus();
-    }
   }
 
   handleCheckboxChange(e) {
@@ -153,7 +142,7 @@ class Deployment extends Component {
     array.push(item);
     this.props.updateSelectedChartsToDeploy(array, () => {
       this.props.history.push({
-        pathname: "/admin/deployment-wvars"
+        pathname: '/admin/deployment-wvars'
       });
     });
   }
@@ -163,7 +152,7 @@ class Deployment extends Component {
     array.push(item);
     this.props.updateSelectedChartsToDeploy(array, () => {
       this.props.history.push({
-        pathname: "/admin/deployment-depanalysis"
+        pathname: '/admin/deployment-depanalysis'
       });
     });
   }
@@ -173,8 +162,8 @@ class Deployment extends Component {
     array.push(item);
     this.props.updateSelectedChartsToDeploy(array, () => {
       this.props.history.push({
-        pathname: "/admin/deployment-wvars",
-        search: "?canary=true"
+        pathname: '/admin/deployment-wvars',
+        search: '?canary=true'
       });
     });
   }
@@ -193,10 +182,10 @@ class Deployment extends Component {
     const items = this.state.chartsResult.charts
       .filter(
         d =>
-          this.state.inputFilter === "" ||
+          this.state.inputFilter === '' ||
           d.name.includes(this.state.inputFilter)
       )
-      .map((item, key) => (
+      .map((item) => (
         <ChartCard
           key={item.name}
           item={item}
@@ -251,7 +240,7 @@ class Deployment extends Component {
                             name="inputFilter"
                             value={this.state.inputFilter}
                             onChange={this.onChangeInputHandler.bind(this)}
-                            style={{ width: "100%" }}
+                            style={{ width: '100%' }}
                             type="text"
                             placeholder="Search using any field"
                             aria-label="Search using any field"
@@ -268,7 +257,7 @@ class Deployment extends Component {
                             onChange={this.handleLatestVersionOnlyChange.bind(
                               this
                             )}
-                          />{" "}
+                          />{' '}
                           <label>LATEST CHART VERSION ONLY</label>
                         </div>
                       </Col>
