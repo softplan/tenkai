@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
 import {
   Tabs,
   Tab,
@@ -9,47 +9,51 @@ import {
   ControlLabel,
   FormControl,
   ButtonToolbar
-} from "react-bootstrap";
-import { Card } from "components/Card/Card.jsx";
+} from 'react-bootstrap';
+import { Card } from 'components/Card/Card.jsx';
 import {
   listHelmDeploymentsByEnvironment,
   listPods,
   listServices,
-  promote
-} from "client-api/apicall.jsx";
-import { ReleasePanel } from "components/Workload/ReleasePanel.jsx";
-import { PodPanel } from "components/Workload/PodPanel.jsx";
-import { ServicePanel } from "components/Workload/ServicePanel.jsx";
-import Button from "components/CustomButton/CustomButton.jsx";
-import CopyModal from "components/Modal/CopyModal.jsx";
-import EditModal from "components/Modal/EditModal";
+  promote,
+  listEndpoints
+} from 'client-api/apicall.jsx';
+import { ReleasePanel } from 'components/Workload/ReleasePanel.jsx';
+import { PodPanel } from 'components/Workload/PodPanel.jsx';
+import { ServicePanel } from 'components/Workload/ServicePanel.jsx';
+import { EndpointPanel } from 'components/Workload/EndpointPanel.jsx';
+import Button from 'components/CustomButton/CustomButton.jsx';
+import CopyModal from 'components/Modal/CopyModal.jsx';
+import EditModal from 'components/Modal/EditModal';
 
 class Workload extends Component {
   state = {
     list: [],
-    inputFilter: "",
-    podInputFilter: "",
-    serviceInputFilter: "",
+    inputFilter: '',
+    podInputFilter: '',
+    serviceInputFilter: '',
+    endpointInputFilter: '',
     podList: [],
     serviceList: [],
+    endpointList: [],
     onShowCopyModal: false,
-    mode: "workload",
+    mode: 'workload',
     onShowConfirmModal: false,
     targetEnvToPromote: {},
-    confirmInput: ""
+    confirmInput: ''
   };
 
   navigateToBlueGreenWizard(item) {
     let chartsToDeploy = [];
     let chartName = item.Chart;
     let chartVersion = item.Chart;
-    chartName = chartName.substring(0, chartName.lastIndexOf("-"));
-    chartVersion = chartVersion.substring(chartVersion.lastIndexOf("-") + 1);
-    chartsToDeploy.push(chartName + "@" + chartVersion);
+    chartName = chartName.substring(0, chartName.lastIndexOf('-'));
+    chartVersion = chartVersion.substring(chartVersion.lastIndexOf('-') + 1);
+    chartsToDeploy.push(chartName + '@' + chartVersion);
     this.props.updateSelectedChartsToDeploy(chartsToDeploy);
 
     this.props.history.push({
-      pathname: "/admin/blueGreenWizard"
+      pathname: '/admin/blueGreenWizard'
     });
   }
 
@@ -57,6 +61,7 @@ class Workload extends Component {
     this.listDeploymentsByEnv();
     this.listPods();
     this.listServices();
+    this.listEndpoints();
   }
 
   refreshPods() {
@@ -65,6 +70,10 @@ class Workload extends Component {
 
   refreshServices() {
     this.listServices();
+  }
+
+  refreshEndpoints() {
+    this.listEndpoints();
   }
 
   refreshReleases() {
@@ -76,7 +85,7 @@ class Workload extends Component {
   }
 
   async onConfirmCopyModal(item) {
-    if (this.state.mode === "full") {
+    if (this.state.mode === 'full') {
       this.setState({
         onShowCopyModal: false,
         onShowConfirmModal: true,
@@ -112,11 +121,24 @@ class Workload extends Component {
   }
 
   showConfirmCopyModal(ref) {
-    this.setState({ mode: "workload", onShowCopyModal: true });
+    this.setState({ mode: 'workload', onShowCopyModal: true });
   }
 
   showConfirmCopyModalFull(ref) {
-    this.setState({ mode: "full", onShowCopyModal: true });
+    this.setState({ mode: 'full', onShowCopyModal: true });
+  }
+
+  listEndpoints() {
+    listEndpoints(this, this.props.selectedEnvironment.value, function(
+      self,
+      res
+    ) {
+      if (res !== undefined && res.data !== null) {
+        self.setState({ endpointList: res.data });
+      } else {
+        self.setState({ endpointList: [] });
+      }
+    });
   }
 
   listPods() {
@@ -176,6 +198,12 @@ class Workload extends Component {
     });
   }
 
+  onChangeEndpointInputHandler(e) {
+    this.setState({
+      endpointInputFilter: e.target.value
+    });
+  }
+
   onCloseConfirmModal() {
     this.setState({ onShowConfirmModal: false, targetEnvToPromote: {} });
   }
@@ -189,7 +217,7 @@ class Workload extends Component {
     const items = this.state.list
       .filter(
         d =>
-          this.state.inputFilter === "" ||
+          this.state.inputFilter === '' ||
           d.Name.includes(this.state.inputFilter)
       )
       .map((item, key) => (
@@ -229,7 +257,7 @@ class Workload extends Component {
                       <FormControl
                         value={this.state.podInputFilter}
                         onChange={this.onChangePodInputHandler.bind(this)}
-                        style={{ width: "100%" }}
+                        style={{ width: '100%' }}
                         type="text"
                         aria-label="Search"
                       ></FormControl>
@@ -254,7 +282,7 @@ class Workload extends Component {
                       handleNotification={this.props.handleNotification}
                       list={this.state.podList.filter(
                         d =>
-                          this.state.podInputFilter === "" ||
+                          this.state.podInputFilter === '' ||
                           d.name.includes(this.state.podInputFilter)
                       )}
                     />
@@ -276,7 +304,7 @@ class Workload extends Component {
                       <FormControl
                         value={this.state.serviceInputFilter}
                         onChange={this.onChangeServiceInputHandler.bind(this)}
-                        style={{ width: "100%" }}
+                        style={{ width: '100%' }}
                         type="text"
                         aria-label="Search"
                       ></FormControl>
@@ -301,8 +329,53 @@ class Workload extends Component {
                       handleNotification={this.props.handleNotification}
                       list={this.state.serviceList.filter(
                         d =>
-                          this.state.serviceInputFilter === "" ||
+                          this.state.serviceInputFilter === '' ||
                           d.name.includes(this.state.serviceInputFilter)
+                      )}
+                    />
+                  </Col>
+                </Row>
+              </div>
+            }
+          />
+        </Tab>
+
+        <Tab eventKey="ep" title="Public Endpoints">
+          <Card
+            title=""
+            content={
+              <div>
+                <Row>
+                  <Col xs={4}>
+                    <FormGroup>
+                      <ControlLabel>Public endpoint search</ControlLabel>
+                      <FormControl
+                        value={this.state.endpointInputFilter}
+                        onChange={this.onChangeEndpointInputHandler.bind(this)}
+                        style={{ width: '100%' }}
+                        type="text"
+                        aria-label="Search"
+                      ></FormControl>
+                    </FormGroup>
+                  </Col>
+
+                  <Col xs={8}>
+                    <Button
+                      className="btn btn-info pull-right"
+                      bsSize="sm"
+                      onClick={this.refreshEndpoints.bind(this)}
+                    >
+                      <i className="pe-7s-refresh-2" /> Refresh
+                    </Button>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col xs={12}>
+                    <EndpointPanel
+                      list={this.state.endpointList.filter(
+                        d =>
+                          this.state.endpointInputFilter === '' ||
+                          d.includes(this.state.endpointInputFilter)
                       )}
                     />
                   </Col>
@@ -334,7 +407,7 @@ class Workload extends Component {
                   form={
                     <div>
                       <p>
-                        This is a <b>dangerous</b> operation, target environment{" "}
+                        This is a <b>dangerous</b> operation, target environment{' '}
                         <b> {this.state.targetEnvToPromote.label} </b> within
                         all variables will be destroyed!
                       </p>
@@ -379,7 +452,7 @@ class Workload extends Component {
                       <FormControl
                         value={this.state.inputFilter}
                         onChange={this.onChangeInputHandler.bind(this)}
-                        style={{ width: "100%" }}
+                        style={{ width: '100%' }}
                         type="text"
                         aria-label="Search"
                       ></FormControl>
@@ -403,7 +476,7 @@ class Workload extends Component {
                         bsSize="sm"
                         onClick={this.showConfirmCopyModal.bind(this)}
                         disabled={
-                          !this.props.keycloak.hasRealmRole("tenkai-admin")
+                          !this.props.keycloak.hasRealmRole('tenkai-admin')
                         }
                       >
                         <i className="pe-7s-smile" /> Copy Releases to another
@@ -415,7 +488,7 @@ class Workload extends Component {
                         bsSize="sm"
                         onClick={this.showConfirmCopyModalFull.bind(this)}
                         disabled={
-                          !this.props.keycloak.hasRealmRole("tenkai-admin")
+                          !this.props.keycloak.hasRealmRole('tenkai-admin')
                         }
                       >
                         <i className="pe-7s-smile" /> Replicate full environment
