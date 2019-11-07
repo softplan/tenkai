@@ -1,5 +1,5 @@
-import axios from "axios";
-import TENKAI_API_URL from "env.js";
+import axios from 'axios';
+import TENKAI_API_URL from 'env.js';
 
 export async function allSolutionCharts(solutionId) {
   return await axios.get(
