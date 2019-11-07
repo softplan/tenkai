@@ -29,7 +29,7 @@ class Header extends Component {
   render() {
     return (
       <Navbar fluid>
-        <Navbar.Collapse>
+        <Navbar fluid>
           <AdminNavbarLinks 
             keycloak={this.props.keycloak} 
             history={this.props.history}
@@ -38,7 +38,7 @@ class Header extends Component {
             handleEnvironmentChange={this.props.handleEnvironmentChange.bind(this)}
           />
 
-        </Navbar.Collapse>        
+        </Navbar>
       </Navbar>
     );
   }

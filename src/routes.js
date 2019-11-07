@@ -3,7 +3,7 @@ import Deployment from "views/Deployment";
 import Config from "views/Config";
 import Variables from "views/Variables";
 import VariablesWizard from "views/VariablesWizard";
-import Microservices from "views/Microservices";
+// import Microservices from "views/Microservices";
 import Dependencies from "views/Dependencies";
 import DepAnalysis from "views/DepAnalysis";
 import DepGraph from "views/DepGraph";
@@ -156,15 +156,15 @@ const dashboardRoutes = [
     menu: false,
     role: "tenkai-user"
   },
-  {
-    path: "/microservices",
-    name: "Releases",
-    icon: "pe-7s-tools",
-    component: Microservices,
-    layout: "/admin",
-    menu: true,
-    role: "tenkai-user"
-  },
+  // {
+  //   path: "/microservices",
+  //   name: "Releases",
+  //   icon: "pe-7s-tools",
+  //   component: Microservices,
+  //   layout: "/admin",
+  //   menu: true,
+  //   role: "tenkai-user"
+  // },
   {
     path: "/microservices-deps",
     name: "Dependencies",
