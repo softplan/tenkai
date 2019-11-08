@@ -7,7 +7,7 @@ export function allUsers() {
       dispatch(types.allUserBegin());
 
       const result = await services.allUsers();
-      const users = result.data.list;
+      const users = result.data.users;
 
       dispatch(types.allUserSuccess(users));
     } catch (error) {
@@ -23,7 +23,7 @@ export function deleteUser(userId) {
 
       await services.deleteUser(userId);
       const result = await services.allUsers();
-      const users = result.data.list;
+      const users = result.data.users;
 
       dispatch(types.deleteUserSuccess(users));
     } catch (error) {
@@ -32,34 +32,23 @@ export function deleteUser(userId) {
   };
 }
 
-export function createUser(data) {
+export function saveUser(data) {
   return async dispatch => {
     try {
-      dispatch(types.createUserBegin());
+      dispatch(types.saveUserBegin());
 
-      await services.createUser(data);
+      let user = {
+        email: data.email,
+        environments: data.checkedEnvs.map(item => ({ ID: parseInt(item) }))
+      };
+
+      await services.saveUser(user);
       const result = await services.allUsers();
-      const users = result.data.list;
+      const users = result.data.users;
 
-      dispatch(types.createUserSuccess(users));
+      dispatch(types.saveSuccess(users));
     } catch (error) {
-      dispatch(types.createUserError(error));
-    }
-  };
-}
-
-export function editUser(data) {
-  return async dispatch => {
-    try {
-      dispatch(types.editUserBegin());
-
-      await services.editUser(data);
-      const result = await services.allUsers();
-      const users = result.data.list;
-
-      dispatch(types.editUserSuccess(users));
-    } catch (error) {
-      dispatch(types.editUserError(error));
+      dispatch(types.saveUserError(error));
     }
   };
 }

@@ -184,26 +184,6 @@ function saveSettings(data, self, onSuccess) {
   }));
 }
 
-function saveUsers(data, self, onSuccess) {
-  let uri = '/users/createOrUpdate';
-
-  axios
-    .post(TENKAI_API_URL + uri, data)
-    .then(res => {
-      onSuccess(self);
-    })
-    .catch(error => {
-      console.log(error.message);
-      handlerError(self, error.response);
-    });
-
-  self.setState(() => ({
-    showInsertUpdateForm: false,
-    editItem: {},
-    editMode: false
-  }));
-}
-
 function multipleInstall(payload, self) {
   self.props.handleLoading(true);
   axios

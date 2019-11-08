@@ -23,8 +23,7 @@ export default function reduce(state = initialState, action = {}) {
         ...state
       };
 
-    case types.CREATE_USER_BEGIN:
-    case types.EDIT_USER_BEGIN:
+    case types.SAVE_USER_BEGIN:
       return {
         ...state,
         loadingSave: true,
@@ -33,8 +32,7 @@ export default function reduce(state = initialState, action = {}) {
 
     case types.ALL_USER_ERROR:
     case types.DELETE_USER_ERROR:
-    case types.CREATE_USER_ERROR:
-    case types.EDIT_USER_ERROR:
+    case types.SAVE_USER_ERROR:
       return {
         ...state,
         loading: false,
@@ -45,8 +43,7 @@ export default function reduce(state = initialState, action = {}) {
 
     case types.ALL_USER_SUCCESS:
     case types.DELETE_USER_SUCCESS:
-    case types.CREATE_USER_SUCCESS:
-    case types.EDIT_USER_SUCCESS:
+    case types.SAVE_USER_SUCCESS:
       return {
         ...state,
         loading: false,

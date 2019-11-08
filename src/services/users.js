@@ -9,10 +9,6 @@ export async function deleteUser(userId) {
   return await axios.delete(`${TENKAI_API_URL}/users/${userId}`);
 }
 
-export async function createUser(data) {
-  return await axios.post(`${TENKAI_API_URL}/users`, data);
-}
-
-export async function editUser(data) {
-  return await axios.post(`${TENKAI_API_URL}/users/edit`, data);
+export async function saveUser(data) {
+  return await axios.post(`${TENKAI_API_URL}/users/createOrUpdate`, data);
 }

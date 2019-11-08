@@ -6,13 +6,9 @@ export const DELETE_USER_BEGIN = 'user.DELETE_BEGIN';
 export const DELETE_USER_SUCCESS = 'user.DELETE_SUCCESS';
 export const DELETE_USER_ERROR = 'user.DELETE_ERROR';
 
-export const CREATE_USER_BEGIN = 'user.CREATE_BEGIN';
-export const CREATE_USER_SUCCESS = 'user.CREATE_SUCCESS';
-export const CREATE_USER_ERROR = 'user.CREATE_ERROR';
-
-export const EDIT_USER_BEGIN = 'user.EDIT_BEGIN';
-export const EDIT_USER_SUCCESS = 'user.EDIT_SUCCESS';
-export const EDIT_USER_ERROR = 'user.EDIT_ERROR';
+export const SAVE_USER_BEGIN = 'user.SAVE_BEGIN';
+export const SAVE_USER_SUCCESS = 'user.SAVE_SUCCESS';
+export const SAVE_USER_ERROR = 'user.SAVE_ERROR';
 
 export const allUserBegin = () => ({
   type: ALL_USER_BEGIN
@@ -28,31 +24,17 @@ export const allUserError = error => ({
   payload: { error }
 });
 
-export const createUserBegin = () => ({
-  type: CREATE_USER_BEGIN
+export const saveUserBegin = () => ({
+  type: SAVE_USER_BEGIN
 });
 
-export const createUserSuccess = users => ({
-  type: CREATE_USER_SUCCESS,
+export const saveUserSuccess = users => ({
+  type: SAVE_USER_SUCCESS,
   payload: { users }
 });
 
-export const createUserError = error => ({
-  type: CREATE_USER_ERROR,
-  payload: { error }
-});
-
-export const editUserBegin = () => ({
-  type: EDIT_USER_BEGIN
-});
-
-export const editUserSuccess = users => ({
-  type: EDIT_USER_SUCCESS,
-  payload: { users }
-});
-
-export const editUserError = error => ({
-  type: EDIT_USER_ERROR,
+export const saveUserError = error => ({
+  type: SAVE_USER_ERROR,
   payload: { error }
 });
 
