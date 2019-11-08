@@ -1,0 +1,61 @@
+{
+  "extends": [
+    "plugin:jest/recommended",
+    "plugin:react/recommended",
+    "plugin:jsx-a11y/recommended"
+  ],
+  "settings": {
+    "react": {
+      "pragma": "React",
+      "version": "16.4.1"
+    }
+  },
+  "plugins": ["jest", "react", "jsx-a11y", "prettier"],
+  "env": {
+    "jest/globals": true,
+    "browser": true
+  },
+  "rules": {
+    "curly": ["error", "all"],
+    "react/jsx-curly-brace-presence": "error",
+    "react/display-name": "off",
+    "react/jsx-uses-react": "error",
+    "react/jsx-uses-vars": "error",
+    "react/no-deprecated": "off",
+    "react/prop-types": "off",
+    "react/no-unescaped-entities": "off",
+    "jest/no-disabled-tests": "warn",
+    "jest/no-focused-tests": "error",
+    "jest/no-identical-title": "error",
+    "jest/prefer-to-have-length": "warn",
+    "jest/valid-expect": "error",
+    "import/prop-types": "off",
+    "import/no-extraneous-dependencies": "off",
+    "import/prefer-default-export": "off",
+    "import/no-unresolved": "off",
+    "import/extensions": "off",
+    "indent": [
+      "error",
+      2,
+      {
+        "SwitchCase": 1
+      }
+    ],
+    "id-length": 0,
+    "semi": ["error", "always"],
+    "quotes": [1, "single"],
+    "object-curly-spacing": ["error", "always"],
+    "jsx-quotes": ["error", "prefer-double"],
+    "avoidEscape": "off",
+    "prettier/prettier": "error"
+  },
+  "parser": "babel-eslint",
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "globals": {
+    "Event": true
+  }
+}

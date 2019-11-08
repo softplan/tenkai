@@ -16,6 +16,11 @@ pre-build:
 	node --version
 	npm --version
 
+#Build the binary
+lint:
+	@echo "Lint Code"
+	yarn lint
+
 #Build the image
 container-image:
 	@echo "Building docker image"

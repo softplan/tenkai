@@ -1,14 +1,14 @@
-import React, { Component } from "react";
-import { Grid, Row, Col, Table, ButtonToolbar } from "react-bootstrap";
+import React, { Component } from 'react';
+import { Grid, Row, Col, Table, ButtonToolbar } from 'react-bootstrap';
 
-import { Card } from "components/Card/Card.jsx";
-import Button from "components/CustomButton/CustomButton.jsx";
-import queryString from "query-string";
-import { retrieveSolutionChart } from "client-api/solutionchart-apicall.jsx";
+import { Card } from 'components/Card/Card.jsx';
+import Button from 'components/CustomButton/CustomButton.jsx';
+import queryString from 'query-string';
+import { retrieveSolutionChart } from 'client-api/solutionchart-apicall.jsx';
 
-import axios from "axios";
+import axios from 'axios';
 
-import TENKAI_API_URL from "env.js";
+import TENKAI_API_URL from 'env.js';
 
 class DeploySolution extends Component {
   constructor(props) {
@@ -18,7 +18,7 @@ class DeploySolution extends Component {
       solutionId: values.solutionId,
       list: [],
       chartsResult: { charts: [] },
-      solutionName: ""
+      solutionName: ''
     };
   }
 
@@ -27,7 +27,7 @@ class DeploySolution extends Component {
       self.props.handleLoading(true);
       for (let x = 0; x < self.state.list.length; x++) {
         let keyword = self.state.list[x].chartName.substr(
-          self.state.list[x].chartName.indexOf("/") + 1
+          self.state.list[x].chartName.indexOf('/') + 1
         );
         await self.getChartsAsync(keyword);
       }
@@ -37,7 +37,9 @@ class DeploySolution extends Component {
 
   //TODO - CREATE AN ENDPOINT THAT RECEIVE A POST AND ALL REQUESTS SIMULTANEOUS
   async getChartsAsync(searchTerm) {
-    let url = "/charts/" + searchTerm + "?all=false";
+    searchTerm = this.getChartName(searchTerm)
+
+    let url = '/charts/' + searchTerm + '?all=false';
 
     await axios
       .get(TENKAI_API_URL + url)
@@ -54,8 +56,13 @@ class DeploySolution extends Component {
       })
       .catch(error => {
         console.log(error.message);
-        this.props.handleNotification("general_fail", "error");
+        this.props.handleNotification('general_fail', 'error');
       });
+  }
+
+  getChartName(chartNameVersion) {
+    let splited = chartNameVersion.split(' - ');
+    return splited.length >= 1 ? splited[0] : '';
   }
 
   navigateToCheckVariables(charts, selected) {
@@ -63,13 +70,13 @@ class DeploySolution extends Component {
 
     let selectedCharts = [];
     for (let x = 0; x < charts.length; x++) {
-      selectedCharts.push(charts[x].name + "@" + charts[x].chartVersion);
+      selectedCharts.push(charts[x].name + '@' + charts[x].chartVersion);
     }
 
     this.props.updateSelectedChartsToDeploy(selectedCharts);
 
     this.props.history.push({
-      pathname: "/admin/deployment-wvars"
+      pathname: '/admin/deployment-wvars'
     });
   }
 

@@ -1,17 +1,17 @@
-import axios from "axios";
-import TENKAI_API_URL from "env.js";
+import axios from 'axios';
+import TENKAI_API_URL from 'env.js';
 
 function handlerError(self, response) {
   if (response !== undefined) {
-    self.props.handleNotification("custom", "error", response.data);
+    self.props.handleNotification('custom', 'error', response.data);
   } else {
-    self.props.handleNotification("fail", "error");
+    self.props.handleNotification('fail', 'error');
   }
 }
 
 function retriveRepo(self) {
   axios
-    .get(TENKAI_API_URL + "/repositories")
+    .get(TENKAI_API_URL + '/repositories')
     .then(response => {
       var arr = [];
       for (var x = 0; x < response.data.repositories.length; x++) {
@@ -28,14 +28,14 @@ function retriveRepo(self) {
 
 function retrieveCharts(self, repo, allVersions, callback) {
   self.props.handleLoading(true);
-  let url = "/charts/" + repo + "?all=" + allVersions;
+  let url = '/charts/' + repo + '?all=' + allVersions;
   axios
     .get(TENKAI_API_URL + url)
     .then(response => {
       let arr = [];
       for (let x = 0; x < response.data.charts.length; x++) {
         let element = response.data.charts[x];
-        let nameVersion = element.name + " - " + element.chartVersion;
+        let nameVersion = element.name + ' - ' + element.chartVersion;
         arr.push({ value: nameVersion, label: nameVersion });
       }
       self.setState({ charts: arr });
@@ -53,7 +53,7 @@ function retrieveCharts(self, repo, allVersions, callback) {
 
 function retrieveSettings(list, self, callback) {
   self.props.handleLoading(true);
-  let url = "/getSettingList";
+  let url = '/getSettingList';
   axios
     .post(TENKAI_API_URL + url, list)
     .then(response => {
@@ -124,7 +124,7 @@ function deleteRelease(id, self) {
   if (self.state.itemToDelete !== undefined) {
     self.props.handleLoading(true);
     axios
-      .delete(TENKAI_API_URL + "/releases/" + id)
+      .delete(TENKAI_API_URL + '/releases/' + id)
       .then(response => {
         retrieveReleases(self.state.selectedChart.value, self);
         self.props.handleLoading(false);
@@ -139,11 +139,11 @@ function deleteRelease(id, self) {
 }
 
 function saveReleases(data, self) {
-  let uri = "";
+  let uri = '';
   if (self.state.editMode) {
-    uri = "/releases/edit";
+    uri = '/releases/edit';
   } else {
-    uri = "/releases";
+    uri = '/releases';
   }
 
   axios
@@ -164,7 +164,7 @@ function saveReleases(data, self) {
 }
 
 function saveSettings(data, self, onSuccess) {
-  let uri = "/settings";
+  let uri = '/settings';
   axios
     .post(TENKAI_API_URL + uri, data)
     .then(res => {
@@ -185,7 +185,7 @@ function saveSettings(data, self, onSuccess) {
 }
 
 function saveUsers(data, self, onSuccess) {
-  let uri = "/users/createOrUpdate";
+  let uri = '/users/createOrUpdate';
 
   axios
     .post(TENKAI_API_URL + uri, data)
@@ -207,9 +207,9 @@ function saveUsers(data, self, onSuccess) {
 function multipleInstall(payload, self) {
   self.props.handleLoading(true);
   axios
-    .post(TENKAI_API_URL + "/multipleInstall", payload)
+    .post(TENKAI_API_URL + '/multipleInstall', payload)
     .then(() => {
-      self.props.handleNotification("deployment_ok", "success");
+      self.props.handleNotification('deployment_ok', 'success');
       self.props.handleLoading(false);
     })
     .catch(error => {
@@ -221,7 +221,7 @@ function multipleInstall(payload, self) {
 function getHelmCommand(payload, self, callback) {
   self.props.handleLoading(true);
   axios
-    .post(TENKAI_API_URL + "/getHelmCommand", payload)
+    .post(TENKAI_API_URL + '/getHelmCommand', payload)
     .then(data => {
       self.props.handleLoading(false);
       if (callback !== undefined) {
@@ -236,7 +236,7 @@ function getHelmCommand(payload, self, callback) {
 
 function retrieveDependency(environmentId, chartName, tag, self) {
   axios
-    .post(TENKAI_API_URL + "/analyse", { environmentId, chartName, tag })
+    .post(TENKAI_API_URL + '/analyse', { environmentId, chartName, tag })
     .then(result => {
       const data = result.data;
       self.setState({ data: data });
@@ -249,7 +249,7 @@ function retrieveDependency(environmentId, chartName, tag, self) {
 
 function getAllEnvironments(self, callback) {
   axios
-    .get(TENKAI_API_URL + "/environments/all")
+    .get(TENKAI_API_URL + '/environments/all')
     .then(response => {
       if (callback !== undefined) {
         callback(response.data.Envs);
@@ -263,7 +263,7 @@ function getAllEnvironments(self, callback) {
 function getDefaultRepo(self, callback) {
   self.props.handleLoading(true);
   axios
-    .get(TENKAI_API_URL + "/repo/default")
+    .get(TENKAI_API_URL + '/repo/default')
     .then(res => {
       self.setState({ defaultRepo: res.data.value });
       self.props.handleLoading(false);
@@ -289,7 +289,7 @@ function listHelmDeploymentsByEnvironment(self, id, callback) {
     })
     .catch(error => {
       self.props.handleLoading(false);
-      console.log("error: " + error);
+      console.log('error: ' + error);
       //self.props.handleNotification("general_fail", "error");
     });
 }
@@ -306,8 +306,24 @@ function listPods(self, id, callback) {
     })
     .catch(error => {
       self.props.handleLoading(false);
-      console.log("error: " + error);
+      console.log('error: ' + error);
       //self.props.handleNotification("general_fail", "error");
+    });
+}
+
+function listEndpoints(self, id, callback) {
+  self.props.handleLoading(true);
+  axios
+    .get(TENKAI_API_URL + `/getVirtualServices?environmentID=${id}`)
+    .then(res => {
+      self.props.handleLoading(false);
+      if (callback !== undefined) {
+        callback(self, res);
+      }
+    })
+    .catch(error => {
+      self.props.handleLoading(false);
+      console.log('error: ' + error);
     });
 }
 
@@ -323,7 +339,7 @@ function listServices(self, id, callback) {
     })
     .catch(error => {
       self.props.handleLoading(false);
-      console.log("error: " + error);
+      console.log('error: ' + error);
       //self.props.handleNotification("general_fail", "error");
     });
 }
@@ -431,14 +447,14 @@ function promote(self, srcEnvID, targetEnvID, full) {
   let url =
     TENKAI_API_URL + `/promote?srcEnvID=${srcEnvID}&targetEnvID=${targetEnvID}`;
   if (full) {
-    url = url + "&mode=full";
+    url = url + '&mode=full';
   } else {
-    url = url + "&mode=workload";
+    url = url + '&mode=workload';
   }
   axios
     .get(url)
     .then(res => {
-      self.props.handleNotification("custom", "success", "Done!");
+      self.props.handleNotification('custom', 'success', 'Done!');
       self.props.handleLoading(false);
     })
     .catch(error => {
@@ -449,7 +465,7 @@ function promote(self, srcEnvID, targetEnvID, full) {
 
 function getTagsOfImage(self, imageName, callback) {
   self.props.handleLoading(true);
-  let url = TENKAI_API_URL + "/listDockerTags";
+  let url = TENKAI_API_URL + '/listDockerTags';
   axios
     .post(url, { imageName })
     .then(res => {
@@ -467,7 +483,7 @@ function getTagsOfImage(self, imageName, callback) {
 function getDockerImageFromHelmChart(self, payload, callback) {
   self.props.handleLoading(true);
 
-  let url = TENKAI_API_URL + "/getChartVariables";
+  let url = TENKAI_API_URL + '/getChartVariables';
 
   axios
     .post(url, payload)
@@ -509,5 +525,6 @@ export {
   retrieveSettings,
   getVariablesNotUsed,
   getDockerImageFromHelmChart,
-  getHelmCommand
+  getHelmCommand,
+  listEndpoints
 };
