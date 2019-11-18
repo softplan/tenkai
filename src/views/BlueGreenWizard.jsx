@@ -1,31 +1,37 @@
-import React, { Component } from "react";
-import { Card } from "components/Card/Card.jsx";
+import React, { Component } from 'react';
+import { Card } from 'components/Card/Card.jsx';
 
-import { Grid, Row, Col, ButtonToolbar } from "react-bootstrap";
+import { Grid, Row, Col, ButtonToolbar } from 'react-bootstrap';
 
-import HelmVariables from "components/Deployment/HelmVariables.jsx";
-import TrafficPanel from "components/Traffic/TrafficPanel.jsx";
-import { multipleInstall } from "client-api/apicall.jsx";
+import HelmVariables from 'components/Deployment/HelmVariables.jsx';
+import TrafficPanel from 'components/Traffic/TrafficPanel.jsx';
+import { multipleInstall } from 'client-api/apicall.jsx';
 
 // eslint-disable-next-line
-const NAMESPACE = "${NAMESPACE}";
+const NAMESPACE = '${NAMESPACE}';
 
 class Step1 extends React.Component {
   updateProps() {
     let state = this.getInnerState();
     if (state !== undefined) {
-      this.props.updateHost(state.hosts["istio.virtualservices.hosts[0]"]);
+      this.props.updateHost(state.hosts['istio.virtualservices.hosts[0]']);
       this.props.updateApiPath(state.defaultApiPath);
-      let onlyChartName = state.chartName.substring(
-        state.chartName.indexOf("/") + 1
-      );
-      let serviceName = onlyChartName + "-" + this.props.envName;
+      let onlyChartName = '';
+      if (state.chartName.indexOf('/') > -1) {
+        onlyChartName = state.chartName.substring(
+          state.chartName.indexOf('/') + 1
+        );
+      } else {
+        onlyChartName = state.chartName;
+      }
+
+      let serviceName = onlyChartName + '-' + this.props.envName;
       this.props.updateServiceName(serviceName);
       let defaultReleaseName =
-        state.releaseName.substring(0, state.releaseName.indexOf("-beta")) +
-        "-" +
+        state.releaseName.substring(0, state.releaseName.indexOf('-beta')) +
+        '-' +
         NAMESPACE;
-      let headerReleaseName = state.releaseName + "-" + NAMESPACE;
+      let headerReleaseName = state.releaseName + '-' + NAMESPACE;
       this.props.updateDefaultReleaseName(defaultReleaseName);
       this.props.updateHeaderReleaseName(headerReleaseName);
       this.props.saveState(state);
@@ -36,14 +42,14 @@ class Step1 extends React.Component {
 
   getInnerState() {
     let result = undefined;
-    if (this.refs["h1"] !== undefined) {
-      result = this.refs["h1"].state;
+    if (this.refs['h1'] !== undefined) {
+      result = this.refs['h1'].state;
     }
     return result;
   }
 
   async componentDidMount() {
-    await this.refs["h1"].getVariables(
+    await this.refs['h1'].getVariables(
       this.props.chartName,
       this.props.chartVersion
     );
@@ -51,10 +57,11 @@ class Step1 extends React.Component {
 
   saveVariablesAndDeploy() {
     let payload = { deployables: [] };
-    this.refs["h1"].save(list => {
+    this.refs['h1'].save(list => {
       for (let x = 0; x < list.length; x++) {
         let data = list[x];
         payload.deployables.push(data);
+        payload.environmentId = this.props.envId;
       }
       multipleInstall(payload, this);
     });
@@ -75,8 +82,8 @@ class Step1 extends React.Component {
           key="h1"
           chartName={this.props.chartName}
           chartVersion={this.props.chartVersion}
-          xref={"h1"}
-          ref={"h1"}
+          xref={'h1'}
+          ref={'h1'}
           envId={this.props.envId}
         />
       </div>
@@ -93,7 +100,7 @@ class Step2 extends React.Component {
     return (
       <div>
         <TrafficPanel
-          ref={"trafficPanel"}
+          ref={'trafficPanel'}
           host={this.props.host}
           apiPath={this.props.apiPath}
           serviceName={this.props.serviceName}
@@ -108,14 +115,14 @@ class Step2 extends React.Component {
   }
 
   applyByHeader() {
-    if (this.refs["trafficPanel"] !== undefined) {
-      this.refs["trafficPanel"].applyByHeader();
+    if (this.refs['trafficPanel'] !== undefined) {
+      this.refs['trafficPanel'].applyByHeader();
     }
   }
 
   applyByWeight() {
-    if (this.refs["trafficPanel"] !== undefined) {
-      this.refs["trafficPanel"].applyByWeight();
+    if (this.refs['trafficPanel'] !== undefined) {
+      this.refs['trafficPanel'].applyByWeight();
     }
   }
 }
@@ -123,13 +130,13 @@ class Step2 extends React.Component {
 class BlueGreenWizard extends Component {
   state = {
     currentStep: 1,
-    chartName: "",
-    chartVersion: "",
-    host: "",
-    apiPath: "",
-    serviceName: "",
-    defaultReleaseName: "",
-    headerReleaseName: "",
+    chartName: '',
+    chartVersion: '',
+    host: '',
+    apiPath: '',
+    serviceName: '',
+    defaultReleaseName: '',
+    headerReleaseName: '',
     releaseState: {}
   };
 
@@ -139,13 +146,14 @@ class BlueGreenWizard extends Component {
     this.state.envId = this.props.selectedEnvironment.value;
     this.state.envName = NAMESPACE;
 
+    console.log('Env: ' + this.props.selectedEnvironment.value);
+
     let charts = this.props.selectedChartsToDeploy;
     if (charts !== undefined && charts.length > 0) {
       let firstElement = charts[0];
-      let chartName =
-        "saj6/" + firstElement.substring(0, firstElement.indexOf("@"));
+      let chartName = firstElement.substring(0, firstElement.indexOf('@'));
       let chartVersion = firstElement.substring(
-        firstElement.indexOf("@") + 1,
+        firstElement.indexOf('@') + 1,
         firstElement.length
       );
 
@@ -155,29 +163,29 @@ class BlueGreenWizard extends Component {
   }
 
   finishWithBlueGreen() {
-    if (this.refs["step2"] !== undefined) {
-      this.refs["step2"].applyByWeight();
+    if (this.refs['step2'] !== undefined) {
+      this.refs['step2'].applyByWeight();
     }
 
     this.props.history.push({
-      pathname: "/admin/workload"
+      pathname: '/admin/workload'
     });
   }
 
   finishWithCanary() {
-    if (this.refs["step2"] !== undefined) {
-      this.refs["step2"].applyByHeader();
+    if (this.refs['step2'] !== undefined) {
+      this.refs['step2'].applyByHeader();
     }
 
     this.props.history.push({
-      pathname: "/admin/workload"
+      pathname: '/admin/workload'
     });
   }
 
   async next() {
-    if (this.refs["step1"] !== undefined) {
-      this.refs["step1"].updateProps();
-      this.refs["step1"].saveVariablesAndDeploy();
+    if (this.refs['step1'] !== undefined) {
+      await this.refs['step1'].updateProps();
+      await this.refs['step1'].saveVariablesAndDeploy();
     }
 
     let currentStep = this.state.currentStep;
@@ -272,12 +280,12 @@ class BlueGreenWizard extends Component {
   render() {
     let firstClassName =
       this.state.currentStep === 1
-        ? "btn btn-success btn-circle btn-fill"
-        : "btn btn-default btn-circle";
+        ? 'btn btn-success btn-circle btn-fill'
+        : 'btn btn-default btn-circle';
     let secondClassName =
       this.state.currentStep === 2
-        ? "btn btn-success btn-circle btn-fill"
-        : "btn btn-default btn-circle";
+        ? 'btn btn-success btn-circle btn-fill'
+        : 'btn btn-default btn-circle';
 
     return (
       <div className="content">
@@ -336,7 +344,7 @@ class BlueGreenWizard extends Component {
                 content={
                   <div>
                     <Step1
-                      ref={"step1"}
+                      ref={'step1'}
                       currentStep={this.state.currentStep}
                       chartName={this.state.chartName}
                       chartVersion={this.state.chartVersion}
@@ -357,7 +365,7 @@ class BlueGreenWizard extends Component {
                     ></Step1>
 
                     <Step2
-                      ref={"step2"}
+                      ref={'step2'}
                       currentStep={this.state.currentStep}
                       host={this.state.host}
                       apiPath={this.state.apiPath}
