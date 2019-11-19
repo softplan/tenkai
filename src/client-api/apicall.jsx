@@ -489,7 +489,6 @@ export {
   retrieveReleasesWithCallBack,
   multipleInstall,
   getAllEnvironments,
-  saveUsers,
   getDefaultRepo,
   listHelmDeploymentsByEnvironment,
   getReleaseHistory,

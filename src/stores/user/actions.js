@@ -46,7 +46,7 @@ export function saveUser(data) {
       const result = await services.allUsers();
       const users = result.data.users;
 
-      dispatch(types.saveSuccess(users));
+      dispatch(types.saveUserSuccess(users));
     } catch (error) {
       dispatch(types.saveUserError(error));
     }
