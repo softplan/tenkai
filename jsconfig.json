@@ -3,6 +3,8 @@
     "baseUrl": "src",
     "paths": {
       "*": ["src/*"]
-    }
+    },
+    "target": "esnext",
+    "jsx": "react"
   }
 }
