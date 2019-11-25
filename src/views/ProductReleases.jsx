@@ -1,5 +1,5 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import {
   Grid,
   Row,
@@ -8,16 +8,16 @@ import {
   ControlLabel,
   FormControl,
   Table
-} from "react-bootstrap";
-import SimpleModal from "components/Modal/SimpleModal.jsx";
+} from 'react-bootstrap';
+import SimpleModal from 'components/Modal/SimpleModal.jsx';
 
-import { Card } from "components/Card/Card.jsx";
-import Button from "components/CustomButton/CustomButton.jsx";
-import ProductReleaseForm from "components/Forms/ProductReleaseForm.jsx";
-import queryString from "query-string";
+import { Card } from 'components/Card/Card.jsx';
+import Button from 'components/CustomButton/CustomButton.jsx';
+import ProductReleaseForm from 'components/Forms/ProductReleaseForm.jsx';
+import queryString from 'query-string';
 
-import * as productReleaseActions from "stores/productRelease/actions";
-import * as productReleaseSelectors from "stores/productRelease/reducer";
+import * as productReleaseActions from 'stores/productRelease/actions';
+import * as productReleaseSelectors from 'stores/productRelease/reducer';
 
 class ProductRelease extends Component {
   constructor(props) {
@@ -27,13 +27,13 @@ class ProductRelease extends Component {
       productId: values.productId,
       item: {},
       showInsertUpdateForm: false,
-      header: "",
+      header: '',
       showConfirmDeleteModal: false,
       itemToDelete: {},
-      inputFilter: "",
+      inputFilter: '',
       editMode: false,
       editItem: {},
-      solutionName: ""
+      solutionName: ''
     };
   }
 
@@ -74,11 +74,24 @@ class ProductRelease extends Component {
     });
   }
 
+  onLockVersion(data) {
+    console.log(data);
+    if (data.locked) {
+      this.props.dispatch(
+        productReleaseActions.unlockProductRelease(data.ID, data.productId)
+      );
+    } else {
+      this.props.dispatch(
+        productReleaseActions.lockProductRelease(data.ID, data.productId)
+      );
+    }
+  }
+
   render() {
     const items = this.props.productReleases
       .filter(
         d =>
-          this.state.inputFilter === "" ||
+          this.state.inputFilter === '' ||
           d.chartName.includes(this.state.inputFilter)
       )
       .map((item, key) => (
@@ -103,12 +116,20 @@ class ProductRelease extends Component {
               className="link-button"
               onClick={() =>
                 this.props.history.push({
-                  pathname: "/admin/product-version-service",
-                  search: "?productVersionId=" + item.ID
+                  pathname: '/admin/product-version-service',
+                  search: '?productVersionId=' + item.ID
                 })
               }
             >
               <i className="pe-7s-news-paper" />
+            </Button>
+          </td>
+          <td>
+            <Button
+              className="link-button"
+              onClick={this.onLockVersion.bind(this, item)}
+            >
+              <i className={item.locked ? 'pe-7s-lock' : 'pe-7s-unlock'} />
             </Button>
           </td>
         </tr>
@@ -186,7 +207,7 @@ class ProductRelease extends Component {
                             onChange={e =>
                               this.setState({ inputFilter: e.target.value })
                             }
-                            style={{ width: "100%" }}
+                            style={{ width: '100%' }}
                             type="text"
                             placeholder="Search using any field"
                             aria-label="Search using any field"
@@ -203,6 +224,7 @@ class ProductRelease extends Component {
                               <th>Version</th>
                               <th>Delete</th>
                               <th>Services</th>
+                              <th>Lock Version</th>
                             </tr>
                           </thead>
                           <tbody>{items}</tbody>
