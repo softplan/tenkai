@@ -75,7 +75,6 @@ class ProductRelease extends Component {
   }
 
   onLockVersion(data) {
-    console.log(data);
     if (data.locked) {
       this.props.dispatch(
         productReleaseActions.unlockProductRelease(data.ID, data.productId)
