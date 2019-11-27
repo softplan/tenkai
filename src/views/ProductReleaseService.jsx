@@ -1,5 +1,5 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import {
   Grid,
   Row,
@@ -9,16 +9,17 @@ import {
   FormControl,
   Table,
   ButtonToolbar
-} from "react-bootstrap";
-import SimpleModal from "components/Modal/SimpleModal.jsx";
+} from 'react-bootstrap';
+import SimpleModal from 'components/Modal/SimpleModal.jsx';
 
-import { Card } from "components/Card/Card.jsx";
-import Button from "components/CustomButton/CustomButton.jsx";
-import ProductReleaseServiceForm from "components/Forms/ProductReleaseServiceForm.jsx";
-import queryString from "query-string";
+import { Card } from 'components/Card/Card.jsx';
+import Button from 'components/CustomButton/CustomButton.jsx';
+import ProductReleaseServiceForm from 'components/Forms/ProductReleaseServiceForm.jsx';
+import queryString from 'query-string';
 
-import * as productReleaseServiceActions from "stores/productReleaseService/actions";
-import * as productReleaseServiceSelectors from "stores/productReleaseService/reducer";
+import * as productReleaseServiceActions from 'stores/productReleaseService/actions';
+import * as productReleaseServiceSelectors from 'stores/productReleaseService/reducer';
+import * as productReleaseSelectors from 'stores/productRelease/reducer';
 
 class ProductReleaseService extends Component {
   constructor(props) {
@@ -28,15 +29,26 @@ class ProductReleaseService extends Component {
       productVersionId: values.productVersionId,
       item: {},
       showInsertUpdateForm: false,
-      header: "",
+      header: '',
       showConfirmDeleteModal: false,
       itemToDelete: {},
-      inputFilter: "",
+      inputFilter: '',
       editMode: false,
       editItem: {},
-      ProductName: "",
-      Version: ""
+      ProductName: '',
+      Version: '',
+      locked: this.isLocked()
     };
+  }
+
+  isLocked() {
+    const pvid = parseInt(
+      queryString.parse(this.props.location.search).productVersionId
+    );
+    const productRelease = this.props.productReleases.find(
+      pr => pr.ID === pvid
+    );
+    return productRelease ? productRelease.locked : false;
   }
 
   componentDidMount() {
@@ -93,14 +105,14 @@ class ProductReleaseService extends Component {
       let serviceName = this.getChartName(item.serviceName);
       let serviceVersion = this.getChartVersion(item.serviceName);
       let chart =
-        serviceName + "@" + serviceVersion + "#" + item.dockerImageTag;
+        serviceName + '@' + serviceVersion + '#' + item.dockerImageTag;
       array.push(chart);
     }
     this.props.handleLoading(false);
     this.props.updateSelectedChartsToDeploy(array, () => {
       this.props.history.push({
-        pathname: "/admin/deployment-wvars",
-        search: "?productVersionId=" + this.state.productVersionId
+        pathname: '/admin/deployment-wvars',
+        search: '?productVersionId=' + this.state.productVersionId
       });
     });
   }
@@ -108,14 +120,14 @@ class ProductReleaseService extends Component {
   goToServiceDeploy(item) {
     let serviceName = this.getChartName(item.serviceName);
     let serviceVersion = this.getChartVersion(item.serviceName);
-    let chart = serviceName + "@" + serviceVersion + "#" + item.dockerImageTag;
+    let chart = serviceName + '@' + serviceVersion + '#' + item.dockerImageTag;
 
     let array = [];
     array.push(chart);
 
     this.props.updateSelectedChartsToDeploy(array, () => {
       this.props.history.push({
-        pathname: "/admin/deployment-wvars"
+        pathname: '/admin/deployment-wvars'
       });
     });
   }
@@ -129,27 +141,27 @@ class ProductReleaseService extends Component {
 
   setChartLatestVersion(item) {
     item.serviceName =
-      this.getChartName(item.serviceName) + " - " + item.chartLatestVersion;
+      this.getChartName(item.serviceName) + ' - ' + item.chartLatestVersion;
     this.setState({ editMode: true, editItem: item }, () => {
       this.onSaveClick(item);
     });
   }
 
   getChartName(chartNameVersion) {
-    let splited = chartNameVersion.split(" - ");
-    return splited.length >= 1 ? splited[0] : "";
+    let splited = chartNameVersion.split(' - ');
+    return splited.length >= 1 ? splited[0] : '';
   }
 
   getChartVersion(chartNameVersion) {
-    let splited = chartNameVersion.split(" - ");
-    return splited.length === 2 ? splited[1] : "";
+    let splited = chartNameVersion.split(' - ');
+    return splited.length === 2 ? splited[1] : '';
   }
 
   render() {
     const items = this.props.productReleaseServices
       .filter(
         d =>
-          this.state.inputFilter === "" ||
+          this.state.inputFilter === '' ||
           d.serviceName.includes(this.state.inputFilter)
       )
       .map((item, key) => (
@@ -157,37 +169,34 @@ class ProductReleaseService extends Component {
           <td>{item.ID}</td>
           <td>{item.serviceName}</td>
           <td>
-            {item.chartLatestVersion !== "" ? (
+            {item.chartLatestVersion !== '' ? (
               <Button
                 className="link-button"
                 onClick={this.setChartLatestVersion.bind(this, item)}
+                disabled={this.state.locked}
               >
                 <i className="pe-7s-left-arrow" />
               </Button>
-            ) : (
-              ""
-            )}
-            {"   "}
+            ) : null}
             {item.chartLatestVersion}
           </td>
           <td>{item.dockerImageTag}</td>
           <td>
-            {item.latestVersion !== "" ? (
+            {item.latestVersion !== '' ? (
               <Button
                 className="link-button"
                 onClick={this.setVersion.bind(this, item)}
+                disabled={this.state.locked}
               >
                 <i className="pe-7s-left-arrow" />
               </Button>
-            ) : (
-              ""
-            )}
-            {"   "}
+            ) : null}
             {item.latestVersion}
           </td>
           <td>
             <Button
               className="link-button"
+              disabled={this.state.locked}
               onClick={() =>
                 this.setState({
                   showInsertUpdateForm: true,
@@ -203,6 +212,7 @@ class ProductReleaseService extends Component {
           <td>
             <Button
               className="link-button"
+              disabled={this.state.locked}
               onClick={() =>
                 this.setState({ itemToDelete: item }, () => {
                   this.setState({ showConfirmDeleteModal: true });
@@ -257,6 +267,7 @@ class ProductReleaseService extends Component {
                       <Button
                         className="pull-right"
                         variant="primary"
+                        disabled={this.state.locked}
                         onClick={() =>
                           this.setState({ showInsertUpdateForm: true })
                         }
@@ -308,7 +319,7 @@ class ProductReleaseService extends Component {
                             onChange={e =>
                               this.setState({ inputFilter: e.target.value })
                             }
-                            style={{ width: "100%" }}
+                            style={{ width: '100%' }}
                             type="text"
                             placeholder="Search using any field"
                             aria-label="Search using any field"
@@ -350,7 +361,8 @@ const mapStateToProps = state => ({
   productReleaseServices: productReleaseServiceSelectors.getProductReleaseServices(
     state
   ),
-  error: productReleaseServiceSelectors.getError(state)
+  error: productReleaseServiceSelectors.getError(state),
+  productReleases: productReleaseSelectors.getProductReleases(state)
 });
 
 export default connect(mapStateToProps)(ProductReleaseService);

@@ -87,6 +87,13 @@ class ProductRelease extends Component {
     }
   }
 
+  getRowClassName(item) {
+    if (item.locked) {
+      return 'bg-disabled';
+    }
+    return '';
+  }
+
   render() {
     const items = this.props.productReleases
       .filter(
@@ -95,12 +102,13 @@ class ProductRelease extends Component {
           d.chartName.includes(this.state.inputFilter)
       )
       .map((item, key) => (
-        <tr key={key}>
+        <tr key={key} className={this.getRowClassName(item)}>
           <td>{item.ID}</td>
           <td>{item.date}</td>
           <td>{item.version}</td>
           <td>
             <Button
+              bsStyle="danger"
               className="link-button"
               onClick={() =>
                 this.setState({ itemToDelete: item }, () => {
@@ -120,6 +128,9 @@ class ProductRelease extends Component {
                   search: '?productVersionId=' + item.ID
                 })
               }
+              disabled={
+                !this.props.keycloak.hasRealmRole('tenkai-lock-version')
+              }
             >
               <i className="pe-7s-news-paper" />
             </Button>
@@ -127,9 +138,11 @@ class ProductRelease extends Component {
           <td>
             <Button
               className="link-button"
+              bsStyle={item.locked ? 'primary' : 'danger'}
               onClick={this.onLockVersion.bind(this, item)}
             >
               <i className={item.locked ? 'pe-7s-lock' : 'pe-7s-unlock'} />
+              {item.locked ? 'Unlock' : 'Lock'}
             </Button>
           </td>
         </tr>
@@ -216,7 +229,7 @@ class ProductRelease extends Component {
                       </div>
 
                       <div>
-                        <Table bordered hover size="sm">
+                        <Table bordered condensed size="sm">
                           <thead>
                             <tr>
                               <th>#</th>

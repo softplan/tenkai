@@ -298,7 +298,7 @@ class BlueGreenWizard extends Component {
                   <div>
                     <div className="stepwizard">
                       <div className="setup-panel">
-                        <div className="stepwizard-step col-xs-3">
+                        <div className="col-xs-3">
                           <a
                             href="#step-1"
                             type="button"
@@ -311,7 +311,7 @@ class BlueGreenWizard extends Component {
                             <small>Configure a new version of service</small>
                           </p>
                         </div>
-                        <div className="stepwizard-step col-xs-3">
+                        <div className="col-xs-3">
                           <a
                             href="#step-2"
                             type="button"
