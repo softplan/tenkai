@@ -20,3 +20,15 @@ export async function createProductRelease(data) {
 export async function editProductRelease(data) {
   return await axios.post(`${TENKAI_API_URL}/productVersions/edit`, data);
 }
+
+export async function lockProductRelease(productReleaseId) {
+  return await axios.get(
+    `${TENKAI_API_URL}/productVersions/lock/${productReleaseId}`
+  );
+}
+
+export async function unlockProductRelease(productReleaseId) {
+  return await axios.get(
+    `${TENKAI_API_URL}/productVersions/unlock/${productReleaseId}`
+  );
+}

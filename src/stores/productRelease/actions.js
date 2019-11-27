@@ -63,3 +63,36 @@ export function editProductRelease(data, productId) {
     }
   };
 }
+
+export function lockProductRelease(productReleaseId, productId) {
+  return async dispatch => {
+    try {
+      dispatch(types.lockProductReleaseBegin());
+
+      await services.lockProductRelease(productReleaseId);
+      const result = await services.allProductReleases(productId);
+      const productReleases = result.data.list;
+
+      dispatch(types.lockProductReleaseSuccess(productReleases));
+    } catch (error) {
+      dispatch(types.lockProductReleaseError(error));
+    }
+  };
+}
+
+export function unlockProductRelease(productReleaseId, productId) {
+  return async dispatch => {
+    try {
+      dispatch(types.unlockProductReleaseBegin());
+
+      await services.unlockProductRelease(productReleaseId);
+      const result = await services.allProductReleases(productId);
+      const productReleases = result.data.list;
+
+      dispatch(types.unlockProductReleaseSuccess(productReleases));
+    } catch (error) {
+      dispatch(types.unlockProductReleaseError(error));
+    }
+  };
+}
+

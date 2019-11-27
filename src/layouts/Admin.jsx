@@ -1,18 +1,18 @@
-import React, { Component } from "react";
-import { Route, Switch } from "react-router-dom";
-import NotificationSystem from "react-notification-system";
+import React, { Component } from 'react';
+import { Route, Switch } from 'react-router-dom';
+import NotificationSystem from 'react-notification-system';
 
-import AdminNavbar from "components/Navbars/AdminNavbar";
-import Footer from "components/Footer/Footer";
-import Sidebar from "components/Sidebar/Sidebar";
+import AdminNavbar from 'components/Navbars/AdminNavbar';
+import Footer from 'components/Footer/Footer';
+import Sidebar from 'components/Sidebar/Sidebar';
 
-import { style } from "variables/Variables.jsx";
-import routes from "routes.js";
-import image from "assets/img/sidebar-8.jpg";
-import "assets/css/loading.css";
-import Keycloak from "keycloak-js";
-import axios from "axios";
-import TENKAI_API_URL from "env.js";
+import { style } from 'variables/Variables.jsx';
+import routes from 'routes.js';
+import image from 'assets/img/sidebar-8.jpg';
+import 'assets/css/custom.css';
+import Keycloak from 'keycloak-js';
+import axios from 'axios';
+import TENKAI_API_URL from 'env.js';
 
 class Admin extends Component {
   constructor(props) {
@@ -24,21 +24,21 @@ class Admin extends Component {
       loading: false,
       _notificationSystem: null,
       image: image,
-      color: "black",
+      color: 'black',
       hasImage: true,
-      fixedClasses: "dropdown show-dropdown open",
+      fixedClasses: 'dropdown show-dropdown open',
       environmentList: [],
       selectedEnvironment: {},
       selectedChartsToDeploy: []
     };
 
-    const keycloak = Keycloak("/keycloak.json");
-    keycloak.init({ onLoad: "login-required" }).then(authenticated => {
+    const keycloak = Keycloak('/keycloak.json');
+    keycloak.init({ onLoad: 'login-required' }).then(authenticated => {
       this.state.keycloak = keycloak;
       this.state.authenticated = authenticated;
       this.state._notificationSystem = this.refs.notificationSystem;
       axios.defaults.headers.common[
-        "Authorization"
+        'Authorization'
       ] = `Bearer ${keycloak.token}`;
       this.getEnvironments();
     });
@@ -48,29 +48,33 @@ class Admin extends Component {
     this.setState({ selectedEnvironment }, () => {
       console.log(JSON.stringify(selectedEnvironment));
       window.localStorage.setItem(
-        "currentEnvironment",
+        'currentEnvironment',
         JSON.stringify(selectedEnvironment)
       );
 
       this.props.history.push({
-        pathname: "/admin/deployment"
+        pathname: '/admin/deployment'
       });
     });
   };
 
   getEnvironments() {
     axios
-      .get(TENKAI_API_URL + "/environments")
+      .get(TENKAI_API_URL + '/environments')
       .then(response => {
         var arr = [];
         for (var x = 0; x < response.data.Envs.length; x++) {
           var element = response.data.Envs[x];
-          arr.push({ value: element.ID, label: element.name, productVersion: element.productVersion });
+          arr.push({
+            value: element.ID,
+            label: element.name,
+            productVersion: element.productVersion
+          });
         }
         this.setState({ environmentList: arr }, () => {
           if (arr.length > 0) {
             let localEnvironment = JSON.parse(
-              window.localStorage.getItem("currentEnvironment")
+              window.localStorage.getItem('currentEnvironment')
             );
 
             if (localEnvironment !== null) {
@@ -84,9 +88,9 @@ class Admin extends Component {
       .catch(error => {
         console.log(error);
         if (error.response !== undefined) {
-          this.handleNotification("custom", "error", error.response.data);
+          this.handleNotification('custom', 'error', error.response.data);
         } else {
-          this.handleNotification("deployment_fail", "error");
+          this.handleNotification('deployment_fail', 'error');
         }
       });
   }
@@ -110,16 +114,16 @@ class Admin extends Component {
 
   handleNotification = (type, level, message) => {
     switch (type) {
-      case "custom":
+      case 'custom':
         this.state._notificationSystem.addNotification({
           title: <span data-notify="icon" className="pe-7s-gift" />,
           message: <div>{message}</div>,
           level: level,
-          position: "tr",
+          position: 'tr',
           autoDismiss: 15
         });
         break;
-      case "deployment_ok":
+      case 'deployment_ok':
         this.state._notificationSystem.addNotification({
           title: <span data-notify="icon" className="pe-7s-gift" />,
           message: (
@@ -129,11 +133,11 @@ class Admin extends Component {
             </div>
           ),
           level: level,
-          position: "tr",
+          position: 'tr',
           autoDismiss: 15
         });
         break;
-      case "deployment_fail":
+      case 'deployment_fail':
         this.state._notificationSystem.addNotification({
           title: <span data-notify="icon" className="pe-7s-gift" />,
           message: (
@@ -142,11 +146,11 @@ class Admin extends Component {
             </div>
           ),
           level: level,
-          position: "tr",
+          position: 'tr',
           autoDismiss: 15
         });
         break;
-      case "fail":
+      case 'fail':
         this.state._notificationSystem.addNotification({
           title: <span data-notify="icon" className="pe-7s-gift" />,
           message: (
@@ -155,11 +159,11 @@ class Admin extends Component {
             </div>
           ),
           level: level,
-          position: "tr",
+          position: 'tr',
           autoDismiss: 15
         });
         break;
-      case "general_fail":
+      case 'general_fail':
         this.state._notificationSystem.addNotification({
           title: <span data-notify="icon" className="pe-7s-gift" />,
           message: (
@@ -168,7 +172,7 @@ class Admin extends Component {
             </div>
           ),
           level: level,
-          position: "tr",
+          position: 'tr',
           autoDismiss: 15
         });
         break;
@@ -190,16 +194,16 @@ class Admin extends Component {
     var level;
     switch (color) {
       case 1:
-        level = "success";
+        level = 'success';
         break;
       case 2:
-        level = "warning";
+        level = 'warning';
         break;
       case 3:
-        level = "error";
+        level = 'error';
         break;
       case 4:
-        level = "info";
+        level = 'info';
         break;
       default:
         break;
@@ -216,7 +220,7 @@ class Admin extends Component {
   getRoutes = routes => {
     return routes.map((prop, key) => {
       let auth = this.state.keycloak.hasRealmRole(prop.role);
-      if (prop.layout === "/admin" && auth) {
+      if (prop.layout === '/admin' && auth) {
         return (
           <Route
             path={prop.layout + prop.path}
@@ -253,7 +257,7 @@ class Admin extends Component {
         return routes[i].name;
       }
     }
-    return "Brand";
+    return 'Brand';
   };
   handleImageClick = image => {
     this.setState({ image: image });
@@ -265,10 +269,10 @@ class Admin extends Component {
     this.setState({ hasImage: hasImage });
   };
   handleFixedClick = () => {
-    if (this.state.fixedClasses === "dropdown") {
-      this.setState({ fixedClasses: "dropdown show-dropdown open" });
+    if (this.state.fixedClasses === 'dropdown') {
+      this.setState({ fixedClasses: 'dropdown show-dropdown open' });
     } else {
-      this.setState({ fixedClasses: "dropdown" });
+      this.setState({ fixedClasses: 'dropdown' });
     }
   };
 
@@ -276,11 +280,11 @@ class Admin extends Component {
     if (
       window.innerWidth < 993 &&
       e.history.location.pathname !== e.location.pathname &&
-      document.documentElement.className.indexOf("nav-open") !== -1
+      document.documentElement.className.indexOf('nav-open') !== -1
     ) {
-      document.documentElement.classList.toggle("nav-open");
+      document.documentElement.classList.toggle('nav-open');
     }
-    if (e.history.action === "PUSH") {
+    if (e.history.action === 'PUSH') {
       //console.log('aqui PUSH');
       //document.documentElement.scrollTop = 0;
       //document.scrollingElement.scrollTop = 0;
@@ -297,7 +301,7 @@ class Admin extends Component {
 
     if (this.state.keycloak) {
       if (this.state.authenticated)
-        return (
+        {return (
           <div className="wrapper">
             <NotificationSystem ref="notificationSystem" style={style} />
 
@@ -327,8 +331,8 @@ class Admin extends Component {
               <Footer />
             </div>
           </div>
-        );
-      else return <div>Unable to authenticate!</div>;
+        );}
+      else {return <div>Unable to authenticate!</div>;}
     }
     return (
       <div>

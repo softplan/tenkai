@@ -323,6 +323,7 @@ export class HelmVariables extends Component {
           if (this.props.desiredTag && this.props.desiredTag !== '') {
             if (this.state.containerTag !== this.props.desiredTag) {
               this.setState({
+                containerImage: response.data.image.repository,
                 containerTag: this.props.desiredTag,
                 selectedTag: {
                   value: this.props.desiredTag,
