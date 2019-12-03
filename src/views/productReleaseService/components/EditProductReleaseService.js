@@ -1,17 +1,22 @@
-import React, { Component } from "react";
-import { Card } from "components/Card/Card.jsx";
-import { FormGroup, ControlLabel, Button, Checkbox } from "react-bootstrap";
-import Select from "react-select";
-import { retrieveCharts, getTagsOfImage, getDockerImageFromHelmChart, getDefaultRepo } from "client-api/apicall.jsx";
-import axios from "axios";
-import TENKAI_API_URL from "env.js";
+import React, { Component } from 'react';
+import { Card } from 'components/Card/Card.jsx';
+import { FormGroup, ControlLabel, Button, Checkbox } from 'react-bootstrap';
+import Select from 'react-select';
+import {
+  retrieveCharts,
+  getTagsOfImage,
+  getDockerImageFromHelmChart,
+  getDefaultRepo
+} from 'client-api/apicall.jsx';
+import axios from 'axios';
+import TENKAI_API_URL from 'env.js';
 
-export class ProductReleaseServiceForm extends Component {
+export class EditProductReleaseService extends Component {
   state = {
     formData: {
-      productVersionId: "",
-      serviceName: "",
-      dockerImageTag: "",
+      productVersionId: '',
+      serviceName: '',
+      dockerImageTag: ''
     },
     charts: [],
     repositories: [],
@@ -38,7 +43,7 @@ export class ProductReleaseServiceForm extends Component {
 
   getRepos() {
     axios
-      .get(TENKAI_API_URL + "/repositories")
+      .get(TENKAI_API_URL + '/repositories')
       .then(response => {
         var arr = [];
         for (var x = 0; x < response.data.repositories.length; x++) {
@@ -58,7 +63,7 @@ export class ProductReleaseServiceForm extends Component {
       })
       .catch(error => {
         console.log(error.message);
-        this.props.handleNotification("general_fail", "error");
+        this.props.handleNotification('general_fail', 'error');
       });
   }
 
@@ -83,17 +88,17 @@ export class ProductReleaseServiceForm extends Component {
     if (self.props.editItem) {
       for (let x = 0; x < charts.length; x++) {
         let element = charts[x];
-        let chartNameVersion = element.name + " - " + element.chartVersion 
+        let chartNameVersion = element.name + ' - ' + element.chartVersion;
         if (chartNameVersion === self.props.editItem.serviceName) {
           const selectedChart = {
             value: chartNameVersion,
             label: chartNameVersion
-          }
+          };
           self.handleChartChange(selectedChart);
         }
       }
     }
-  }
+  };
 
   tagCallback = (self, tags) => {
     if (self.props.editItem) {
@@ -102,17 +107,17 @@ export class ProductReleaseServiceForm extends Component {
           const selectedTag = {
             value: tag.tag,
             label: tag.tag
-          }
+          };
           self.setState({ selectedTag });
         }
-      })
+      });
     }
-  }
+  };
 
   handleRepositoryChange = selectedRepository => {
     this.setState({ selectedRepository });
 
-    if(this.props.editMode) {
+    if (this.props.editMode) {
       retrieveCharts(this, selectedRepository.value, true, this.chartCallback);
       this.setState(() => ({
         allVersions: true
@@ -120,7 +125,6 @@ export class ProductReleaseServiceForm extends Component {
     } else {
       retrieveCharts(this, selectedRepository.value, false, this.chartCallback);
     }
-
   };
 
   async retrieveTagsOfImage(imageName, callback) {
@@ -134,7 +138,7 @@ export class ProductReleaseServiceForm extends Component {
       }
       this.setState({ tags: arr });
 
-      if(callback) {
+      if (callback) {
         callback(this, data.tags);
       }
     });
@@ -148,7 +152,7 @@ export class ProductReleaseServiceForm extends Component {
       chartVersion: selectedChart.version
     };
     getDockerImageFromHelmChart(this, payload, (self, dockerImage) => {
-      if(dockerImage) {
+      if (dockerImage) {
         this.retrieveTagsOfImage(dockerImage, this.tagCallback);
       }
     });
@@ -165,13 +169,18 @@ export class ProductReleaseServiceForm extends Component {
   };
 
   handleAllVersions = event => {
-    this.setState({allVersions: event.target.checked})
+    this.setState({ allVersions: event.target.checked });
     const { selectedRepository } = this.state;
-    retrieveCharts(this, selectedRepository.value, event.target.checked, this.chartCallback);
-  }
+    retrieveCharts(
+      this,
+      selectedRepository.value,
+      event.target.checked,
+      this.chartCallback
+    );
+  };
 
   getChartName(chartNameWithVersion) {
-    return chartNameWithVersion.split(' - ')[0]
+    return chartNameWithVersion.split(' - ')[0];
   }
 
   render() {
@@ -180,11 +189,11 @@ export class ProductReleaseServiceForm extends Component {
     const { selectedRepository } = this.state;
     const { selectedTag } = this.state;
     const { allVersions } = this.state;
-  
+
     return (
       <div>
         <Card
-          title={editMode ? "Edit Chart Association" : "New Chart Association"}
+          title={editMode ? 'Edit Chart Association' : 'New Chart Association'}
           content={
             <form>
               <FormGroup>
@@ -246,4 +255,4 @@ export class ProductReleaseServiceForm extends Component {
   }
 }
 
-export default ProductReleaseServiceForm;
+export default EditProductReleaseService;
