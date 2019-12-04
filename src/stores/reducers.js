@@ -6,6 +6,8 @@ import solution from './solution/reducer';
 import solutionChart from './solutionChart/reducer';
 import user from './user/reducer';
 import environment from './environment/reducer';
+import valueRule from './valueRule/reducer';
+import variableRule from './variableRule/reducer';
 
 export {
   dependency,
@@ -15,5 +17,7 @@ export {
   solution,
   solutionChart,
   user,
-  environment
+  environment,
+  valueRule,
+  variableRule
 };

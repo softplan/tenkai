@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Card } from 'components/Card/Card.jsx';
 import CButton from 'components/CustomButton/CustomButton.jsx';
+import { PageHeader } from 'react-bootstrap';
 
 export default class CardButton extends Component {
   render() {
@@ -9,14 +10,17 @@ export default class CardButton extends Component {
         title=""
         content={
           <form>
-            <CButton
-              className="pull-right"
-              variant="primary"
-              onClick={this.props.handleClick.bind(this)}
-            >
-              {this.props.buttonName}
-            </CButton>
-            <div className="clearfix" />
+            <h4>
+              {this.props.header}
+              <CButton
+                className="pull-right"
+                variant="primary"
+                onClick={this.props.handleClick.bind(this)}
+              >
+                {this.props.buttonName}
+              </CButton>
+              <div className="clearfix" />
+            </h4>
           </form>
         }
       />
