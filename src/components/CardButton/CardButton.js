@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Card } from 'components/Card/Card.jsx';
 import CButton from 'components/CustomButton/CustomButton.jsx';
-import { PageHeader } from 'react-bootstrap';
 
 export default class CardButton extends Component {
   render() {
