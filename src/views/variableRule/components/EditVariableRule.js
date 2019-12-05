@@ -1,14 +1,13 @@
-import React, { Component } from "react";
-import { Card } from "components/Card/Card.jsx";
-import { FormInputs } from "components/FormInputs/FormInputs.jsx";
-import { Button } from "react-bootstrap";
+import React, { Component } from 'react';
+import { Card } from 'components/Card/Card.jsx';
+import { FormInputs } from 'components/FormInputs/FormInputs.jsx';
+import { Button } from 'react-bootstrap';
 
-export class ProductForm extends Component {
+export class EditRule extends Component {
   state = {
     formData: {
-      ID: "",
-      team: "",
-      name: ""
+      ID: '',
+      name: ''
     }
   };
 
@@ -46,17 +45,17 @@ export class ProductForm extends Component {
     return (
       <div>
         <Card
-          title={editMode ? "Edit Product" : "New Product"}
+          title={editMode ? 'Edit Variable Rule' : 'New Variable Rule'}
           content={
             <form>
               <FormInputs
-                ncols={["col-md-6", "col-md-3"]}
+                ncols={['col-md-6']}
                 properties={[
                   {
-                    name: "name",
-                    label: "Product Name",
-                    type: "text",
-                    bsClass: "form-control",
+                    name: 'name',
+                    label: 'Name',
+                    type: 'text',
+                    bsClass: 'form-control',
                     value: this.state.formData.name,
                     onChange: this.handleChange
                   }
@@ -89,4 +88,4 @@ export class ProductForm extends Component {
   }
 }
 
-export default ProductForm;
+export default EditRule;

@@ -1,4 +1,4 @@
-import * as types from "./actionTypes";
+import * as types from './actionTypes';
 
 const initialState = {
   productReleases: [],
@@ -25,6 +25,8 @@ export default function reduce(state = initialState, action = {}) {
 
     case types.CREATE_PRODUCT_RELEASE_BEGIN:
     case types.EDIT_PRODUCT_RELEASE_BEGIN:
+    case types.LOCK_PRODUCT_RELEASE_BEGIN:
+    case types.UNLOCK_PRODUCT_RELEASE_BEGIN:
       return {
         ...state,
         loadingSave: true,
@@ -35,6 +37,8 @@ export default function reduce(state = initialState, action = {}) {
     case types.DELETE_PRODUCT_RELEASE_ERROR:
     case types.CREATE_PRODUCT_RELEASE_ERROR:
     case types.EDIT_PRODUCT_RELEASE_ERROR:
+    case types.LOCK_PRODUCT_RELEASE_ERROR:
+    case types.UNLOCK_PRODUCT_RELEASE_ERROR:
       return {
         ...state,
         loading: false,
@@ -47,6 +51,8 @@ export default function reduce(state = initialState, action = {}) {
     case types.DELETE_PRODUCT_RELEASE_SUCCESS:
     case types.CREATE_PRODUCT_RELEASE_SUCCESS:
     case types.EDIT_PRODUCT_RELEASE_SUCCESS:
+    case types.LOCK_PRODUCT_RELEASE_SUCCESS:
+    case types.UNLOCK_PRODUCT_RELEASE_SUCCESS:
       return {
         ...state,
         loading: false,

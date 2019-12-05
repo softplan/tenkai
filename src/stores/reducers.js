@@ -4,6 +4,10 @@ import productRelease from './productRelease/reducer';
 import productReleaseService from './productReleaseService/reducer';
 import solution from './solution/reducer';
 import solutionChart from './solutionChart/reducer';
+import user from './user/reducer';
+import environment from './environment/reducer';
+import valueRule from './valueRule/reducer';
+import variableRule from './variableRule/reducer';
 
 export {
   dependency,
@@ -11,5 +15,9 @@ export {
   productRelease,
   productReleaseService,
   solution,
-  solutionChart
+  solutionChart,
+  user,
+  environment,
+  valueRule,
+  variableRule
 };

@@ -1,5 +1,5 @@
-import React, { Component } from "react";
-import { Card } from "components/Card/Card.jsx";
+import React, { Component } from 'react';
+import { Card } from 'components/Card/Card.jsx';
 import {
   Row,
   Col,
@@ -8,36 +8,36 @@ import {
   ButtonToolbar,
   ControlLabel,
   FormControl
-} from "react-bootstrap";
-import axios from "axios";
-import ArrayVariable from "components/Deployment/ArrayVariable.jsx";
-import IstioVariable from "./IstioVariable";
-import TENKAI_API_URL from "env.js";
-import { ConfigMap } from "components/Deployment/ConfigMap.jsx";
-import Button from "components/CustomButton/CustomButton.jsx";
-import { CanaryCard } from "components/Deployment/CanaryCard.jsx";
-import { getTagsOfImage, retrieveSettings } from "client-api/apicall.jsx";
-import Select from "react-select";
+} from 'react-bootstrap';
+import axios from 'axios';
+import ArrayVariable from 'components/Deployment/ArrayVariable.jsx';
+import IstioVariable from './IstioVariable';
+import TENKAI_API_URL from 'env.js';
+import { ConfigMap } from 'components/Deployment/ConfigMap.jsx';
+import Button from 'components/CustomButton/CustomButton.jsx';
+import { CanaryCard } from 'components/Deployment/CanaryCard.jsx';
+import { getTagsOfImage, retrieveSettings } from 'client-api/apicall.jsx';
+import Select from 'react-select';
 
 export class HelmVariables extends Component {
   state = {
-    chartName: "",
-    chartVersion: "",
+    chartName: '',
+    chartVersion: '',
     variables: {},
     values: {},
-    defaultApiPath: "",
+    defaultApiPath: '',
     injectIstioCar: true,
     enableVirtualService: true,
-    containerImage: "",
-    containerTag: "",
+    containerImage: '',
+    containerTag: '',
     selectedTag: {},
     hosts: {},
     hostCount: 0,
-    configMapChart: "",
-    simpleChart: "",
-    canaryChart: "",
+    configMapChart: '',
+    simpleChart: '',
+    canaryChart: '',
     canaryShowing: false,
-    releaseName: "",
+    releaseName: '',
     dontCreateService: false,
     applyConfigMap: false,
     tags: []
@@ -47,26 +47,26 @@ export class HelmVariables extends Component {
     super(props);
 
     let data = [];
-    data.push("commonValuesConfigMapChart");
-    data.push("commonVariablesConfigMapChart");
-    data.push("canaryChart");
+    data.push('commonValuesConfigMapChart');
+    data.push('commonVariablesConfigMapChart');
+    data.push('canaryChart');
 
     retrieveSettings({ list: data }, this, (result, self) => {
-      let vCommonValuesConfigMapChart = "";
-      let vCommonVariablesConfigMapChart = "";
-      let vCanaryChart = "";
+      let vCommonValuesConfigMapChart = '';
+      let vCommonVariablesConfigMapChart = '';
+      let vCanaryChart = '';
 
       for (let x = 0; x < result.List.length; x++) {
         let field = result.List[x].name;
         let value = result.List[x].value;
 
-        if (field === "commonValuesConfigMapChart") {
+        if (field === 'commonValuesConfigMapChart') {
           vCommonValuesConfigMapChart = value;
         } else {
-          if (field === "commonVariablesConfigMapChart") {
+          if (field === 'commonVariablesConfigMapChart') {
             vCommonVariablesConfigMapChart = value;
           } else {
-            if (field === "canaryChart") {
+            if (field === 'canaryChart') {
               vCanaryChart = value;
             }
           }
@@ -84,12 +84,12 @@ export class HelmVariables extends Component {
     this.state.chartVersion = props.chartVersion;
 
     let scope = this.state.chartName;
-    var n = scope.indexOf("/");
+    var n = scope.indexOf('/');
     let releaseName = scope.substring(n + 1);
     this.state.releaseName = releaseName;
 
     if (this.props.canary) {
-      this.state.releaseName = this.state.releaseName + "-beta";
+      this.state.releaseName = this.state.releaseName + '-beta';
       this.state.dontCreateService = true;
       this.state.canaryShowing = true;
     }
@@ -108,7 +108,7 @@ export class HelmVariables extends Component {
         item = dbArray[element];
       }
     } else {
-      item = { name: "", value: "" };
+      item = { name: '', value: '' };
     }
     dbArray.push(item);
     this.setState(state => ({
@@ -139,6 +139,7 @@ export class HelmVariables extends Component {
   };
 
   save(callbackFunction) {
+    console.log('save ' + this.props.envId);
     const scope = this.state.chartName;
     const environmentId = parseInt(this.props.envId);
     let payload = { data: [] };
@@ -157,38 +158,38 @@ export class HelmVariables extends Component {
 
     payload.data.push({
       scope: scope,
-      name: "istio.enabled",
-      value: this.state.injectIstioCar ? "true" : "false",
+      name: 'istio.enabled',
+      value: this.state.injectIstioCar ? 'true' : 'false',
       environmentId: environmentId
     });
     payload.data.push({
       scope: scope,
-      name: "istio.virtualservices.enabled",
-      value: this.state.enableVirtualService ? "true" : "false",
+      name: 'istio.virtualservices.enabled',
+      value: this.state.enableVirtualService ? 'true' : 'false',
       environmentId: environmentId
     });
     payload.data.push({
       scope: scope,
-      name: "istio.virtualservices.apiPath",
+      name: 'istio.virtualservices.apiPath',
       value: this.state.defaultApiPath,
       environmentId: environmentId
     });
     payload.data.push({
       scope: scope,
-      name: "image.repository",
+      name: 'image.repository',
       value: this.state.containerImage,
       environmentId: environmentId
     });
     payload.data.push({
       scope: scope,
-      name: "image.tag",
+      name: 'image.tag',
       value: this.state.containerTag,
       environmentId: environmentId
     });
     payload.data.push({
       scope: scope,
-      name: "service.apply",
-      value: this.state.dontCreateService ? "false" : "true",
+      name: 'service.apply',
+      value: this.state.dontCreateService ? 'false' : 'true',
       environmentId: environmentId
     });
 
@@ -206,7 +207,7 @@ export class HelmVariables extends Component {
     let data = payload.data;
 
     axios
-      .post(TENKAI_API_URL + "/saveVariableValues", { data })
+      .post(TENKAI_API_URL + '/saveVariableValues', { data })
       .then(res => {
         if (this.state.applyConfigMap && this.refs.hConfigMap !== undefined) {
           this.refs.hConfigMap.save(data => {
@@ -234,18 +235,19 @@ export class HelmVariables extends Component {
           installPayload.name = this.state.releaseName;
           installPayload.chart = scope;
           installPayload.environmentId = environmentId;
-          installPayload.chartVersion = this.state.chartVersion
+          installPayload.chartVersion = this.state.chartVersion;
           list.push(installPayload);
           callbackFunction(list);
         }
       })
       .catch(error => {
-        this.props.handleNotification("general_fail", "error");
-        console.log("Error saveVariableValues: " + error.message);
+        this.props.handleNotification('general_fail', 'error');
+        console.log('Error saveVariableValues: ' + error.message);
       });
   }
 
   async retrieveTagsOfImage(imageName) {
+    console.log('ImageName: ' + imageName);
     getTagsOfImage(this, imageName, (self, data) => {
       var arr = [];
       if (data.tags != null) {
@@ -262,7 +264,7 @@ export class HelmVariables extends Component {
     this.props.handleLoading(true);
     this.setState({ values: {} }, () => {
       axios
-        .post(TENKAI_API_URL + "/listVariables", {
+        .post(TENKAI_API_URL + '/listVariables', {
           environmentId: environmentId,
           scope: this.state.chartName
         })
@@ -273,25 +275,25 @@ export class HelmVariables extends Component {
 
           if (
             this.state.applyConfigMap &&
-            this.refs["hConfigMap"] !== undefined
+            this.refs['hConfigMap'] !== undefined
           ) {
-            this.refs["hConfigMap"].listVariables(environmentId);
+            this.refs['hConfigMap'].listVariables(environmentId);
           }
           this.props.handleLoading(false);
         })
         .catch(error => {
           this.props.handleLoading(false);
           console.log(error.message);
-          this.props.handleNotification("general_fail", "error");
+          this.props.handleNotification('general_fail', 'error');
         });
     });
   }
 
   async hasConfigMap(chartName, chartVersion) {
     await axios
-      .post(TENKAI_API_URL + "/hasConfigMap", { chartName, chartVersion })
+      .post(TENKAI_API_URL + '/hasConfigMap', { chartName, chartVersion })
       .then(response => {
-        if (response.data.result === "true") {
+        if (response.data.result === 'true') {
           this.setState({ applyConfigMap: true });
         } else {
           this.setState({ applyConfigMap: false });
@@ -305,7 +307,7 @@ export class HelmVariables extends Component {
     this.props.handleLoading(true);
 
     await axios
-      .post(TENKAI_API_URL + "/getChartVariables", { chartName, chartVersion })
+      .post(TENKAI_API_URL + '/getChartVariables', { chartName, chartVersion })
       .then(response => {
         this.props.handleLoading(false);
         if (response.data.istio != null) {
@@ -318,9 +320,10 @@ export class HelmVariables extends Component {
         }
 
         if (response.data.image) {
-          if (this.props.desiredTag && this.props.desiredTag !== "") {
+          if (this.props.desiredTag && this.props.desiredTag !== '') {
             if (this.state.containerTag !== this.props.desiredTag) {
               this.setState({
+                containerImage: response.data.image.repository,
                 containerTag: this.props.desiredTag,
                 selectedTag: {
                   value: this.props.desiredTag,
@@ -339,13 +342,15 @@ export class HelmVariables extends Component {
                 }
               },
               () => {
-                this.retrieveTagsOfImage(this.state.containerImage);
+                if (this.state.containerImage !== '') {
+                  this.retrieveTagsOfImage(this.state.containerImage);
+                }
               }
             );
           }
         }
 
-        if (response.data.app != null) {
+        if (response.data.app !== null) {
           this.setState({ variables: response.data.app });
         } else {
           this.setState({ variables: [] });
@@ -356,7 +361,7 @@ export class HelmVariables extends Component {
 
         this.props.handleLoading(true);
         axios
-          .post(TENKAI_API_URL + "/listVariables", {
+          .post(TENKAI_API_URL + '/listVariables', {
             environmentId: environmentId,
             scope: scope
           })
@@ -368,19 +373,19 @@ export class HelmVariables extends Component {
           })
           .catch(error => {
             console.log(error.message);
-            this.props.handleNotification("general_fail", "error");
+            this.props.handleNotification('general_fail', 'error');
             this.props.handleLoading(false);
           });
       })
       .catch(error => {
         this.props.handleLoading(false);
-        console.log("Error here: " + JSON.stringify(error));
-        this.props.handleNotification("general_fail", "error");
+        console.log('Error here: ' + JSON.stringify(error));
+        this.props.handleNotification('general_fail', 'error');
       });
   }
 
   getRootName(name) {
-    let i = name.indexOf("[");
+    let i = name.indexOf('[');
     let value = name.substring(0, i);
     return value;
   }
@@ -388,16 +393,16 @@ export class HelmVariables extends Component {
   fillImageFields(self, variables) {
     variables.forEach((value, index, array) => {
       switch (value.name) {
-        case "image.repository":
-          if (this.state.containerImage !== value.value) {
+        case 'image.repository':
+          if (this.state.containerImage !== value.value && value.value !== '') {
             this.setState({ containerImage: value.value }, () => {
               this.retrieveTagsOfImage(this.state.containerImage);
             });
           }
           break;
-        case "image.tag":
-          console.log("desiredTag=" + this.props.desiredTag);
-          if (this.props.desiredTag && this.props.desiredTag !== "") {
+        case 'image.tag':
+          console.log('desiredTag=' + this.props.desiredTag);
+          if (this.props.desiredTag && this.props.desiredTag !== '') {
             if (this.state.containerTag !== this.props.desiredTag) {
               this.setState({
                 containerTag: this.props.desiredTag,
@@ -426,27 +431,27 @@ export class HelmVariables extends Component {
   fillIstioFields(self, variables) {
     variables.forEach((value, index, array) => {
       switch (value.name) {
-        case "istio.enabled":
+        case 'istio.enabled':
           this.setState({
-            injectIstioCar: value.value === "true" ? true : false
+            injectIstioCar: value.value === 'true' ? true : false
           });
           break;
-        case "service.apply":
+        case 'service.apply':
           this.setState({
             dontCreateService:
-              value.value === "true" && !this.props.canary ? false : true
+              value.value === 'true' && !this.props.canary ? false : true
           });
           break;
-        case "istio.virtualservices.enabled":
+        case 'istio.virtualservices.enabled':
           this.setState({
-            enableVirtualService: value.value === "true" ? true : false
+            enableVirtualService: value.value === 'true' ? true : false
           });
           break;
-        case "istio.virtualservices.apiPath":
+        case 'istio.virtualservices.apiPath':
           this.setState({ defaultApiPath: value.value });
           break;
         default:
-          if (value.name.indexOf("istio.virtualservices.hosts[") > -1) {
+          if (value.name.indexOf('istio.virtualservices.hosts[') > -1) {
             let name = value.name;
             let varValue = value.value;
             this.onHostChange(name, varValue);
@@ -463,7 +468,7 @@ export class HelmVariables extends Component {
 
     variables.forEach((value, index, array) => {
       valuesMap[value.name] = value.value;
-      if (value.name.indexOf("].") > -1) {
+      if (value.name.indexOf('].') > -1) {
         if (dynamicEntries[this.getRootName(value.name)] !== undefined) {
           dynamicEntries[this.getRootName(value.name)]++;
         } else {
@@ -520,8 +525,8 @@ export class HelmVariables extends Component {
   }
 
   addHost() {
-    let name = "istio.virtualservices.hosts[" + this.state.hostCount + "]";
-    this.onHostChange(name, "");
+    let name = 'istio.virtualservices.hosts[' + this.state.hostCount + ']';
+    this.onHostChange(name, '');
     this.setState({
       hostCount: this.state.hostCount + 1
     });
@@ -537,9 +542,9 @@ export class HelmVariables extends Component {
   }
 
   getConfigMapName() {
-    let configMapName = this.state.releaseName + "-gcm";
+    let configMapName = this.state.releaseName + '-gcm';
     if (this.props.canary) {
-      configMapName = configMapName + "-beta";
+      configMapName = configMapName + '-beta';
     }
     return configMapName;
   }
@@ -560,7 +565,7 @@ export class HelmVariables extends Component {
 
   render() {
     const items = Object.keys(this.state.variables).map(key => {
-      if (typeof this.state.variables[key] == "object") {
+      if (typeof this.state.variables[key] == 'object') {
         return (
           <ArrayVariable
             key={key}
@@ -572,8 +577,8 @@ export class HelmVariables extends Component {
           />
         );
       } else {
-        const value = this.state.values[key] || "";
-        const keyValue = "" + this.state.variables[key];
+        const value = this.state.values[key] || '';
+        const keyValue = '' + this.state.variables[key];
 
         return (
           <tr key={key}>
@@ -585,7 +590,7 @@ export class HelmVariables extends Component {
                 value={value}
                 onChange={this.onInputChange}
                 type="text"
-                style={{ width: "100%" }}
+                style={{ width: '100%' }}
               />
             </td>
           </tr>
@@ -622,10 +627,10 @@ export class HelmVariables extends Component {
                         onClick={this.showHideCanaryOptions.bind(this)}
                         bsSize="sm"
                       >
-                        <i className="pe-7s-magic-wand" />{" "}
+                        <i className="pe-7s-magic-wand" />{' '}
                         {this.state.canaryShowing
-                          ? "Hide Advanved Option"
-                          : "Show Advanced Options"}
+                          ? 'Hide Advanved Option'
+                          : 'Show Advanced Options'}
                       </Button>
                     </ButtonToolbar>
 

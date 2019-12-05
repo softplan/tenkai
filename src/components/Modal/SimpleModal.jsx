@@ -1,5 +1,5 @@
-import React from "react";
-import { Modal, Button } from "react-bootstrap";
+import React from 'react';
+import { Modal, Button } from 'react-bootstrap';
 
 const SimpleModal = props => (
   <Modal
@@ -14,10 +14,16 @@ const SimpleModal = props => (
       <p>{props.message}</p>
     </Modal.Body>
     <Modal.Footer>
-      <Button style={{ marginBottom: 0 }} onClick={props.handleConfirmDelete}>
+      <Button
+        bsStyle="danger"
+        style={{ marginBottom: 0 }}
+        onClick={props.handleConfirmDelete}
+      >
         Yes
       </Button>
-      <Button onClick={props.handleConfirmDeleteModalClose}>No</Button>
+      <Button bsStyle="primary" onClick={props.handleConfirmDeleteModalClose}>
+        No
+      </Button>
     </Modal.Footer>
   </Modal>
 );

@@ -9,30 +9,46 @@ import {
   FormGroup,
   ControlLabel
 } from 'react-bootstrap';
+import queryString from 'query-string';
 
 import Button from 'components/CustomButton/CustomButton.jsx';
 import { Card } from 'components/Card/Card.jsx';
-import CButton from 'components/CustomButton/CustomButton.jsx';
-import UserForm from 'components/Users/UserForm.jsx';
+import EditRule from 'views/valueRule/components/EditValueRule';
 import SimpleModal from 'components/Modal/SimpleModal.jsx';
 
-import * as userActions from 'stores/user/actions';
-import * as userSelectors from 'stores/user/reducer';
+import * as valueRuleActions from 'stores/valueRule/actions';
+import * as valueRuleSelectors from 'stores/valueRule/reducer';
+import CardButton from 'components/CardButton/CardButton';
 
-class Users extends Component {
-  state = {
-    showInsertUpdateForm: false,
-    inputFilter: '',
-    showConfirmDeleteModal: false,
-    itemToDelete: {}
-  };
+class Rule extends Component {
+  constructor(props) {
+    super(props);
+
+    const values = queryString.parse(props.location.search);
+    this.state = {
+      variableRuleId: values.variableRuleId,
+      showInsertUpdateForm: false,
+      inputFilter: '',
+      showConfirmDeleteModal: false,
+      itemToDelete: {}
+    };
+  }
 
   componentDidMount() {
-    this.props.dispatch(userActions.allUsers());
+    this.props.dispatch(
+      valueRuleActions.allValueRules(this.state.variableRuleId)
+    );
+    this.props.dispatch(valueRuleActions.allRuleTypes());
   }
 
   onSaveClick(data) {
-    this.props.dispatch(userActions.saveUser(data));
+    data.variableRuleId = parseInt(this.state.variableRuleId);
+
+    if (this.state.editMode) {
+      this.props.dispatch(valueRuleActions.editValueRule(data));
+    } else {
+      this.props.dispatch(valueRuleActions.createValueRule(data));
+    }
 
     this.setState({
       showInsertUpdateForm: false,
@@ -41,33 +57,57 @@ class Users extends Component {
     });
   }
 
+  onClickNew() {
+    this.setState({
+      showInsertUpdateForm: true,
+      editItem: {},
+      editMode: false
+    });
+  }
+
   handleConfirmDelete() {
-    this.props.dispatch(userActions.deleteUser(this.state.itemToDelete.ID));
+    this.props.dispatch(
+      valueRuleActions.deleteValueRule(
+        this.state.itemToDelete.ID,
+        parseInt(this.state.variableRuleId)
+      )
+    );
 
     this.setState({ showConfirmDeleteModal: false, itemToDelete: {} });
   }
 
+  onEdit = item => {
+    this.setState({
+      showInsertUpdateForm: true,
+      editItem: item,
+      editMode: true
+    });
+    window.scrollTo(0, 0);
+  };
+
+  getHeader() {
+    const parent = this.props.variableRules.find(
+      e => e.ID === parseInt(this.state.variableRuleId)
+    );
+    return parent != null ? `Variable rule name: "${parent.name}"` : '';
+  }
+
   render() {
-    const items = this.props.users
+    const items = this.props.rules
       .filter(
         d =>
           this.state.inputFilter === '' ||
-          d.email.includes(this.state.inputFilter)
+          d.type.includes(this.state.inputFilter)
       )
       .map((item, key) => (
         <tr key={key}>
           <td>{item.ID}</td>
-          <td>{item.email}</td>
+          <td>{item.type}</td>
+          <td>{item.value}</td>
           <td>
             <Button
               className="link-button"
-              onClick={() =>
-                this.setState({
-                  showInsertUpdateForm: true,
-                  editItem: item,
-                  editMode: true
-                })
-              }
+              onClick={this.onEdit.bind(this, item)}
             >
               <i className="pe-7s-edit" />
             </Button>
@@ -75,7 +115,7 @@ class Users extends Component {
           <td>
             <Button
               className="link-button"
-              onClick={e =>
+              onClick={() =>
                 this.setState({ itemToDelete: item }, () => {
                   this.setState({ showConfirmDeleteModal: true });
                 })
@@ -95,34 +135,18 @@ class Users extends Component {
             this.setState({ showConfirmDeleteModal: false, itemToDelete: {} })
           }
           title="Confirm"
-          subTitle="Delete user"
-          message="Are you sure you want to delete this user?"
+          subTitle="Delete rule"
+          message="Are you sure you want to delete this rule?"
           handleConfirmDelete={this.handleConfirmDelete.bind(this)}
         ></SimpleModal>
 
         <Grid fluid>
           <Row>
             <Col md={12}>
-              <Card
-                title=""
-                content={
-                  <form>
-                    <CButton
-                      className="pull-right"
-                      variant="primary"
-                      onClick={() =>
-                        this.setState({
-                          showInsertUpdateForm: true,
-                          editItem: {},
-                          editMode: false
-                        })
-                      }
-                    >
-                      New User
-                    </CButton>
-                    <div className="clearfix" />
-                  </form>
-                }
+              <CardButton
+                buttonName="New Rule"
+                handleClick={this.onClickNew.bind(this)}
+                header={this.getHeader()}
               />
             </Col>
           </Row>
@@ -130,10 +154,11 @@ class Users extends Component {
           <Row>
             <Col md={12}>
               {this.state.showInsertUpdateForm ? (
-                <UserForm
+                <EditRule
                   editMode={this.state.editMode}
                   editItem={this.state.editItem}
                   saveClick={this.onSaveClick.bind(this)}
+                  ruleTypes={this.props.ruleTypes}
                   cancelClick={() =>
                     this.setState({
                       showInsertUpdateForm: false,
@@ -149,16 +174,18 @@ class Users extends Component {
           <Row>
             <Col md={12}>
               <Card
-                title="Users"
+                title="Rules"
                 content={
                   <form>
                     <div className="col-md-8">
                       <FormGroup>
-                        <ControlLabel>User Search</ControlLabel>
+                        <ControlLabel>Rule Search</ControlLabel>
                         <FormControl
                           value={this.state.inputFilter}
                           onChange={e =>
-                            this.setState({ inputFilter: e.target.value })
+                            this.setState({
+                              inputFilter: e.target.value
+                            })
                           }
                           style={{ width: '100%' }}
                           type="text"
@@ -173,7 +200,8 @@ class Users extends Component {
                         <thead>
                           <tr>
                             <th>#</th>
-                            <th>Email</th>
+                            <th>Type</th>
+                            <th>Value</th>
                             <th>Edit</th>
                             <th>Delete</th>
                           </tr>
@@ -193,9 +221,11 @@ class Users extends Component {
 }
 
 const mapStateToProps = state => ({
-  loading: userSelectors.getLoading(state),
-  users: userSelectors.getUsers(state),
-  error: userSelectors.getError(state)
+  loading: valueRuleSelectors.getLoading(state),
+  rules: valueRuleSelectors.getRules(state),
+  ruleTypes: valueRuleSelectors.getRuleTypes(state),
+  variableRules: valueRuleSelectors.getVariableRules(state),
+  error: valueRuleSelectors.getError(state)
 });
 
-export default connect(mapStateToProps)(Users);
+export default connect(mapStateToProps)(Rule);

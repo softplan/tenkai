@@ -1,13 +1,13 @@
-import React, { Component } from "react";
-import { Card } from "components/Card/Card.jsx";
-import { FormInputs } from "components/FormInputs/FormInputs.jsx";
-import { Button, Row, Col, Checkbox } from "react-bootstrap";
+import React, { Component } from 'react';
+import { Card } from 'components/Card/Card.jsx';
+import { FormInputs } from 'components/FormInputs/FormInputs.jsx';
+import { Button, Row, Col, Checkbox } from 'react-bootstrap';
 
-export class ProductReleaseForm extends Component {
+export class EditProductRelease extends Component {
   state = {
     formData: {
-      ID: "",
-      version: "",
+      ID: '',
+      version: '',
       copyLatestRelease: false
     }
   };
@@ -46,8 +46,8 @@ export class ProductReleaseForm extends Component {
         ...state.formData,
         copyLatestRelease: checked
       }
-    }))
-  }
+    }));
+  };
 
   saveClick = event => {
     event.preventDefault();
@@ -61,19 +61,19 @@ export class ProductReleaseForm extends Component {
     return (
       <div>
         <Card
-          title={editMode ? "Edit Product Release" : "New Product Release"}
+          title={editMode ? 'Edit Product Release' : 'New Product Release'}
           content={
             <form>
               <Row>
                 <Col md={12}>
                   <FormInputs
-                    ncols={["col-md-3"]}
+                    ncols={['col-md-3']}
                     properties={[
                       {
-                        name: "version",
-                        label: "Version",
-                        type: "text",
-                        bsClass: "form-control",
+                        name: 'version',
+                        label: 'Version',
+                        type: 'text',
+                        bsClass: 'form-control',
                         value: this.state.formData.version,
                         onChange: this.handleChange
                       }
@@ -124,4 +124,4 @@ export class ProductReleaseForm extends Component {
   }
 }
 
-export default ProductReleaseForm;
+export default EditProductRelease;

@@ -1,5 +1,5 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import {
   Grid,
   Row,
@@ -8,21 +8,21 @@ import {
   Table,
   FormGroup,
   ControlLabel
-} from "react-bootstrap";
+} from 'react-bootstrap';
 
-import Button from "components/CustomButton/CustomButton.jsx";
-import { Card } from "components/Card/Card.jsx";
-import CButton from "components/CustomButton/CustomButton.jsx";
-import ProductForm from "components/Forms/ProductForm.jsx";
-import SimpleModal from "components/Modal/SimpleModal.jsx";
+import Button from 'components/CustomButton/CustomButton.jsx';
+import { Card } from 'components/Card/Card.jsx';
+import EditProduct from 'views/product/components/EditProduct';
+import SimpleModal from 'components/Modal/SimpleModal.jsx';
 
-import * as productActions from "stores/product/actions";
-import * as productSelectors from "stores/product/reducer";
+import * as productActions from 'stores/product/actions';
+import * as productSelectors from 'stores/product/reducer';
+import CardButton from 'components/CardButton/CardButton';
 
 class Product extends Component {
   state = {
     showInsertUpdateForm: false,
-    inputFilter: "",
+    inputFilter: '',
     showConfirmDeleteModal: false,
     itemToDelete: {}
   };
@@ -45,6 +45,14 @@ class Product extends Component {
     });
   }
 
+  onClickNew() {
+    this.setState({
+      showInsertUpdateForm: true,
+      editItem: {},
+      editMode: false
+    });
+  }
+
   handleConfirmDelete() {
     this.props.dispatch(
       productActions.deleteProduct(this.state.itemToDelete.ID)
@@ -57,7 +65,7 @@ class Product extends Component {
     const items = this.props.products
       .filter(
         d =>
-          this.state.inputFilter === "" ||
+          this.state.inputFilter === '' ||
           d.name.includes(this.state.inputFilter)
       )
       .map((item, key) => (
@@ -96,8 +104,8 @@ class Product extends Component {
               className="link-button"
               onClick={() =>
                 this.props.history.push({
-                  pathname: "/admin/product-version",
-                  search: "?productId=" + item.ID
+                  pathname: '/admin/product-version',
+                  search: '?productId=' + item.ID
                 })
               }
             >
@@ -123,26 +131,9 @@ class Product extends Component {
         <Grid fluid>
           <Row>
             <Col md={12}>
-              <Card
-                title=""
-                content={
-                  <form>
-                    <CButton
-                      className="pull-right"
-                      variant="primary"
-                      onClick={() =>
-                        this.setState({
-                          showInsertUpdateForm: true,
-                          editItem: {},
-                          editMode: false
-                        })
-                      }
-                    >
-                      New Product
-                    </CButton>
-                    <div className="clearfix" />
-                  </form>
-                }
+              <CardButton
+                buttonName="New Product"
+                handleClick={this.onClickNew.bind(this)}
               />
             </Col>
           </Row>
@@ -150,7 +141,7 @@ class Product extends Component {
           <Row>
             <Col md={12}>
               {this.state.showInsertUpdateForm ? (
-                <ProductForm
+                <EditProduct
                   editMode={this.state.editMode}
                   editItem={this.state.editItem}
                   saveClick={this.onSaveClick.bind(this)}
@@ -182,7 +173,7 @@ class Product extends Component {
                               inputFilter: e.target.value
                             })
                           }
-                          style={{ width: "100%" }}
+                          style={{ width: '100%' }}
                           type="text"
                           placeholder="Search using any field"
                           aria-label="Search using any field"

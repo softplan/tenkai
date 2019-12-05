@@ -1,4 +1,5 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import {
   Grid,
   Row,
@@ -6,21 +7,21 @@ import {
   FormControl,
   FormGroup,
   ControlLabel
-} from "react-bootstrap";
+} from 'react-bootstrap';
 
-import { Card } from "components/Card/Card.jsx";
-import CButton from "components/CustomButton/CustomButton.jsx";
-import EnvironmentForm from "components/Environments/EnvironmentForm.jsx";
-import SimpleModal from "components/Modal/SimpleModal.jsx";
-import EnvironmentCard from "components/Card/EnvironmentCard.jsx";
-import axios from "axios";
-import TENKAI_API_URL from "env.js";
+import { Card } from 'components/Card/Card.jsx';
+import CButton from 'components/CustomButton/CustomButton.jsx';
+import EnvironmentForm from 'components/Environments/EnvironmentForm.jsx';
+import SimpleModal from 'components/Modal/SimpleModal.jsx';
+import EnvironmentCard from 'components/Card/EnvironmentCard.jsx';
+
+import * as environmentActions from 'stores/environment/actions';
+import * as environmentSelectors from 'stores/environment/reducer';
 
 class Environments extends Component {
   state = {
     showInsertUpdateForm: false,
-    envResult: { Envs: [] },
-    inputFilter: "",
+    inputFilter: '',
     showConfirmDeleteModal: false,
     showConfirmDuplicateModal: false,
     itemToDelete: {},
@@ -28,7 +29,7 @@ class Environments extends Component {
   };
 
   componentDidMount() {
-    this.getEnvironmentList();
+    this.props.dispatch(environmentActions.allEnvironments());
   }
 
   handleConfirmDeleteModalClose() {
@@ -44,9 +45,7 @@ class Environments extends Component {
   }
 
   handleConfirmDuplicateModalShow() {
-    this.setState({ showConfirmDuplicateModal: true }, () => {
-      console.log("showing modal");
-    });
+    this.setState({ showConfirmDuplicateModal: true });
   }
 
   onChangeFilterHandler(e) {
@@ -55,30 +54,15 @@ class Environments extends Component {
     });
   }
 
-  getEnvironmentList() {
-    axios
-      .get(TENKAI_API_URL + "/environments")
-      .then(response => this.setState({ envResult: response.data }))
-      .catch(error => {
-        console.log(error);
-        if (error.response !== undefined) {
-          this.props.handleNotification("custom", "error", error.response.data);
-        } else {
-          this.props.handleNotification("deployment_fail", "error");
-        }
-      });
-  }
-
   navigateToEnvironmentVariables(id, group, name) {
     this.props.history.push({
-      pathname: "/admin/environments-envvars",
-      search: "?id=" + id,
+      pathname: '/admin/environments-envvars',
+      search: '?id=' + id,
       state: { item: { group: group, name: name } }
     });
   }
 
   navigateToEditEnvironment(item) {
-    console.log("navigateToEditEnvironment");
     this.setState(() => ({
       showInsertUpdateForm: true,
       editItem: item,
@@ -105,12 +89,16 @@ class Environments extends Component {
 
   onSaveClick(data) {
     if (this.state.editMode) {
-      console.log("edit");
-      this.save(data, "/environments/edit");
+      this.props.dispatch(environmentActions.editEnvironment(data));
     } else {
-      console.log("new");
-      this.save(data, "/environments");
+      this.props.dispatch(environmentActions.createEnvironment(data));
     }
+
+    this.setState({
+      showInsertUpdateForm: false,
+      editItem: {},
+      editMode: false
+    });
   }
 
   duplicateEnvironment(item) {
@@ -121,49 +109,10 @@ class Environments extends Component {
   }
 
   handleConfirmDuplicate() {
-    this.props.handleLoading(true);
-    if (this.state.itemToDuplicate !== undefined) {
-      axios
-        .get(
-          TENKAI_API_URL +
-            "/environments/duplicate/" +
-            this.state.itemToDuplicate.ID
-        )
-        .then(res => {
-          this.props.handleLoading(false);
-          this.props.handleNotification("custom", "success", "Duplicated");
-          this.getEnvironmentList();
-        })
-        .catch(error => {
-          this.props.handleLoading(false);
-          this.props.handleNotification("general_fail", "error");
-        });
-    }
+    this.props.dispatch(
+      environmentActions.duplicateEnvironment(this.state.itemToDuplicate.ID)
+    );
     this.setState({ showConfirmDuplicateModal: false, itemToDuplicate: {} });
-  }
-
-  save(data, uri) {
-    this.props.handleLoading(true);
-    axios
-      .post(TENKAI_API_URL + uri, { data })
-      .then(res => {
-        this.setState({
-          envResult: { Envs: [...this.state.envResult.Envs, data] }
-        });
-        this.props.handleLoading(false);
-        this.props.handleNotification("custom", "success", "Saved");
-        this.getEnvironmentList();
-      })
-      .catch(error => {
-        console.log(error.message);
-        this.props.handleLoading(false);
-        this.props.handleNotification("general_fail", "error");
-      });
-    this.setState(() => ({
-      showInsertUpdateForm: false,
-      editItem: {},
-      editMode: false
-    }));
   }
 
   onDelete(item) {
@@ -173,72 +122,42 @@ class Environments extends Component {
   }
 
   handleConfirmDelete() {
-    this.props.handleLoading(true);
-    if (this.state.itemToDelete !== undefined) {
-      axios
-        .delete(
-          TENKAI_API_URL + "/environments/delete/" + this.state.itemToDelete.ID
-        )
-        .then(res => {
-          this.props.handleLoading(false);
-          this.props.handleNotification("custom", "success", "Deleted");
-          this.getEnvironmentList();
-        })
-        .catch(error => {
-          console.log(error.message);
-          this.props.handleLoading(false);
-          this.props.handleNotification("general_fail", "error");
-        });
-    }
+    this.props.dispatch(
+      environmentActions.deleteEnvironment(this.state.itemToDelete.ID)
+    );
     this.setState({ showConfirmDeleteModal: false, itemToDelete: {} });
   }
 
   onExport(item) {
-    axios
-      .get(TENKAI_API_URL + `/environments/export/${item.ID}`)
-      .then(function(response) {
-        console.log("aqui X");
-        console.log(response.data);
-
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement("a");
-        link.href = url;
-        link.setAttribute(
-          "download",
-          `environment_${item.group}_${item.name}.txt`
-        );
-        document.body.appendChild(link);
-        link.click();
-      })
-      .catch(function(error) {
-        console.log(error.message);
-        this.props.handleNotification("general_fail", "error");
-      });
+    this.props.dispatch(environmentActions.exportEnvironment(item));
   }
 
   render() {
-    const items = this.state.envResult.Envs.filter(
-      d =>
-        this.state.inputFilter === "" || d.name.includes(this.state.inputFilter)
-    ).map((item, key) => (
-      <EnvironmentCard
-        key={item.ID}
-        id={item.id}
-        keycloak={this.props.keycloak}
-        item={item}
-        group={item.group}
-        name={item.name}
-        clusterUri={item.cluster_uri}
-        namespace={item.namespace}
-        navigateToEditEnvironment={this.navigateToEditEnvironment.bind(this)}
-        navigateToEnvironmentVariables={this.navigateToEnvironmentVariables.bind(
-          this
-        )}
-        duplicateEnvironment={this.duplicateEnvironment.bind(this)}
-        onDelete={this.onDelete.bind(this)}
-        onExport={this.onExport.bind(this)}
-      />
-    ));
+    const items = this.props.environments
+      .filter(
+        d =>
+          this.state.inputFilter === '' ||
+          d.name.includes(this.state.inputFilter)
+      )
+      .map((item, key) => (
+        <EnvironmentCard
+          key={item.ID}
+          id={item.id}
+          keycloak={this.props.keycloak}
+          item={item}
+          group={item.group}
+          name={item.name}
+          clusterUri={item.cluster_uri}
+          namespace={item.namespace}
+          navigateToEditEnvironment={this.navigateToEditEnvironment.bind(this)}
+          navigateToEnvironmentVariables={this.navigateToEnvironmentVariables.bind(
+            this
+          )}
+          duplicateEnvironment={this.duplicateEnvironment.bind(this)}
+          onDelete={this.onDelete.bind(this)}
+          onExport={this.onExport.bind(this)}
+        />
+      ));
 
     return (
       <div className="content">
@@ -273,7 +192,7 @@ class Environments extends Component {
                   <form>
                     <CButton
                       disabled={
-                        !this.props.keycloak.hasRealmRole("tenkai-admin")
+                        !this.props.keycloak.hasRealmRole('tenkai-admin')
                       }
                       className="pull-right"
                       variant="primary"
@@ -315,7 +234,7 @@ class Environments extends Component {
                           <FormControl
                             value={this.state.inputFilter}
                             onChange={this.onChangeFilterHandler.bind(this)}
-                            style={{ width: "100%" }}
+                            style={{ width: '100%' }}
                             type="text"
                             placeholder="Search using any field"
                             aria-label="Search using any field"
@@ -337,4 +256,10 @@ class Environments extends Component {
   }
 }
 
-export default Environments;
+const mapStateToProps = state => ({
+  loading: environmentSelectors.getLoading(state),
+  environments: environmentSelectors.getEnvironments(state),
+  error: environmentSelectors.getError(state)
+});
+
+export default connect(mapStateToProps)(Environments);
