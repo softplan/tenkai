@@ -14,7 +14,7 @@ import SimpleModal from 'components/Modal/SimpleModal.jsx';
 
 import { Card } from 'components/Card/Card.jsx';
 import Button from 'components/CustomButton/CustomButton.jsx';
-import ProductReleaseServiceForm from 'components/Forms/ProductReleaseServiceForm.jsx';
+import EditProductReleaseService from 'views/productReleaseService/components/EditProductReleaseService';
 import queryString from 'query-string';
 
 import * as productReleaseServiceActions from 'stores/productReleaseService/actions';
@@ -286,7 +286,7 @@ class ProductReleaseService extends Component {
           <Row>
             <Col md={12}>
               {this.state.showInsertUpdateForm ? (
-                <ProductReleaseServiceForm
+                <EditProductReleaseService
                   editMode={this.state.editMode}
                   handleLoading={this.props.handleLoading}
                   handleNotification={this.props.handleNotification}

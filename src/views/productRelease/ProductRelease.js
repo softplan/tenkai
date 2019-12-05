@@ -4,20 +4,22 @@ import {
   Grid,
   Row,
   Col,
-  FormGroup,
-  ControlLabel,
   FormControl,
-  Table
+  Table,
+  FormGroup,
+  ControlLabel
 } from 'react-bootstrap';
+
+import Button from 'components/CustomButton/CustomButton.jsx';
+import { Card } from 'components/Card/Card.jsx';
+import EditProductRelease from 'views/productRelease/components/EditProductRelease';
 import SimpleModal from 'components/Modal/SimpleModal.jsx';
 
-import { Card } from 'components/Card/Card.jsx';
-import Button from 'components/CustomButton/CustomButton.jsx';
-import ProductReleaseForm from 'components/Forms/ProductReleaseForm.jsx';
 import queryString from 'query-string';
 
 import * as productReleaseActions from 'stores/productRelease/actions';
 import * as productReleaseSelectors from 'stores/productRelease/reducer';
+import CardButton from 'components/CardButton/CardButton';
 
 class ProductRelease extends Component {
   constructor(props) {
@@ -93,6 +95,10 @@ class ProductRelease extends Component {
     return '';
   }
 
+  onClickNew() {
+    this.setState({ showInsertUpdateForm: true });
+  }
+
   render() {
     const items = this.props.productReleases
       .filter(
@@ -163,23 +169,9 @@ class ProductRelease extends Component {
         <Grid fluid>
           <Row>
             <Col md={12}>
-              <Card
-                title=""
-                content={
-                  <form>
-                    <h2>{this.state.productName}</h2>
-                    <Button
-                      className="pull-right"
-                      variant="primary"
-                      onClick={() =>
-                        this.setState({ showInsertUpdateForm: true })
-                      }
-                    >
-                      New Release
-                    </Button>
-                    <div className="clearfix" />
-                  </form>
-                }
+              <CardButton
+                buttonName="New Release"
+                handleClick={this.onClickNew.bind(this)}
               />
             </Col>
           </Row>
@@ -187,7 +179,7 @@ class ProductRelease extends Component {
           <Row>
             <Col md={12}>
               {this.state.showInsertUpdateForm ? (
-                <ProductReleaseForm
+                <EditProductRelease
                   editMode={this.state.editMode}
                   handleLoading={this.props.handleLoading}
                   editItem={this.state.editItem}
