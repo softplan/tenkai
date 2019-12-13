@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Card } from "components/Card/Card.jsx";
+import { CardTenkai } from "components/Card/CardTenkai.jsx";
 import { FormInputs } from "components/FormInputs/FormInputs.jsx";
 import {
     Button
@@ -50,7 +50,7 @@ export class DockerRepoForm extends Component {
 
         return (
             <div>
-                <Card title={editMode ? "Edit Repository" : "New Repository"}
+                <CardTenkai title={editMode ? "Edit Repository" : "New Repository"}
                     content={
                         <form>
                             <FormInputs
@@ -60,7 +60,7 @@ export class DockerRepoForm extends Component {
                                         name: "host",
                                         label: "Host",
                                         type: "text",
-                                        bsClass: "form-control",
+                                        bsPrefix: "form-control",
                                         placeholder: "https://dockerxpto",
                                         value: this.state.formData.host,
                                         onChange: this.handleChange
@@ -75,7 +75,7 @@ export class DockerRepoForm extends Component {
                                         name: "username",
                                         label: "Username",
                                         type: "text",
-                                        bsClass: "form-control",
+                                        bsPrefix: "form-control",
                                         value: this.state.formData.username,
                                         onChange: this.handleChange
 
@@ -85,7 +85,7 @@ export class DockerRepoForm extends Component {
                                         name: "password",
                                         label: "Password",
                                         type: "password",
-                                        bsClass: "form-control",
+                                        bsPrefix: "form-control",
                                         value: this.state.formData.password,
                                         onChange: this.handleChange
 
@@ -95,20 +95,17 @@ export class DockerRepoForm extends Component {
                          
                             <div className="btn-toolbar">
                                 <div className="btn-group">
-                                    <Button bsStyle="info" type="button" onClick={this.saveClick}>
+                                    <Button variant="info" type="button" onClick={this.saveClick}>
                                         Save
                                     </Button>
                                 </div>
                                 <div className="btn-group">
-                                    <Button bsStyle="info" type="button" onClick={this.props.cancelClick}>
+                                    <Button variant="info" type="button" onClick={this.props.cancelClick}>
                                         Cancel
                                     </Button>
 
                                 </div>
                             </div>
-
-                            <div className="clearfix" />
-
                         </form>
                     }
                 />

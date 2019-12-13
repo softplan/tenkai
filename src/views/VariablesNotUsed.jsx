@@ -1,17 +1,17 @@
 import React, { Component } from "react";
 import {
-  Grid,
+  Container,
   Row,
   Col,
   FormGroup,
-  ControlLabel,
+  FormLabel,
   FormControl
 } from "react-bootstrap";
 import SimpleModal from "components/Modal/SimpleModal.jsx";
 import axios from "axios";
 import TENKAI_API_URL from "env.js";
 import VariableCard from "components/Card/VariableCard.jsx";
-import { Card } from "components/Card/Card.jsx";
+import { CardTenkai } from "components/Card/CardTenkai.jsx";
 import { getVariablesNotUsed } from "client-api/apicall.jsx";
 import queryString from "query-string";
 
@@ -124,10 +124,10 @@ class VariablesNotUsed extends Component {
           handleConfirmDelete={this.handleConfirmDelete.bind(this)}
         ></SimpleModal>
 
-        <Grid fluid>
+        <Container fluid>
           <Row>
             <Col md={12}>
-              <Card
+              <CardTenkai
                 title=""
                 content={
                   <form>
@@ -135,7 +135,6 @@ class VariablesNotUsed extends Component {
                       Variables in down services - Env:{" "}
                       {this.state.environmentName}{" "}
                     </h3>
-                    <div className="clearfix" />
                   </form>
                 }
               />
@@ -144,16 +143,16 @@ class VariablesNotUsed extends Component {
 
           <Row>
             <Col md={12}>
-              <Card
+              <CardTenkai
                 title="Variables"
                 content={
                   <form>
                     <Row>
                       <div className="col-md-8">
                         <FormGroup>
-                          <ControlLabel>
+                          <FormLabel>
                             Search by scope, name or value
-                          </ControlLabel>
+                          </FormLabel>
                           <FormControl
                             value={this.state.inputFilter}
                             onChange={this.onChangeFilterHandler.bind(this)}
@@ -174,7 +173,7 @@ class VariablesNotUsed extends Component {
               />
             </Col>
           </Row>
-        </Grid>
+        </Container>
       </div>
     );
   }

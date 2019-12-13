@@ -1,7 +1,7 @@
 import React, { Component } from "react";
-import { Grid, Row, Col, ButtonToolbar } from "react-bootstrap";
+import { Container, Row, Col, ButtonToolbar } from "react-bootstrap";
 
-import { Card } from "components/Card/Card.jsx";
+import { CardTenkai } from "components/Card/CardTenkai.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
 import HelmVariables from "components/Deployment/HelmVariables.jsx";
 import CopyModal from "components/Modal/CopyModal.jsx";
@@ -210,14 +210,14 @@ class VariablesWizard extends Component {
           environments={this.props.environments}
         ></CopyModal>
 
-        <Grid fluid>
+        <Container fluid>
           <Row>
             <Col md={12}>
-              <Card
+              <CardTenkai
                 title=""
                 content={
-                  <div>
-                    <ButtonToolbar>
+                  <div align="right">
+                    <ButtonToolbar style={{ display: 'block' }}>
                       <Button
                         className="btn-primary pull-right"
                         type="button"
@@ -257,8 +257,6 @@ class VariablesWizard extends Component {
                         Show Helm Command
                       </Button>
                     </ButtonToolbar>
-
-                    <div className="clearfix" />
                   </div>
                 }
               />
@@ -266,7 +264,7 @@ class VariablesWizard extends Component {
           </Row>
 
           {items}
-        </Grid>
+        </Container>
       </div>
     );
   }

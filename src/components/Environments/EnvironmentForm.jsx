@@ -1,12 +1,12 @@
 import React, { Component } from "react";
-import { Card } from "components/Card/Card.jsx";
+import { CardTenkai } from "components/Card/CardTenkai.jsx";
 import { FormInputs } from "components/FormInputs/FormInputs.jsx";
 import {
     Row,
     Col,
     FormGroup,
     FormControl, 
-    ControlLabel,
+    FormLabel,
     Button
 } from "react-bootstrap";
 
@@ -59,7 +59,7 @@ export class EnvironmentForm extends Component {
 
         return (
             <div>
-                <Card title={editMode ? "Edit Environment" : "New Environment"}
+                <CardTenkai title={editMode ? "Edit Environment" : "New Environment"}
                     content={
                         <form>
                             <FormInputs
@@ -69,7 +69,7 @@ export class EnvironmentForm extends Component {
                                         name: "group",
                                         label: "Group",
                                         type: "text",
-                                        bsClass: "form-control",
+                                        bsPrefix: "form-control",
                                         placeholder: "Version",
                                         value: this.state.formData.group,
                                         onChange: this.handleChange
@@ -78,7 +78,7 @@ export class EnvironmentForm extends Component {
                                         name: "name",
                                         label: "Name",
                                         type: "text",
-                                        bsClass: "form-control",
+                                        bsPrefix: "form-control",
                                         value: this.state.formData.name,
                                         onChange: this.handleChange
 
@@ -87,7 +87,7 @@ export class EnvironmentForm extends Component {
                                         name: "cluster_uri",
                                         label: "Cluster API URL",
                                         type: "text",
-                                        bsClass: "form-control",
+                                        bsPrefix: "form-control",
                                         placeholder: "http://clusterInfo/",
                                         value: this.state.formData.cluster_uri,
                                         onChange: this.handleChange
@@ -98,12 +98,12 @@ export class EnvironmentForm extends Component {
                             <Row>
                             <Col md={12}>
                                 <FormGroup controlId="formControlsTextarea">
-                                <ControlLabel>CA Certificate</ControlLabel>
+                                <FormLabel>CA Certificate</FormLabel>
                                 <FormControl
-                                     name="ca_certificate"
+                                    name="ca_certificate"
                                     rows="5"
-                                    componentClass="textarea"
-                                    bsClass="form-control"
+                                    as="textarea"
+                                    bsPrefix="form-control"
                                     placeholder="Paste here the CA Certificate"
                                     value={this.state.formData.ca_certificate}
                                     onChange={this.handleChange}
@@ -119,7 +119,7 @@ export class EnvironmentForm extends Component {
                                         name: "token",
                                         label: "Token",
                                         type: "text",
-                                        bsClass: "form-control",
+                                        bsPrefix: "form-control",
                                         placeholder: "Token",
                                         value: this.state.formData.token,
                                         onChange: this.handleChange
@@ -130,7 +130,7 @@ export class EnvironmentForm extends Component {
                                         name: "namespace",
                                         label: "Default Namespace",
                                         type: "text",
-                                        bsClass: "form-control",
+                                        bsPrefix: "form-control",
                                         placeholder: "",
                                         value: this.state.formData.namespace,
                                         onChange: this.handleChange
@@ -140,7 +140,7 @@ export class EnvironmentForm extends Component {
                                         name: "gateway",
                                         label: "Default Gateway",
                                         type: "text",
-                                        bsClass: "form-control",
+                                        bsPrefix: "form-control",
                                         placeholder: "",
                                         value: this.state.formData.gateway,
                                         onChange: this.handleChange
@@ -151,12 +151,12 @@ export class EnvironmentForm extends Component {
                          
                             <div className="btn-toolbar">
                                 <div className="btn-group">
-                                    <Button bsStyle="info" type="button" onClick={this.saveClick}>
+                                    <Button variant="info" type="button" onClick={this.saveClick}>
                                         Save
                                     </Button>
                                 </div>
                                 <div className="btn-group">
-                                    <Button bsStyle="info" type="button" onClick={this.props.cancelClick}>
+                                    <Button variant="info" type="button" onClick={this.props.cancelClick}>
                                         Cancel
                                     </Button>
 

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
-import { Grid, Row, Col, Table, ButtonToolbar } from "react-bootstrap";
+import { Container, Row, Col, Table, ButtonToolbar } from "react-bootstrap";
 
-import { Card } from "components/Card/Card.jsx";
+import { CardTenkai } from "components/Card/CardTenkai.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
 import RepoForm from "components/Config/RepoForm.jsx";
 import SimpleModal from "components/Modal/SimpleModal.jsx";
@@ -217,14 +217,14 @@ class Config extends Component {
           handleConfirmDelete={this.handleConfirmDelete.bind(this)}
         ></SimpleModal>
 
-        <Grid fluid>
+        <Container fluid>
           <Row>
             <Col md={12}>
-              <Card
+              <CardTenkai
                 title=""
                 content={
-                  <form>
-                    <ButtonToolbar>
+                  <div align="right">
+                    <ButtonToolbar style={{ display: 'block' }}>
                       <Button
                         className="pull-right"
                         variant="info"
@@ -247,8 +247,7 @@ class Config extends Component {
                         New Repo
                       </Button>
                     </ButtonToolbar>
-                    <div className="clearfix" />
-                  </form>
+                  </div>
                 }
               />
             </Col>
@@ -269,7 +268,7 @@ class Config extends Component {
 
           <Row>
             <Col md={12}>
-              <Card
+              <CardTenkai
                 title="Repositories"
                 content={
                   <form>
@@ -292,7 +291,7 @@ class Config extends Component {
               />
             </Col>
           </Row>
-        </Grid>
+        </Container>
       </div>
     );
   }

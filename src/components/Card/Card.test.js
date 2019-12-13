@@ -2,11 +2,11 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { render, cleanup } from '@testing-library/react';
 
-import Card from './Card';
+import CardTenkai from './CardTenkai';
 
 afterEach(cleanup);
 
-describe('Card Component', () => {
+describe('CardTenkai Component', () => {
   it('Should render the component', () => {
     const { container } = createComponent();
     expect(container).toBeDefined();
@@ -14,7 +14,7 @@ describe('Card Component', () => {
 
   it('Should unmount the component', () => {
     const div = document.createElement('div');
-    ReactDOM.render(<Card />, div);
+    ReactDOM.render(<CardTenkai />, div);
     ReactDOM.unmountComponentAtNode(div);
   });
 });
@@ -24,5 +24,5 @@ function createComponent(props = {}) {
     ...props
   };
 
-  return render(<Card {...defaultProps} />);
+  return render(<CardTenkai {...defaultProps} />);
 }

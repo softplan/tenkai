@@ -6,7 +6,7 @@ import { Tabs, Tab, ButtonToolbar, Row, Col } from "react-bootstrap";
 import Button from "components/CustomButton/CustomButton.jsx";
 import HelmVariables from "components/Deployment/HelmVariables.jsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Card } from "components/Card/Card.jsx";
+import { CardTenkai } from "components/Card/CardTenkai.jsx";
 import { multipleInstall } from "client-api/apicall.jsx";
 import CopyModal from "components/Modal/CopyModal.jsx";
 
@@ -216,7 +216,7 @@ class DepGraph extends Component {
           <Tab eventKey="main" title="Dependency Analysis">
             <Row>
               <Col md={12}>
-                <Card
+                <CardTenkai
                   title=""
                   content={
                     <div>
@@ -231,7 +231,7 @@ class DepGraph extends Component {
 
                       <ButtonToolbar>
                         <Button
-                          bsStyle="primary"
+                          variant="primary"
                           fill
                           pullRight
                           type="button"
@@ -240,8 +240,6 @@ class DepGraph extends Component {
                           Install/Update All
                         </Button>
                       </ButtonToolbar>
-
-                      <div className="clearfix" />
                     </div>
                   }
                 />
@@ -285,14 +283,14 @@ class DepGraph extends Component {
                 }
               >
                 <div>
-                  <Card
+                  <CardTenkai
                     title=""
                     content={
                       <div>
                         <ButtonToolbar>
                           <h3>Environment: {this.state.environmentName}</h3>
                           <Button
-                            bsStyle="primary"
+                            variant="primary"
                             fill
                             pullRight
                             type="button"
@@ -305,7 +303,7 @@ class DepGraph extends Component {
                           </Button>
 
                           <Button
-                            bsStyle="info"
+                            variant="info"
                             fill
                             pullRight
                             type="button"
@@ -317,8 +315,6 @@ class DepGraph extends Component {
                             Save Variables
                           </Button>
                         </ButtonToolbar>
-
-                        <div className="clearfix" />
                       </div>
                     }
                   />

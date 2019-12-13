@@ -1,14 +1,14 @@
-import React, { Component } from "react";
-import { Panel, ButtonToolbar, Table } from "react-bootstrap";
-import Button from "components/CustomButton/CustomButton.jsx";
+import React, { Component } from 'react';
+import { Card, ButtonToolbar, Table, Accordion } from 'react-bootstrap';
+import Button from 'components/CustomButton/CustomButton.jsx';
 import {
   getReleaseHistory,
   deleteHelmRelease,
   getRevisionYaml,
   rollbackHelmRelease
-} from "client-api/apicall.jsx";
-import SimpleModal from "components/Modal/SimpleModal.jsx";
-import EditorModal from "components/Modal/EditorModal.jsx";
+} from 'client-api/apicall.jsx';
+import SimpleModal from 'components/Modal/SimpleModal.jsx';
+import EditorModal from 'components/Modal/EditorModal.jsx';
 
 export class ReleasePanel extends Component {
   state = {
@@ -18,7 +18,7 @@ export class ReleasePanel extends Component {
     showEditorModal: false,
     historyRecord: {},
     itemToRollback: {},
-    yaml: ""
+    yaml: ''
   };
 
   showReleaseHistory(releaseName) {
@@ -86,7 +86,7 @@ export class ReleasePanel extends Component {
   }
 
   closeEditorModal() {
-    this.setState({ showEditorModal: false, historyRecord: {}, yaml: "" });
+    this.setState({ showEditorModal: false, historyRecord: {}, yaml: '' });
   }
 
   showEditorModal(item) {
@@ -111,6 +111,11 @@ export class ReleasePanel extends Component {
     this.props.navigateToBlueGreenWizard(item);
   }
 
+  showContent = name => {
+    this.setState({ historyList: [] });
+    this.onEnter(name);
+  };
+
   render() {
     const historyList = this.state.historyList.map((item, key) => (
       <tr key={key}>
@@ -121,7 +126,7 @@ export class ReleasePanel extends Component {
         <td>
           <Button
             className="link-button"
-            disabled={!this.props.keycloak.hasRealmRole("tenkai-promote")}
+            disabled={!this.props.keycloak.hasRealmRole('tenkai-promote')}
             onClick={this.showRollbackConfirmModal.bind(this, item.revision)}
           >
             <i className="pe-7s-back-2" />
@@ -131,7 +136,7 @@ export class ReleasePanel extends Component {
         <td>
           <Button
             className="link-button"
-            disabled={!this.props.keycloak.hasRealmRole("tenkai-promote")}
+            disabled={!this.props.keycloak.hasRealmRole('tenkai-promote')}
             onClick={this.showEditorModal.bind(this, item)}
           >
             <i className="pe-7s-note2" />
@@ -141,7 +146,7 @@ export class ReleasePanel extends Component {
     ));
 
     return (
-      <Panel eventKey={this.props.eventKey}>
+      <Card eventKey={this.props.eventKey}>
         <SimpleModal
           showConfirmDeleteModal={this.state.showConfirmDeleteModal}
           handleConfirmDeleteModalClose={this.handleConfirmDeleteClose.bind(
@@ -171,25 +176,32 @@ export class ReleasePanel extends Component {
           close={this.closeEditorModal.bind(this)}
         />
 
-        <Panel.Heading>
-          <Panel.Title toggle>
-            {this.props.item.Name} - revision {this.props.item.Revision}
-          </Panel.Title>
-        </Panel.Heading>
-
-        <Panel.Collapse
-          onEnter={this.onEnter.bind(this, this.props.item.Name)}
-          onExit={this.onExit.bind(this, this.props.item.Name)}
+        <Accordion.Toggle
+          as={Card.Header}
+          variant="link"
+          eventKey={this.props.eventKey}
         >
-          <Panel.Body>
+          {this.props.item.Name} - revision {this.props.item.Revision}
+        </Accordion.Toggle>
+
+        <Accordion.Collapse eventKey={this.props.eventKey}>
+          <Card.Body>
             <p>Chart: {this.props.item.Chart}</p>
             <p>Updated: {this.props.item.Updated}</p>
             <p>Status: {this.props.item.Status}</p>
 
             <ButtonToolbar>
               <Button
+                className="btn btn-info pull-right"
+                size="sm"
+                onClick={this.showContent.bind(this, this.props.item.Name)}
+              >
+                <i className="pe-7s-refresh-2" /> Refresh
+              </Button>
+
+              <Button
                 className="btn btn-danger"
-                bsSize="sm"
+                size="sm"
                 onClick={this.showDeleteConfirmModal.bind(
                   this,
                   this.props.item.Name
@@ -200,7 +212,7 @@ export class ReleasePanel extends Component {
 
               <Button
                 className="btn btn-info btn-fill"
-                bsSize="sm"
+                size="sm"
                 onClick={this.navigateToBlueGreenWizard.bind(
                   this,
                   this.props.item
@@ -223,9 +235,9 @@ export class ReleasePanel extends Component {
               </thead>
               <tbody>{historyList}</tbody>
             </Table>
-          </Panel.Body>
-        </Panel.Collapse>
-      </Panel>
+          </Card.Body>
+        </Accordion.Collapse>
+      </Card>
     );
   }
 }

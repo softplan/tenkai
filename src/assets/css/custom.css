@@ -24,6 +24,7 @@
 
 .modal-90w {
     width: 60%;
+    max-width: initial;
 }
 
 .stepwizard-step p {

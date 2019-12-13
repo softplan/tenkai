@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Card } from "components/Card/Card.jsx";
+import { CardTenkai } from "components/Card/CardTenkai.jsx";
 import { FormInputs } from "components/FormInputs/FormInputs.jsx";
 import { Button } from "react-bootstrap";
 
@@ -13,7 +13,7 @@ export const RepoForm = ({ editMode, editItem, ...props }) => {
 
   return (
     <div>
-      <Card
+      <CardTenkai
         title={editMode ? "Edit Repository" : "New Repository"}
         content={
           <form>
@@ -24,7 +24,7 @@ export const RepoForm = ({ editMode, editItem, ...props }) => {
                   name: "name",
                   label: "Name",
                   type: "text",
-                  bsClass: "form-control",
+                  bsPrefix: "form-control",
                   value: formData.name,
                   onChange: e => handleChange(e)
                 },
@@ -32,7 +32,7 @@ export const RepoForm = ({ editMode, editItem, ...props }) => {
                   name: "url",
                   label: "URL",
                   type: "text",
-                  bsClass: "form-control",
+                  bsPrefix: "form-control",
                   placeholder: "https://artifactory/artifactory/xpto-helm",
                   value: formData.url,
                   onChange: e => handleChange(e)
@@ -47,7 +47,7 @@ export const RepoForm = ({ editMode, editItem, ...props }) => {
                   name: "username",
                   label: "Username",
                   type: "text",
-                  bsClass: "form-control",
+                  bsPrefix: "form-control",
                   value: formData.username,
                   onChange: e => handleChange(e)
                 },
@@ -55,7 +55,7 @@ export const RepoForm = ({ editMode, editItem, ...props }) => {
                   name: "password",
                   label: "Password",
                   type: "password",
-                  bsClass: "form-control",
+                  bsPrefix: "form-control",
                   value: formData.password,
                   onChange: e => handleChange(e)
                 }
@@ -65,7 +65,7 @@ export const RepoForm = ({ editMode, editItem, ...props }) => {
             <div className="btn-toolbar">
               <div className="btn-group">
                 <Button
-                  bsStyle="info"
+                  variant="info"
                   type="button"
                   onClick={e => {
                     e.preventDefault();
@@ -77,7 +77,7 @@ export const RepoForm = ({ editMode, editItem, ...props }) => {
               </div>
               <div className="btn-group">
                 <Button
-                  bsStyle="info"
+                  variant="info"
                   type="button"
                   onClick={props.cancelClick}
                 >
@@ -85,8 +85,6 @@ export const RepoForm = ({ editMode, editItem, ...props }) => {
                 </Button>
               </div>
             </div>
-
-            <div className="clearfix" />
           </form>
         }
       />

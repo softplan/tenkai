@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import { Table, Grid, Row, Col, FormGroup } from "react-bootstrap";
-import { Card } from "components/Card/Card.jsx";
+import { Table, Container, Row, Col, FormGroup } from "react-bootstrap";
+import { CardTenkai } from "components/Card/CardTenkai.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
 import Select from "react-select";
 import { retrieveReleasesWithCallBack } from "client-api/apicall.jsx";
@@ -94,15 +94,15 @@ class DepAnalysis extends Component {
 
     return (
       <div className="content">
-        <Grid fluid>
+        <Container fluid>
           <Row>
             <Col md={12}>
-              <Card
+              <CardTenkai
                 title=""
                 content={
                   <div>
                     <Button
-                      bsStyle="info"
+                      variant="info"
                       disabled={
                         (Object.entries(this.state.selectedVersion).length ===
                           0 &&
@@ -116,7 +116,6 @@ class DepAnalysis extends Component {
                     >
                       Analyse
                     </Button>
-                    <div className="clearfix" />
                   </div>
                 }
               />
@@ -125,7 +124,7 @@ class DepAnalysis extends Component {
 
           <Row>
             <Col md={12}>
-              <Card
+              <CardTenkai
                 title="Charts"
                 content={
                   <div>
@@ -144,7 +143,7 @@ class DepAnalysis extends Component {
               />
             </Col>
           </Row>
-        </Grid>
+        </Container>
       </div>
     );
   }

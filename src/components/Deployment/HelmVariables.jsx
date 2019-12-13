@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
-import { Card } from 'components/Card/Card.jsx';
+import { CardTenkai } from 'components/Card/CardTenkai.jsx';
 import {
   Row,
   Col,
   Table,
   FormGroup,
   ButtonToolbar,
-  ControlLabel,
+  FormLabel,
   FormControl
 } from 'react-bootstrap';
 import axios from 'axios';
@@ -582,9 +582,9 @@ export class HelmVariables extends Component {
 
         return (
           <tr key={key}>
-            <td className="col-md-2">{key}</td>
-            <td className="col-md-5 word-wrap">{keyValue}</td>
-            <td className="col-md-5">
+            <td className="word-wrap">{key}</td>
+            <td className="word-wrap">{keyValue}</td>
+            <td>
               <input
                 name={key}
                 value={value}
@@ -602,7 +602,7 @@ export class HelmVariables extends Component {
       <div>
         <Row>
           <Col md={12}>
-            <Card
+            <CardTenkai
               title={this.state.chartName}
               content={
                 <div>
@@ -615,7 +615,7 @@ export class HelmVariables extends Component {
                           this,
                           this.props.xref
                         )}
-                        bsSize="sm"
+                        size="sm"
                       >
                         <i className="pe-7s-magic-wand" /> Copy config from
                         another environment
@@ -625,7 +625,7 @@ export class HelmVariables extends Component {
                         className="btn-warning"
                         disabled={this.props.canary}
                         onClick={this.showHideCanaryOptions.bind(this)}
-                        bsSize="sm"
+                        size="sm"
                       >
                         <i className="pe-7s-magic-wand" />{' '}
                         {this.state.canaryShowing
@@ -661,12 +661,12 @@ export class HelmVariables extends Component {
                       <Row>
                         <Col xs={6}>
                           <FormGroup>
-                            <ControlLabel>Container image</ControlLabel>
+                            <FormLabel>Container image</FormLabel>
                             <FormControl
                               name="image"
                               readOnly={true}
                               type="text"
-                              bsClass="form-control"
+                              bsPrefix="form-control"
                               value={this.state.containerImage}
                               onChange={this.handleContainerImageChange}
                             />
@@ -674,7 +674,7 @@ export class HelmVariables extends Component {
                         </Col>
                         <Col xs={3}>
                           <FormGroup>
-                            <ControlLabel>Container Tag</ControlLabel>
+                            <FormLabel>Container Tag</FormLabel>
                             <Select
                               value={this.state.selectedTag}
                               onChange={this.handleContainerTagChange}

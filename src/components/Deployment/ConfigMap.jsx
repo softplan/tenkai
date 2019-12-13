@@ -284,7 +284,7 @@ export class ConfigMap extends Component {
                     name: "configMapName",
                     label: "Config Map Name",
                     type: "text",
-                    bsClass: "form-control",
+                    bsPrefix: "form-control",
                     value: this.props.configMapName,
                     onChange: this.handleConfigMapNameChange
                   }

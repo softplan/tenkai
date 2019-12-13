@@ -1,7 +1,7 @@
 import React from "react";
 import Proptypes from "prop-types";
 
-export const Card = props => (
+export const CardTenkai = props => (
   <div className={"card" + (props.plain ? " card-plain" : "")}>
     <div className={"header" + (props.hCenter ? " text-center" : "")}>
       <h4 className="title">{props.title}</h4>
@@ -29,7 +29,7 @@ export const Card = props => (
   </div>
 );
 
-Card.propTypes = {
+CardTenkai.propTypes = {
   plain: Proptypes.bool,
   ctAllIcons: Proptypes.bool,
   ctTableFullWidth: Proptypes.bool,
@@ -40,4 +40,4 @@ Card.propTypes = {
   content: Proptypes.object
 };
 
-export default Card;
+export default CardTenkai;

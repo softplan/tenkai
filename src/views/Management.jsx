@@ -1,27 +1,25 @@
 import React from "react";
-import { Grid, Row, Col } from "react-bootstrap";
-import { Card } from "components/Card/Card.jsx";
+import { Container, Row, Col } from "react-bootstrap";
+import { CardTenkai } from "components/Card/CardTenkai.jsx";
 
 const Management = () => (
   <div className="content">
-    <Grid fluid>
+    <Container fluid>
       <Row>
         <Col md={12}>
-          <Card
+          <CardTenkai
             title=""
             content={
               <form>
                 <Row>
                   <div className="col-md-5"></div>
                 </Row>
-
-                <div className="clearfix" />
               </form>
             }
           />
         </Col>
       </Row>
-    </Grid>
+    </Container>
   </div>
 );
 

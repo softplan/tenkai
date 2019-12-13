@@ -1,26 +1,28 @@
 import React, { Component } from 'react';
-import { Card } from 'components/Card/Card.jsx';
+import { CardTenkai } from 'components/Card/CardTenkai.jsx';
 import CButton from 'components/CustomButton/CustomButton.jsx';
+import { Container, ButtonToolbar } from 'react-bootstrap';
 
 export default class CardButton extends Component {
   render() {
     return (
-      <Card
+      <CardTenkai
         title=""
         content={
-          <form>
-            <h4>
-              {this.props.header}
-              <CButton
-                className="pull-right"
-                variant="primary"
-                onClick={this.props.handleClick.bind(this)}
-              >
-                {this.props.buttonName}
-              </CButton>
-              <div className="clearfix" />
-            </h4>
-          </form>
+          <Container fluid>
+            <h4>{this.props.header}</h4>
+            <div align="right">
+              <ButtonToolbar style={{ display: 'block' }}>
+                <CButton
+                  className="pull-right"
+                  variant="primary"
+                  onClick={this.props.handleClick.bind(this)}
+                >
+                  {this.props.buttonName}
+                </CButton>
+              </ButtonToolbar>
+            </div>
+          </Container>
         }
       />
     );

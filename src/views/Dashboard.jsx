@@ -1,10 +1,10 @@
 import React from "react";
-import { Grid, Row, Col } from "react-bootstrap";
+import { Container, Row, Col } from "react-bootstrap";
 import { StatsCard } from "components/StatsCard/StatsCard.jsx";
 
 const Dashboard = () => (
   <div className="content">
-    <Grid fluid>
+    <Container fluid>
       <Row>
         <Col lg={3} sm={6}>
           <StatsCard
@@ -34,7 +34,7 @@ const Dashboard = () => (
           />
         </Col>
       </Row>
-    </Grid>
+    </Container>
   </div>
 );
 

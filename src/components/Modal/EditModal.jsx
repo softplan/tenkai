@@ -2,7 +2,7 @@ import React from "react";
 import { Modal } from "react-bootstrap";
 
 const EditModal = ({ onShow, header, title, onClose, form }) => (
-  <Modal bsSize="large" show={onShow} onHide={e => onClose(e)}>
+  <Modal size="large" show={onShow} onHide={e => onClose(e)}>
     {header && (
       <Modal.Header closeButton>
         <Modal.Title>{title}</Modal.Title>

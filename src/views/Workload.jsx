@@ -2,15 +2,15 @@ import React, { Component } from 'react';
 import {
   Tabs,
   Tab,
-  PanelGroup,
+  Accordion,
   Row,
   Col,
   FormGroup,
-  ControlLabel,
+  FormLabel,
   FormControl,
   ButtonToolbar
 } from 'react-bootstrap';
-import { Card } from 'components/Card/Card.jsx';
+import { CardTenkai } from 'components/Card/CardTenkai.jsx';
 import {
   listHelmDeploymentsByEnvironment,
   listPods,
@@ -169,7 +169,7 @@ class Workload extends Component {
       this,
       this.props.selectedEnvironment.value,
       function(self, res) {
-        if (res !== undefined && res.data !== null) {
+        if (res !== undefined && res.data !== null && res.data !== undefined) {
           self.setState({ list: res.data.Releases });
         } else {
           self.setState({ list: [] });
@@ -238,7 +238,6 @@ class Workload extends Component {
           refresh={this.listDeploymentsByEnv.bind(this)}
         />
       ));
-
     return (
       <Tabs
         defaultActiveKey="pods"
@@ -246,14 +245,14 @@ class Workload extends Component {
         onSelect={this.onTabSelect.bind(this)}
       >
         <Tab eventKey="pods" title="Pods">
-          <Card
+          <CardTenkai
             title=""
             content={
               <div>
                 <Row>
                   <Col xs={4}>
                     <FormGroup>
-                      <ControlLabel>Pod Search</ControlLabel>
+                      <FormLabel>Pod Search</FormLabel>
                       <FormControl
                         value={this.state.podInputFilter}
                         onChange={this.onChangePodInputHandler.bind(this)}
@@ -267,7 +266,7 @@ class Workload extends Component {
                   <Col xs={8}>
                     <Button
                       className="btn btn-info pull-right"
-                      bsSize="sm"
+                      size="sm"
                       onClick={this.refreshPods.bind(this)}
                     >
                       <i className="pe-7s-refresh-2" /> Refresh
@@ -293,14 +292,14 @@ class Workload extends Component {
           />
         </Tab>
         <Tab eventKey="services" title="Services">
-          <Card
+          <CardTenkai
             title=""
             content={
               <div>
                 <Row>
                   <Col xs={4}>
                     <FormGroup>
-                      <ControlLabel>Service Search</ControlLabel>
+                      <FormLabel>Service Search</FormLabel>
                       <FormControl
                         value={this.state.serviceInputFilter}
                         onChange={this.onChangeServiceInputHandler.bind(this)}
@@ -314,7 +313,7 @@ class Workload extends Component {
                   <Col xs={8}>
                     <Button
                       className="btn btn-info pull-right"
-                      bsSize="sm"
+                      size="sm"
                       onClick={this.refreshServices.bind(this)}
                     >
                       <i className="pe-7s-refresh-2" /> Refresh
@@ -341,14 +340,14 @@ class Workload extends Component {
         </Tab>
 
         <Tab eventKey="ep" title="Public Endpoints">
-          <Card
+          <CardTenkai
             title=""
             content={
               <div>
                 <Row>
                   <Col xs={4}>
                     <FormGroup>
-                      <ControlLabel>Public endpoint search</ControlLabel>
+                      <FormLabel>Public endpoint search</FormLabel>
                       <FormControl
                         value={this.state.endpointInputFilter}
                         onChange={this.onChangeEndpointInputHandler.bind(this)}
@@ -362,7 +361,7 @@ class Workload extends Component {
                   <Col xs={8}>
                     <Button
                       className="btn btn-info pull-right"
-                      bsSize="sm"
+                      size="sm"
                       onClick={this.refreshEndpoints.bind(this)}
                     >
                       <i className="pe-7s-refresh-2" /> Refresh
@@ -386,7 +385,7 @@ class Workload extends Component {
         </Tab>
 
         <Tab eventKey="helm" title="Helm Releases">
-          <Card
+          <CardTenkai
             title=""
             content={
               <div>
@@ -424,7 +423,7 @@ class Workload extends Component {
                       <ButtonToolbar>
                         <Button
                           className="btn btn-danger btn-fill"
-                          bsSize="sm"
+                          size="sm"
                           disabled={
                             this.state.confirmInput !==
                             this.state.targetEnvToPromote.label
@@ -435,7 +434,7 @@ class Workload extends Component {
                         </Button>
                         <Button
                           className="btn btn-info btn-fill"
-                          bsSize="sm"
+                          size="sm"
                           onClick={this.onCloseConfirmModal.bind(this)}
                         >
                           <i className="pe-7s-smile" /> Cancel
@@ -448,7 +447,7 @@ class Workload extends Component {
                 <Row>
                   <Col xs={4}>
                     <FormGroup>
-                      <ControlLabel>Release Search</ControlLabel>
+                      <FormLabel>Release Search</FormLabel>
                       <FormControl
                         value={this.state.inputFilter}
                         onChange={this.onChangeInputHandler.bind(this)}
@@ -462,7 +461,7 @@ class Workload extends Component {
                   <Col xs={2}>
                     <Button
                       className="btn btn-info pull-right"
-                      bsSize="sm"
+                      size="sm"
                       onClick={this.refreshReleases.bind(this)}
                     >
                       <i className="pe-7s-refresh-2" /> Refresh
@@ -473,7 +472,7 @@ class Workload extends Component {
                     <ButtonToolbar>
                       <Button
                         className="btn btn-success btn-fill pull-right"
-                        bsSize="sm"
+                        size="sm"
                         onClick={this.showConfirmCopyModal.bind(this)}
                         disabled={
                           !this.props.keycloak.hasRealmRole('tenkai-admin')
@@ -485,7 +484,7 @@ class Workload extends Component {
 
                       <Button
                         className="btn btn-danger btn-fill pull-right"
-                        bsSize="sm"
+                        size="sm"
                         onClick={this.showConfirmCopyModalFull.bind(this)}
                         disabled={
                           !this.props.keycloak.hasRealmRole('tenkai-admin')
@@ -498,9 +497,9 @@ class Workload extends Component {
                 </Row>
                 <Row>
                   <Col xs={12}>
-                    <PanelGroup accordion id="workload-accordion">
+                    <Accordion defaultActiveKey="0" id="workload-accordion">
                       {items}
-                    </PanelGroup>
+                    </Accordion>
                   </Col>
                 </Row>
               </div>

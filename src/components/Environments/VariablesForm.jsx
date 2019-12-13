@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Card } from "components/Card/Card.jsx";
+import { CardTenkai } from "components/Card/CardTenkai.jsx";
 import { FormInputs } from "components/FormInputs/FormInputs.jsx";
 import {
     Button
@@ -70,7 +70,7 @@ export class VariablesForm extends Component {
 
         return (
             <div>
-                <Card title={editMode ? "Edit Variable" : "New Variable"}
+                <CardTenkai title={editMode ? "Edit Variable" : "New Variable"}
                     content={
                         <form>
                             <FormInputs
@@ -80,7 +80,7 @@ export class VariablesForm extends Component {
                                         name: "scope",
                                         label: "Scope",
                                         type: "text",
-                                        bsClass: "form-control",
+                                        bsPrefix: "form-control",
                                         value: this.state.formData.scope,
                                         onChange: this.handleChange
 
@@ -90,7 +90,7 @@ export class VariablesForm extends Component {
                                         name: "name",
                                         label: "Variable Name",
                                         type: "text",
-                                        bsClass: "form-control",
+                                        bsPrefix: "form-control",
                                         value: this.state.formData.name,
                                         onChange: this.handleChange
 
@@ -99,7 +99,7 @@ export class VariablesForm extends Component {
                                         name: "value",
                                         label: "Variable Value",
                                         type: "text",
-                                        bsClass: "form-control",
+                                        bsPrefix: "form-control",
                                         value: this.state.formData.value,
                                         onChange: this.handleChange
 
@@ -114,7 +114,7 @@ export class VariablesForm extends Component {
                                         name: "description",
                                         label: "Description",
                                         type: "text",
-                                        bsClass: "form-control",
+                                        bsPrefix: "form-control",
                                         value: this.state.formData.description,
                                         onChange: this.handleChange
 
@@ -124,7 +124,7 @@ export class VariablesForm extends Component {
                                         name: "secret",
                                         label: "Secret",
                                         type: "checkbox",
-                                        bsClass: "form-control",
+                                        bsPrefix: "form-control",
                                         checked: this.state.formData.secret,
                                         onChange: this.handleBoolChange
 
@@ -137,20 +137,17 @@ export class VariablesForm extends Component {
                          
                             <div className="btn-toolbar">
                                 <div className="btn-group">
-                                    <Button bsStyle="info" type="button" onClick={this.saveClick}>
+                                    <Button variant="info" type="button" onClick={this.saveClick}>
                                         Save
                                     </Button>
                                 </div>
                                 <div className="btn-group">
-                                    <Button bsStyle="info" type="button" onClick={this.props.cancelClick}>
+                                    <Button variant="info" type="button" onClick={this.props.cancelClick}>
                                         Cancel
                                     </Button>
 
                                 </div>
                             </div>
-
-                            <div className="clearfix" />
-
                         </form>
                     }
                 />

@@ -1,9 +1,9 @@
 import React from "react";
-import { FormGroup, ControlLabel, FormControl } from "react-bootstrap";
+import { FormGroup, FormLabel, FormControl } from "react-bootstrap";
 
 const FieldGroup = ({ label, ...props }) => (
   <FormGroup>
-    <ControlLabel>{label}</ControlLabel>
+    <FormLabel>{label}</FormLabel>
     <FormControl {...props} />
   </FormGroup>
 );

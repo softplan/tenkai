@@ -56,7 +56,7 @@ export class ArrayVariable extends Component {
       <tr>
         <td colSpan="3">
           <Button
-            bsStyle="info"
+            variant="info"
             type="button"
             className="pull-right"
             onClick={this.onCreateDynamicVariable.bind(this, this.props.name)}
