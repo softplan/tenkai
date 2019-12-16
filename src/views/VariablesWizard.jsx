@@ -218,17 +218,18 @@ class VariablesWizard extends Component {
                 content={
                   <div align="right">
                     <ButtonToolbar style={{ display: 'block' }}>
+
                       <Button
                         className="btn-primary pull-right"
                         type="button"
-                        onClick={this.onClick}
+                        onClick={this.onHelmCommand}
                         disabled={
                           !this.props.keycloak.hasRealmRole(
                             "tenkai-helm-upgrade"
                           )
                         }
                       >
-                        Install/Update
+                        Show Helm Command
                       </Button>
 
                       <Button
@@ -247,14 +248,14 @@ class VariablesWizard extends Component {
                       <Button
                         className="btn-primary pull-right"
                         type="button"
-                        onClick={this.onHelmCommand}
+                        onClick={this.onClick}
                         disabled={
                           !this.props.keycloak.hasRealmRole(
                             "tenkai-helm-upgrade"
                           )
                         }
                       >
-                        Show Helm Command
+                        Install/Update
                       </Button>
                     </ButtonToolbar>
                   </div>
