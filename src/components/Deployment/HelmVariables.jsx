@@ -604,7 +604,22 @@ export class HelmVariables extends Component {
 
   getInvalidMsg(key) {
     const v = this.state.invalidVariables[key];
-    return `Value should ${v.ruleType} '${v.valueRule}'`;
+    return `Value should ${this.generateMsg(v.ruleType, v.valueRule)}`;
+  }
+
+  generateMsg(ruleType, valueRule) {
+    switch (ruleType) {
+      case 'NotEmpty':
+        return 'be not empty.';
+      case 'StartsWith':
+        return `starts with '${valueRule}'.`;
+      case 'EndsWith':
+        return `ends with '${valueRule}'.`;
+      case 'RegEx':
+        return `complies to regex '${valueRule}'.`;
+      default:
+        break;
+    }
   }
 
   render() {
