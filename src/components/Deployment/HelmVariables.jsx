@@ -97,6 +97,9 @@ export class HelmVariables extends Component {
 
   async componentDidMount() {
     this.addHost();
+
+    const environmentId = parseInt(this.props.envId);
+    this.validateVariables(environmentId);
   }
 
   addDynamicVariableClick(variableName) {
@@ -279,6 +282,31 @@ export class HelmVariables extends Component {
           ) {
             this.refs['hConfigMap'].listVariables(environmentId);
           }
+          this.props.handleLoading(false);
+        })
+        .catch(error => {
+          this.props.handleLoading(false);
+          console.log(error.message);
+          this.props.handleNotification('general_fail', 'error');
+        });
+    });
+  }
+
+  async validateVariables(environmentId) {
+    this.props.handleLoading(true);
+    this.setState({ values: {} }, () => {
+      axios
+        .post(TENKAI_API_URL + '/validateVariables', {
+          environmentId: environmentId,
+          scope: this.state.chartName
+        })
+        .then(response => {
+          const invalidToMap = {};
+          response.data.InvalidVariables.forEach(val => {
+            invalidToMap[val.name] = val;
+          });
+
+          this.setState({ invalidVariables: invalidToMap });
           this.props.handleLoading(false);
         })
         .catch(error => {
@@ -563,6 +591,22 @@ export class HelmVariables extends Component {
     this.setState({ dontCreateService: value });
   };
 
+  isValid(key) {
+    if (this.hasInvalidVar(key)) {
+      return 'form-control is-invalid';
+    }
+    return '';
+  }
+
+  hasInvalidVar(key) {
+    return !!this.state.invalidVariables[key];
+  }
+
+  getInvalidMsg(key) {
+    const v = this.state.invalidVariables[key];
+    return `Value should ${v.ruleType} '${v.valueRule}'`;
+  }
+
   render() {
     const items = Object.keys(this.state.variables).map(key => {
       if (typeof this.state.variables[key] == 'object') {
@@ -591,7 +635,11 @@ export class HelmVariables extends Component {
                 onChange={this.onInputChange}
                 type="text"
                 style={{ width: '100%' }}
+                class={this.isValid(key)}
               />
+              {this.hasInvalidVar(key) && (
+                <div class="invalid-feedback">{this.getInvalidMsg(key)}</div>
+              )}
             </td>
           </tr>
         );

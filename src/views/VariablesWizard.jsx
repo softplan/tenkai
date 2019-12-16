@@ -80,7 +80,7 @@ class VariablesWizard extends Component {
     super(props);
     this.state.envId = this.props.selectedEnvironment.value;
     const values = queryString.parse(props.location.search);
-    this.state.productVersionId = values.productVersionId
+    this.state.productVersionId = values.productVersionId;
   }
 
   onSave = payload => {
