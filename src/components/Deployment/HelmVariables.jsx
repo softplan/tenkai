@@ -18,6 +18,7 @@ import Button from 'components/CustomButton/CustomButton.jsx';
 import { CanaryCard } from 'components/Deployment/CanaryCard.jsx';
 import { getTagsOfImage, retrieveSettings } from 'client-api/apicall.jsx';
 import Select from 'react-select';
+import { validateVariables } from 'client-api/apicall.jsx';
 
 export class HelmVariables extends Component {
   state = {
@@ -97,9 +98,23 @@ export class HelmVariables extends Component {
 
   async componentDidMount() {
     this.addHost();
+    this.validateVars();
+  }
 
+  validateVars() {
     const environmentId = parseInt(this.props.envId);
-    this.validateVariables(environmentId);
+    validateVariables(this, environmentId, (self, invalidVariables) => {
+      const invalidToMap = this.arrayToMap(invalidVariables);
+      self.setState({ invalidVariables: invalidToMap });
+    });
+  }
+
+  arrayToMap(invalidVariables) {
+    const invalidToMap = {};
+    invalidVariables.forEach(val => {
+      invalidToMap[val.name] = val;
+    });
+    return invalidToMap;
   }
 
   addDynamicVariableClick(variableName) {
@@ -282,31 +297,6 @@ export class HelmVariables extends Component {
           ) {
             this.refs['hConfigMap'].listVariables(environmentId);
           }
-          this.props.handleLoading(false);
-        })
-        .catch(error => {
-          this.props.handleLoading(false);
-          console.log(error.message);
-          this.props.handleNotification('general_fail', 'error');
-        });
-    });
-  }
-
-  async validateVariables(environmentId) {
-    this.props.handleLoading(true);
-    this.setState({ values: {} }, () => {
-      axios
-        .post(TENKAI_API_URL + '/validateVariables', {
-          environmentId: environmentId,
-          scope: this.state.chartName
-        })
-        .then(response => {
-          const invalidToMap = {};
-          response.data.InvalidVariables.forEach(val => {
-            invalidToMap[val.name] = val;
-          });
-
-          this.setState({ invalidVariables: invalidToMap });
           this.props.handleLoading(false);
         })
         .catch(error => {

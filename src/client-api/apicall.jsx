@@ -479,6 +479,25 @@ function getDockerImageFromHelmChart(self, payload, callback) {
     });
 }
 
+function validateVariables(self, environmentId, callback) {
+  self.props.handleLoading(true);
+  axios
+    .post(TENKAI_API_URL + '/validateVariables', {
+      environmentId: environmentId,
+      scope: self.state.chartName
+    })
+    .then(response => {
+      if (callback !== undefined) {
+        callback(self, response.data.InvalidVariables);
+      }
+      self.props.handleLoading(false);
+    })
+    .catch(error => {
+      self.props.handleLoading(false);
+      handlerError(self, error.response);
+    });
+}
+
 export {
   retriveRepo,
   retrieveCharts,
@@ -505,5 +524,6 @@ export {
   getVariablesNotUsed,
   getDockerImageFromHelmChart,
   getHelmCommand,
-  listEndpoints
+  listEndpoints,
+  validateVariables
 };
