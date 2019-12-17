@@ -1,23 +1,28 @@
-import React, { Component } from "react";
-import { Container, Row, Col, ButtonToolbar } from "react-bootstrap";
+import React, { Component } from 'react';
+import { Container, Row, Col, ButtonToolbar } from 'react-bootstrap';
 
-import { CardTenkai } from "components/Card/CardTenkai.jsx";
-import Button from "components/CustomButton/CustomButton.jsx";
-import HelmVariables from "components/Deployment/HelmVariables.jsx";
-import CopyModal from "components/Modal/CopyModal.jsx";
-import { multipleInstall, getHelmCommand } from "client-api/apicall.jsx";
-import HelmCommandModal from "components/Modal/HelmCommandModal.jsx";
-import queryString from "query-string";
+import { CardTenkai } from 'components/Card/CardTenkai.jsx';
+import Button from 'components/CustomButton/CustomButton.jsx';
+import HelmVariables from 'components/Deployment/HelmVariables.jsx';
+import CopyModal from 'components/Modal/CopyModal.jsx';
+import { multipleInstall, getHelmCommand } from 'client-api/apicall.jsx';
+import HelmCommandModal from 'components/Modal/HelmCommandModal.jsx';
+import queryString from 'query-string';
+import { validateVariables } from 'client-api/apicall.jsx';
+import SimpleModal from 'components/Modal/SimpleModal.jsx';
 
 class VariablesWizard extends Component {
   state = {
-    envId: "",
+    envId: '',
     charts: [],
     chartVersions: new Map(),
     onShowCopyModal: false,
     desiredTags: new Map(),
     showEditorModal: false,
-    helmValue: ""
+    helmValue: '',
+    showConfirmInstallModal: false,
+    installPayload: [],
+    invalidVariables: []
   };
 
   componentDidMount() {
@@ -25,29 +30,29 @@ class VariablesWizard extends Component {
     let total = this.props.selectedChartsToDeploy.length;
     let chartsToDeploy = this.props.selectedChartsToDeploy;
     let helmCharts = [];
-    let chartVersion = "";
-    let value = "";
+    let chartVersion = '';
+    let value = '';
     let chartVersions = new Map();
     let desiredTags = new Map();
     for (let i = 0; i < total; i++) {
-      value = chartsToDeploy[i].substring(0, chartsToDeploy[i].indexOf("@"));
+      value = chartsToDeploy[i].substring(0, chartsToDeploy[i].indexOf('@'));
       helmCharts.push(value);
 
-      if (chartsToDeploy[i].indexOf("#") > 0) {
+      if (chartsToDeploy[i].indexOf('#') > 0) {
         let dockerImage = chartsToDeploy[i].substring(
-          chartsToDeploy[i].indexOf("#") + 1,
+          chartsToDeploy[i].indexOf('#') + 1,
           chartsToDeploy[i].length
         );
         desiredTags[value] = dockerImage;
 
         chartVersion = chartsToDeploy[i].substring(
-          chartsToDeploy[i].indexOf("@") + 1,
-          chartsToDeploy[i].indexOf("#")
+          chartsToDeploy[i].indexOf('@') + 1,
+          chartsToDeploy[i].indexOf('#')
         );
         chartVersions[value] = chartVersion;
       } else {
         chartVersion = chartsToDeploy[i].substring(
-          chartsToDeploy[i].indexOf("@") + 1,
+          chartsToDeploy[i].indexOf('@') + 1,
           chartsToDeploy[i].length
         );
         chartVersions[value] = chartVersion;
@@ -59,17 +64,20 @@ class VariablesWizard extends Component {
         chartVersions: chartVersions,
         desiredTags: desiredTags
       },
-      async () => {
-        await this.getChildVariables();
-        this.props.handleLoading(false);
-      }
+      async () => this.didMountCallback(helmCharts)
     );
   }
+
+  didMountCallback = async helmCharts => {
+    await this.getChildVariables();
+    this.props.handleLoading(false);
+    this.validateVars(helmCharts, this.callbackValidate);
+  };
 
   async getChildVariables() {
     for (let x = 0; x < this.state.charts.length; x++) {
       let chartName = this.state.charts[x];
-      await this.refs["h" + x].getVariables(
+      await this.refs['h' + x].getVariables(
         chartName,
         this.state.chartVersions[chartName]
       );
@@ -83,26 +91,25 @@ class VariablesWizard extends Component {
     this.state.productVersionId = values.productVersionId;
   }
 
-  onSave = payload => {
-    multipleInstall(payload, this);
-  };
-
   onSaveVariablesClick = () => {
-    this.props.handleLoading(true);
-    let count = this.state.charts.length;
-    let index = 0;
+    this.setState({ invalidVariables: {} }, () => {
+      this.props.handleLoading(true);
+      let count = this.state.charts.length;
+      let index = 0;
 
-    this.state.charts.forEach((item, key) => {
-      this.refs["h" + key].save(data => {
-        index++;
-        if (index >= count) {
-          this.props.handleNotification(
-            "custom",
-            "success",
-            "Variables saved!"
-          );
-          this.props.handleLoading(false);
-        }
+      this.state.charts.forEach((item, key) => {
+        this.refs['h' + key].save(data => {
+          index++;
+          if (index >= count) {
+            this.props.handleNotification(
+              'custom',
+              'success',
+              'Variables saved!'
+            );
+            this.props.handleLoading(false);
+          }
+        });
+        this.validateVars([item], this.callbackValidate);
       });
     });
   };
@@ -113,7 +120,7 @@ class VariablesWizard extends Component {
     const totalCharts = this.state.charts.length;
 
     this.state.charts.forEach((item, key) => {
-      this.refs["h" + key].save(list => {
+      this.refs['h' + key].save(list => {
         for (let x = 0; x < list.length; x++) {
           let data = list[x];
           payload.deployables.push(data);
@@ -126,37 +133,81 @@ class VariablesWizard extends Component {
     });
   };
 
-  onClick = () => {
-    let payload = {
-      productVersionId: parseInt(this.state.productVersionId),
-      environmentId: parseInt(this.state.envId),
-      deployables: []
-    };
+  installUpdate = () => {
+    this.setState({ invalidVariables: {} }, () => {
+      let payload = {
+        productVersionId: parseInt(this.state.productVersionId),
+        environmentId: parseInt(this.state.envId),
+        deployables: []
+      };
 
-    let count = 0;
-    const totalCharts = this.state.charts.length;
+      let count = 0;
+      const totalCharts = this.state.charts.length;
 
-    this.state.charts.forEach((item, key) => {
-      this.refs["h" + key].save(list => {
-        for (let x = 0; x < list.length; x++) {
-          let data = list[x];
-          payload.deployables.push(data);
-        }
-        count++;
-        if (count === totalCharts) {
-          this.onSave(payload);
-        }
+      this.state.charts.forEach((item, key) => {
+        this.refs['h' + key].save(list => {
+          for (let x = 0; x < list.length; x++) {
+            let data = list[x];
+            payload.deployables.push(data);
+          }
+          count++;
+          if (count === totalCharts) {
+            this.setState({ installPayload: payload }, () => {
+              this.validateVars(this.state.charts, this.callbackValidateAndInstall);
+            });
+          }
+        });
       });
     });
   };
 
+  validateVars(helmCharts, callback) {
+    helmCharts.forEach(async chart => {
+      await validateVariables(
+        this,
+        parseInt(this.props.selectedEnvironment.value),
+        chart,
+        callback
+      );
+    });
+  }
+
+  callbackValidate = invalidVars => {
+    const invalidToMap = this.arrayToMap(invalidVars);
+
+    this.setState({
+      invalidVariables: {
+        ...this.state.invalidVariables,
+        ...invalidToMap
+      }
+    });
+  };
+
+  callbackValidateAndInstall = invalidVars => {
+    this.callbackValidate(invalidVars);
+
+    if (invalidVars.length === 0) {
+      multipleInstall(this.state.installPayload, this);
+    } else {
+      this.setState({ showConfirmInstallModal: true });
+    }
+  };
+
+  arrayToMap(invalidVariables) {
+    const invalidToMap = {};
+    invalidVariables.forEach(val => {
+      invalidToMap[val.name] = val;
+    });
+    return invalidToMap;
+  }
+
   onCloseCopyModal() {
-    this.setState({ onShowCopyModal: false, chartToManipulate: "" });
+    this.setState({ onShowCopyModal: false, chartToManipulate: '' });
   }
 
   async onConfirmCopyModal(item) {
     await this.refs[this.state.chartToManipulate].listVariables(item.value);
-    this.setState({ onShowCopyModal: false, chartToManipulate: "" });
+    this.setState({ onShowCopyModal: false, chartToManipulate: '' });
   }
 
   showConfirmCopyModal(ref) {
@@ -164,13 +215,22 @@ class VariablesWizard extends Component {
   }
 
   closeEditorModal() {
-    this.setState({ showEditorModal: false, yaml: "" });
+    this.setState({ showEditorModal: false, yaml: '' });
   }
 
   onSaveHelmCommand = payload => {
     getHelmCommand(payload, this, res => {
       this.setState({ helmValue: res.data, showEditorModal: true });
     });
+  };
+
+  handleConfirmInstallClose = () => {
+    this.setState({ showConfirmInstallModal: false });
+  };
+
+  handleConfirmInstall = () => {
+    multipleInstall(this.state.installPayload, this);
+    this.setState({ installPayload: [], showConfirmInstallModal: false });
   };
 
   render() {
@@ -186,9 +246,10 @@ class VariablesWizard extends Component {
           chartName={item}
           chartVersion={this.state.chartVersions[item]}
           desiredTag={this.state.desiredTags[item]}
-          xref={"h" + key}
-          ref={"h" + key}
+          xref={'h' + key}
+          ref={'h' + key}
           envId={envId}
+          invalidVariables={this.state.invalidVariables}
         />
       );
     });
@@ -210,6 +271,15 @@ class VariablesWizard extends Component {
           environments={this.props.environments}
         ></CopyModal>
 
+        <SimpleModal
+          showConfirmDeleteModal={this.state.showConfirmInstallModal}
+          handleConfirmDeleteModalClose={this.handleConfirmInstallClose.bind(this)}
+          title="Invalid variables detected!"
+          subTitle="Install anyway?"
+          message="The following variables are invalid:"
+          handleConfirmDelete={this.handleConfirmInstall.bind(this)}
+        />
+
         <Container fluid>
           <Row>
             <Col md={12}>
@@ -225,7 +295,7 @@ class VariablesWizard extends Component {
                         onClick={this.onHelmCommand}
                         disabled={
                           !this.props.keycloak.hasRealmRole(
-                            "tenkai-helm-upgrade"
+                            'tenkai-helm-upgrade'
                           )
                         }
                       >
@@ -238,7 +308,7 @@ class VariablesWizard extends Component {
                         onClick={this.onSaveVariablesClick}
                         disabled={
                           !this.props.keycloak.hasRealmRole(
-                            "tenkai-variables-save"
+                            'tenkai-variables-save'
                           )
                         }
                       >
@@ -248,10 +318,10 @@ class VariablesWizard extends Component {
                       <Button
                         className="btn-primary pull-right"
                         type="button"
-                        onClick={this.onClick}
+                        onClick={this.installUpdate}
                         disabled={
                           !this.props.keycloak.hasRealmRole(
-                            "tenkai-helm-upgrade"
+                            'tenkai-helm-upgrade'
                           )
                         }
                       >

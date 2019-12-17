@@ -18,7 +18,6 @@ import Button from 'components/CustomButton/CustomButton.jsx';
 import { CanaryCard } from 'components/Deployment/CanaryCard.jsx';
 import { getTagsOfImage, retrieveSettings } from 'client-api/apicall.jsx';
 import Select from 'react-select';
-import { validateVariables } from 'client-api/apicall.jsx';
 
 export class HelmVariables extends Component {
   state = {
@@ -98,24 +97,24 @@ export class HelmVariables extends Component {
 
   async componentDidMount() {
     this.addHost();
-    this.validateVars();
+    // this.validateVars();
   }
 
-  validateVars() {
-    const environmentId = parseInt(this.props.envId);
-    validateVariables(this, environmentId, (self, invalidVariables) => {
-      const invalidToMap = this.arrayToMap(invalidVariables);
-      self.setState({ invalidVariables: invalidToMap });
-    });
-  }
+  // validateVars() {
+  //   const environmentId = parseInt(this.props.envId);
+  //   validateVariables(this, environmentId, (self, invalidVariables) => {
+  //     const invalidToMap = this.arrayToMap(invalidVariables);
+  //     self.setState({ invalidVariables: invalidToMap });
+  //   });
+  // }
 
-  arrayToMap(invalidVariables) {
-    const invalidToMap = {};
-    invalidVariables.forEach(val => {
-      invalidToMap[val.name] = val;
-    });
-    return invalidToMap;
-  }
+  // arrayToMap(invalidVariables) {
+  //   const invalidToMap = {};
+  //   invalidVariables.forEach(val => {
+  //     invalidToMap[val.name] = val;
+  //   });
+  //   return invalidToMap;
+  // }
 
   addDynamicVariableClick(variableName) {
     let dbArray = [...this.state.variables[variableName]];
@@ -589,11 +588,11 @@ export class HelmVariables extends Component {
   }
 
   hasInvalidVar(key) {
-    return !!this.state.invalidVariables[key];
+    return !!this.props.invalidVariables[key];
   }
 
   getInvalidMsg(key) {
-    const v = this.state.invalidVariables[key];
+    const v = this.props.invalidVariables[key];
     return `Value should ${this.generateMsg(v.ruleType, v.valueRule)}`;
   }
 
