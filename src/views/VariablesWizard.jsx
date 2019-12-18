@@ -107,9 +107,9 @@ class VariablesWizard extends Component {
               'Variables saved!'
             );
             this.props.handleLoading(false);
+            this.validateVars([item], this.callbackValidate);
           }
         });
-        this.validateVars([item], this.callbackValidate);
       });
     });
   };
@@ -153,7 +153,10 @@ class VariablesWizard extends Component {
           count++;
           if (count === totalCharts) {
             this.setState({ installPayload: payload }, () => {
-              this.validateVars(this.state.charts, this.callbackValidateAndInstall);
+              this.validateVars(
+                this.state.charts,
+                this.callbackValidateAndInstall
+              );
             });
           }
         });
@@ -273,7 +276,9 @@ class VariablesWizard extends Component {
 
         <SimpleModal
           showConfirmDeleteModal={this.state.showConfirmInstallModal}
-          handleConfirmDeleteModalClose={this.handleConfirmInstallClose.bind(this)}
+          handleConfirmDeleteModalClose={this.handleConfirmInstallClose.bind(
+            this
+          )}
           title="Invalid variables detected!"
           subTitle="Install anyway?"
           message="The following variables are invalid:"
@@ -288,7 +293,6 @@ class VariablesWizard extends Component {
                 content={
                   <div align="right">
                     <ButtonToolbar style={{ display: 'block' }}>
-
                       <Button
                         className="btn-primary pull-right"
                         type="button"
