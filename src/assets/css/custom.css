@@ -107,3 +107,7 @@ table > tbody > tr > td > button > i {
 .bg-disabled {
   background: rgb(240, 240, 240);
 }
+
+.invalid-feedback {
+  font-size: 100%;
+}

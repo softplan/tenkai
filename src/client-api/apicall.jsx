@@ -479,15 +479,15 @@ function getDockerImageFromHelmChart(self, payload, callback) {
     });
 }
 
-async function validateVariables(self, environmentId, chartName, callback) {
+async function validateVariables(self, envId, chartName, callback, cmRef) {
   self.props.handleLoading(true);
   await axios
     .post(TENKAI_API_URL + '/validateVariables', {
-      environmentId: environmentId,
+      environmentId: envId,
       scope: chartName
     })
     .then(response => {
-      callback(response.data.InvalidVariables);
+      callback(response.data.InvalidVariables, cmRef);
       self.props.handleLoading(false);
     })
     .catch(error => {

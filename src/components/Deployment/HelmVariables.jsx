@@ -97,24 +97,7 @@ export class HelmVariables extends Component {
 
   async componentDidMount() {
     this.addHost();
-    // this.validateVars();
   }
-
-  // validateVars() {
-  //   const environmentId = parseInt(this.props.envId);
-  //   validateVariables(this, environmentId, (self, invalidVariables) => {
-  //     const invalidToMap = this.arrayToMap(invalidVariables);
-  //     self.setState({ invalidVariables: invalidToMap });
-  //   });
-  // }
-
-  // arrayToMap(invalidVariables) {
-  //   const invalidToMap = {};
-  //   invalidVariables.forEach(val => {
-  //     invalidToMap[val.name] = val;
-  //   });
-  //   return invalidToMap;
-  // }
 
   addDynamicVariableClick(variableName) {
     let dbArray = [...this.state.variables[variableName]];
@@ -611,6 +594,13 @@ export class HelmVariables extends Component {
     }
   }
 
+  renderCM() {
+    return (
+      this.state.applyConfigMap &&
+      this.state.chartName !== this.state.simpleChart
+    );
+  }
+
   render() {
     const items = Object.keys(this.state.variables).map(key => {
       if (typeof this.state.variables[key] == 'object') {
@@ -639,10 +629,12 @@ export class HelmVariables extends Component {
                 onChange={this.onInputChange}
                 type="text"
                 style={{ width: '100%' }}
-                class={this.isValid(key)}
+                className={this.isValid(key)}
               />
               {this.hasInvalidVar(key) && (
-                <div class="invalid-feedback">{this.getInvalidMsg(key)}</div>
+                <div className="invalid-feedback">
+                  {this.getInvalidMsg(key)}
+                </div>
               )}
             </td>
           </tr>
@@ -781,8 +773,7 @@ export class HelmVariables extends Component {
 
                   <hr />
 
-                  {this.state.applyConfigMap &&
-                  this.state.chartName !== this.state.simpleChart ? (
+                  {this.renderCM() ? (
                     <ConfigMap
                       handleLoading={this.props.handleLoading}
                       handleNotification={this.props.handleNotification}

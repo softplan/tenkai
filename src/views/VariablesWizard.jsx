@@ -22,7 +22,7 @@ class VariablesWizard extends Component {
     helmValue: '',
     showConfirmInstallModal: false,
     installPayload: [],
-    invalidVariables: []
+    invalidVariables: {}
   };
 
   componentDidMount() {
@@ -109,7 +109,7 @@ class VariablesWizard extends Component {
             this.props.handleLoading(false);
             this.validateVars([item], this.callbackValidate);
           }
-        });
+        }, this.validateVars);
       });
     });
   };
@@ -155,7 +155,8 @@ class VariablesWizard extends Component {
             this.setState({ installPayload: payload }, () => {
               this.validateVars(
                 this.state.charts,
-                this.callbackValidateAndInstall
+                this.callbackValidateAndInstall,
+                this.refs['h' + key]
               );
             });
           }
@@ -164,13 +165,14 @@ class VariablesWizard extends Component {
     });
   };
 
-  validateVars(helmCharts, callback) {
+  validateVars(helmCharts, callback, cmRef) {
     helmCharts.forEach(async chart => {
       await validateVariables(
         this,
         parseInt(this.props.selectedEnvironment.value),
         chart,
-        callback
+        callback,
+        cmRef
       );
     });
   }
@@ -186,13 +188,22 @@ class VariablesWizard extends Component {
     });
   };
 
-  callbackValidateAndInstall = invalidVars => {
+  hasInvalidVarsInConfigMap(cmRef) {
+    return (
+      !!cmRef &&
+      !!cmRef.refs &&
+      !!cmRef.refs.hConfigMap &&
+      Object.entries(cmRef.refs.hConfigMap.state.invalidVariables).length > 0
+    );
+  }
+
+  callbackValidateAndInstall = (invalidVars, cmRef) => {
     this.callbackValidate(invalidVars);
 
-    if (invalidVars.length === 0) {
-      multipleInstall(this.state.installPayload, this);
-    } else {
+    if (this.hasInvalidVarsInConfigMap(cmRef) || invalidVars.length > 0) {
       this.setState({ showConfirmInstallModal: true });
+    } else {
+      multipleInstall(this.state.installPayload, this);
     }
   };
 
@@ -281,7 +292,7 @@ class VariablesWizard extends Component {
           )}
           title="Invalid variables detected!"
           subTitle="Install anyway?"
-          message="The following variables are invalid:"
+          message="There are variables with invalid values. Please, review and then install it again."
           handleConfirmDelete={this.handleConfirmInstall.bind(this)}
         />
 
