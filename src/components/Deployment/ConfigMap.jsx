@@ -70,7 +70,12 @@ export class ConfigMap extends Component {
   arrayToMap(invalidVariables) {
     const invalidToMap = {};
     invalidVariables.forEach(val => {
-      invalidToMap[val.name] = val;
+      if (!!invalidToMap[val.name]) {
+        invalidToMap[val.name].push(val);
+      } else {
+        invalidToMap[val.name] = [];
+        invalidToMap[val.name].push(val);
+      }
     });
     return invalidToMap;
   }
@@ -286,11 +291,13 @@ export class ConfigMap extends Component {
   }
 
   hasInvalidVar(key) {
-    return !!this.state.invalidVariables[key];
+    return !!this.state.invalidVariables && !!this.state.invalidVariables[key];
   }
 
-  getInvalidMsg(key) {
-    const v = this.state.invalidVariables[key];
+  getInvalidMsg(name, ruleType) {
+    const v = this.state.invalidVariables[name].find(
+      o => o.ruleType === ruleType
+    );
     return `Value should ${this.generateMsg(v.ruleType, v.valueRule)}`;
   }
 
@@ -328,7 +335,13 @@ export class ConfigMap extends Component {
               className={this.isValid(key)}
             />
             {this.hasInvalidVar(key) && (
-              <div className="invalid-feedback">{this.getInvalidMsg(key)}</div>
+              this.state.invalidVariables[key].map(k => {
+                return (
+                  <div key={k} className="invalid-feedback">
+                    {this.getInvalidMsg(k.name, k.ruleType)}
+                  </div>
+                );
+              })
             )}
           </td>
         </tr>

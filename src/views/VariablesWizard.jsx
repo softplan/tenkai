@@ -210,7 +210,12 @@ class VariablesWizard extends Component {
   arrayToMap(invalidVariables) {
     const invalidToMap = {};
     invalidVariables.forEach(val => {
-      invalidToMap[val.name] = val;
+      if (!!invalidToMap[val.name]) {
+        invalidToMap[val.name].push(val);
+      } else {
+        invalidToMap[val.name] = [];
+        invalidToMap[val.name].push(val);
+      }
     });
     return invalidToMap;
   }

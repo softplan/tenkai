@@ -571,11 +571,13 @@ export class HelmVariables extends Component {
   }
 
   hasInvalidVar(key) {
-    return !!this.props.invalidVariables[key];
+    return !!this.props.invalidVariables && !!this.props.invalidVariables[key];
   }
 
-  getInvalidMsg(key) {
-    const v = this.props.invalidVariables[key];
+  getInvalidMsg(name, ruleType) {
+    const v = this.props.invalidVariables[name].find(
+      o => o.ruleType === ruleType
+    );
     return `Value should ${this.generateMsg(v.ruleType, v.valueRule)}`;
   }
 
@@ -632,9 +634,13 @@ export class HelmVariables extends Component {
                 className={this.isValid(key)}
               />
               {this.hasInvalidVar(key) && (
-                <div className="invalid-feedback">
-                  {this.getInvalidMsg(key)}
-                </div>
+                this.props.invalidVariables[key].map(key => {
+                  return (
+                    <div key={key} className="invalid-feedback">
+                      {this.getInvalidMsg(key.name, key.ruleType)}
+                    </div>
+                  );
+                })
               )}
             </td>
           </tr>
