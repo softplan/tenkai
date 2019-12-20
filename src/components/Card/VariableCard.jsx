@@ -15,9 +15,16 @@ const Header = props =>
       </b>
     </h4>
   );
-
+//{ backgroundColor: "#FCFFEC" }
 export const HelmCard = props => (
-  <div className={"card"} style={{ backgroundColor: "#FCFFEC" }}>
+  <div
+    className="card"
+    style={
+      props.isValid
+        ? { backgroundColor: '#FCFFEC' }
+        : { backgroundColor: 'rgba(255, 0, 0, 0.2)' }
+    }
+  >
     <div className={"header"}>
       <Header item={props.item} />
       <p className="category">{props.item.scope}</p>
@@ -26,6 +33,15 @@ export const HelmCard = props => (
       <p>{props.item.description}</p>
       <div className="footer">
         <hr />
+        {!props.isValid && (
+          props.invalidVariablesMsg.map(key => {
+            return (
+              <p key={key} className={"category"} style={{ color: '#2F4F4F'}}>
+                {'Value should ' +
+                  props.generateMsg(key.ruleType, key.valueRule)}
+              </p>
+            );
+          }))}
       </div>
 
       <ButtonToolbar>

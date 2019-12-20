@@ -19,6 +19,7 @@ import { ButtonToolbar } from "react-bootstrap";
 import { CardTenkai } from "components/Card/CardTenkai.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
 import { VariablesForm } from "components/Environments/VariablesForm.jsx";
+import { validateEnvVars } from 'client-api/apicall.jsx';
 
 class Variables extends Component {
   state = {
@@ -31,7 +32,8 @@ class Variables extends Component {
     itemToDelete: {},
     inputFilter: "",
     showVariablesNotUsedModal: false,
-    variablesNotUsed: []
+    variablesNotUsed: [],
+    invalidVariables: {}
   };
 
   componentDidMount() {
@@ -54,7 +56,8 @@ class Variables extends Component {
     this.setState(
       { environmentName: environmentName, locationSearch: locationSearch },
       () => {
-        this.getScopedVariables();
+        const values = queryString.parse(this.state.locationSearch);
+        validateEnvVars(this, values.id, this.callbackValidate);
       }
     );
   }
@@ -86,12 +89,42 @@ class Variables extends Component {
         this.setState({ variablesResult: response.data }, () => {
           this.props.handleLoading(false);
         });
+        // validateEnvVars(this, values.id, this.callbackValidate);
       })
       .catch(error => {
         this.props.handleLoading(false);
         console.log(error.message);
         this.props.handleNotification("general_fail", "error");
       });
+  }
+
+  callbackValidate = invalidVars => {
+    const invalidToMap = this.arrayToMap(invalidVars);
+
+    this.setState(
+      {
+        invalidVariables: {
+          ...this.state.invalidVariables,
+          ...invalidToMap
+        }
+      },
+      () => {
+        this.getScopedVariables();
+      }
+    );
+  };
+
+  arrayToMap(invalidVariables) {
+    const invalidToMap = {};
+    invalidVariables.forEach(val => {
+      if (!!invalidToMap[val.name]) {
+        invalidToMap[val.name].push(val);
+      } else {
+        invalidToMap[val.name] = [];
+        invalidToMap[val.name].push(val);
+      }
+    });
+    return invalidToMap;
   }
 
   handleNewClick(e) {
@@ -169,6 +202,36 @@ class Variables extends Component {
     this.setState({ showConfirmDeleteModal: false, itemToDelete: {} });
   }
 
+  isValid(key) {
+    return !this.hasInvalidVar(key);
+  }
+
+  hasInvalidVar(key) {
+    return !!this.state.invalidVariables && !!this.state.invalidVariables[key];
+  }
+
+  getInvalidMsg(name) {
+    if (!!this.state.invalidVariables && !!this.state.invalidVariables[name]) {
+      return this.state.invalidVariables[name];
+    }
+    return [];
+  }
+
+  generateMsg = (ruleType, valueRule) => {
+    switch (ruleType) {
+      case 'NotEmpty':
+        return 'be not empty.';
+      case 'StartsWith':
+        return `starts with '${valueRule}'.`;
+      case 'EndsWith':
+        return `ends with '${valueRule}'.`;
+      case 'RegEx':
+        return `complies to regex '${valueRule}'.`;
+      default:
+        break;
+    }
+  };
+
   render() {
     const notUsedRender = this.state.variablesNotUsed.map((item, key) => {
       return (
@@ -190,6 +253,9 @@ class Variables extends Component {
       <VariableCard
         key={key}
         item={item}
+        isValid={this.isValid(item.name)}
+        invalidVariablesMsg={this.getInvalidMsg(item.name)}
+        generateMsg={this.generateMsg}
         navigateToEditEnvironment={this.navigateToEditEnvironment.bind(
           this,
           item
