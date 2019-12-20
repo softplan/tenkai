@@ -496,6 +496,20 @@ async function validateVariables(self, envId, chartName, callback, cmRef) {
     });
 }
 
+async function validateEnvVars(self, envId, callback) {
+  self.props.handleLoading(true);
+  await axios
+    .post(TENKAI_API_URL + '/validateEnvVars/' + envId)
+    .then(response => {
+      callback(response.data.InvalidVariables);
+      self.props.handleLoading(false);
+    })
+    .catch(error => {
+      self.props.handleLoading(false);
+      handlerError(self, error.response);
+    });
+}
+
 export {
   retriveRepo,
   retrieveCharts,
@@ -523,5 +537,6 @@ export {
   getDockerImageFromHelmChart,
   getHelmCommand,
   listEndpoints,
-  validateVariables
+  validateVariables,
+  validateEnvVars
 };
