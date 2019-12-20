@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 
 import {
-    PanelGroup, Panel, Row, Col, FormGroup
+  CardGroup, Card, Row, Col, FormGroup
 } from "react-bootstrap";
-import { Card } from "components/Card/Card.jsx";
+import { CardTenkai } from "components/Card/CardTenkai.jsx";
 import { FormInputs } from "components/FormInputs/FormInputs.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
 import axios from 'axios';
@@ -39,10 +39,10 @@ export class TrafficPanel extends Component {
         }
 
         this.addRelease();
-        
+
         if (this.props.defaultReleaseName !== undefined) {
             this.setState({defaultReleaseName: this.props.defaultReleaseName});
-            await this.addRelease(this.props.defaultReleaseName);    
+            await this.addRelease(this.props.defaultReleaseName);
         }
 
         if (this.props.headerReleaseName !== undefined) {
@@ -207,7 +207,7 @@ export class TrafficPanel extends Component {
                             name: index,
                             label: "Release",
                             type: "text",
-                            bsClass: "form-control",
+                            bsPrefix: "form-control",
                             value: this.state.releases[index].name,
                             onChange: this.handleReleaseNameChange.bind(this)
                         },
@@ -215,7 +215,7 @@ export class TrafficPanel extends Component {
                             name: index,
                             label: "Weight",
                             type: "text",
-                            bsClass: "form-control",
+                            bsPrefix: "form-control",
                             value: this.state.releases[index].weight,
                             onChange: this.handleWeightChanged.bind(this)
                         }
@@ -229,7 +229,7 @@ export class TrafficPanel extends Component {
             <div className="content">
                 <Row>
                     <Col md={12}>
-                        <Card
+                        <CardTenkai
                             title="Traffic Management"
                             content={
                                 <div>
@@ -242,7 +242,7 @@ export class TrafficPanel extends Component {
                                                     label: "DOMAIN",
                                                     type: "text",
                                                     placeholder: "Internal or External DOMAIN",
-                                                    bsClass: "form-control",
+                                                    bsPrefix: "form-control",
                                                     value: this.state.domain,
                                                     onChange: this.handleDomainChange.bind(this)
                                                 },
@@ -251,7 +251,7 @@ export class TrafficPanel extends Component {
                                                     label: "Context Path",
                                                     type: "text",
                                                     placeholder: "/xpto",
-                                                    bsClass: "form-control",
+                                                    bsPrefix: "form-control",
                                                     value: this.state.apiPath,
                                                     onChange: this.handleApiPathChange.bind(this)
                                                 }
@@ -269,7 +269,7 @@ export class TrafficPanel extends Component {
                                                     name: "serviceName",
                                                     label: "K8S Service Name",
                                                     type: "text",
-                                                    bsClass: "form-control",
+                                                    bsPrefix: "form-control",
                                                     value: this.state.serviceName,
                                                     onChange: this.handleServiceNameChange.bind(this)
                                                 }
@@ -278,12 +278,12 @@ export class TrafficPanel extends Component {
                                     </FormGroup>
 
 
-                                    <PanelGroup accordion id="accordion-example">
-                                        <Panel eventKey="1">
-                                            <Panel.Heading>
-                                                <Panel.Title toggle>Canary (by Header)</Panel.Title>
-                                            </Panel.Heading>
-                                            <Panel.Body collapsible>
+                                    <CardGroup accordion="true" id="accordion-example">
+                                        <Card eventKey="1">
+                                            <Card.Header>
+                                                <Card.Title toggle>Canary (by Header)</Card.Title>
+                                            </Card.Header>
+                                            <Card.Body collapsible>
                                                 <FormGroup>
                                                     <FormInputs
                                                         ncols={["col-md-5", "col-md-5"]}
@@ -292,7 +292,7 @@ export class TrafficPanel extends Component {
                                                                 name: "headerName",
                                                                 label: "Header Name",
                                                                 type: "text",
-                                                                bsClass: "form-control",
+                                                                bsPrefix: "form-control",
                                                                 value: this.state.headerName,
                                                                 onChange: this.handleHeaderNameChange.bind(this)
                                                             },
@@ -300,7 +300,7 @@ export class TrafficPanel extends Component {
                                                                 name: "headerValue",
                                                                 label: "Header Value",
                                                                 type: "text",
-                                                                bsClass: "form-control",
+                                                                bsPrefix: "form-control",
                                                                 value: this.state.headerValue,
                                                                 onChange: this.handleHeaderValueChange.bind(this)
                                                             },
@@ -316,7 +316,7 @@ export class TrafficPanel extends Component {
                                                                 name: "headerReleaseName",
                                                                 label: "Header Release Name",
                                                                 type: "text",
-                                                                bsClass: "form-control",
+                                                                bsPrefix: "form-control",
                                                                 value: this.state.headerReleaseName,
                                                                 onChange: this.handleHeaderReleaseNameChange.bind(this)
                                                             }
@@ -331,37 +331,37 @@ export class TrafficPanel extends Component {
                                                                 name: "defaultReleaseName",
                                                                 label: "Default Release Name",
                                                                 type: "text",
-                                                                bsClass: "form-control",
+                                                                bsPrefix: "form-control",
                                                                 value: this.state.defaultReleaseName,
                                                                 onChange: this.handleDefaultReleaseNameChange.bind(this)
                                                             }
                                                         ]} />
                                                 </FormGroup>
 
-                                            </Panel.Body>
-                                        </Panel>
-                                        <Panel eventKey="2">
+                                            </Card.Body>
+                                        </Card>
+                                        <Card eventKey="2">
 
-                                            <Panel.Heading>
-                                                <Panel.Title toggle>Blue/Green (by Weight)</Panel.Title>
-                                            </Panel.Heading>
+                                            <Card.Header>
+                                                <Card.Title toggle>Blue/Green (by Weight)</Card.Title>
+                                            </Card.Header>
 
-                                            <Panel.Body collapsible>
+                                            <Card.Body collapsible>
 
                                                 <Row>
                                                     <Col md={10}>
                                                         <FormGroup>
                                                             {releases}
                                                         </FormGroup>
-                                                        <Button bsStyle="info" onClick={this.addRelease.bind(this)}>
+                                                        <Button variant="info" onClick={this.addRelease.bind(this)}>
                                                             Add Release
                                                         </Button>
                                                     </Col>
                                                 </Row>
 
-                                            </Panel.Body>
-                                        </Panel>
-                                    </PanelGroup>
+                                            </Card.Body>
+                                        </Card>
+                                    </CardGroup>
                                 </div>
                             } />
                     </Col>

@@ -6,10 +6,11 @@ import Button from "components/CustomButton/CustomButton.jsx";
 export const ChartCard = props => (
   <div className={"card chart"}>
     <div className={"header"}>
-      <ButtonToolbar>
+      <ButtonToolbar  >
         <Button
-          className="btn-primary btn-fill"
-          bsSize="sm"
+          className="btn-fill"
+          variant="primary"
+          size="sm"
           onClick={() =>
             props.deploy(props.item.name + "@" + props.item.chartVersion)
           }
@@ -17,19 +18,9 @@ export const ChartCard = props => (
           <i className="pe-7s-album" /> Deploy
         </Button>
 
-        {/* <Button
-          className="btn-info btn-fill"
-          bsSize="sm"
-          onClick={() =>
-            props.analysis(`${props.item.name}@${props.item.chartVersion}`)
-          }
-        >
-          <i className="pe-7s-eyedropper" /> Analyse
-        </Button> */}
-
         <Button
-          className="btn"
-          bsSize="sm"
+          variant="secondary"
+          size="sm"
           onClick={() =>
             props.addToDeployList(
               `${props.item.name}@${props.item.chartVersion}`

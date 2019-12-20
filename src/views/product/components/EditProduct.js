@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Card } from 'components/Card/Card.jsx';
+import { CardTenkai } from 'components/Card/CardTenkai.jsx';
 import { FormInputs } from 'components/FormInputs/FormInputs.jsx';
 import { Button } from 'react-bootstrap';
 
@@ -45,7 +45,7 @@ export class EditProduct extends Component {
 
     return (
       <div>
-        <Card
+        <CardTenkai
           title={editMode ? 'Edit Product' : 'New Product'}
           content={
             <form>
@@ -56,7 +56,7 @@ export class EditProduct extends Component {
                     name: 'name',
                     label: 'Product Name',
                     type: 'text',
-                    bsClass: 'form-control',
+                    bsPrefix: 'form-control',
                     value: this.state.formData.name,
                     onChange: this.handleChange
                   }
@@ -65,13 +65,13 @@ export class EditProduct extends Component {
 
               <div className="btn-toolbar">
                 <div className="btn-group">
-                  <Button bsStyle="info" type="button" onClick={this.saveClick}>
+                  <Button variant="info" type="button" onClick={this.saveClick}>
                     Save
                   </Button>
                 </div>
                 <div className="btn-group">
                   <Button
-                    bsStyle="info"
+                    variant="info"
                     type="button"
                     onClick={this.props.cancelClick}
                   >
@@ -79,8 +79,6 @@ export class EditProduct extends Component {
                   </Button>
                 </div>
               </div>
-
-              <div className="clearfix" />
             </form>
           }
         />

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { Card } from 'components/Card/Card.jsx';
+import { CardTenkai } from 'components/Card/CardTenkai.jsx';
 
-import { Grid, Row, Col, ButtonToolbar } from 'react-bootstrap';
+import { Container, Row, Col, ButtonToolbar } from 'react-bootstrap';
 
 import HelmVariables from 'components/Deployment/HelmVariables.jsx';
 import TrafficPanel from 'components/Traffic/TrafficPanel.jsx';
@@ -289,10 +289,10 @@ class BlueGreenWizard extends Component {
 
     return (
       <div className="content">
-        <Grid fluid>
+        <Container fluid>
           <Row>
             <Col md={12}>
-              <Card
+              <CardTenkai
                 title=""
                 content={
                   <div>
@@ -339,7 +339,7 @@ class BlueGreenWizard extends Component {
 
           <Row>
             <Col md={12}>
-              <Card
+              <CardTenkai
                 title=""
                 content={
                   <div>
@@ -381,7 +381,7 @@ class BlueGreenWizard extends Component {
               />
             </Col>
           </Row>
-        </Grid>
+        </Container>
       </div>
     );
   }

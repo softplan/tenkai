@@ -1,17 +1,17 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
-  Grid,
+  Container,
   Row,
   Col,
   FormControl,
   Table,
   FormGroup,
-  ControlLabel
+  FormLabel
 } from 'react-bootstrap';
 
 import Button from 'components/CustomButton/CustomButton.jsx';
-import { Card } from 'components/Card/Card.jsx';
+import { CardTenkai } from 'components/Card/CardTenkai.jsx';
 import EditProductRelease from 'views/productRelease/components/EditProductRelease';
 import SimpleModal from 'components/Modal/SimpleModal.jsx';
 
@@ -113,7 +113,7 @@ class ProductRelease extends Component {
           <td>{item.version}</td>
           <td>
             <Button
-              bsStyle="danger"
+              variant="danger"
               className="link-button"
               onClick={() =>
                 this.setState({ itemToDelete: item }, () => {
@@ -143,7 +143,7 @@ class ProductRelease extends Component {
           <td>
             <Button
               className="link-button"
-              bsStyle={item.locked ? 'primary' : 'danger'}
+              variant={item.locked ? 'primary' : 'danger'}
               onClick={this.onLockVersion.bind(this, item)}
             >
               <i className={item.locked ? 'pe-7s-lock' : 'pe-7s-unlock'} />
@@ -166,7 +166,7 @@ class ProductRelease extends Component {
           handleConfirmDelete={this.handleConfirmDelete.bind(this)}
         ></SimpleModal>
 
-        <Grid fluid>
+        <Container fluid>
           <Row>
             <Col md={12}>
               <CardButton
@@ -198,14 +198,14 @@ class ProductRelease extends Component {
 
           <Row>
             <Col md={12}>
-              <Card
+              <CardTenkai
                 title="Releases"
                 content={
                   <form>
                     <div>
                       <div className="col-md-8">
                         <FormGroup>
-                          <ControlLabel>Release Search</ControlLabel>
+                          <FormLabel>Release Search</FormLabel>
                           <FormControl
                             value={this.state.inputFilter}
                             onChange={e =>
@@ -240,7 +240,7 @@ class ProductRelease extends Component {
               />
             </Col>
           </Row>
-        </Grid>
+        </Container>
       </div>
     );
   }

@@ -24,6 +24,7 @@
 
 .modal-90w {
     width: 60%;
+    max-width: initial;
 }
 
 .stepwizard-step p {
@@ -105,4 +106,8 @@ table > tbody > tr > td > button > i {
 
 .bg-disabled {
   background: rgb(240, 240, 240);
+}
+
+.invalid-feedback {
+  font-size: 100%;
 }

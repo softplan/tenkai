@@ -18,7 +18,7 @@ export const EnvironmentCard = props => (
       <ButtonToolbar>
         <Button
           className="btn-primary"
-          bsSize="sm"
+          size="sm"
           disabled={!props.keycloak.hasRealmRole("tenkai-admin")}
           onClick={() => props.navigateToEditEnvironment(props.item)}
         >
@@ -27,7 +27,7 @@ export const EnvironmentCard = props => (
 
         <Button
           className="btn-primary"
-          bsSize="sm"
+          size="sm"
           onClick={() =>
             props.navigateToEnvironmentVariables(
               props.item.ID,
@@ -41,7 +41,7 @@ export const EnvironmentCard = props => (
 
         <Button
           className="btn-primary"
-          bsSize="sm"
+          size="sm"
           disabled={!props.keycloak.hasRealmRole("tenkai-admin")}
           onClick={() => props.duplicateEnvironment(props.item)}
         >
@@ -50,7 +50,7 @@ export const EnvironmentCard = props => (
 
         <Button
           className="btn-primary"
-          bsSize="sm"
+          size="sm"
           onClick={() => props.onExport(props.item)}
         >
           <i className="pe-7s-global" /> Export
@@ -58,7 +58,7 @@ export const EnvironmentCard = props => (
 
         <Button
           className="btn-danger"
-          bsSize="sm"
+          size="sm"
           disabled={!props.keycloak.hasRealmRole("tenkai-admin")}
           onClick={() => props.onDelete(props.item)}
         >

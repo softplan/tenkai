@@ -1,7 +1,7 @@
 import React, { Component } from "react";
-import { Card } from "components/Card/Card.jsx";
+import { CardTenkai } from "components/Card/CardTenkai.jsx";
 import { FormInputs } from "components/FormInputs/FormInputs.jsx";
-import { FormGroup, ControlLabel, Button } from "react-bootstrap";
+import { FormGroup, FormLabel, Button } from "react-bootstrap";
 import Select from "react-select";
 import { retriveRepo, retrieveCharts } from "client-api/apicall.jsx";
 
@@ -65,12 +65,12 @@ export class DepForm extends Component {
 
     return (
       <div>
-        <Card
+        <CardTenkai
           title={editMode ? "Edit Dependency" : "New Dependency"}
           content={
             <form>
               <FormGroup>
-                <ControlLabel>Repository</ControlLabel>
+                <FormLabel>Repository</FormLabel>
                 <Select
                   value={selectedRepository}
                   onChange={this.handleRepositoryChange}
@@ -79,7 +79,7 @@ export class DepForm extends Component {
               </FormGroup>
 
               <FormGroup>
-                <ControlLabel>Helm Chart</ControlLabel>
+                <FormLabel>Helm Chart</FormLabel>
                 <Select
                   value={selectedChart}
                   onChange={this.handleChartChange}
@@ -94,7 +94,7 @@ export class DepForm extends Component {
                     name: "version",
                     label: "Version (Tag)",
                     type: "text",
-                    bsClass: "form-control",
+                    bsPrefix: "form-control",
                     placeholder: "Version",
                     value: this.state.formData.version,
                     onChange: this.handleChange
@@ -103,13 +103,13 @@ export class DepForm extends Component {
               />
               <div className="btn-toolbar">
                 <div className="btn-group">
-                  <Button bsStyle="info" type="button" onClick={this.saveClick}>
+                  <Button variant="info" type="button" onClick={this.saveClick}>
                     Save
                   </Button>
                 </div>
                 <div className="btn-group">
                   <Button
-                    bsStyle="info"
+                    variant="info"
                     type="button"
                     onClick={this.props.cancelClick}
                   >
@@ -117,7 +117,6 @@ export class DepForm extends Component {
                   </Button>
                 </div>
               </div>
-              <div className="clearfix" />
             </form>
           }
         />

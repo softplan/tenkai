@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
-import { Card } from 'components/Card/Card.jsx';
+import { CardTenkai } from 'components/Card/CardTenkai.jsx';
 import {
   Row,
   Col,
   Table,
   FormGroup,
   ButtonToolbar,
-  ControlLabel,
+  FormLabel,
   FormControl
 } from 'react-bootstrap';
 import axios from 'axios';
@@ -563,6 +563,46 @@ export class HelmVariables extends Component {
     this.setState({ dontCreateService: value });
   };
 
+  isValid(key) {
+    if (this.hasInvalidVar(key)) {
+      return 'form-control is-invalid';
+    }
+    return '';
+  }
+
+  hasInvalidVar(key) {
+    return !!this.props.invalidVariables && !!this.props.invalidVariables[key];
+  }
+
+  getInvalidMsg(name, ruleType) {
+    const v = this.props.invalidVariables[name].find(
+      o => o.ruleType === ruleType
+    );
+    return `Value should ${this.generateMsg(v.ruleType, v.valueRule)}`;
+  }
+
+  generateMsg(ruleType, valueRule) {
+    switch (ruleType) {
+      case 'NotEmpty':
+        return 'be not empty.';
+      case 'StartsWith':
+        return `starts with '${valueRule}'.`;
+      case 'EndsWith':
+        return `ends with '${valueRule}'.`;
+      case 'RegEx':
+        return `complies to regex '${valueRule}'.`;
+      default:
+        break;
+    }
+  }
+
+  renderCM() {
+    return (
+      this.state.applyConfigMap &&
+      this.state.chartName !== this.state.simpleChart
+    );
+  }
+
   render() {
     const items = Object.keys(this.state.variables).map(key => {
       if (typeof this.state.variables[key] == 'object') {
@@ -582,16 +622,26 @@ export class HelmVariables extends Component {
 
         return (
           <tr key={key}>
-            <td className="col-md-2">{key}</td>
-            <td className="col-md-5 word-wrap">{keyValue}</td>
-            <td className="col-md-5">
+            <td className="word-wrap">{key}</td>
+            <td className="word-wrap">{keyValue}</td>
+            <td>
               <input
                 name={key}
                 value={value}
                 onChange={this.onInputChange}
                 type="text"
                 style={{ width: '100%' }}
+                className={this.isValid(key)}
               />
+              {this.hasInvalidVar(key) && (
+                this.props.invalidVariables[key].map(key => {
+                  return (
+                    <div key={key} className="invalid-feedback">
+                      {this.getInvalidMsg(key.name, key.ruleType)}
+                    </div>
+                  );
+                })
+              )}
             </td>
           </tr>
         );
@@ -602,7 +652,7 @@ export class HelmVariables extends Component {
       <div>
         <Row>
           <Col md={12}>
-            <Card
+            <CardTenkai
               title={this.state.chartName}
               content={
                 <div>
@@ -615,7 +665,7 @@ export class HelmVariables extends Component {
                           this,
                           this.props.xref
                         )}
-                        bsSize="sm"
+                        size="sm"
                       >
                         <i className="pe-7s-magic-wand" /> Copy config from
                         another environment
@@ -625,7 +675,7 @@ export class HelmVariables extends Component {
                         className="btn-warning"
                         disabled={this.props.canary}
                         onClick={this.showHideCanaryOptions.bind(this)}
-                        bsSize="sm"
+                        size="sm"
                       >
                         <i className="pe-7s-magic-wand" />{' '}
                         {this.state.canaryShowing
@@ -661,12 +711,12 @@ export class HelmVariables extends Component {
                       <Row>
                         <Col xs={6}>
                           <FormGroup>
-                            <ControlLabel>Container image</ControlLabel>
+                            <FormLabel>Container image</FormLabel>
                             <FormControl
                               name="image"
                               readOnly={true}
                               type="text"
-                              bsClass="form-control"
+                              bsPrefix="form-control"
                               value={this.state.containerImage}
                               onChange={this.handleContainerImageChange}
                             />
@@ -674,7 +724,7 @@ export class HelmVariables extends Component {
                         </Col>
                         <Col xs={3}>
                           <FormGroup>
-                            <ControlLabel>Container Tag</ControlLabel>
+                            <FormLabel>Container Tag</FormLabel>
                             <Select
                               value={this.state.selectedTag}
                               onChange={this.handleContainerTagChange}
@@ -729,8 +779,7 @@ export class HelmVariables extends Component {
 
                   <hr />
 
-                  {this.state.applyConfigMap &&
-                  this.state.chartName !== this.state.simpleChart ? (
+                  {this.renderCM() ? (
                     <ConfigMap
                       handleLoading={this.props.handleLoading}
                       handleNotification={this.props.handleNotification}

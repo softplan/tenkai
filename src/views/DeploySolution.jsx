@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { Grid, Row, Col, Table, ButtonToolbar } from 'react-bootstrap';
+import { Container, Row, Col, Table, ButtonToolbar } from 'react-bootstrap';
 
-import { Card } from 'components/Card/Card.jsx';
+import { CardTenkai } from 'components/Card/CardTenkai.jsx';
 import Button from 'components/CustomButton/CustomButton.jsx';
 import queryString from 'query-string';
 import { retrieveSolutionChart } from 'client-api/solutionchart-apicall.jsx';
@@ -92,10 +92,10 @@ class DeploySolution extends Component {
 
     return (
       <div className="content">
-        <Grid fluid>
+        <Container fluid>
           <Row>
             <Col md={12}>
-              <Card
+              <CardTenkai
                 title="Helm Chart"
                 content={
                   <div>
@@ -119,7 +119,7 @@ class DeploySolution extends Component {
                       <Col xs={10}>
                         <ButtonToolbar>
                           <Button
-                            bsStyle="default"
+                            variant="default"
                             disabled={
                               (Object.entries(this.props.selectedEnvironment)
                                 .length === 0 &&
@@ -145,7 +145,7 @@ class DeploySolution extends Component {
               />
             </Col>
           </Row>
-        </Grid>
+        </Container>
       </div>
     );
   }

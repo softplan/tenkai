@@ -1,17 +1,17 @@
 import React, { Component } from "react";
 import {
-  Grid,
+  Container,
   Row,
   Col,
   FormGroup,
-  ControlLabel,
+  FormLabel,
   Table,
   Button
 } from "react-bootstrap";
 
 import Select from "react-select";
 
-import { Card } from "components/Card/Card.jsx";
+import { CardTenkai } from "components/Card/CardTenkai.jsx";
 import { ReleaseForm } from "components/Microservices/ReleaseForm.jsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import SimpleModal from "components/Modal/SimpleModal.jsx";
@@ -130,15 +130,15 @@ class Microservices extends Component {
           handleConfirmDelete={this.handleConfirmDelete.bind(this)}
         ></SimpleModal>
 
-        <Grid fluid>
+        <Container fluid>
           <Row>
             <Col md={12}>
-              <Card
+              <CardTenkai
                 title=""
                 content={
                   <form>
                     <FormGroup>
-                      <ControlLabel>Repository</ControlLabel>
+                      <FormLabel>Repository</FormLabel>
                       <Select
                         value={selectedRepository}
                         onChange={this.handleRepositoryChange}
@@ -147,7 +147,7 @@ class Microservices extends Component {
                     </FormGroup>
 
                     <FormGroup>
-                      <ControlLabel>Helm Chart</ControlLabel>
+                      <FormLabel>Helm Chart</FormLabel>
                       <Select
                         value={selectedChart}
                         onChange={this.handleChartChange}
@@ -162,8 +162,6 @@ class Microservices extends Component {
                     >
                       New Release
                     </Button>
-
-                    <div className="clearfix" />
                   </form>
                 }
               />
@@ -185,7 +183,7 @@ class Microservices extends Component {
 
           <Row>
             <Col md={12}>
-              <Card
+              <CardTenkai
                 title="Releases"
                 category="Version number"
                 content={
@@ -205,7 +203,7 @@ class Microservices extends Component {
               />
             </Col>
           </Row>
-        </Grid>
+        </Container>
       </div>
     );
   }

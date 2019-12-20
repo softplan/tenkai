@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import {
-  Grid,
+  Container,
   Row,
   Col,
   FormGroup,
   FormControl,
-  ControlLabel,
-  Panel
+  FormLabel,
+  Card,
+  Form
 } from 'react-bootstrap';
 
 import Select from 'react-select';
@@ -185,7 +186,7 @@ class Deployment extends Component {
           this.state.inputFilter === '' ||
           d.name.includes(this.state.inputFilter)
       )
-      .map((item) => (
+      .map(item => (
         <ChartCard
           key={item.name}
           item={item}
@@ -200,7 +201,7 @@ class Deployment extends Component {
 
     return (
       <div className="content">
-        <Grid fluid>
+        <Container fluid>
           <Row>
             <Col md={12}>
               <ActionCard
@@ -219,22 +220,20 @@ class Deployment extends Component {
                 content={
                   <div>
                     <Row>
-                      <div className="col-md-5">
+                      <Col xs={2}>
                         <FormGroup>
-                          <ControlLabel>Repository</ControlLabel>
+                          <FormLabel>Repository</FormLabel>
                           <Select
                             value={selectedRepository}
                             onChange={this.handleRepositoryChange}
                             options={this.state.repositories}
                           />
                         </FormGroup>
-                      </div>
-                    </Row>
+                      </Col>
 
-                    <Row>
-                      <Col xs={4}>
+                      <Col xs={8}>
                         <FormGroup>
-                          <ControlLabel>Chart Search</ControlLabel>
+                          <FormLabel>Chart Search</FormLabel>
                           <FormControl
                             ref="inputNode"
                             name="inputFilter"
@@ -248,42 +247,41 @@ class Deployment extends Component {
                         </FormGroup>
                       </Col>
 
-                      <Col xs={3}>
-                        <div>
-                          <input
-                            type="checkbox"
+                      <Col xs={2}>
+                        <FormGroup>
+                          <FormLabel>Latest chart only</FormLabel>
+                          <Form.Check
                             id="latestVersionOnly"
+                            type="switch"
                             checked={this.state.latestVersionOnly === true}
                             onChange={this.handleLatestVersionOnlyChange.bind(
                               this
                             )}
-                          />{' '}
-                          <label>LATEST CHART VERSION ONLY</label>
-                        </div>
+                            label=""
+                          ></Form.Check>
+                        </FormGroup>
                       </Col>
                     </Row>
 
                     <Row>
                       <Col xs={12}>
-                        <Panel>
-                          <Panel.Heading>
+                        <Card>
+                          <Card.Header>
                             Multiple deployment selection
-                          </Panel.Heading>
-                          <Panel.Body>{multipleDeployList}</Panel.Body>
-                        </Panel>
+                          </Card.Header>
+                          <Card.Body>{multipleDeployList}</Card.Body>
+                        </Card>
                       </Col>
                     </Row>
 
                     <Row>
                       <Col xs={12}>
-                        <Panel bsStyle="primary">
-                          <Panel.Heading>
-                            <Panel.Title componentClass="h3">
-                              Charts
-                            </Panel.Title>
-                          </Panel.Heading>
-                          <Panel.Body>{items}</Panel.Body>
-                        </Panel>
+                        <Card variant="primary">
+                          <Card.Header>
+                            <Card.Title as="h4">Charts</Card.Title>
+                          </Card.Header>
+                          <Card.Body>{items}</Card.Body>
+                        </Card>
                       </Col>
                     </Row>
                   </div>
@@ -291,7 +289,7 @@ class Deployment extends Component {
               />
             </Col>
           </Row>
-        </Grid>
+        </Container>
       </div>
     );
   }

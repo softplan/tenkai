@@ -1,17 +1,17 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
-  Grid,
+  Container,
   Row,
   Col,
   FormControl,
   Table,
   FormGroup,
-  ControlLabel
+  FormLabel
 } from 'react-bootstrap';
 
 import Button from 'components/CustomButton/CustomButton.jsx';
-import { Card } from 'components/Card/Card.jsx';
+import { CardTenkai } from 'components/Card/CardTenkai.jsx';
 import EditProduct from 'views/product/components/EditProduct';
 import SimpleModal from 'components/Modal/SimpleModal.jsx';
 
@@ -128,7 +128,7 @@ class Product extends Component {
           handleConfirmDelete={this.handleConfirmDelete.bind(this)}
         ></SimpleModal>
 
-        <Grid fluid>
+        <Container fluid>
           <Row>
             <Col md={12}>
               <CardButton
@@ -159,13 +159,13 @@ class Product extends Component {
 
           <Row>
             <Col md={12}>
-              <Card
+              <CardTenkai
                 title="Products"
                 content={
                   <form>
                     <div className="col-md-8">
                       <FormGroup>
-                        <ControlLabel>Product Search</ControlLabel>
+                        <FormLabel>Product Search</FormLabel>
                         <FormControl
                           value={this.state.inputFilter}
                           onChange={e =>
@@ -200,7 +200,7 @@ class Product extends Component {
               />
             </Col>
           </Row>
-        </Grid>
+        </Container>
       </div>
     );
   }

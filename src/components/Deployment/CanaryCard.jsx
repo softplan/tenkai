@@ -1,12 +1,12 @@
 import React from "react";
-import { Card } from "components/Card/Card.jsx";
-import { Row, Col, FormGroup, Checkbox } from "react-bootstrap";
+import { CardTenkai } from "components/Card/CardTenkai.jsx";
+import { Row, Col, FormGroup, Form } from "react-bootstrap";
 import { FormInputs } from "components/FormInputs/FormInputs.jsx";
 
 export const CanaryCard = props => (
   <Row>
     <Col md={12}>
-      <Card
+      <CardTenkai
         plain
         title="Advanced Options"
         category="Make sure you know what you're doing"
@@ -21,22 +21,23 @@ export const CanaryCard = props => (
                       name: "releaseName",
                       label: "Release Name",
                       type: "text",
-                      bsClass: "form-control",
+                      bsPrefix: "form-control",
                       value: props.releaseName,
                       onChange: props.handleReleaseNameChange
                     }
                   ]}
                 />
               </FormGroup>
-              <Checkbox
+              <Form.Check
+                id="create-svc"
+                type="switch"
                 inline
-                checked={props.dontCreateService}
+                checked={!props.dontCreateService}
                 onChange={event =>
-                  props.handleDontCreateServiceChange(event.target.checked)
+                  props.handleDontCreateServiceChange(!event.target.checked)
                 }
-              >
-                Don't create a service
-              </Checkbox>
+                label="Create a service"
+              ></Form.Check>
             </form>
           </div>
         }

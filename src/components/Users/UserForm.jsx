@@ -1,7 +1,7 @@
 import React, { Component } from "react";
-import { Card } from "components/Card/Card.jsx";
+import { CardTenkai } from "components/Card/CardTenkai.jsx";
 import { FormInputs } from "components/FormInputs/FormInputs.jsx";
-import { Button, FormGroup, Checkbox } from "react-bootstrap";
+import { Button, FormGroup, Form } from "react-bootstrap";
 import { getAllEnvironments } from 'client-api/apicall.jsx';
 
 export class UserForm extends Component {
@@ -70,20 +70,21 @@ export class UserForm extends Component {
     const { editMode } = this.props;
 
     const items = this.state.envs.map((item, key) => (
-      <Checkbox
+      <Form.Check
         name={item.ID}
         key={key}
+        id={item.ID}
+        type="switch"
         inline
-        checked={this.state.formData.checkedEnvs.indexOf("" + item.ID) !== -1}
+        checked={this.state.formData.checkedEnvs.indexOf('' + item.ID) !== -1}
         onChange={this.handleEnvironmentCheckedChange.bind(this)}
-      >
-        {item.name}
-      </Checkbox>
+        label={item.name}
+      ></Form.Check>
     ));
 
     return (
       <div>
-        <Card
+        <CardTenkai
           title={editMode ? "Edit User" : "New User"}
           content={
             <form>
@@ -94,7 +95,7 @@ export class UserForm extends Component {
                     name: "email",
                     label: "Email",
                     type: "text",
-                    bsClass: "form-control",
+                    bsPrefix: "form-control",
                     value: this.state.formData.email,
                     onChange: this.handleChange
                   }
@@ -107,13 +108,13 @@ export class UserForm extends Component {
 
               <div className="btn-toolbar">
                 <div className="btn-group">
-                  <Button bsStyle="info" type="button" onClick={this.saveClick}>
+                  <Button variant="info" type="button" onClick={this.saveClick}>
                     Save
                   </Button>
                 </div>
                 <div className="btn-group">
                   <Button
-                    bsStyle="info"
+                    variant="info"
                     type="button"
                     onClick={this.props.cancelClick}
                   >
@@ -121,8 +122,6 @@ export class UserForm extends Component {
                   </Button>
                 </div>
               </div>
-
-              <div className="clearfix" />
             </form>
           }
         />

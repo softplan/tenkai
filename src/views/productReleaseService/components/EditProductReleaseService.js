@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { Card } from 'components/Card/Card.jsx';
-import { FormGroup, ControlLabel, Button, Checkbox } from 'react-bootstrap';
+import { CardTenkai } from 'components/Card/CardTenkai.jsx';
+import { FormGroup, FormLabel, Button, Form } from 'react-bootstrap';
 import Select from 'react-select';
 import {
   retrieveCharts,
@@ -192,12 +192,12 @@ export class EditProductReleaseService extends Component {
 
     return (
       <div>
-        <Card
+        <CardTenkai
           title={editMode ? 'Edit Chart Association' : 'New Chart Association'}
           content={
             <form>
               <FormGroup>
-                <ControlLabel>Repository</ControlLabel>
+                <FormLabel>Repository</FormLabel>
                 <Select
                   value={selectedRepository}
                   onChange={this.handleRepositoryChange}
@@ -206,23 +206,24 @@ export class EditProductReleaseService extends Component {
               </FormGroup>
 
               <FormGroup>
-                <ControlLabel>Helm Chart</ControlLabel>
+                <FormLabel>Helm Chart</FormLabel>
                 <Select
                   value={selectedChart}
                   onChange={this.handleChartChange}
                   options={this.state.charts}
                 />
-                <Checkbox
+                <Form.Check
+                  id="allVersions"
+                  type="switch"
                   inline
                   checked={allVersions}
                   onChange={this.handleAllVersions}
-                >
-                  Show all versions
-                </Checkbox>
+                  label="Show all versions"
+                ></Form.Check>
               </FormGroup>
 
               <FormGroup>
-                <ControlLabel>Docker Image Tag</ControlLabel>
+                <FormLabel>Docker Image Tag</FormLabel>
                 <Select
                   value={selectedTag}
                   onChange={this.handleContainerTagChange}
@@ -232,13 +233,13 @@ export class EditProductReleaseService extends Component {
 
               <div className="btn-toolbar">
                 <div className="btn-group">
-                  <Button bsStyle="info" type="button" onClick={this.saveClick}>
+                  <Button variant="info" type="button" onClick={this.saveClick}>
                     Save
                   </Button>
                 </div>
                 <div className="btn-group">
                   <Button
-                    bsStyle="info"
+                    variant="info"
                     type="button"
                     onClick={this.props.cancelClick}
                   >
@@ -246,7 +247,6 @@ export class EditProductReleaseService extends Component {
                   </Button>
                 </div>
               </div>
-              <div className="clearfix" />
             </form>
           }
         />

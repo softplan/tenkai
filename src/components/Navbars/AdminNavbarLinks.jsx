@@ -1,57 +1,78 @@
-import React, { Component } from "react";
-import { Nav, Navbar, NavDropdown, MenuItem } from "react-bootstrap";
+import React, { Component } from 'react';
+import { Nav, Navbar, NavDropdown, Form } from 'react-bootstrap';
 import Select from 'react-select';
 
 class AdminNavbarLinks extends Component {
-
   constructor(props) {
     super(props);
     this.state = {
-      name: "",
-      email: "",
-      id: "",
-      selectedOption: {},
+      name: '',
+      email: '',
+      id: '',
+      selectedOption: {}
     };
     if (this.props.keycloak !== undefined) {
       this.props.keycloak.loadUserInfo().then(userInfo => {
-          this.setState({name: userInfo.name, email: userInfo.email, id: userInfo.sub})
+        this.setState({
+          name: userInfo.name,
+          email: userInfo.email,
+          id: userInfo.sub
+        });
       });
     }
-  }  
-
+  }
 
   logout() {
-    this.props.history.push('/')
+    this.props.history.push('/');
     this.props.keycloak.logout();
   }
 
+  handleDropdown = eventKey => {
+    if (eventKey === 'logout') {
+      this.logout();
+    }
+  };
+
   render() {
+    const renderVersion =
+      this.props.selectedEnvironment &&
+      this.props.selectedEnvironment.productVersion;
 
     return (
-      <div>
-        <Navbar.Text>
-          Environment:
-        </Navbar.Text>
+      <Navbar collapseOnSelect bg="light" expand="lg">
         <Nav>
-          <Navbar.Form style={{ width: "200px", marginTop: "8px"}} pullLeft>
-            <Select value={this.props.selectedEnvironment} onChange={this.props.handleEnvironmentChange} options={this.props.environments} />
-          </Navbar.Form>
+          <Nav.Link href="#">Environment:</Nav.Link>
         </Nav>
-        {this.props.selectedEnvironment && this.props.selectedEnvironment.productVersion &&
-          <Navbar.Text>
-            Product Version: {this.props.selectedEnvironment.productVersion}
-          </Navbar.Text>
-        }
-        <Nav pullRight>
-          <NavDropdown
-            eventKey={2}
-            title={this.state.name}
-            id="basic-nav-dropdown-right"
-          >
-            <MenuItem eventKey={2.1} onClick={() => this.logout()}>Logout</MenuItem>
-          </NavDropdown>
-        </Nav>
-      </div>
+        <Nav.Item style={{ width: '200px' }}>
+          <Select
+            value={this.props.selectedEnvironment}
+            onChange={this.props.handleEnvironmentChange}
+            options={this.props.environments}
+          />
+        </Nav.Item>
+        <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+        <Navbar.Collapse id="responsive-navbar-nav">
+          <Nav className="mr-auto">
+            {renderVersion && (
+              <Nav>
+                <Nav.Link href="#">
+                  Product Version:{' '}
+                  {this.props.selectedEnvironment.productVersion}
+                </Nav.Link>
+              </Nav>
+            )}
+          </Nav>
+          <Form inline>
+            <NavDropdown
+              onSelect={this.handleDropdown}
+              title={this.state.name}
+              id="basic-nav-dropdown-right"
+            >
+              <NavDropdown.Item eventKey="logout">Logout</NavDropdown.Item>
+            </NavDropdown>
+          </Form>
+        </Navbar.Collapse>
+      </Navbar>
     );
   }
 }

@@ -1,10 +1,10 @@
 import React, { Component } from "react";
 import {
-  Grid,
+  Container,
   Row,
   Col,
   FormGroup,
-  ControlLabel,
+  FormLabel,
   FormControl,
   Table
 } from "react-bootstrap";
@@ -16,7 +16,7 @@ import TENKAI_API_URL from "env.js";
 import VariableCard from "components/Card/VariableCard.jsx";
 import { ButtonToolbar } from "react-bootstrap";
 
-import { Card } from "components/Card/Card.jsx";
+import { CardTenkai } from "components/Card/CardTenkai.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
 import { VariablesForm } from "components/Environments/VariablesForm.jsx";
 
@@ -243,35 +243,34 @@ class Variables extends Component {
           }
         />
 
-        <Grid fluid>
+        <Container fluid>
           <Row>
             <Col md={12}>
-              <Card
+              <CardTenkai
                 title=""
                 content={
-                  <form>
+                  <div>
                     <h3>Environment: {this.state.environmentName}</h3>
+                    <div align="right">
+                      <ButtonToolbar style={{ display: 'block' }}>
+                        <Button
+                          className="pull-right"
+                          variant="primary"
+                          onClick={this.handleNewClick.bind(this)}
+                        >
+                          New Variable
+                        </Button>
 
-                    <ButtonToolbar>
-                      <Button
-                        className="pull-right"
-                        variant="primary"
-                        onClick={this.handleNewClick.bind(this)}
-                      >
-                        New Variable
-                      </Button>
-
-                      <Button
-                        className="btn-danger pull-right"
-                        variant="primary"
-                        onClick={this.navigateToNotUsedVariables.bind(this)}
-                      >
-                        List variables in down services (not used)
-                      </Button>
-                    </ButtonToolbar>
-
-                    <div className="clearfix" />
-                  </form>
+                        <Button
+                          className="btn-danger pull-right"
+                          variant="primary"
+                          onClick={this.navigateToNotUsedVariables.bind(this)}
+                        >
+                          List variables in down services (not used)
+                        </Button>
+                      </ButtonToolbar>
+                    </div>
+                  </div>
                 }
               />
             </Col>
@@ -292,16 +291,16 @@ class Variables extends Component {
 
           <Row>
             <Col md={12}>
-              <Card
+              <CardTenkai
                 title="Variables"
                 content={
                   <form>
                     <Row>
                       <div className="col-md-8">
                         <FormGroup>
-                          <ControlLabel>
+                          <FormLabel>
                             Search by scope, name or value
-                          </ControlLabel>
+                          </FormLabel>
                           <FormControl
                             value={this.state.inputFilter}
                             onChange={this.onChangeFilterHandler.bind(this)}
@@ -322,7 +321,7 @@ class Variables extends Component {
               />
             </Col>
           </Row>
-        </Grid>
+        </Container>
       </div>
     );
   }

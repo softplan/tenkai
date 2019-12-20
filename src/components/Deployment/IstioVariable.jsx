@@ -1,20 +1,17 @@
-import React from "react";
+import React from 'react';
 import {
   FormGroup,
   Button,
-  Checkbox,
-  ControlLabel,
+  FormLabel,
   FormControl,
   Row,
-  Col
-} from "react-bootstrap";
-import { FormInputs } from "components/FormInputs/FormInputs.jsx";
+  Col,
+  Form
+} from 'react-bootstrap';
+import { FormInputs } from 'components/FormInputs/FormInputs.jsx';
 
 export const IstioVariable = props => {
   const hosts = Object.keys(props.hosts).map((item, index) => {
-    //let name="istio.virtualservices.hosts[" + index + "]";
-    //console.log('alfa: ' + name);
-    //console.log('beta: ' + item);
     return (
       <FormControl
         key={index}
@@ -28,31 +25,35 @@ export const IstioVariable = props => {
   });
 
   return (
-    <form>
+    <Form>
       <FormGroup>
-        <Checkbox
+        <Form.Check
+          type="switch"
+          id="inj-istio"
           inline
           checked={props.injectIstioCar}
           onChange={e => props.onInjectIstioCar(e.target.checked)}
-        >
-          Inject IstioCar
-        </Checkbox>{" "}
-        <Checkbox
+          label="Inject IstioCar"
+        ></Form.Check>
+
+        <Form.Check
+          type="switch"
+          id="enab-virt-svc"
           inline
           checked={props.enableVirtualService}
           onChange={e => props.onEnableVirtualService(e.target.checked)}
-        >
-          Enable VirtualService
-        </Checkbox>
+          label="Enable VirtualService"
+        ></Form.Check>
+
         <FormInputs
-          ncols={["col-md-4"]}
+          ncols={['col-md-4']}
           properties={[
             {
-              name: "apiPath",
-              label: "Context Path",
-              type: "text",
-              placeholder: "/xpto",
-              bsClass: "form-control",
+              name: 'apiPath',
+              label: 'Context Path',
+              type: 'text',
+              placeholder: '/xpto',
+              bsPrefix: 'form-control',
               value: props.defaultApiPath,
               onChange: e => props.onApiGatewayPathChange(e.target.value)
             }
@@ -63,12 +64,12 @@ export const IstioVariable = props => {
       <Row>
         <Col md={6}>
           <FormGroup>
-            <ControlLabel>DOMAIN</ControlLabel>
+            <FormLabel>DOMAIN</FormLabel>
             {hosts}
           </FormGroup>
 
           <Button
-            bsStyle="info"
+            variant="info"
             type="button"
             onClick={() => props.onAddHost()}
           >
@@ -76,7 +77,7 @@ export const IstioVariable = props => {
           </Button>
         </Col>
       </Row>
-    </form>
+    </Form>
   );
 };
 
