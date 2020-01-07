@@ -1,11 +1,11 @@
-import React from "react";
-import { FormGroup, FormLabel, FormControl } from "react-bootstrap";
+import React from 'react';
+import { Form } from 'react-bootstrap';
 
 const FieldGroup = ({ label, ...props }) => (
-  <FormGroup>
-    <FormLabel>{label}</FormLabel>
-    <FormControl {...props} />
-  </FormGroup>
+  <Form.Group>
+    <Form.Label>{label}</Form.Label>
+    <Form.Control {...props} />
+  </Form.Group>
 );
 
 export default FieldGroup;
