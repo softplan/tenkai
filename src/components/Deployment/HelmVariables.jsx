@@ -141,6 +141,7 @@ export class HelmVariables extends Component {
   save(callbackFunction) {
     console.log('save ' + this.props.envId);
     const scope = this.state.chartName;
+    const chartVersion = this.state.chartVersion;
     const environmentId = parseInt(this.props.envId);
     let payload = { data: [] };
 
@@ -149,6 +150,7 @@ export class HelmVariables extends Component {
     Object.keys(this.state.values).map(function(key, index) {
       payload.data.push({
         scope: scope,
+        chartVersion: chartVersion,
         name: key,
         value: elements[key],
         environmentId: environmentId
@@ -158,36 +160,42 @@ export class HelmVariables extends Component {
 
     payload.data.push({
       scope: scope,
+      chartVersion: chartVersion,
       name: 'istio.enabled',
       value: this.state.injectIstioCar ? 'true' : 'false',
       environmentId: environmentId
     });
     payload.data.push({
       scope: scope,
+      chartVersion: chartVersion,
       name: 'istio.virtualservices.enabled',
       value: this.state.enableVirtualService ? 'true' : 'false',
       environmentId: environmentId
     });
     payload.data.push({
       scope: scope,
+      chartVersion: chartVersion,
       name: 'istio.virtualservices.apiPath',
       value: this.state.defaultApiPath,
       environmentId: environmentId
     });
     payload.data.push({
       scope: scope,
+      chartVersion: chartVersion,
       name: 'image.repository',
       value: this.state.containerImage,
       environmentId: environmentId
     });
     payload.data.push({
       scope: scope,
+      chartVersion: chartVersion,
       name: 'image.tag',
       value: this.state.containerTag,
       environmentId: environmentId
     });
     payload.data.push({
       scope: scope,
+      chartVersion: chartVersion,
       name: 'service.apply',
       value: this.state.dontCreateService ? 'false' : 'true',
       environmentId: environmentId
@@ -197,6 +205,7 @@ export class HelmVariables extends Component {
     Object.keys(hosts).map(function(key, index) {
       payload.data.push({
         scope: scope,
+        chartVersion: chartVersion,
         name: key,
         value: hosts[key],
         environmentId: environmentId
