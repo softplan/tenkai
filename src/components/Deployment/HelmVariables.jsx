@@ -7,7 +7,9 @@ import {
   FormGroup,
   ButtonToolbar,
   FormLabel,
-  FormControl
+  FormControl,
+  OverlayTrigger,
+  Tooltip
 } from 'react-bootstrap';
 import axios from 'axios';
 import ArrayVariable from 'components/Deployment/ArrayVariable.jsx';
@@ -628,20 +630,26 @@ export class HelmVariables extends Component {
       } else {
         const value = this.state.values[key] || '';
         const keyValue = '' + this.state.variables[key];
-
+        const tooltip = <Tooltip id="tooltip">{keyValue}</Tooltip>;
         return (
           <tr key={key}>
             <td className="word-wrap">{key}</td>
-            <td className="word-wrap">{keyValue}</td>
             <td>
-              <input
-                name={key}
-                value={value}
-                onChange={this.onInputChange}
-                type="text"
-                style={{ width: '100%' }}
-                className={this.isValid(key)}
-              />
+              <OverlayTrigger
+                placement="bottom"
+                overlay={tooltip}
+                delayShow={300}
+                delayHide={150}
+              >
+                <input
+                  name={key}
+                  value={value}
+                  onChange={this.onInputChange}
+                  type="text"
+                  style={{ width: '100%' }}
+                  className={this.isValid(key)}
+                />
+              </OverlayTrigger>
               {this.hasInvalidVar(key) && (
                 this.props.invalidVariables[key].map(key => {
                   return (
@@ -777,9 +785,8 @@ export class HelmVariables extends Component {
                     <Table striped hover>
                       <thead>
                         <tr>
-                          <th>Variable</th>
-                          <th>Chart Default Value</th>
-                          <th>Environment Value</th>
+                          <th style={{ width: '20%' }}>Variable</th>
+                          <th style={{ width: '80%' }}>Environment Value</th>
                         </tr>
                       </thead>
                       <tbody>{items}</tbody>
