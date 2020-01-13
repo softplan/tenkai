@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Table, FormGroup } from 'react-bootstrap';
+import { Table, FormGroup, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import axios from 'axios';
 import TENKAI_API_URL from 'env.js';
 import { FormInputs } from 'components/FormInputs/FormInputs.jsx';
@@ -321,19 +321,28 @@ export class ConfigMap extends Component {
       const value = this.state.values[key] || '';
       const keyValue = '' + this.state.variables[key];
 
+      const tooltip = <Tooltip id="tooltip">{keyValue}</Tooltip>;
+
+
       return (
         <tr key={key}>
           <td>{key}</td>
-          <td>{keyValue}</td>
           <td>
-            <input
-              name={key}
-              value={value}
-              onChange={this.onInputChange}
-              type="text"
-              style={{ width: '100%' }}
-              className={this.isValid(key)}
-            />
+            <OverlayTrigger
+              placement="bottom"
+              overlay={tooltip}
+              delayShow={300}
+              delayHide={150}
+            >
+              <input
+                name={key}
+                value={value}
+                onChange={this.onInputChange}
+                type="text"
+                style={{ width: '100%' }}
+                className={this.isValid(key)}
+              />
+            </OverlayTrigger>
             {this.hasInvalidVar(key) && (
               this.state.invalidVariables[key].map(k => {
                 return (
@@ -377,9 +386,8 @@ export class ConfigMap extends Component {
           <Table striped hover>
             <thead>
               <tr>
-                <th style={{ width: '10%' }}>Variable</th>
-                <th style={{ width: '40%' }}>Chart Default Value</th>
-                <th style={{ width: '40%' }}>Environment Value</th>
+                <th style={{ width: '20%' }}>Variable</th>
+                <th style={{ width: '80%' }}>Environment Value</th>
               </tr>
             </thead>
             <tbody>{items}</tbody>

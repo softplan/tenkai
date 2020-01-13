@@ -7,7 +7,9 @@ import {
   FormGroup,
   ButtonToolbar,
   FormLabel,
-  FormControl
+  FormControl,
+  OverlayTrigger,
+  Tooltip
 } from 'react-bootstrap';
 import axios from 'axios';
 import ArrayVariable from 'components/Deployment/ArrayVariable.jsx';
@@ -141,6 +143,7 @@ export class HelmVariables extends Component {
   save(callbackFunction) {
     console.log('save ' + this.props.envId);
     const scope = this.state.chartName;
+    const chartVersion = this.state.chartVersion;
     const environmentId = parseInt(this.props.envId);
     let payload = { data: [] };
 
@@ -149,6 +152,7 @@ export class HelmVariables extends Component {
     Object.keys(this.state.values).map(function(key, index) {
       payload.data.push({
         scope: scope,
+        chartVersion: chartVersion,
         name: key,
         value: elements[key],
         environmentId: environmentId
@@ -158,36 +162,42 @@ export class HelmVariables extends Component {
 
     payload.data.push({
       scope: scope,
+      chartVersion: chartVersion,
       name: 'istio.enabled',
       value: this.state.injectIstioCar ? 'true' : 'false',
       environmentId: environmentId
     });
     payload.data.push({
       scope: scope,
+      chartVersion: chartVersion,
       name: 'istio.virtualservices.enabled',
       value: this.state.enableVirtualService ? 'true' : 'false',
       environmentId: environmentId
     });
     payload.data.push({
       scope: scope,
+      chartVersion: chartVersion,
       name: 'istio.virtualservices.apiPath',
       value: this.state.defaultApiPath,
       environmentId: environmentId
     });
     payload.data.push({
       scope: scope,
+      chartVersion: chartVersion,
       name: 'image.repository',
       value: this.state.containerImage,
       environmentId: environmentId
     });
     payload.data.push({
       scope: scope,
+      chartVersion: chartVersion,
       name: 'image.tag',
       value: this.state.containerTag,
       environmentId: environmentId
     });
     payload.data.push({
       scope: scope,
+      chartVersion: chartVersion,
       name: 'service.apply',
       value: this.state.dontCreateService ? 'false' : 'true',
       environmentId: environmentId
@@ -197,6 +207,7 @@ export class HelmVariables extends Component {
     Object.keys(hosts).map(function(key, index) {
       payload.data.push({
         scope: scope,
+        chartVersion: chartVersion,
         name: key,
         value: hosts[key],
         environmentId: environmentId
@@ -619,20 +630,26 @@ export class HelmVariables extends Component {
       } else {
         const value = this.state.values[key] || '';
         const keyValue = '' + this.state.variables[key];
-
+        const tooltip = <Tooltip id="tooltip">{keyValue}</Tooltip>;
         return (
           <tr key={key}>
             <td className="word-wrap">{key}</td>
-            <td className="word-wrap">{keyValue}</td>
             <td>
-              <input
-                name={key}
-                value={value}
-                onChange={this.onInputChange}
-                type="text"
-                style={{ width: '100%' }}
-                className={this.isValid(key)}
-              />
+              <OverlayTrigger
+                placement="bottom"
+                overlay={tooltip}
+                delayShow={300}
+                delayHide={150}
+              >
+                <input
+                  name={key}
+                  value={value}
+                  onChange={this.onInputChange}
+                  type="text"
+                  style={{ width: '100%' }}
+                  className={this.isValid(key)}
+                />
+              </OverlayTrigger>
               {this.hasInvalidVar(key) && (
                 this.props.invalidVariables[key].map(key => {
                   return (
@@ -768,9 +785,8 @@ export class HelmVariables extends Component {
                     <Table striped hover>
                       <thead>
                         <tr>
-                          <th>Variable</th>
-                          <th>Chart Default Value</th>
-                          <th>Environment Value</th>
+                          <th style={{ width: '20%' }}>Variable</th>
+                          <th style={{ width: '80%' }}>Environment Value</th>
                         </tr>
                       </thead>
                       <tbody>{items}</tbody>

@@ -1,5 +1,5 @@
-import React, { Component } from "react";
-import { Table, Button } from "react-bootstrap";
+import React, { Component } from 'react';
+import { Table, Button, OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 class TableRow extends Component {
   onInputChange(event) {
@@ -8,22 +8,32 @@ class TableRow extends Component {
 
   render() {
     let index = this.props.index;
-    let element = this.props.element || "";
+    let element = this.props.element || '';
     const variables = Object.keys(element).map(item => {
       let variableName = `${this.props.baseVarName}[${index}].${item}`;
-      const value = this.props.values[variableName] || "";
+      const value = this.props.values[variableName] || '';
+      const tooltip = (
+        <Tooltip id="tooltip">{this.props.element[item]}}</Tooltip>
+      );
+
       return (
         <tr key={item}>
           <td>{variableName}</td>
-          <td>{this.props.element[item]}</td>
           <td>
-            <input
-              name={variableName}
-              type="text"
-              value={value}
-              onChange={this.onInputChange.bind(this)}
-              style={{ width: "100%" }}
-            />
+            <OverlayTrigger
+              placement="bottom"
+              overlay={tooltip}
+              delayShow={300}
+              delayHide={150}
+            >
+              <input
+                name={variableName}
+                type="text"
+                value={value}
+                onChange={this.onInputChange.bind(this)}
+                style={{ width: '100%' }}
+              />
+            </OverlayTrigger>
           </td>
         </tr>
       );
@@ -67,9 +77,8 @@ export class ArrayVariable extends Component {
           <Table>
             <thead>
               <tr>
-                <th style={{ width: "20%" }}>Dynamic Variable</th>
-                <th style={{ width: "40%" }}>Chart Default Value</th>
-                <th style={{ width: "40%" }}>Environment Value</th>
+                <th style={{ width: '20%' }}>Dynamic Variable</th>
+                <th style={{ width: '80%' }}>Environment Value</th>
               </tr>
             </thead>
             {fieldNames}
