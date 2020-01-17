@@ -1,15 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import Select from 'react-select';
-import {
-  Button,
-  Container,
-  Row,
-  Col,
-  Table,
-  Card,
-  Form
-} from 'react-bootstrap';
+import { Container, Row, Col, Table, Card } from 'react-bootstrap';
 import * as compareEnvActions from 'stores/compareEnv/actions';
 import * as compareEnvSelectors from 'stores/compareEnv/reducer';
 import CompareEnvFilter from './CompareEnvFilter';
@@ -19,8 +10,14 @@ class CompareEnv extends Component {
     super(props);
     this.state = {
       selectedSrcEnv: {},
-      selectedTarEnv: {}
+      selectedTarEnv: {},
+      filterChartType: {},
+      selectedRepository: {},
     };
+  }
+
+  componentDidMount() {
+    this.props.dispatch(compareEnvActions.loadRepositories());
   }
 
   handleSrcEnvChange = selectedSrcEnv => {
@@ -50,6 +47,9 @@ class CompareEnv extends Component {
       };
       this.props.dispatch(compareEnvActions.compareEnv(payload));
     }
+  };
+
+  handleRepositoryChange = repo => {
   }
 
   compare = (a, b) => {
@@ -60,7 +60,7 @@ class CompareEnv extends Component {
 
     if (scopeA > scopeB || sourceNameA > sourceNameB) {
       return 1;
-    } 
+    }
     if (scopeA < scopeB || sourceNameA < sourceNameB) {
       return -1;
     }
@@ -107,6 +107,8 @@ class CompareEnv extends Component {
               handleTarEnvChange={this.handleTarEnvChange.bind(this)}
               environments={this.props.environments}
               handleCompare={this.handleCompare.bind(this)}
+              filterChartType={this.state.filterChartType}
+              repositories={this.props.compareEnv.repositories}
             />
           </Col>
         </Row>

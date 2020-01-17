@@ -27,3 +27,25 @@ export function compareEnv(data) {
     }
   };
 }
+
+export function loadRepositories() {
+  return async dispatch => {
+    try {
+      dispatch(types.loadReposBegin());
+
+      const result = await services.loadRepositories();
+      const repositories = result.data.repositories;
+      const r = repositories.map(e => {
+        const x = {
+          value: e.name,
+          label: e.name
+        };
+        return x;
+      });
+
+      dispatch(types.loadReposSuccess(r));
+    } catch (error) {
+      dispatch(types.loadReposError(error));
+    }
+  };
+}
