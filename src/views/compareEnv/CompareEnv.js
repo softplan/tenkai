@@ -12,6 +12,7 @@ import {
 } from 'react-bootstrap';
 import * as compareEnvActions from 'stores/compareEnv/actions';
 import * as compareEnvSelectors from 'stores/compareEnv/reducer';
+import CompareEnvFilter from './CompareEnvFilter';
 
 class CompareEnv extends Component {
   constructor(props) {
@@ -34,7 +35,7 @@ class CompareEnv extends Component {
     );
   };
 
-  handleCompare() {
+  handleCompare = () => {
     if (
       !!this.props.compareEnv.selectedSrcEnv &&
       !!this.props.compareEnv.selectedTarEnv
@@ -75,57 +76,38 @@ class CompareEnv extends Component {
     if (!!this.props.compareEnv.selectedTarEnv) {
       tarEnvLabel = this.props.compareEnv.selectedTarEnv.label.toUpperCase();
     }
+    let lastScope = '';
+    let striped = false;
     const items = this.props.compareEnv.envsDiff
       .sort(this.compare)
-      .map((item, key) => (
-        <tr key={key}>
-          <td>{item.sourceScope}</td>
-          <td>{item.sourceName}</td>
-          <td>{item.sourceValue}</td>
-          <td>{item.targetScope}</td>
-          <td>{item.targetName}</td>
-          <td>{item.targetValue}</td>
-        </tr>
-      ));
+      .map((item, key) => {
+        const scope = item.sourceScope || item.targetScope;
+        if (lastScope != scope) {
+          lastScope = scope;
+          striped = !striped;
+        }
+        return (
+          <tr key={key} bgcolor={striped ? '#DCDCDC' : '#FFFFFF'}>
+            <td>{item.sourceScope}</td>
+            <td>{item.sourceName}</td>
+            <td>{item.sourceValue}</td>
+            <td>{item.targetScope}</td>
+            <td>{item.targetName}</td>
+            <td>{item.targetValue}</td>
+          </tr>
+        );
+      });
     return (
       <Container fluid>
         <Row>
           <Col md={12}>
-            <Card>
-              <Card.Header as="h5">Filter</Card.Header>
-              <Card.Body>
-                <Form>
-                  <Row>
-                    <Col md={6}>
-                      <Form.Group controlId="srcEnv">
-                        <Form.Label>Source environment</Form.Label>
-                        <Select
-                          value={this.props.compareEnv.selectedSrcEnv}
-                          onChange={this.handleSrcEnvChange}
-                          options={this.props.environments}
-                        />
-                      </Form.Group>
-                    </Col>
-                    <Col md={6}>
-                      <Form.Group controlId="tarEnv">
-                        <Form.Label>Target environment</Form.Label>
-                        <Select
-                          value={this.props.compareEnv.selectedTarEnv}
-                          onChange={this.handleTarEnvChange}
-                          options={this.props.environments}
-                        />
-                      </Form.Group>
-                    </Col>
-                  </Row>
-                  <Button
-                    variant="primary"
-                    onClick={() => this.handleCompare()}
-                  >
-                    Compare
-                  </Button>
-                </Form>
-              </Card.Body>
-            </Card>
+            <CompareEnvFilter
+              selectedSrcEnv={this.props.compareEnv.selectedSrcEnv}
+              handleSrcEnvChange={this.handleSrcEnvChange.bind(this)}
+              handleTarEnvChange={this.handleTarEnvChange.bind(this)}
+              environments={this.props.environments}
+              handleCompare={this.handleCompare.bind(this)}
+            />
           </Col>
         </Row>
         <Row>
@@ -135,7 +117,7 @@ class CompareEnv extends Component {
                 Diff between source <strong>{srcEnvLabel}</strong> and target{' '}
                 <strong>{tarEnvLabel}</strong>
               </Card.Header>
-              <Table responsive striped bordered hover size="sm">
+              <Table responsive bordered size="sm">
                 <thead>
                   <tr>
                     <th style={{ width: '10%' }}>Source Scope</th>
