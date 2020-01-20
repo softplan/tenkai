@@ -68,7 +68,8 @@ class Admin extends Component {
           arr.push({
             value: element.ID,
             label: element.name,
-            productVersion: element.productVersion
+            productVersion: element.productVersion,
+            currentRelease: element.currentRelease
           });
         }
         this.setState({ environmentList: arr }, () => {

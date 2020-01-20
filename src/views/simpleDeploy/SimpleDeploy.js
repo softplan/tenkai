@@ -132,10 +132,26 @@ class SimpleDeploy extends Component {
     );
   };
 
+  filterDockerTagsByCurrentRelease = () => {
+    const selectedEnvId = this.props.selectedEnvironment.value;
+    const selectedEnv = this.props.environments.find(
+      e => e.value === selectedEnvId
+    );
+
+    if (
+      !!selectedEnv &&
+      !!selectedEnv.currentRelease &&
+      selectedEnv.currentRelease !== '' &&
+      !!this.props.simpleDeploy.dockerTags
+    ) {
+      return this.props.simpleDeploy.dockerTags.filter(e =>
+        e.value.startsWith(selectedEnv.currentRelease)
+      );
+    }
+    return this.props.simpleDeploy.dockerTags;
+  };
+
   render() {
-    // console.log('##############################################');
-    // console.log(JSON.stringify(this.props.simpleDeploy, null, 1));
-    let image = this.findImage();
     return (
       <Card>
         <Card.Body>
@@ -181,7 +197,7 @@ class SimpleDeploy extends Component {
                     readOnly={true}
                     type="text"
                     bsPrefix="form-control"
-                    value={image}
+                    value={this.findImage()}
                   />
                 </FormGroup>
               </Col>
@@ -191,7 +207,7 @@ class SimpleDeploy extends Component {
                   <Select
                     value={this.props.simpleDeploy.selectedTag}
                     onChange={this.handleContainerTagChange}
-                    options={this.props.simpleDeploy.dockerTags}
+                    options={this.filterDockerTagsByCurrentRelease()}
                   />
                 </FormGroup>
               </Col>
