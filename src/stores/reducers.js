@@ -8,6 +8,7 @@ import user from './user/reducer';
 import environment from './environment/reducer';
 import valueRule from './valueRule/reducer';
 import variableRule from './variableRule/reducer';
+import simpleDeploy from './simpleDeploy/reducer';
 
 export {
   dependency,
@@ -19,5 +20,6 @@ export {
   user,
   environment,
   valueRule,
-  variableRule
+  variableRule,
+  simpleDeploy
 };

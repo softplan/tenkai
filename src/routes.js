@@ -21,6 +21,7 @@ import ProductReleaseService from 'views/productReleaseService/ProductReleaseSer
 import VariablesNotUsed from 'views/VariablesNotUsed';
 import VariableRule from 'views/variableRule/VariableRule';
 import ValueRule from 'views/valueRule/ValueRule';
+import SimpleDeploy from 'views/simpleDeploy/SimpleDeploy';
 
 const dashboardRoutes = [
   {
@@ -229,6 +230,15 @@ const dashboardRoutes = [
     layout: '/admin',
     menu: false,
     role: 'tenkai-admin'
+  },
+  {
+    path: '/simpleDeploy',
+    name: 'Simple Deploy',
+    icon: 'pe-7s-news-paper',
+    component: SimpleDeploy,
+    layout: '/admin',
+    menu: true,
+    role: 'tenkai-limited-user'
   }
 ];
 
