@@ -13,6 +13,7 @@ import 'assets/css/custom.css';
 import Keycloak from 'keycloak-js';
 import axios from 'axios';
 import TENKAI_API_URL from 'env.js';
+import NotificationContainer from 'components/Notification/NotificationContainer';
 
 class Admin extends Component {
   constructor(props) {
@@ -305,6 +306,7 @@ class Admin extends Component {
         {return (
           <div className="wrapper">
             <NotificationSystem ref="notificationSystem" style={style} />
+            <NotificationContainer />
 
             <Sidebar
               {...this.props}
@@ -338,6 +340,7 @@ class Admin extends Component {
     return (
       <div>
         <NotificationSystem ref="notificationSystem" style={style} />
+        <NotificationContainer />
         Initializing Keycloak...
       </div>
     );

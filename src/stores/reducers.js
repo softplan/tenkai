@@ -9,8 +9,10 @@ import environment from './environment/reducer';
 import valueRule from './valueRule/reducer';
 import variableRule from './variableRule/reducer';
 import simpleDeploy from './simpleDeploy/reducer';
+import { reducer as notifications } from 'react-notification-system-redux';
 
 export {
+  notifications,
   dependency,
   product,
   productRelease,

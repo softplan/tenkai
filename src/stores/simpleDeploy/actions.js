@@ -1,5 +1,6 @@
 import * as types from './actionTypes';
 import * as services from 'services/simpleDeploy';
+import * as messages from 'components/Notification/defaultMessages';
 
 export function loadRepositories() {
   return async dispatch => {
@@ -17,8 +18,9 @@ export function loadRepositories() {
       });
 
       dispatch(types.loadReposSuccess(repos));
-    } catch (error) {
-      dispatch(types.loadReposError(error));
+    } catch (e) {
+      dispatch(types.loadReposError(e));
+      dispatch(messages.errorDefault(e));
     }
   };
 }
@@ -40,8 +42,9 @@ export function loadCharts(repo, allVersions) {
       });
 
       dispatch(types.loadChartsSuccess(repos));
-    } catch (error) {
-      dispatch(types.loadChartsError(error));
+    } catch (e) {
+      dispatch(types.loadChartsError(e));
+      dispatch(messages.errorDefault(e));
     }
   };
 }
@@ -55,8 +58,9 @@ export function loadVariables(envId, scope, callback) {
       const variables = result.data.Variables;
       dispatch(types.loadVariablesSuccess(variables));
       callback();
-    } catch (error) {
-      dispatch(types.loadVariablesError(error));
+    } catch (e) {
+      dispatch(types.loadVariablesError(e));
+      dispatch(messages.errorDefault(e));
     }
   };
 }
@@ -77,13 +81,19 @@ export function loadDockerTags(imageName) {
       });
 
       dispatch(types.loadDockerTagsSuccess(items));
-    } catch (error) {
-      dispatch(types.loadDockerTagsError(error));
+    } catch (e) {
+      dispatch(types.loadDockerTagsError(e));
+      dispatch(messages.errorDefault(e));
     }
   };
 }
 
-export function saveVariables(chartName, dockerTag, environmentId, installCallback) {
+export function saveVariables(
+  chartName,
+  dockerTag,
+  environmentId,
+  installCallback
+) {
   return async dispatch => {
     try {
       dispatch(types.saveVariablesBegin());
@@ -100,8 +110,9 @@ export function saveVariables(chartName, dockerTag, environmentId, installCallba
       await services.saveVariables(data);
       dispatch(types.saveVariablesSuccess());
       installCallback();
-    } catch (error) {
-      dispatch(types.saveVariablesError(error));
+    } catch (e) {
+      dispatch(types.saveVariablesError(e));
+      dispatch(messages.errorDefault(e));
     }
   };
 }
@@ -120,8 +131,10 @@ export function install(envId, releaseName, chartName, chartVersion) {
 
       await services.install(data);
       dispatch(types.installSuccess());
-    } catch (error) {
-      dispatch(types.installError(error));
+      dispatch(messages.successDefault());
+    } catch (e) {
+      dispatch(types.installError(e));
+      dispatch(messages.errorDefault(e));
     }
   };
 }

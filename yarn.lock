@@ -10283,7 +10283,15 @@ react-lifecycles-compat@^3.0.4:
   resolved "https://registry.yarnpkg.com/react-lifecycles-compat/-/react-lifecycles-compat-3.0.4.tgz#4f1a273afdfc8f3488a8c516bfda78f872352362"
   integrity sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==
 
-react-notification-system@0.2.17:
+react-notification-system-redux@2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/react-notification-system-redux/-/react-notification-system-redux-2.0.0.tgz#cd12bcf2dd68154c3eaf546830e6892084962a06"
+  integrity sha512-4MiBxa9jIqxN8TcXL42b7svTkTYYI0bQTVk3eH7/2x9ZPgMmBPXY0svr4J758ve5gPUuctJfpzOCEw9jMF2+zA==
+  dependencies:
+    prop-types "^15.6.0"
+    react-notification-system "^0.2.x"
+
+react-notification-system@0.2.17, react-notification-system@^0.2.x:
   version "0.2.17"
   resolved "https://registry.yarnpkg.com/react-notification-system/-/react-notification-system-0.2.17.tgz#a60eddbb62225ad8f9fc5d7837546bf6cdb36818"
   integrity sha1-pg7du2IiWtj5/F14N1Rr9s2zaBg=

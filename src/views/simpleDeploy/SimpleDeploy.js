@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { error } from 'react-notification-system-redux';
 import Select from 'react-select';
 import {
   Button,
@@ -13,6 +14,7 @@ import {
 } from 'react-bootstrap';
 import * as simpleDeployActions from 'stores/simpleDeploy/actions';
 import * as simpleDeploySelectors from 'stores/simpleDeploy/reducer';
+import * as messages from 'components/Notification/defaultMessages';
 
 class SimpleDeploy extends Component {
   constructor(props) {
@@ -105,18 +107,34 @@ class SimpleDeploy extends Component {
   }
 
   handleDeploy = () => {
-    const chartName = this.props.simpleDeploy.selectedChart.value;
-    const dockerTag = this.props.simpleDeploy.selectedTag.value;
-    const envId = this.props.selectedEnvironment.value;
+    if (!this.hasInvalidFields()) {
+      const chartName = this.props.simpleDeploy.selectedChart.value;
+      const dockerTag = this.props.simpleDeploy.selectedTag.value;
+      const envId = this.props.selectedEnvironment.value;
 
-    this.props.dispatch(
-      simpleDeployActions.saveVariables(
-        chartName,
-        dockerTag,
-        envId,
-        this.install
-      )
-    );
+      this.props.dispatch(
+        simpleDeployActions.saveVariables(
+          chartName,
+          dockerTag,
+          envId,
+          this.install
+        )
+      );
+    }
+  };
+
+  hasInvalidFields = () => {
+    if (
+      this.props.simpleDeploy.selectedRepository === undefined ||
+      this.props.simpleDeploy.selectedChart === undefined ||
+      this.props.simpleDeploy.selectedTag === undefined
+    ) {
+      this.props.dispatch(
+        error(messages.errorWithMessage('All fields are required!'))
+      );
+      return true;
+    }
+    return false;
   };
 
   install = () => {
@@ -157,7 +175,7 @@ class SimpleDeploy extends Component {
         <Card.Body>
           <Form>
             <Row>
-              <Col md={4}>
+              <Col md={6}>
                 <FormGroup>
                   <FormLabel>Repository</FormLabel>
                   <Select
@@ -169,7 +187,7 @@ class SimpleDeploy extends Component {
               </Col>
             </Row>
             <Row>
-              <Col md={7}>
+              <Col md={6}>
                 <FormGroup>
                   <FormLabel>Chart</FormLabel>
                   <Select
@@ -189,7 +207,7 @@ class SimpleDeploy extends Component {
               </Col>
             </Row>
             <Row>
-              <Col md={7}>
+              <Col md={6}>
                 <FormGroup>
                   <FormLabel>Container image</FormLabel>
                   <FormControl
@@ -201,7 +219,7 @@ class SimpleDeploy extends Component {
                   />
                 </FormGroup>
               </Col>
-              <Col xs={5}>
+              <Col xs={4}>
                 <FormGroup>
                   <FormLabel>Container Tag</FormLabel>
                   <Select
