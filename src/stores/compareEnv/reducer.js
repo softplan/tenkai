@@ -1,20 +1,42 @@
 import * as types from './actionTypes';
 
 const initialState = {
-  loading: false,
   error: null,
   envsDiff: [],
-  repositories: []
+  repositories: [],
+  charts: [],
+  selectedRepository: {},
+  selectedCharts: [],
+  filterOnlyExcept: 0
 };
 
 export default function reduce(state = initialState, action = {}) {
   switch (action.type) {
-    case types.COMPARE_ENV_BEGIN:
-    case types.LOAD_REPOS_BEGIN:
+    case types.SELECT_REPOSITORY:
       return {
         ...state,
-        loading: true,
-        error: null
+        selectedRepository: action.payload.selectedRepository,
+        selectedCharts: []
+      };
+
+    case types.ADD_CHART:
+      return {
+        ...state,
+        selectedCharts: [...state.selectedCharts, action.payload.selectedChart]
+      };
+
+    case types.REMOVE_CHART:
+      return {
+        ...state,
+        selectedCharts: state.selectedCharts.filter(
+          i => i !== action.payload.selectedChart
+        )
+      };
+
+    case types.SELECT_FILTER_ONLY_EXCEPT:
+      return {
+        ...state,
+        filterOnlyExcept: action.payload.filterOnlyExcept
       };
 
     case types.SELECT_SOURCE_ENVIRONMENT:
@@ -32,34 +54,34 @@ export default function reduce(state = initialState, action = {}) {
     case types.COMPARE_ENV_SUCCESS:
       return {
         ...state,
-        loading: false,
         envsDiff: action.payload.envsDiff
       };
 
     case types.LOAD_REPOS_SUCCESS:
       const newState = {
         ...state,
-        loading: false,
         repositories: action.payload.repositories
       };
       console.log(newState);
       return newState;
 
+    case types.LOAD_CHART_SUCCESS:
+      return {
+        ...state,
+        charts: action.payload.charts
+      };
+
+    case types.LOAD_CHART_ERROR:
     case types.COMPARE_ENV_ERROR:
     case types.LOAD_REPOS_ERROR:
       return {
         ...state,
-        loading: false,
         envsDiff: action.payload.error
       };
 
     default:
       return state;
   }
-}
-
-export function getLoading(state) {
-  return state.loading;
 }
 
 export function getError(state) {

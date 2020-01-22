@@ -4,44 +4,73 @@ import { Container, Row, Col, Table, Card } from 'react-bootstrap';
 import * as compareEnvActions from 'stores/compareEnv/actions';
 import * as compareEnvSelectors from 'stores/compareEnv/reducer';
 import CompareEnvFilter from './CompareEnvFilter';
+import * as global from 'stores/global/actions';
 
 class CompareEnv extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      selectedSrcEnv: {},
-      selectedTarEnv: {},
-      filterChartType: {},
-      selectedRepository: {},
-    };
-  }
-
   componentDidMount() {
     this.props.dispatch(compareEnvActions.loadRepositories());
   }
 
-  handleSrcEnvChange = selectedSrcEnv => {
+  selectSourceEnv = selectedSrcEnv => {
     this.props.dispatch(
       compareEnvActions.selectSourceEnvironment(selectedSrcEnv)
     );
   };
 
-  handleTarEnvChange = selectedTarEnv => {
+  selectTargetEnv = selectedTarEnv => {
     this.props.dispatch(
       compareEnvActions.selectTargetEnvironment(selectedTarEnv)
     );
   };
 
-  handleCompare = () => {
+  isValid() {
+    if (this.props.compareEnv.selectedSrcEnv === undefined) {
+      this.props.dispatch(
+        global.errorMessage('Please, select the source environment')
+      );
+      return false;
+    }
+    if (this.props.compareEnv.selectedTarEnv === undefined) {
+      this.props.dispatch(
+        global.errorMessage('Please, select the target environment')
+      );
+      return false;
+    }
     if (
-      !!this.props.compareEnv.selectedSrcEnv &&
-      !!this.props.compareEnv.selectedTarEnv
+      this.props.compareEnv.selectedSrcEnv ===
+      this.props.compareEnv.selectedTarEnv
     ) {
+      this.props.dispatch(
+        global.errorMessage(
+          'Source and target environment should be different.'
+        )
+      );
+      return false;
+    }
+    return true;
+  }
+
+  getOnlyCharts() {
+    if (this.props.compareEnv.filterOnlyExcept === 1) {
+      return this.props.compareEnv.selectedCharts;
+    }
+    return [];
+  }
+
+  getExceptCharts() {
+    if (this.props.compareEnv.filterOnlyExcept === 2) {
+      return this.props.compareEnv.selectedCharts;
+    }
+    return [];
+  }
+
+  handleCompare = () => {
+    if (this.isValid()) {
       const payload = {
         sourceEnvId: this.props.compareEnv.selectedSrcEnv.value,
         targetEnvId: this.props.compareEnv.selectedTarEnv.value,
-        exceptCharts: [],
-        onlyCharts: [],
+        exceptCharts: this.getExceptCharts(),
+        onlyCharts: this.getOnlyCharts(),
         exceptFields: [],
         onlyFields: []
       };
@@ -50,9 +79,11 @@ class CompareEnv extends Component {
   };
 
   handleRepositoryChange = repo => {
-  }
+    this.props.dispatch(compareEnvActions.selectRepository(repo));
+    this.props.dispatch(compareEnvActions.loadCharts(repo.value, false));
+  };
 
-  compare = (a, b) => {
+  sort = (a, b) => {
     const scopeA = a.sourceScope.toUpperCase();
     const scopeB = b.sourceScope.toUpperCase();
     const sourceNameA = a.sourceName.toUpperCase();
@@ -67,7 +98,21 @@ class CompareEnv extends Component {
     return 0;
   };
 
+  addChart = selectedChart => {
+    this.props.dispatch(compareEnvActions.addChart(selectedChart.value));
+  };
+
+  removeChart = selectedChart => {
+    this.props.dispatch(compareEnvActions.removeChart(selectedChart));
+  };
+
+  handleFilterChartChange = filter => {
+    this.props.dispatch(compareEnvActions.selectFilterOnlyExcept(filter));
+  };
+
   render() {
+    console.log(JSON.stringify(this.props.compareEnv, null, 4));
+
     let srcEnvLabel = '';
     if (!!this.props.compareEnv.selectedSrcEnv) {
       srcEnvLabel = this.props.compareEnv.selectedSrcEnv.label.toUpperCase();
@@ -79,10 +124,10 @@ class CompareEnv extends Component {
     let lastScope = '';
     let striped = false;
     const items = this.props.compareEnv.envsDiff
-      .sort(this.compare)
+      .sort(this.sort)
       .map((item, key) => {
         const scope = item.sourceScope || item.targetScope;
-        if (lastScope != scope) {
+        if (lastScope !== scope) {
           lastScope = scope;
           striped = !striped;
         }
@@ -102,13 +147,15 @@ class CompareEnv extends Component {
         <Row>
           <Col md={12}>
             <CompareEnvFilter
-              selectedSrcEnv={this.props.compareEnv.selectedSrcEnv}
-              handleSrcEnvChange={this.handleSrcEnvChange.bind(this)}
-              handleTarEnvChange={this.handleTarEnvChange.bind(this)}
               environments={this.props.environments}
+              state={this.props.compareEnv}
+              selectSourceEnv={this.selectSourceEnv.bind(this)}
+              selectTargetEnv={this.selectTargetEnv.bind(this)}
+              handleRepositoryChange={this.handleRepositoryChange}
+              addChart={this.addChart.bind(this)}
+              handleFilterChartChange={this.handleFilterChartChange}
               handleCompare={this.handleCompare.bind(this)}
-              filterChartType={this.state.filterChartType}
-              repositories={this.props.compareEnv.repositories}
+              removeChart={this.removeChart.bind(this)}
             />
           </Col>
         </Row>
@@ -142,7 +189,6 @@ class CompareEnv extends Component {
 
 const mapStateToProps = state => ({
   compareEnv: compareEnvSelectors.getCompareEnv(state),
-  loading: compareEnvSelectors.getLoading(state),
   error: compareEnvSelectors.getError(state)
 });
 

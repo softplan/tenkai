@@ -8,3 +8,7 @@ export async function compareEnvs(data) {
 export async function loadRepositories() {
   return await axios.get(`${TENKAI_API_URL}/repositories`);
 }
+
+export async function loadCharts(repo) {
+  return await axios.get(`${TENKAI_API_URL}/charts/${repo}?all=false`);
+}

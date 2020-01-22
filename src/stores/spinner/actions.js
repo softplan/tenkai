@@ -2,12 +2,12 @@ import * as types from './actionTypes';
 
 export function increaseLoading() {
   return async dispatch => {
-    dispatch(types.showSpinner());
+    dispatch(types.show());
   };
 }
 
 export function decreaseLoading() {
   return async dispatch => {
-    dispatch(types.hideSpinner());
+    dispatch(types.hide());
   };
 }
