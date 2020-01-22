@@ -21,7 +21,8 @@ export class EnvironmentForm extends Component {
             ca_certificate: '',
             token: '',
             namespace: '',
-            gateway:''
+            gateway:'',
+            currentRelease: ''
         }
     }
 
@@ -113,7 +114,7 @@ export class EnvironmentForm extends Component {
                             </Row>               
 
                             <FormInputs
-                                ncols={["col-md-2", "col-md-3", "col-md-3"]}
+                                ncols={["col-md-3", "col-md-3", "col-md-3", "col-md-3"]}
                                 properties={[
                                     {
                                         name: "token",
@@ -145,6 +146,15 @@ export class EnvironmentForm extends Component {
                                         value: this.state.formData.gateway,
                                         onChange: this.handleChange
 
+                                    },
+                                    {
+                                        name: "currentRelease",
+                                        label: "Current Release",
+                                        type: "text",
+                                        bsPrefix: "form-control",
+                                        placeholder: "Current release",
+                                        value: this.state.formData.currentRelease,
+                                        onChange: this.handleChange
                                     }
                                 ]}
                             />                                         

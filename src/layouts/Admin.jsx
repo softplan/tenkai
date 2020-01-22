@@ -13,6 +13,8 @@ import 'assets/css/custom.css';
 import Keycloak from 'keycloak-js';
 import axios from 'axios';
 import TENKAI_API_URL from 'env.js';
+import NotificationContainer from 'components/Notification/NotificationContainer';
+import Spinner from 'components/Spinner/Spinner';
 
 class Admin extends Component {
   constructor(props) {
@@ -68,7 +70,8 @@ class Admin extends Component {
           arr.push({
             value: element.ID,
             label: element.name,
-            productVersion: element.productVersion
+            productVersion: element.productVersion,
+            currentRelease: element.currentRelease
           });
         }
         this.setState({ environmentList: arr }, () => {
@@ -304,6 +307,7 @@ class Admin extends Component {
         {return (
           <div className="wrapper">
             <NotificationSystem ref="notificationSystem" style={style} />
+            <NotificationContainer />
 
             <Sidebar
               {...this.props}
@@ -316,6 +320,7 @@ class Admin extends Component {
 
             <div id="main-panel" className="main-panel" ref="mainPanel">
               {loadingDiv}
+              <Spinner />
               <AdminNavbar
                 {...this.props}
                 brandText={this.getBrandText(this.props.location.pathname)}
@@ -337,6 +342,7 @@ class Admin extends Component {
     return (
       <div>
         <NotificationSystem ref="notificationSystem" style={style} />
+        <NotificationContainer />
         Initializing Keycloak...
       </div>
     );
