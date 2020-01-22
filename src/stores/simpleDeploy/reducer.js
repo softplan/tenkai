@@ -1,12 +1,12 @@
 import * as types from './actionTypes';
 
 const initialState = {
-  loading: false,
   error: null,
   repositories: [],
   charts: [],
   selectedRepository: {},
-  selectedChart: {}
+  selectedChart: {},
+  image: ''
 };
 
 export default function reduce(state = initialState, action = {}) {
@@ -14,13 +14,17 @@ export default function reduce(state = initialState, action = {}) {
     case types.SELECT_REPOSITORY:
       return {
         ...state,
-        selectedRepository: action.payload.selectedRepository
+        selectedRepository: action.payload.selectedRepository,
+        selectedChart: {},
+        selectedTag: {},
+        image: ''
       };
 
     case types.SELECT_CHART:
       return {
         ...state,
-        selectedChart: action.payload.selectedChart
+        selectedChart: action.payload.selectedChart,
+        selectedTag: {}
       };
 
     case types.SELECT_TAG:
@@ -29,55 +33,38 @@ export default function reduce(state = initialState, action = {}) {
         selectedTag: action.payload.selectedTag
       };
 
-    case types.LOAD_REPOS_BEGIN:
-    case types.LOAD_DOCKER_TAGS_BEGIN:
-    case types.LOAD_CHART_BEGIN:
-    case types.LOAD_VARIABLES_BEGIN:
-    case types.SAVE_VARIABLES_BEGIN:
-    case types.INSTALL_BEGIN:
-      return {
-        ...state,
-        loading: true,
-        error: null
-      };
-
     case types.LOAD_REPOS_SUCCESS:
       return {
         ...state,
-        loading: false,
         repositories: action.payload.repositories
       };
 
     case types.LOAD_CHART_SUCCESS:
       return {
         ...state,
-        loading: false,
         charts: action.payload.charts
       };
 
     case types.LOAD_VARIABLES_SUCCESS:
       return {
         ...state,
-        loading: false,
-        variables: action.payload.variables
+        variables: action.payload.variables,
+        image: action.payload.image
       };
 
     case types.SAVE_VARIABLES_SUCCESS:
       return {
-        ...state,
-        loading: false
+        ...state
       };
 
     case types.INSTALL_SUCCESS:
       return {
-        ...state,
-        loading: false
+        ...state
       };
 
     case types.LOAD_DOCKER_TAGS_SUCCESS:
       return {
         ...state,
-        loading: false,
         dockerTags: action.payload.dockerTags
       };
 
@@ -89,7 +76,6 @@ export default function reduce(state = initialState, action = {}) {
     case types.INSTALL_ERROR:
       return {
         ...state,
-        loading: false,
         error: action.payload.error
       };
 
@@ -99,11 +85,11 @@ export default function reduce(state = initialState, action = {}) {
 }
 
 export function getLoading(state) {
-  return state.loading;
+  return state.simpleDeploy.loading;
 }
 
 export function getError(state) {
-  return state.error;
+  return state.simpleDeploy.error;
 }
 
 export function getSimpleDeploy(state) {

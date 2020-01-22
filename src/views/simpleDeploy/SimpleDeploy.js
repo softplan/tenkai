@@ -73,19 +73,6 @@ class SimpleDeploy extends Component {
     this.props.dispatch(simpleDeployActions.selectTag(selectedTag));
   };
 
-  findImage() {
-    let image = '';
-    if (!!this.props.simpleDeploy.variables) {
-      let imageVar = this.props.simpleDeploy.variables.find(
-        e => e.name === 'image.repository'
-      );
-      if (!!imageVar) {
-        image = imageVar.value;
-      }
-    }
-    return image;
-  }
-
   getReleaseName(chartName) {
     let releaseName = '';
     let splited = chartName.split('/');
@@ -175,7 +162,7 @@ class SimpleDeploy extends Component {
         <Card.Body>
           <Form>
             <Row>
-              <Col md={6}>
+              <Col md={3}>
                 <FormGroup>
                   <FormLabel>Repository</FormLabel>
                   <Select
@@ -185,8 +172,6 @@ class SimpleDeploy extends Component {
                   />
                 </FormGroup>
               </Col>
-            </Row>
-            <Row>
               <Col md={6}>
                 <FormGroup>
                   <FormLabel>Chart</FormLabel>
@@ -207,7 +192,7 @@ class SimpleDeploy extends Component {
               </Col>
             </Row>
             <Row>
-              <Col md={6}>
+              <Col md={5}>
                 <FormGroup>
                   <FormLabel>Container image</FormLabel>
                   <FormControl
@@ -215,7 +200,7 @@ class SimpleDeploy extends Component {
                     readOnly={true}
                     type="text"
                     bsPrefix="form-control"
-                    value={this.findImage()}
+                    value={this.props.simpleDeploy.image}
                   />
                 </FormGroup>
               </Col>

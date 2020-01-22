@@ -14,6 +14,7 @@ import Keycloak from 'keycloak-js';
 import axios from 'axios';
 import TENKAI_API_URL from 'env.js';
 import NotificationContainer from 'components/Notification/NotificationContainer';
+import Spinner from 'components/Spinner/Spinner';
 
 class Admin extends Component {
   constructor(props) {
@@ -319,6 +320,7 @@ class Admin extends Component {
 
             <div id="main-panel" className="main-panel" ref="mainPanel">
               {loadingDiv}
+              <Spinner />
               <AdminNavbar
                 {...this.props}
                 brandText={this.getBrandText(this.props.location.pathname)}
