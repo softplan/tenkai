@@ -17,13 +17,6 @@ import * as simpleDeploySelectors from 'stores/simpleDeploy/reducer';
 import * as messages from 'components/Notification/defaultMessages';
 
 class SimpleDeploy extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      selectedRepository: {}
-    };
-  }
-
   componentDidMount() {
     this.props.dispatch(simpleDeployActions.loadRepositories());
   }
