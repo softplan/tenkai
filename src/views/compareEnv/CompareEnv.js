@@ -157,25 +157,28 @@ class CompareEnv extends Component {
     }
     let lastScope = '';
     let striped = false;
-    const items = this.props.compareEnv.envsDiff
-      .sort(this.sort)
-      .map((item, key) => {
-        const scope = item.sourceScope || item.targetScope;
-        if (lastScope !== scope) {
-          lastScope = scope;
-          striped = !striped;
-        }
-        return (
-          <tr key={key} bgcolor={striped ? '#DCDCDC' : '#FFFFFF'}>
-            <td>{item.sourceScope}</td>
-            <td>{item.sourceName}</td>
-            <td>{item.sourceValue}</td>
-            <td>{item.targetScope}</td>
-            <td>{item.targetName}</td>
-            <td>{item.targetValue}</td>
-          </tr>
-        );
-      });
+    let items = [];
+    if (!!this.props.compareEnv.envsDiff) {
+      items = this.props.compareEnv.envsDiff
+        .sort(this.sort)
+        .map((item, key) => {
+          const scope = item.sourceScope || item.targetScope;
+          if (lastScope !== scope) {
+            lastScope = scope;
+            striped = !striped;
+          }
+          return (
+            <tr key={key} bgcolor={striped ? '#DCDCDC' : '#FFFFFF'}>
+              <td>{item.sourceScope}</td>
+              <td>{item.sourceName}</td>
+              <td>{item.sourceValue}</td>
+              <td>{item.targetScope}</td>
+              <td>{item.targetName}</td>
+              <td>{item.targetValue}</td>
+            </tr>
+          );
+        });
+    }
     return (
       <Container fluid>
         <Row>

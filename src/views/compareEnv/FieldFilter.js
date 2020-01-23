@@ -57,7 +57,7 @@ export default class FieldFilter extends Component {
                 </Row>
                 {state.filterOnlyExceptField > 0 && (
                   <Row>
-                    <Col md={4}>
+                    <Col md={12}>
                       <FormGroup>
                         <FormLabel>Fields</FormLabel>
                         <Select
@@ -68,7 +68,7 @@ export default class FieldFilter extends Component {
                       </FormGroup>
                       {badges}
                     </Col>
-                  </Row> 
+                  </Row>
                 )}
               </Card.Body>
             </Card>
