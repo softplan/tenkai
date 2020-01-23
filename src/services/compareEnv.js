@@ -12,3 +12,7 @@ export async function loadRepositories() {
 export async function loadCharts(repo) {
   return await axios.get(`${TENKAI_API_URL}/charts/${repo}?all=false`);
 }
+
+export async function loadVariables(envId) {
+  return await axios.get(`${TENKAI_API_URL}/variables/${envId}`);
+}

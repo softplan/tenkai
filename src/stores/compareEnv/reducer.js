@@ -7,7 +7,14 @@ const initialState = {
   charts: [],
   selectedRepository: {},
   selectedCharts: [],
-  filterOnlyExcept: 0
+  selectedFields: [],
+  filterOnlyExceptChart: 0,
+  filterOnlyExceptField: 0,
+  selectedSrcEnv: null,
+  selectedTarEnv: null,
+  srcVariables: [],
+  tarVariables: [],
+  fields: []
 };
 
 export default function reduce(state = initialState, action = {}) {
@@ -33,10 +40,30 @@ export default function reduce(state = initialState, action = {}) {
         )
       };
 
+    case types.ADD_FIELD:
+      return {
+        ...state,
+        selectedFields: [...state.selectedFields, action.payload.selectedField]
+      };
+
+    case types.REMOVE_FIELD:
+      return {
+        ...state,
+        selectedFields: state.selectedFields.filter(
+          i => i !== action.payload.selectedField
+        )
+      };
+
     case types.SELECT_FILTER_ONLY_EXCEPT:
       return {
         ...state,
-        filterOnlyExcept: action.payload.filterOnlyExcept
+        filterOnlyExceptChart: action.payload.filterOnlyExceptChart
+      };
+
+    case types.SELECT_FILTER_ONLY_EXCEPT_FIELD:
+      return {
+        ...state,
+        filterOnlyExceptField: action.payload.filterOnlyExceptField
       };
 
     case types.SELECT_SOURCE_ENVIRONMENT:
@@ -71,9 +98,44 @@ export default function reduce(state = initialState, action = {}) {
         charts: action.payload.charts
       };
 
+    case types.LOAD_SRC_VARIABLES_SUCCESS:
+      return {
+        ...state,
+        srcVariables: action.payload.srcVariables
+      };
+
+    case types.LOAD_TAR_VARIABLES_SUCCESS:
+      return {
+        ...state,
+        tarVariables: action.payload.tarVariables
+      };
+
+    case types.UPDATE_FIELDS:
+      let uniqueFields = [];
+
+      action.payload.fields.forEach(field => {
+        if (
+          !arrayHasElement(state.fields, field) &&
+          !arrayHasElement(uniqueFields, field)
+        ) {
+          uniqueFields.push(field);
+        }
+      });
+
+      const oldFields = state.fields;
+      let newFields = oldFields.concat(uniqueFields);
+      newFields.sort(sort);
+
+      return {
+        ...state,
+        fields: newFields
+      };
+
     case types.LOAD_CHART_ERROR:
     case types.COMPARE_ENV_ERROR:
     case types.LOAD_REPOS_ERROR:
+    case types.LOAD_SRC_VARIABLES_ERROR:
+    case types.LOAD_TAR_VARIABLES_ERROR:
       return {
         ...state,
         envsDiff: action.payload.error
@@ -91,3 +153,25 @@ export function getError(state) {
 export function getCompareEnv(state) {
   return state.compareEnv;
 }
+
+function arrayHasElement(array, element) {
+  for (let i = 0; i < array.length; i++) {
+    if (array[i].value === element.value) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function sort(a, b) {
+  const fieldA = a.value.toUpperCase();
+  const fieldB = b.value.toUpperCase();
+
+  if (fieldA > fieldB) {
+    return 1;
+  }
+  if (fieldA < fieldB) {
+    return -1;
+  }
+  return 0;
+};

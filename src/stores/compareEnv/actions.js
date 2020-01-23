@@ -32,9 +32,27 @@ export function removeChart(selectedChart) {
   };
 }
 
-export function selectFilterOnlyExcept(filterOnlyExcept) {
+export function addField(selectedField) {
   return async dispatch => {
-    dispatch(types.selectFilterOnlyExcept(filterOnlyExcept));
+    dispatch(types.addField(selectedField));
+  };
+}
+
+export function removeField(selectedField) {
+  return async dispatch => {
+    dispatch(types.removeField(selectedField));
+  };
+}
+
+export function selectFilterOnlyExcept(filterOnlyExceptChart) {
+  return async dispatch => {
+    dispatch(types.selectFilterOnlyExcept(filterOnlyExceptChart));
+  };
+}
+
+export function selectFilterOnlyExceptField(filterOnlyExceptField) {
+  return async dispatch => {
+    dispatch(types.selectFilterOnlyExceptField(filterOnlyExceptField));
   };
 }
 
@@ -97,6 +115,58 @@ export function loadCharts(repo) {
       dispatch(global.successWithParam(types.loadChartsSuccess, repos));
     } catch (e) {
       dispatch(global.handleError(e, types.loadChartsError));
+    }
+  };
+}
+
+export function loadSrcVariables(envId) {
+  return async dispatch => {
+    try {
+      dispatch(global.beginLoad());
+
+      const result = await services.loadVariables(envId);
+      const vars = result.data.Variables;
+
+      dispatch(global.successWithParam(types.loadSrcVariablesSuccess, vars));
+      dispatch(updateFields(vars));
+    } catch (e) {
+      dispatch(global.handleError(e, types.loadSrcVariablesError));
+    }
+  };
+}
+
+export function loadTarVariables(envId) {
+  return async dispatch => {
+    try {
+      dispatch(global.beginLoad());
+
+      const result = await services.loadVariables(envId);
+      const vars = result.data.Variables;
+
+      dispatch(global.successWithParam(types.loadTarVariablesSuccess, vars));
+      dispatch(updateFields(vars));
+    } catch (e) {
+      dispatch(global.handleError(e, types.loadTarVariablesError));
+    }
+  };
+}
+
+export function updateFields(vars) {
+  return async dispatch => {
+    try {
+      dispatch(global.beginLoad());
+
+      let fields = vars.map((i, key) => {
+        const item = {
+          value: i.name,
+          label: i.name
+        };
+        return item;
+      });
+
+      dispatch(global.successWithParam(types.updateFields, fields));
+    } catch (e) {
+      dispatch(global.handleError(e, types.loadSrcVariablesError));
     }
   };
 }

@@ -3,7 +3,9 @@ import { connect } from 'react-redux';
 import { Container, Row, Col, Table, Card } from 'react-bootstrap';
 import * as compareEnvActions from 'stores/compareEnv/actions';
 import * as compareEnvSelectors from 'stores/compareEnv/reducer';
-import CompareEnvFilter from './CompareEnvFilter';
+import ChartFilter from './ChartFilter';
+import FieldFilter from './FieldFilter';
+import Environment from './Environment';
 import * as global from 'stores/global/actions';
 
 class CompareEnv extends Component {
@@ -15,11 +17,17 @@ class CompareEnv extends Component {
     this.props.dispatch(
       compareEnvActions.selectSourceEnvironment(selectedSrcEnv)
     );
+    this.props.dispatch(
+      compareEnvActions.loadSrcVariables(selectedSrcEnv.value)
+    );
   };
 
   selectTargetEnv = selectedTarEnv => {
     this.props.dispatch(
       compareEnvActions.selectTargetEnvironment(selectedTarEnv)
+    );
+    this.props.dispatch(
+      compareEnvActions.loadTarVariables(selectedTarEnv.value)
     );
   };
 
@@ -51,15 +59,29 @@ class CompareEnv extends Component {
   }
 
   getOnlyCharts() {
-    if (this.props.compareEnv.filterOnlyExcept === 1) {
+    if (this.props.compareEnv.filterOnlyExceptChart === 1) {
       return this.props.compareEnv.selectedCharts;
     }
     return [];
   }
 
   getExceptCharts() {
-    if (this.props.compareEnv.filterOnlyExcept === 2) {
+    if (this.props.compareEnv.filterOnlyExceptChart === 2) {
       return this.props.compareEnv.selectedCharts;
+    }
+    return [];
+  }
+
+  getOnlyFields() {
+    if (this.props.compareEnv.filterOnlyExceptField === 1) {
+      return this.props.compareEnv.selectedFields;
+    }
+    return [];
+  }
+
+  getExceptFields() {
+    if (this.props.compareEnv.filterOnlyExceptField === 2) {
+      return this.props.compareEnv.selectedFields;
     }
     return [];
   }
@@ -71,8 +93,8 @@ class CompareEnv extends Component {
         targetEnvId: this.props.compareEnv.selectedTarEnv.value,
         exceptCharts: this.getExceptCharts(),
         onlyCharts: this.getOnlyCharts(),
-        exceptFields: [],
-        onlyFields: []
+        exceptFields: this.getExceptFields(),
+        onlyFields: this.getOnlyFields()
       };
       this.props.dispatch(compareEnvActions.compareEnv(payload));
     }
@@ -106,8 +128,20 @@ class CompareEnv extends Component {
     this.props.dispatch(compareEnvActions.removeChart(selectedChart));
   };
 
+  addField = selectedField => {
+    this.props.dispatch(compareEnvActions.addField(selectedField.value));
+  };
+
+  removeField = selectedField => {
+    this.props.dispatch(compareEnvActions.removeField(selectedField));
+  };
+
   handleFilterChartChange = filter => {
     this.props.dispatch(compareEnvActions.selectFilterOnlyExcept(filter));
+  };
+
+  handleFilterFieldChange = filter => {
+    this.props.dispatch(compareEnvActions.selectFilterOnlyExceptField(filter));
   };
 
   render() {
@@ -146,16 +180,32 @@ class CompareEnv extends Component {
       <Container fluid>
         <Row>
           <Col md={12}>
-            <CompareEnvFilter
+            <Environment
               environments={this.props.environments}
               state={this.props.compareEnv}
               selectSourceEnv={this.selectSourceEnv.bind(this)}
               selectTargetEnv={this.selectTargetEnv.bind(this)}
+              handleCompare={this.handleCompare.bind(this)}
+            />
+          </Col>
+        </Row>
+        <Row>
+          <Col md={6}>
+            <ChartFilter
+              environments={this.props.environments}
+              state={this.props.compareEnv}
               handleRepositoryChange={this.handleRepositoryChange}
               addChart={this.addChart.bind(this)}
               handleFilterChartChange={this.handleFilterChartChange}
-              handleCompare={this.handleCompare.bind(this)}
               removeChart={this.removeChart.bind(this)}
+            />
+          </Col>
+          <Col md={6}>
+            <FieldFilter
+              state={this.props.compareEnv}
+              addField={this.addField.bind(this)}
+              handleFilterFieldChange={this.handleFilterFieldChange}
+              removeField={this.removeField.bind(this)}
             />
           </Col>
         </Row>

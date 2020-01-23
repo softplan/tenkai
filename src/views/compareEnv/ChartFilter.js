@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import Select from 'react-select';
 import {
-  Button,
   Row,
   Col,
   Card,
@@ -13,7 +12,7 @@ import {
   Badge
 } from 'react-bootstrap';
 
-export default class CompareEnvFilter extends Component {
+export default class ChartFilter extends Component {
   render() {
     const state = this.props.state;
 
@@ -41,7 +40,7 @@ export default class CompareEnvFilter extends Component {
                     <ToggleButtonGroup
                       name="radio"
                       type="radio"
-                      value={state.filterOnlyExcept}
+                      value={state.filterOnlyExceptChart}
                       onChange={this.props.handleFilterChartChange}
                     >
                       <ToggleButton name="radio" value={0}>
@@ -56,7 +55,7 @@ export default class CompareEnvFilter extends Component {
                     </ToggleButtonGroup>
                   </Col>
                 </Row>
-                {state.filterOnlyExcept > 0 && (
+                {state.filterOnlyExceptChart > 0 && (
                   <Row>
                     <Col md={4}>
                       <FormGroup>
@@ -83,31 +82,6 @@ export default class CompareEnvFilter extends Component {
                 )}
               </Card.Body>
             </Card>
-            <Row>
-              <Col md={6}>
-                <Form.Group controlId="srcEnv">
-                  <Form.Label>Source environment</Form.Label>
-                  <Select
-                    value={state.selectedSrcEnv}
-                    onChange={this.props.selectSourceEnv}
-                    options={this.props.environments}
-                  />
-                </Form.Group>
-              </Col>
-              <Col md={6}>
-                <Form.Group controlId="tarEnv">
-                  <Form.Label>Target environment</Form.Label>
-                  <Select
-                    value={state.selectedTarEnv}
-                    onChange={this.props.selectTargetEnv}
-                    options={this.props.environments}
-                  />
-                </Form.Group>
-              </Col>
-            </Row>
-            <Button variant="primary" onClick={this.props.handleCompare}>
-              Compare
-            </Button>
           </Form>
         </Card.Body>
       </Card>
