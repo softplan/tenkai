@@ -1,11 +1,18 @@
 export const SELECT_SOURCE_ENVIRONMENT = 'SELECT_SOURCE_ENVIRONMENT';
 export const SELECT_TARGET_ENVIRONMENT = 'SELECT_TARGET_ENVIRONMENT';
+
 export const SELECT_REPOSITORY = 'SELECT_REPOSITORY';
+export const INPUT_FILTER = 'INPUT_FILTER';
+
 export const SELECT_FILTER_ONLY_EXCEPT = 'SELECT_FILTER_ONLY_EXCEPT';
 export const SELECT_FILTER_ONLY_EXCEPT_FIELD =
   'SELECT_FILTER_ONLY_EXCEPT_FIELD';
+
+export const CLEAR_FILTER = 'CLEAR_FILTER';
+
 export const ADD_CHART = 'ADD_CHART';
 export const REMOVE_CHART = 'REMOVE_CHART';
+
 export const ADD_FIELD = 'ADD_FIELD';
 export const REMOVE_FIELD = 'REMOVE_FIELD';
 
@@ -69,6 +76,15 @@ export const selectFilterOnlyExcept = filterOnlyExceptChart => ({
 export const selectFilterOnlyExceptField = filterOnlyExceptField => ({
   type: SELECT_FILTER_ONLY_EXCEPT_FIELD,
   payload: { filterOnlyExceptField }
+});
+
+export const inputFilter = value => ({
+  type: INPUT_FILTER,
+  payload: { value }
+});
+
+export const clearFilter = () => ({
+  type: CLEAR_FILTER
 });
 
 export const compareEnvSuccess = envsDiff => ({

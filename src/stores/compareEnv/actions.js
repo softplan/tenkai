@@ -56,6 +56,12 @@ export function selectFilterOnlyExceptField(filterOnlyExceptField) {
   };
 }
 
+export function inputFilter(value) {
+  return async dispatch => {
+    dispatch(types.inputFilter(value));
+  };
+}
+
 export function compareEnv(data) {
   return async dispatch => {
     try {
@@ -68,6 +74,12 @@ export function compareEnv(data) {
     } catch (error) {
       dispatch(global.handleError(error, types.compareEnvError));
     }
+  };
+}
+
+export function clearFilter() {
+  return async dispatch => {
+    dispatch(types.clearFilter());
   };
 }
 
@@ -112,6 +124,7 @@ export function loadCharts(repo) {
         });
       }
 
+      repos.push({ value: 'global', label: 'global' });
       dispatch(global.successWithParam(types.loadChartsSuccess, repos));
     } catch (e) {
       dispatch(global.handleError(e, types.loadChartsError));

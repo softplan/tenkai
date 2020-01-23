@@ -1,6 +1,14 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Container, Row, Col, Table, Card } from 'react-bootstrap';
+import {
+  Container,
+  Row,
+  Col,
+  Table,
+  Card,
+  Button,
+  Form
+} from 'react-bootstrap';
 import * as compareEnvActions from 'stores/compareEnv/actions';
 import * as compareEnvSelectors from 'stores/compareEnv/reducer';
 import ChartFilter from './ChartFilter';
@@ -13,22 +21,26 @@ class CompareEnv extends Component {
     this.props.dispatch(compareEnvActions.loadRepositories());
   }
 
-  selectSourceEnv = selectedSrcEnv => {
-    this.props.dispatch(
+  selectSourceEnv = async selectedSrcEnv => {
+    await this.props.dispatch(
       compareEnvActions.selectSourceEnvironment(selectedSrcEnv)
     );
-    this.props.dispatch(
+    await this.props.dispatch(
       compareEnvActions.loadSrcVariables(selectedSrcEnv.value)
     );
+
+    this.autoCompare();
   };
 
-  selectTargetEnv = selectedTarEnv => {
-    this.props.dispatch(
+  selectTargetEnv = async selectedTarEnv => {
+    await this.props.dispatch(
       compareEnvActions.selectTargetEnvironment(selectedTarEnv)
     );
-    this.props.dispatch(
+    await this.props.dispatch(
       compareEnvActions.loadTarVariables(selectedTarEnv.value)
     );
+
+    this.autoCompare();
   };
 
   isValid() {
@@ -100,6 +112,10 @@ class CompareEnv extends Component {
     }
   };
 
+  clearFilter = () => {
+    this.props.dispatch(compareEnvActions.clearFilter());
+  };
+
   handleRepositoryChange = repo => {
     this.props.dispatch(compareEnvActions.selectRepository(repo));
     this.props.dispatch(compareEnvActions.loadCharts(repo.value, false));
@@ -120,28 +136,58 @@ class CompareEnv extends Component {
     return 0;
   };
 
-  addChart = selectedChart => {
-    this.props.dispatch(compareEnvActions.addChart(selectedChart.value));
+  addChart = async selectedChart => {
+    await this.props.dispatch(compareEnvActions.addChart(selectedChart.value));
+    this.autoCompare();
   };
 
-  removeChart = selectedChart => {
-    this.props.dispatch(compareEnvActions.removeChart(selectedChart));
+  removeChart = async selectedChart => {
+    await this.props.dispatch(compareEnvActions.removeChart(selectedChart));
+    this.autoCompare();
   };
 
-  addField = selectedField => {
-    this.props.dispatch(compareEnvActions.addField(selectedField.value));
+  addField = async selectedField => {
+    await this.props.dispatch(compareEnvActions.addField(selectedField.value));
+    this.autoCompare();
   };
 
-  removeField = selectedField => {
-    this.props.dispatch(compareEnvActions.removeField(selectedField));
+  removeField = async selectedField => {
+    await this.props.dispatch(compareEnvActions.removeField(selectedField));
+    this.autoCompare();
   };
 
-  handleFilterChartChange = filter => {
-    this.props.dispatch(compareEnvActions.selectFilterOnlyExcept(filter));
+  handleFilterChartChange = async filter => {
+    await this.props.dispatch(compareEnvActions.selectFilterOnlyExcept(filter));
+
+    if (this.props.compareEnv.repositories.length === 0) {
+      this.props.dispatch(compareEnvActions.loadRepositories());
+    }
+    if (this.props.compareEnv.selectedCharts.length > 0) {
+      this.autoCompare();
+    }
   };
 
-  handleFilterFieldChange = filter => {
-    this.props.dispatch(compareEnvActions.selectFilterOnlyExceptField(filter));
+  handleFilterFieldChange = async filter => {
+    await this.props.dispatch(
+      compareEnvActions.selectFilterOnlyExceptField(filter)
+    );
+
+    if (this.props.compareEnv.selectedFields.length > 0) {
+      this.autoCompare();
+    }
+  };
+
+  autoCompare() {
+    if (
+      !!this.props.compareEnv.selectedSrcEnv &&
+      !!this.props.compareEnv.selectedTarEnv
+    ) {
+      this.handleCompare();
+    }
+  }
+
+  onInputFilter = evt => {
+    this.props.dispatch(compareEnvActions.inputFilter(evt.target.value));
   };
 
   render() {
@@ -158,8 +204,19 @@ class CompareEnv extends Component {
     let lastScope = '';
     let striped = false;
     let items = [];
+    const inputFilter = this.props.compareEnv.inputFilter;
     if (!!this.props.compareEnv.envsDiff) {
       items = this.props.compareEnv.envsDiff
+        .filter(
+          f =>
+            inputFilter === '' ||
+            f.sourceScope.includes(inputFilter) ||
+            f.sourceName.includes(inputFilter) ||
+            f.sourceValue.includes(inputFilter) ||
+            f.targetScope.includes(inputFilter) ||
+            f.targetName.includes(inputFilter) ||
+            f.targetValue.includes(inputFilter)
+        )
         .sort(this.sort)
         .map((item, key) => {
           const scope = item.sourceScope || item.targetScope;
@@ -168,7 +225,7 @@ class CompareEnv extends Component {
             striped = !striped;
           }
           return (
-            <tr key={key} bgcolor={striped ? '#DCDCDC' : '#FFFFFF'}>
+            <tr key={key} bgcolor={striped ? '#EAECEE' : '#FFFFFF'}>
               <td>{item.sourceScope}</td>
               <td>{item.sourceName}</td>
               <td>{item.sourceValue}</td>
@@ -188,7 +245,6 @@ class CompareEnv extends Component {
               state={this.props.compareEnv}
               selectSourceEnv={this.selectSourceEnv.bind(this)}
               selectTargetEnv={this.selectTargetEnv.bind(this)}
-              handleCompare={this.handleCompare.bind(this)}
             />
           </Col>
         </Row>
@@ -210,6 +266,27 @@ class CompareEnv extends Component {
               handleFilterFieldChange={this.handleFilterFieldChange}
               removeField={this.removeField.bind(this)}
             />
+          </Col>
+        </Row>
+        <Row>
+          <Col md={6}>
+            <Form.Group>
+              <Form.Label>Global Filter</Form.Label>
+              <Form.Control
+                type="text"
+                onChange={this.onInputFilter.bind(this)}
+              />
+            </Form.Group>
+          </Col>
+        </Row>
+        <Row>
+          <Col md={6}>
+            <Button variant="primary" onClick={this.handleCompare}>
+              Compare
+            </Button>
+            <Button variant="danger" onClick={this.clearFilter}>
+              Clear Filter
+            </Button>
           </Col>
         </Row>
         <Row>

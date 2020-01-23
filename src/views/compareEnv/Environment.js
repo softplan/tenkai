@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Select from 'react-select';
-import { Button, Row, Col, Card, Form } from 'react-bootstrap';
+import { Row, Col, Card, Form } from 'react-bootstrap';
 
 export default class Environment extends Component {
   render() {
@@ -31,9 +31,6 @@ export default class Environment extends Component {
                 </Form.Group>
               </Col>
             </Row>
-            <Button variant="primary" onClick={this.props.handleCompare}>
-              Compare
-            </Button>
           </Form>
         </Card.Body>
       </Card>

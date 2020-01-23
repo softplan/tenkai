@@ -14,11 +14,21 @@ const initialState = {
   selectedTarEnv: null,
   srcVariables: [],
   tarVariables: [],
-  fields: []
+  fields: [],
+  inputFilter: ''
 };
 
 export default function reduce(state = initialState, action = {}) {
   switch (action.type) {
+    case types.CLEAR_FILTER:
+      return initialState;
+
+    case types.INPUT_FILTER:
+      return {
+        ...state,
+        inputFilter: action.payload.value
+      };
+
     case types.SELECT_REPOSITORY:
       return {
         ...state,
