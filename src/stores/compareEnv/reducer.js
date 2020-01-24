@@ -37,10 +37,16 @@ export default function reduce(state = initialState, action = {}) {
       };
 
     case types.ADD_CHART:
-      return {
-        ...state,
-        selectedCharts: [...state.selectedCharts, action.payload.selectedChart]
-      };
+      if (!arrayHasValue(state.selectedCharts, action.payload.selectedChart)) {
+        return {
+          ...state,
+          selectedCharts: [
+            ...state.selectedCharts,
+            action.payload.selectedChart
+          ]
+        };
+      }
+      return state;
 
     case types.REMOVE_CHART:
       return {
