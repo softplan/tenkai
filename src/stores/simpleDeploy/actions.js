@@ -1,34 +1,11 @@
 import * as types from './actionTypes';
 import * as services from 'services/simpleDeploy';
-import * as messages from 'components/Notification/defaultMessages';
-import * as spinner from 'stores/spinner/actionTypes';
-
-function handleError(e, action) {
-  return async dispatch => {
-    dispatch(action(e));
-    dispatch(messages.errorDefault(e));
-    dispatch(spinner.hideSpinner());
-  };
-}
-
-function handleSuccessParam(actionSuccess, param) {
-  return async dispatch => {
-    dispatch(actionSuccess(param));
-    dispatch(spinner.hideSpinner());
-  };
-}
-
-function handleSuccess(actionSuccess) {
-  return async dispatch => {
-    dispatch(actionSuccess());
-    dispatch(spinner.hideSpinner());
-  };
-}
+import * as global from 'stores/global/actions';
 
 export function loadRepositories() {
   return async dispatch => {
     try {
-      dispatch(spinner.showSpinner());
+      dispatch(global.beginLoad());
 
       const result = await services.loadRepositories();
       const repositories = result.data.repositories;
@@ -40,9 +17,9 @@ export function loadRepositories() {
         return item;
       });
 
-      dispatch(handleSuccessParam(types.loadReposSuccess, repos));
+      dispatch(global.successWithParam(types.loadReposSuccess, repos));
     } catch (e) {
-      dispatch(handleError(e, types.loadReposError));
+      dispatch(global.handleError(e, types.loadReposError));
     }
   };
 }
@@ -50,7 +27,7 @@ export function loadRepositories() {
 export function loadCharts(repo, allVersions) {
   return async dispatch => {
     try {
-      dispatch(spinner.showSpinner());
+      dispatch(global.beginLoad());
 
       const result = await services.loadCharts(repo, allVersions);
       const charts = result.data.charts;
@@ -67,9 +44,9 @@ export function loadCharts(repo, allVersions) {
         });
       }
 
-      dispatch(handleSuccessParam(types.loadChartsSuccess, repos));
+      dispatch(global.successWithParam(types.loadChartsSuccess, repos));
     } catch (e) {
-      dispatch(handleError(e, types.loadChartsError));
+      dispatch(global.handleError(e, types.loadChartsError));
     }
   };
 }
@@ -77,16 +54,16 @@ export function loadCharts(repo, allVersions) {
 export function loadVariables(envId, scope, callback) {
   return async dispatch => {
     try {
-      dispatch(spinner.showSpinner());
+      dispatch(global.beginLoad());
 
       const result = await services.loadVariables(envId, scope);
       const variables = result.data.Variables;
 
       dispatch(types.loadVariablesSuccess(variables, findImage(variables)));
-      dispatch(spinner.hideSpinner());
+      dispatch(global.hideSpinner());
       callback();
     } catch (e) {
-      dispatch(handleError(e, types.loadVariablesError));
+      dispatch(global.handleError(e, types.loadVariablesError));
     }
   };
 }
@@ -104,7 +81,7 @@ function findImage(variables) {
 export function loadDockerTags(imageName) {
   return async dispatch => {
     try {
-      dispatch(spinner.showSpinner());
+      dispatch(global.beginLoad());
 
       const result = await services.loadDockerTags(imageName);
       const dockerTags = result.data.tags;
@@ -116,9 +93,9 @@ export function loadDockerTags(imageName) {
         return item;
       });
 
-      dispatch(handleSuccessParam(types.loadDockerTagsSuccess, items));
+      dispatch(global.successWithParam(types.loadDockerTagsSuccess, items));
     } catch (e) {
-      dispatch(handleError(e, types.loadDockerTagsError));
+      dispatch(global.handleError(e, types.loadDockerTagsError));
     }
   };
 }
@@ -131,7 +108,7 @@ export function saveVariables(
 ) {
   return async dispatch => {
     try {
-      dispatch(spinner.showSpinner());
+      dispatch(global.beginLoad());
 
       const data = [
         {
@@ -143,10 +120,10 @@ export function saveVariables(
       ];
 
       await services.saveVariables(data);
-      dispatch(handleSuccess(types.saveVariablesSuccess));
+      dispatch(global.handleSuccess(types.saveVariablesSuccess));
       installCallback();
     } catch (e) {
-      dispatch(handleError(e, types.saveVariablesError));
+      dispatch(global.handleError(e, types.saveVariablesError));
     }
   };
 }
@@ -154,7 +131,7 @@ export function saveVariables(
 export function install(envId, releaseName, chartName, chartVersion) {
   return async dispatch => {
     try {
-      dispatch(spinner.showSpinner());
+      dispatch(global.beginLoad());
 
       const data = {
         environmentId: envId,
@@ -165,10 +142,10 @@ export function install(envId, releaseName, chartName, chartVersion) {
 
       await services.install(data);
 
-      dispatch(handleSuccess(types.installSuccess));
-      dispatch(messages.successDefault());
+      dispatch(global.handleSuccess(types.installSuccess));
+      dispatch(global.successDefaultMessage());
     } catch (e) {
-      dispatch(handleError(e, types.installError));
+      dispatch(global.handleError(e, types.installError));
     }
   };
 }

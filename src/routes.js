@@ -22,6 +22,7 @@ import VariablesNotUsed from 'views/VariablesNotUsed';
 import VariableRule from 'views/variableRule/VariableRule';
 import ValueRule from 'views/valueRule/ValueRule';
 import SimpleDeploy from 'views/simpleDeploy/SimpleDeploy';
+import CompareEnv from 'views/compareEnv/CompareEnv';
 
 const dashboardRoutes = [
   {
@@ -211,6 +212,15 @@ const dashboardRoutes = [
     component: ValueRule,
     layout: '/admin',
     menu: false,
+    role: 'tenkai-user'
+  },
+  {
+    path: '/compareEnv',
+    name: 'Compare Envs',
+    icon: 'pe-7s-way',
+    component: CompareEnv,
+    layout: '/admin',
+    menu: true,
     role: 'tenkai-user'
   },
   {
