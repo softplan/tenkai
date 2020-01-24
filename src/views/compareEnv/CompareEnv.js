@@ -191,8 +191,6 @@ class CompareEnv extends Component {
   };
 
   render() {
-    console.log(JSON.stringify(this.props.compareEnv, null, 4));
-
     let srcEnvLabel = '';
     if (!!this.props.compareEnv.selectedSrcEnv) {
       srcEnvLabel = this.props.compareEnv.selectedSrcEnv.label.toUpperCase();
