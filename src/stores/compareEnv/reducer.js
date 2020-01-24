@@ -51,10 +51,16 @@ export default function reduce(state = initialState, action = {}) {
       };
 
     case types.ADD_FIELD:
-      return {
-        ...state,
-        selectedFields: [...state.selectedFields, action.payload.selectedField]
-      };
+      if (!arrayHasValue(state.selectedFields, action.payload.selectedField)) {
+        return {
+          ...state,
+          selectedFields: [
+            ...state.selectedFields,
+            action.payload.selectedField
+          ]
+        };
+      }
+      return state;
 
     case types.REMOVE_FIELD:
       return {
@@ -173,6 +179,15 @@ function arrayHasElement(array, element) {
   return false;
 }
 
+function arrayHasValue(array, element) {
+  for (let i = 0; i < array.length; i++) {
+    if (array[i] === element) {
+      return true;
+    }
+  }
+  return false;
+}
+
 function sort(a, b) {
   const fieldA = a.value.toUpperCase();
   const fieldB = b.value.toUpperCase();
@@ -184,4 +199,4 @@ function sort(a, b) {
     return -1;
   }
   return 0;
-};
+}
