@@ -1,17 +1,18 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
-  Grid,
+  Container,
   Row,
   Col,
   FormControl,
   Table,
   FormGroup,
-  ControlLabel
+  FormLabel,
+  ButtonToolbar
 } from 'react-bootstrap';
 
 import Button from 'components/CustomButton/CustomButton.jsx';
-import { Card } from 'components/Card/Card.jsx';
+import { CardTenkai } from 'components/Card/CardTenkai.jsx';
 import CButton from 'components/CustomButton/CustomButton.jsx';
 import UserForm from 'components/Users/UserForm.jsx';
 import SimpleModal from 'components/Modal/SimpleModal.jsx';
@@ -100,28 +101,29 @@ class Users extends Component {
           handleConfirmDelete={this.handleConfirmDelete.bind(this)}
         ></SimpleModal>
 
-        <Grid fluid>
+        <Container fluid>
           <Row>
             <Col md={12}>
-              <Card
+              <CardTenkai
                 title=""
                 content={
-                  <form>
-                    <CButton
-                      className="pull-right"
-                      variant="primary"
-                      onClick={() =>
-                        this.setState({
-                          showInsertUpdateForm: true,
-                          editItem: {},
-                          editMode: false
-                        })
-                      }
-                    >
-                      New User
-                    </CButton>
-                    <div className="clearfix" />
-                  </form>
+                  <div align="right">
+                    <ButtonToolbar style={{ display: 'block' }}>
+                      <CButton
+                        className="pull-right"
+                        variant="primary"
+                        onClick={() =>
+                          this.setState({
+                            showInsertUpdateForm: true,
+                            editItem: {},
+                            editMode: false
+                          })
+                        }
+                      >
+                        New User
+                      </CButton>
+                    </ButtonToolbar>
+                  </div>
                 }
               />
             </Col>
@@ -148,13 +150,13 @@ class Users extends Component {
 
           <Row>
             <Col md={12}>
-              <Card
+              <CardTenkai
                 title="Users"
                 content={
                   <form>
                     <div className="col-md-8">
                       <FormGroup>
-                        <ControlLabel>User Search</ControlLabel>
+                        <FormLabel>User Search</FormLabel>
                         <FormControl
                           value={this.state.inputFilter}
                           onChange={e =>
@@ -186,7 +188,7 @@ class Users extends Component {
               />
             </Col>
           </Row>
-        </Grid>
+        </Container>
       </div>
     );
   }

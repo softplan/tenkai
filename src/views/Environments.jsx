@@ -1,15 +1,16 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
-  Grid,
+  Container,
   Row,
   Col,
   FormControl,
   FormGroup,
-  ControlLabel
+  FormLabel,
+  ButtonToolbar
 } from 'react-bootstrap';
 
-import { Card } from 'components/Card/Card.jsx';
+import { CardTenkai } from 'components/Card/CardTenkai.jsx';
 import CButton from 'components/CustomButton/CustomButton.jsx';
 import EnvironmentForm from 'components/Environments/EnvironmentForm.jsx';
 import SimpleModal from 'components/Modal/SimpleModal.jsx';
@@ -183,25 +184,26 @@ class Environments extends Component {
           handleConfirmDelete={this.handleConfirmDuplicate.bind(this)}
         ></SimpleModal>
 
-        <Grid fluid>
+        <Container fluid>
           <Row>
             <Col md={12}>
-              <Card
+              <CardTenkai
                 title=""
                 content={
-                  <form>
-                    <CButton
-                      disabled={
-                        !this.props.keycloak.hasRealmRole('tenkai-admin')
-                      }
-                      className="pull-right"
-                      variant="primary"
-                      onClick={this.handleNewEnvironmentClick.bind(this)}
-                    >
-                      New Environment
-                    </CButton>
-                    <div className="clearfix" />
-                  </form>
+                  <div align="right">
+                    <ButtonToolbar style={{ display: 'block' }}>
+                      <CButton
+                        disabled={
+                          !this.props.keycloak.hasRealmRole('tenkai-admin')
+                        }
+                        className="pull-right"
+                        variant="primary"
+                        onClick={this.handleNewEnvironmentClick.bind(this)}
+                      >
+                        New Environment
+                      </CButton>
+                    </ButtonToolbar>
+                  </div>
                 }
               />
             </Col>
@@ -222,7 +224,7 @@ class Environments extends Component {
 
           <Row>
             <Col md={12}>
-              <Card
+              <CardTenkai
                 plain
                 title="Environments"
                 content={
@@ -230,7 +232,7 @@ class Environments extends Component {
                     <Row>
                       <Col xs={8}>
                         <FormGroup>
-                          <ControlLabel>Environment Search</ControlLabel>
+                          <FormLabel>Environment Search</FormLabel>
                           <FormControl
                             value={this.state.inputFilter}
                             onChange={this.onChangeFilterHandler.bind(this)}
@@ -250,7 +252,7 @@ class Environments extends Component {
               />
             </Col>
           </Row>
-        </Grid>
+        </Container>
       </div>
     );
   }

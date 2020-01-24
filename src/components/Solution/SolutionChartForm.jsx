@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import { Card } from "components/Card/Card.jsx";
-import { FormGroup, ControlLabel, Button} from "react-bootstrap";
+import { CardTenkai } from "components/Card/CardTenkai.jsx";
+import { FormGroup, FormLabel, Button} from "react-bootstrap";
 import Select from 'react-select';
 import { retriveRepo, retrieveCharts } from 'client-api/apicall.jsx';
 
@@ -63,33 +63,32 @@ export class SolutionChartForm extends Component {
 
         return (
             <div>
-                <Card title={editMode ? "Edit Chart Association" : "New Chart Association"}
+                <CardTenkai title={editMode ? "Edit Chart Association" : "New Chart Association"}
                     content={
                         <form>
 
                             <FormGroup>
-                                <ControlLabel>Repository</ControlLabel>
+                                <FormLabel>Repository</FormLabel>
                                 <Select value={selectedRepository} onChange={this.handleRepositoryChange} options={this.state.repositories} />
                             </FormGroup>
 
                             <FormGroup>
-                                <ControlLabel>Helm Chart</ControlLabel>
+                                <FormLabel>Helm Chart</FormLabel>
                                 <Select value={selectedChart} onChange={this.handleChartChange} options={this.state.charts} />
                             </FormGroup>
 
                             <div className="btn-toolbar">
                                 <div className="btn-group">
-                                    <Button bsStyle="info" type="button" onClick={this.saveClick}>
+                                    <Button variant="info" type="button" onClick={this.saveClick}>
                                         Save
                                     </Button>
                                 </div>
                                 <div className="btn-group">
-                                    <Button bsStyle="info" type="button" onClick={this.props.cancelClick}>
+                                    <Button variant="info" type="button" onClick={this.props.cancelClick}>
                                         Cancel
                                     </Button>
                                 </div>
                             </div>
-                            <div className="clearfix" />
                         </form>
                     }
                 />

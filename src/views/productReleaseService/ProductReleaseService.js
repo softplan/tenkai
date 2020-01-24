@@ -1,18 +1,18 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
-  Grid,
+  Container,
   Row,
   Col,
   FormGroup,
-  ControlLabel,
+  FormLabel,
   FormControl,
   Table,
   ButtonToolbar
 } from 'react-bootstrap';
 import SimpleModal from 'components/Modal/SimpleModal.jsx';
 
-import { Card } from 'components/Card/Card.jsx';
+import { CardTenkai } from 'components/Card/CardTenkai.jsx';
 import Button from 'components/CustomButton/CustomButton.jsx';
 import EditProductReleaseService from 'views/productReleaseService/components/EditProductReleaseService';
 import queryString from 'query-string';
@@ -246,38 +246,37 @@ class ProductReleaseService extends Component {
           handleConfirmDelete={this.handleConfirmDelete.bind(this)}
         ></SimpleModal>
 
-        <Grid fluid>
+        <Container fluid>
           <Row>
             <Col md={12}>
-              <Card
+              <CardTenkai
                 title=""
                 content={
-                  <form>
+                  <Container fluid>
                     <h2>{this.state.solutionName}</h2>
+                    <div align="right">
+                      <ButtonToolbar style={{ display: 'block' }}>
+                        <Button
+                          className="btn-primary pull-right"
+                          variant="primary"
+                          onClick={this.goToDeploy.bind(this)}
+                        >
+                          Go to deploy
+                        </Button>
 
-                    <ButtonToolbar>
-                      <Button
-                        className="btn-primary pull-right"
-                        variant="primary"
-                        onClick={this.goToDeploy.bind(this)}
-                      >
-                        Go to deploy
-                      </Button>
-
-                      <Button
-                        className="pull-right"
-                        variant="primary"
-                        disabled={this.state.locked}
-                        onClick={() =>
-                          this.setState({ showInsertUpdateForm: true })
-                        }
-                      >
-                        Associate Chart
-                      </Button>
-                    </ButtonToolbar>
-
-                    <div className="clearfix" />
-                  </form>
+                        <Button
+                          className="pull-right"
+                          variant="primary"
+                          disabled={this.state.locked}
+                          onClick={() =>
+                            this.setState({ showInsertUpdateForm: true })
+                          }
+                        >
+                          Associate Chart
+                        </Button>
+                      </ButtonToolbar>
+                    </div>
+                  </Container>
                 }
               />
             </Col>
@@ -306,14 +305,14 @@ class ProductReleaseService extends Component {
 
           <Row>
             <Col md={12}>
-              <Card
+              <CardTenkai
                 title="Charts"
                 content={
                   <form>
                     <div>
                       <div className="col-md-8">
                         <FormGroup>
-                          <ControlLabel>Charts Search</ControlLabel>
+                          <FormLabel>Charts Search</FormLabel>
                           <FormControl
                             value={this.state.inputFilter}
                             onChange={e =>
@@ -350,7 +349,7 @@ class ProductReleaseService extends Component {
               />
             </Col>
           </Row>
-        </Grid>
+        </Container>
       </div>
     );
   }

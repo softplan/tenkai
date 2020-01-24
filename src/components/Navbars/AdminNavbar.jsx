@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import { Navbar } from "react-bootstrap";
 import AdminNavbarLinks from "./AdminNavbarLinks.jsx";
 
 class Header extends Component {
@@ -28,18 +27,13 @@ class Header extends Component {
   }
   render() {
     return (
-      <Navbar fluid>
-        <Navbar fluid>
-          <AdminNavbarLinks 
-            keycloak={this.props.keycloak} 
-            history={this.props.history}
-            environments={this.props.environments}
-            selectedEnvironment={this.props.selectedEnvironment}
-            handleEnvironmentChange={this.props.handleEnvironmentChange.bind(this)}
-          />
-
-        </Navbar>
-      </Navbar>
+      <AdminNavbarLinks 
+        keycloak={this.props.keycloak} 
+        history={this.props.history}
+        environments={this.props.environments}
+        selectedEnvironment={this.props.selectedEnvironment}
+        handleEnvironmentChange={this.props.handleEnvironmentChange.bind(this)}
+      />
     );
   }
 }

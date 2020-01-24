@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Row, Col, ButtonToolbar } from "react-bootstrap";
-import { Card } from "components/Card/Card.jsx";
+import { CardTenkai } from "components/Card/CardTenkai.jsx";
 import { FormInputs } from "components/FormInputs/FormInputs.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
 import { saveSettings, retrieveSettings } from "client-api/apicall.jsx";
@@ -88,11 +88,11 @@ class GlobalConfig extends Component {
       <div className="content">
         <Row>
           <Col md={12}>
-            <Card
+            <CardTenkai
               title=""
               content={
-                <div>
-                  <ButtonToolbar>
+                <div align="right">
+                  <ButtonToolbar style={{ display: 'block' }}>
                     <Button
                       className="btn-primary pull-right"
                       type="button"
@@ -101,8 +101,6 @@ class GlobalConfig extends Component {
                       Save
                     </Button>
                   </ButtonToolbar>
-
-                  <div className="clearfix" />
                 </div>
               }
             />
@@ -111,7 +109,7 @@ class GlobalConfig extends Component {
 
         <Row>
           <Col md={12}>
-            <Card
+            <CardTenkai
               title="Settings"
               content={
                 <div>
@@ -123,7 +121,7 @@ class GlobalConfig extends Component {
                           name: "commonValuesConfigMapChart",
                           label: "Common values Configmap Chart",
                           type: "text",
-                          bsClass: "form-control",
+                          bsPrefix: "form-control",
                           value: this.state.formData.commonValuesConfigMapChart,
                           onChange: this.handleChange
                         }
@@ -136,7 +134,7 @@ class GlobalConfig extends Component {
                           name: "commonVariablesConfigMapChart",
                           label: "Common variables Configmap chart",
                           type: "text",
-                          bsClass: "form-control",
+                          bsPrefix: "form-control",
                           value: this.state.formData
                             .commonVariablesConfigMapChart,
                           onChange: this.handleChange
@@ -150,7 +148,7 @@ class GlobalConfig extends Component {
                           name: "canaryChart",
                           label: "Canary chart",
                           type: "text",
-                          bsClass: "form-control",
+                          bsPrefix: "form-control",
                           value: this.state.formData.canaryChart,
                           onChange: this.handleChange
                         }

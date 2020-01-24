@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { Card } from 'components/Card/Card.jsx';
+import { CardTenkai } from 'components/Card/CardTenkai.jsx';
 import { FormInputs } from 'components/FormInputs/FormInputs.jsx';
-import { FormGroup, ControlLabel, Button, Col } from 'react-bootstrap';
+import { FormGroup, FormLabel, Button, Col } from 'react-bootstrap';
 import Select from 'react-select';
 
 export class EditRule extends Component {
@@ -65,13 +65,13 @@ export class EditRule extends Component {
 
     return (
       <div>
-        <Card
+        <CardTenkai
           title={editMode ? 'Edit Rule' : 'New Rule'}
           content={
             <form>
               <Col md={3}>
                 <FormGroup>
-                  <ControlLabel>Rule Type</ControlLabel>
+                  <FormLabel>Rule Type</FormLabel>
                   <Select
                     value={this.state.selectedRuleType}
                     onChange={this.handleRuleTypeChange}
@@ -86,7 +86,7 @@ export class EditRule extends Component {
                     name: 'value',
                     label: 'Value',
                     type: 'text',
-                    bsClass: 'form-control',
+                    bsPrefix: 'form-control',
                     value: this.state.formData.value,
                     onChange: this.handleChange
                   }
@@ -95,13 +95,13 @@ export class EditRule extends Component {
 
               <div className="btn-toolbar">
                 <div className="btn-group">
-                  <Button bsStyle="info" type="button" onClick={this.saveClick}>
+                  <Button variant="info" type="button" onClick={this.saveClick}>
                     Save
                   </Button>
                 </div>
                 <div className="btn-group">
                   <Button
-                    bsStyle="info"
+                    variant="info"
                     type="button"
                     onClick={this.props.cancelClick}
                   >
@@ -109,8 +109,6 @@ export class EditRule extends Component {
                   </Button>
                 </div>
               </div>
-
-              <div className="clearfix" />
             </form>
           }
         />

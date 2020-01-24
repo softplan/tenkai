@@ -37,13 +37,13 @@ export class Tasks extends Component {
           <td>{tasks_title[i]}</td>
           <td className="td-actions text-right">
             <OverlayTrigger placement="top" overlay={edit}>
-              <Button bsStyle="info" simple type="button" bsSize="xs">
+              <Button variant="info" simple type="button" size="xs">
                 <i className="fa fa-edit" />
               </Button>
             </OverlayTrigger>
 
             <OverlayTrigger placement="top" overlay={remove}>
-              <Button bsStyle="danger" simple type="button" bsSize="xs">
+              <Button variant="danger" simple type="button" size="xs">
                 <i className="fa fa-times" />
               </Button>
             </OverlayTrigger>

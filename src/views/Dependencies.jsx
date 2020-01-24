@@ -1,17 +1,17 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import {
-  Grid,
+  Container,
   Row,
   Col,
   FormGroup,
-  ControlLabel,
+  FormLabel,
   FormControl,
   Table
 } from "react-bootstrap";
 import SimpleModal from "components/Modal/SimpleModal.jsx";
 
-import { Card } from "components/Card/Card.jsx";
+import { CardTenkai } from "components/Card/CardTenkai.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
 import DepForm from "components/Dependencies/DepForm.jsx";
 import queryString from "query-string";
@@ -111,10 +111,10 @@ class Dependencies extends Component {
           handleConfirmDelete={this.handleConfirmDelete.bind(this)}
         />
 
-        <Grid fluid>
+        <Container fluid>
           <Row>
             <Col md={12}>
-              <Card
+              <CardTenkai
                 title=""
                 content={
                   <form>
@@ -128,7 +128,6 @@ class Dependencies extends Component {
                     >
                       New Dependency
                     </Button>
-                    <div className="clearfix" />
                   </form>
                 }
               />
@@ -157,14 +156,14 @@ class Dependencies extends Component {
 
           <Row>
             <Col md={12}>
-              <Card
+              <CardTenkai
                 title="Dependencies"
                 content={
                   <form>
                     <div>
                       <div className="col-md-8">
                         <FormGroup>
-                          <ControlLabel>Dependency Search</ControlLabel>
+                          <FormLabel>Dependency Search</FormLabel>
                           <FormControl
                             value={this.state.inputFilter}
                             onChange={e =>
@@ -196,7 +195,7 @@ class Dependencies extends Component {
               />
             </Col>
           </Row>
-        </Grid>
+        </Container>
       </div>
     );
   }

@@ -1,13 +1,15 @@
 import React, { Component } from 'react';
-import { Card } from 'components/Card/Card.jsx';
+import { CardTenkai } from 'components/Card/CardTenkai.jsx';
 import {
   Row,
   Col,
   Table,
   FormGroup,
   ButtonToolbar,
-  ControlLabel,
-  FormControl
+  FormLabel,
+  FormControl,
+  OverlayTrigger,
+  Tooltip
 } from 'react-bootstrap';
 import axios from 'axios';
 import ArrayVariable from 'components/Deployment/ArrayVariable.jsx';
@@ -141,6 +143,7 @@ export class HelmVariables extends Component {
   save(callbackFunction) {
     console.log('save ' + this.props.envId);
     const scope = this.state.chartName;
+    const chartVersion = this.state.chartVersion;
     const environmentId = parseInt(this.props.envId);
     let payload = { data: [] };
 
@@ -149,6 +152,7 @@ export class HelmVariables extends Component {
     Object.keys(this.state.values).map(function(key, index) {
       payload.data.push({
         scope: scope,
+        chartVersion: chartVersion,
         name: key,
         value: elements[key],
         environmentId: environmentId
@@ -158,36 +162,42 @@ export class HelmVariables extends Component {
 
     payload.data.push({
       scope: scope,
+      chartVersion: chartVersion,
       name: 'istio.enabled',
       value: this.state.injectIstioCar ? 'true' : 'false',
       environmentId: environmentId
     });
     payload.data.push({
       scope: scope,
+      chartVersion: chartVersion,
       name: 'istio.virtualservices.enabled',
       value: this.state.enableVirtualService ? 'true' : 'false',
       environmentId: environmentId
     });
     payload.data.push({
       scope: scope,
+      chartVersion: chartVersion,
       name: 'istio.virtualservices.apiPath',
       value: this.state.defaultApiPath,
       environmentId: environmentId
     });
     payload.data.push({
       scope: scope,
+      chartVersion: chartVersion,
       name: 'image.repository',
       value: this.state.containerImage,
       environmentId: environmentId
     });
     payload.data.push({
       scope: scope,
+      chartVersion: chartVersion,
       name: 'image.tag',
       value: this.state.containerTag,
       environmentId: environmentId
     });
     payload.data.push({
       scope: scope,
+      chartVersion: chartVersion,
       name: 'service.apply',
       value: this.state.dontCreateService ? 'false' : 'true',
       environmentId: environmentId
@@ -197,6 +207,7 @@ export class HelmVariables extends Component {
     Object.keys(hosts).map(function(key, index) {
       payload.data.push({
         scope: scope,
+        chartVersion: chartVersion,
         name: key,
         value: hosts[key],
         environmentId: environmentId
@@ -563,6 +574,46 @@ export class HelmVariables extends Component {
     this.setState({ dontCreateService: value });
   };
 
+  isValid(key) {
+    if (this.hasInvalidVar(key)) {
+      return 'form-control is-invalid';
+    }
+    return '';
+  }
+
+  hasInvalidVar(key) {
+    return !!this.props.invalidVariables && !!this.props.invalidVariables[key];
+  }
+
+  getInvalidMsg(name, ruleType) {
+    const v = this.props.invalidVariables[name].find(
+      o => o.ruleType === ruleType
+    );
+    return `Value should ${this.generateMsg(v.ruleType, v.valueRule)}`;
+  }
+
+  generateMsg(ruleType, valueRule) {
+    switch (ruleType) {
+      case 'NotEmpty':
+        return 'be not empty.';
+      case 'StartsWith':
+        return `starts with '${valueRule}'.`;
+      case 'EndsWith':
+        return `ends with '${valueRule}'.`;
+      case 'RegEx':
+        return `complies to regex '${valueRule}'.`;
+      default:
+        break;
+    }
+  }
+
+  renderCM() {
+    return (
+      this.state.applyConfigMap &&
+      this.state.chartName !== this.state.simpleChart
+    );
+  }
+
   render() {
     const items = Object.keys(this.state.variables).map(key => {
       if (typeof this.state.variables[key] == 'object') {
@@ -579,19 +630,35 @@ export class HelmVariables extends Component {
       } else {
         const value = this.state.values[key] || '';
         const keyValue = '' + this.state.variables[key];
-
+        const tooltip = <Tooltip id="tooltip">{keyValue}</Tooltip>;
         return (
           <tr key={key}>
-            <td className="col-md-2">{key}</td>
-            <td className="col-md-5 word-wrap">{keyValue}</td>
-            <td className="col-md-5">
-              <input
-                name={key}
-                value={value}
-                onChange={this.onInputChange}
-                type="text"
-                style={{ width: '100%' }}
-              />
+            <td className="word-wrap">{key}</td>
+            <td>
+              <OverlayTrigger
+                placement="bottom"
+                overlay={tooltip}
+                delayShow={300}
+                delayHide={150}
+              >
+                <input
+                  name={key}
+                  value={value}
+                  onChange={this.onInputChange}
+                  type="text"
+                  style={{ width: '100%' }}
+                  className={this.isValid(key)}
+                />
+              </OverlayTrigger>
+              {this.hasInvalidVar(key) && (
+                this.props.invalidVariables[key].map(key => {
+                  return (
+                    <div key={key} className="invalid-feedback">
+                      {this.getInvalidMsg(key.name, key.ruleType)}
+                    </div>
+                  );
+                })
+              )}
             </td>
           </tr>
         );
@@ -602,7 +669,7 @@ export class HelmVariables extends Component {
       <div>
         <Row>
           <Col md={12}>
-            <Card
+            <CardTenkai
               title={this.state.chartName}
               content={
                 <div>
@@ -615,7 +682,7 @@ export class HelmVariables extends Component {
                           this,
                           this.props.xref
                         )}
-                        bsSize="sm"
+                        size="sm"
                       >
                         <i className="pe-7s-magic-wand" /> Copy config from
                         another environment
@@ -625,7 +692,7 @@ export class HelmVariables extends Component {
                         className="btn-warning"
                         disabled={this.props.canary}
                         onClick={this.showHideCanaryOptions.bind(this)}
-                        bsSize="sm"
+                        size="sm"
                       >
                         <i className="pe-7s-magic-wand" />{' '}
                         {this.state.canaryShowing
@@ -661,12 +728,12 @@ export class HelmVariables extends Component {
                       <Row>
                         <Col xs={6}>
                           <FormGroup>
-                            <ControlLabel>Container image</ControlLabel>
+                            <FormLabel>Container image</FormLabel>
                             <FormControl
                               name="image"
                               readOnly={true}
                               type="text"
-                              bsClass="form-control"
+                              bsPrefix="form-control"
                               value={this.state.containerImage}
                               onChange={this.handleContainerImageChange}
                             />
@@ -674,7 +741,7 @@ export class HelmVariables extends Component {
                         </Col>
                         <Col xs={3}>
                           <FormGroup>
-                            <ControlLabel>Container Tag</ControlLabel>
+                            <FormLabel>Container Tag</FormLabel>
                             <Select
                               value={this.state.selectedTag}
                               onChange={this.handleContainerTagChange}
@@ -718,9 +785,8 @@ export class HelmVariables extends Component {
                     <Table striped hover>
                       <thead>
                         <tr>
-                          <th>Variable</th>
-                          <th>Chart Default Value</th>
-                          <th>Environment Value</th>
+                          <th style={{ width: '20%' }}>Variable</th>
+                          <th style={{ width: '80%' }}>Environment Value</th>
                         </tr>
                       </thead>
                       <tbody>{items}</tbody>
@@ -729,8 +795,7 @@ export class HelmVariables extends Component {
 
                   <hr />
 
-                  {this.state.applyConfigMap &&
-                  this.state.chartName !== this.state.simpleChart ? (
+                  {this.renderCM() ? (
                     <ConfigMap
                       handleLoading={this.props.handleLoading}
                       handleNotification={this.props.handleNotification}

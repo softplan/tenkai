@@ -8,8 +8,13 @@ import user from './user/reducer';
 import environment from './environment/reducer';
 import valueRule from './valueRule/reducer';
 import variableRule from './variableRule/reducer';
+import simpleDeploy from './simpleDeploy/reducer';
+import spinner from './spinner/reducer';
+import { reducer as notifications } from 'react-notification-system-redux';
+import compareEnv from './compareEnv/reducer';
 
 export {
+  notifications,
   dependency,
   product,
   productRelease,
@@ -19,5 +24,8 @@ export {
   user,
   environment,
   valueRule,
-  variableRule
+  variableRule,
+  simpleDeploy,
+  spinner,
+  compareEnv
 };

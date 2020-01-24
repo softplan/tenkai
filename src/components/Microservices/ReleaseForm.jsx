@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Card } from "components/Card/Card.jsx";
+import { CardTenkai } from "components/Card/CardTenkai.jsx";
 import { FormInputs } from "components/FormInputs/FormInputs.jsx";
 import { Button } from "react-bootstrap";
 
@@ -18,7 +18,7 @@ export const ReleaseForm = props => {
 
   return (
     <div>
-      <Card
+      <CardTenkai
         title={props.editMode ? "Edit Release" : "New Release"}
         content={
           <form>
@@ -29,7 +29,7 @@ export const ReleaseForm = props => {
                   name: "release",
                   label: "Release Number",
                   type: "text",
-                  bsClass: "form-control",
+                  bsPrefix: "form-control",
                   placeholder: "Version",
                   value: formData.release,
                   onChange: event => {
@@ -45,7 +45,7 @@ export const ReleaseForm = props => {
             <div className="btn-toolbar">
               <div className="btn-group">
                 <Button
-                  bsStyle="info"
+                  variant="info"
                   type="button"
                   onClick={event => {
                     event.preventDefault();
@@ -57,7 +57,7 @@ export const ReleaseForm = props => {
               </div>
               <div className="btn-group">
                 <Button
-                  bsStyle="info"
+                  variant="info"
                   type="button"
                   onClick={props.cancelClick}
                 >
@@ -65,7 +65,6 @@ export const ReleaseForm = props => {
                 </Button>
               </div>
             </div>
-            <div className="clearfix" />
           </form>
         }
       />

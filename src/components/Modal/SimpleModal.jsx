@@ -14,14 +14,10 @@ const SimpleModal = props => (
       <p>{props.message}</p>
     </Modal.Body>
     <Modal.Footer>
-      <Button
-        bsStyle="danger"
-        style={{ marginBottom: 0 }}
-        onClick={props.handleConfirmDelete}
-      >
+      <Button variant="danger" onClick={props.handleConfirmDelete}>
         Yes
       </Button>
-      <Button bsStyle="primary" onClick={props.handleConfirmDeleteModalClose}>
+      <Button variant="primary" onClick={props.handleConfirmDeleteModalClose}>
         No
       </Button>
     </Modal.Footer>

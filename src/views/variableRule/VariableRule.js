@@ -1,17 +1,17 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
-  Grid,
+  Container,
   Row,
   Col,
   FormControl,
   Table,
   FormGroup,
-  ControlLabel
+  FormLabel
 } from 'react-bootstrap';
 
 import Button from 'components/CustomButton/CustomButton.jsx';
-import { Card } from 'components/Card/Card.jsx';
+import { CardTenkai } from 'components/Card/CardTenkai.jsx';
 import EditVariableRule from 'views/variableRule/components/EditVariableRule';
 import SimpleModal from 'components/Modal/SimpleModal.jsx';
 
@@ -131,7 +131,7 @@ class VariableRule extends Component {
           handleConfirmDelete={this.handleConfirmDelete.bind(this)}
         ></SimpleModal>
 
-        <Grid fluid>
+        <Container fluid>
           <Row>
             <Col md={12}>
               <CardButton
@@ -162,13 +162,13 @@ class VariableRule extends Component {
 
           <Row>
             <Col md={12}>
-              <Card
+              <CardTenkai
                 title="Variable Rules"
                 content={
                   <form>
                     <div className="col-md-8">
                       <FormGroup>
-                        <ControlLabel>Rule Search</ControlLabel>
+                        <FormLabel>Rule Search</FormLabel>
                         <FormControl
                           value={this.state.inputFilter}
                           onChange={e =>
@@ -203,7 +203,7 @@ class VariableRule extends Component {
               />
             </Col>
           </Row>
-        </Grid>
+        </Container>
       </div>
     );
   }
