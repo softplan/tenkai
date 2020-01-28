@@ -22,7 +22,8 @@ class VariablesWizard extends Component {
     helmValue: '',
     showConfirmInstallModal: false,
     installPayload: [],
-    invalidVariables: {}
+    invalidVariables: {},
+    chartsValidated: 0
   };
 
   componentDidMount() {
@@ -92,7 +93,7 @@ class VariablesWizard extends Component {
   }
 
   onSaveVariablesClick = () => {
-    this.setState({ invalidVariables: {} }, () => {
+    this.setState({ invalidVariables: {}, chartsValidated: 0 }, () => {
       this.props.handleLoading(true);
       let count = this.state.charts.length;
       let index = 0;
@@ -134,7 +135,7 @@ class VariablesWizard extends Component {
   };
 
   installUpdate = () => {
-    this.setState({ invalidVariables: {} }, () => {
+    this.setState({ invalidVariables: {}, chartsValidated: 0 }, () => {
       let payload = {
         productVersionId: parseInt(this.state.productVersionId),
         environmentId: parseInt(this.state.envId),
@@ -184,7 +185,8 @@ class VariablesWizard extends Component {
       invalidVariables: {
         ...this.state.invalidVariables,
         ...invalidToMap
-      }
+      },
+      chartsValidated: this.state.chartsValidated + 1
     });
   };
 
@@ -200,10 +202,12 @@ class VariablesWizard extends Component {
   callbackValidateAndInstall = (invalidVars, cmRef) => {
     this.callbackValidate(invalidVars);
 
-    if (this.hasInvalidVarsInConfigMap(cmRef) || invalidVars.length > 0) {
-      this.setState({ showConfirmInstallModal: true });
-    } else {
-      multipleInstall(this.state.installPayload, this);
+    if (this.state.chartsValidated === this.state.charts.length) {
+      if (this.hasInvalidVarsInConfigMap(cmRef) || invalidVars.length > 0) {
+        this.setState({ showConfirmInstallModal: true });
+      } else {
+        multipleInstall(this.state.installPayload, this);
+      }
     }
   };
 
