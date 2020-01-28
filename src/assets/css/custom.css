@@ -111,3 +111,19 @@ table > tbody > tr > td > button > i {
 .invalid-feedback {
   font-size: 100%;
 }
+
+#compareEnv {
+    table-layout: fixed;
+}
+
+#compareEnv, .table-responsive {
+    /* overflow-y: auto;  */
+    height: 800px;
+}
+
+#compareEnv, thead, th {
+    border: 0px !important;
+    position: sticky;
+    top: 0;
+    background-color: #eee;
+}

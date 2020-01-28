@@ -203,6 +203,10 @@ class CompareEnv extends Component {
     let striped = false;
     let items = [];
     const inputFilter = this.props.compareEnv.inputFilter;
+    const wrapText = {
+      'word-wrap': 'break-word',
+      height: '100px'
+    };
     if (!!this.props.compareEnv.envsDiff) {
       items = this.props.compareEnv.envsDiff
         .filter(
@@ -226,10 +230,10 @@ class CompareEnv extends Component {
             <tr key={key} bgcolor={striped ? '#EAECEE' : '#FFFFFF'}>
               <td>{item.sourceScope}</td>
               <td>{item.sourceName}</td>
-              <td>{item.sourceValue}</td>
+              <td style={wrapText}>{item.sourceValue}</td>
               <td>{item.targetScope}</td>
               <td>{item.targetName}</td>
-              <td>{item.targetValue}</td>
+              <td style={wrapText}>{item.targetValue}</td>
             </tr>
           );
         });
@@ -294,16 +298,14 @@ class CompareEnv extends Component {
                 Diff between source <strong>{srcEnvLabel}</strong> and target{' '}
                 <strong>{tarEnvLabel}</strong>
               </Card.Header>
-              <Table responsive bordered size="sm">
+              <Table id="compareEnv" bordered responsive size="sm">
                 <thead>
-                  <tr>
-                    <th style={{ width: '10%' }}>Source Scope</th>
-                    <th style={{ width: '13%' }}>Source Variable Name</th>
-                    <th style={{ width: '27%' }}>Source Variable Value</th>
-                    <th style={{ width: '10%' }}>Target Scope</th>
-                    <th style={{ width: '13%' }}>Target Variable Name</th>
-                    <th style={{ width: '27%' }}>Target Variable Value</th>
-                  </tr>
+                  <th style={{ width: '10%' }}>Source Scope</th>
+                  <th style={{ width: '13%' }}>Source Variable Name</th>
+                  <th style={{ width: '27%' }}>Source Variable Value</th>
+                  <th style={{ width: '10%' }}>Target Scope</th>
+                  <th style={{ width: '13%' }}>Target Variable Name</th>
+                  <th style={{ width: '27%' }}>Target Variable Value</th>
                 </thead>
                 <tbody>{items}</tbody>
               </Table>
