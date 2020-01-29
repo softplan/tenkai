@@ -8,6 +8,7 @@ const initialState = {
   selectedRepository: {},
   selectedCharts: [],
   selectedFields: [],
+  customFields: [],
   filterOnlyExceptChart: 0,
   filterOnlyExceptField: 0,
   selectedSrcEnv: null,
@@ -15,7 +16,8 @@ const initialState = {
   srcVariables: [],
   tarVariables: [],
   fields: [],
-  inputFilter: ''
+  inputFilter: '',
+  selectedFilterFieldType: {}
 };
 
 export default function reduce(state = initialState, action = {}) {
@@ -27,6 +29,12 @@ export default function reduce(state = initialState, action = {}) {
       return {
         ...state,
         inputFilter: action.payload.value
+      };
+
+    case types.FIELD_FILTER_EXP:
+      return {
+        ...state,
+        fieldFilterExp: action.payload.value
       };
 
     case types.SELECT_REPOSITORY:
@@ -68,11 +76,29 @@ export default function reduce(state = initialState, action = {}) {
       }
       return state;
 
+    case types.ADD_CUSTOM_FIELD:
+      return {
+        ...state,
+        customFields: [...state.customFields, action.payload]
+      };
+
     case types.REMOVE_FIELD:
       return {
         ...state,
         selectedFields: state.selectedFields.filter(
           i => i !== action.payload.selectedField
+        )
+      };
+
+    case types.REMOVE_CUSTOM_FIELD:
+      return {
+        ...state,
+        customFields: state.customFields.filter(
+          i =>
+            !(
+              i.filterType === action.payload.customField.filterType &&
+              i.filterValue === action.payload.customField.filterValue
+            )
         )
       };
 
@@ -98,6 +124,12 @@ export default function reduce(state = initialState, action = {}) {
       return {
         ...state,
         selectedTarEnv: action.payload.selectedTarEnv
+      };
+
+    case types.SELECT_FILTER_FIELD_TYPE:
+      return {
+        ...state,
+        selectedFilterFieldType: action.payload.selectedFilterFieldType
       };
 
     case types.COMPARE_ENV_SUCCESS:
@@ -132,6 +164,12 @@ export default function reduce(state = initialState, action = {}) {
         tarVariables: action.payload.tarVariables
       };
 
+    case types.LOAD_FILTER_FIELD_SUCCESS:
+      return {
+        ...state,
+        filterFields: action.payload.filterFields
+      };
+
     case types.UPDATE_FIELDS:
       let uniqueFields = [];
 
@@ -158,6 +196,7 @@ export default function reduce(state = initialState, action = {}) {
     case types.LOAD_REPOS_ERROR:
     case types.LOAD_SRC_VARIABLES_ERROR:
     case types.LOAD_TAR_VARIABLES_ERROR:
+    case types.LOAD_FILTER_FIELD_ERROR:
       return {
         ...state,
         envsDiff: action.payload.error

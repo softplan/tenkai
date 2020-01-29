@@ -16,3 +16,12 @@ export async function loadCharts(repo) {
 export async function loadVariables(envId) {
   return await axios.get(`${TENKAI_API_URL}/variables/${envId}`);
 }
+
+export async function loadCustomFilterField() {
+  return [
+    { value: 'Contains', label: 'Contains' },
+    { value: 'StartsWith', label: 'StartsWith' },
+    { value: 'EndsWith', label: 'EndsWith' },
+    { value: 'RegEx', label: 'RegEx' }
+  ];
+}

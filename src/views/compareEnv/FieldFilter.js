@@ -9,7 +9,8 @@ import {
   ToggleButton,
   FormLabel,
   FormGroup,
-  Badge
+  Badge,
+  Button
 } from 'react-bootstrap';
 
 export default class FieldFilter extends Component {
@@ -28,6 +29,24 @@ export default class FieldFilter extends Component {
         </Badge>
       );
     });
+
+    const badgesCustom = state.customFields.map((v, k) => {
+      return (
+        <Badge
+          key={k}
+          pill
+          variant="primary"
+          onClick={() => this.props.removeCustomField(v)}
+        >
+          {v.filterType}: {v.filterValue}
+        </Badge>
+      );
+    });
+
+    const renderOnlyFields =
+      state.filterOnlyExceptField > 0 && state.filterOnlyExceptField < 3;
+    const renderCustomFilter = state.filterOnlyExceptField === 3;
+
     return (
       <Card>
         <Card.Body>
@@ -52,10 +71,13 @@ export default class FieldFilter extends Component {
                       <ToggleButton name="radio" value={2}>
                         Except Fields
                       </ToggleButton>
+                      <ToggleButton name="radio" value={3}>
+                        Custom Filter
+                      </ToggleButton>
                     </ToggleButtonGroup>
                   </Col>
                 </Row>
-                {state.filterOnlyExceptField > 0 && (
+                {renderOnlyFields && (
                   <Row>
                     <Col md={12}>
                       <FormGroup>
@@ -68,6 +90,40 @@ export default class FieldFilter extends Component {
                       </FormGroup>
                       {badges}
                     </Col>
+                  </Row>
+                )}
+                {renderCustomFilter && (
+                  <Row>
+                    <Col md={4}>
+                      <FormGroup>
+                        <FormLabel>Filter type</FormLabel>
+                        <Select
+                          value={state.selectedFilterFieldType}
+                          onChange={this.props.selectFilterFieldType}
+                          options={state.filterFields}
+                        />
+                      </FormGroup>
+                      {badges}
+                    </Col>
+                    <Col md={6}>
+                      <Form.Group>
+                        <Form.Label>Field Expression</Form.Label>
+                        <Form.Control
+                          type="text"
+                          onChange={this.props.fieldFilterExp}
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col md={2}>
+                      <Button
+                        style={{ marginTop: '25px' }}
+                        variant="primary"
+                        onClick={this.props.addFilterField}
+                      >
+                        Add
+                      </Button>
+                    </Col>
+                    {badgesCustom}
                   </Row>
                 )}
               </Card.Body>
