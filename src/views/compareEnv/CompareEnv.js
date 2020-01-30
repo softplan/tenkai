@@ -19,6 +19,7 @@ import * as global from 'stores/global/actions';
 class CompareEnv extends Component {
   componentDidMount() {
     this.props.dispatch(compareEnvActions.loadRepositories());
+    this.props.dispatch(compareEnvActions.loadCustomFilterFieldTypes());
   }
 
   selectSourceEnv = async selectedSrcEnv => {
@@ -98,6 +99,13 @@ class CompareEnv extends Component {
     return [];
   }
 
+  getCustomFields() {
+    if (this.props.compareEnv.filterOnlyExceptField === 3) {
+      return this.props.compareEnv.customFields;
+    }
+    return [];
+  }
+
   handleCompare = () => {
     if (this.isValid()) {
       const payload = {
@@ -106,7 +114,8 @@ class CompareEnv extends Component {
         exceptCharts: this.getExceptCharts(),
         onlyCharts: this.getOnlyCharts(),
         exceptFields: this.getExceptFields(),
-        onlyFields: this.getOnlyFields()
+        onlyFields: this.getOnlyFields(),
+        customFields: this.getCustomFields()
       };
       this.props.dispatch(compareEnvActions.compareEnv(payload));
     }
@@ -151,8 +160,28 @@ class CompareEnv extends Component {
     this.autoCompare();
   };
 
+  selectFilterFieldType = selectedFilterFieldType => {
+    this.props.dispatch(
+      compareEnvActions.selectFilterFieldType(selectedFilterFieldType)
+    );
+  };
+
+  addFilterField = async () => {
+    const filterType = this.props.compareEnv.selectedFilterFieldType.value;
+    const exp = this.props.compareEnv.fieldFilterExp;
+    await this.props.dispatch(
+      compareEnvActions.addCustomField(filterType, exp)
+    );
+    this.autoCompare();
+  };
+
   removeField = async selectedField => {
     await this.props.dispatch(compareEnvActions.removeField(selectedField));
+    this.autoCompare();
+  };
+
+  removeCustomField = async customField => {
+    await this.props.dispatch(compareEnvActions.removeCustomField(customField));
     this.autoCompare();
   };
 
@@ -190,7 +219,37 @@ class CompareEnv extends Component {
     this.props.dispatch(compareEnvActions.inputFilter(evt.target.value));
   };
 
+  fieldFilterExp = evt => {
+    this.props.dispatch(compareEnvActions.fieldFilterExp(evt.target.value));
+  };
+
+  customFilter(inputFilter) {
+    try {
+      const regex = new RegExp(inputFilter);
+
+      if (!regex.compile()) {
+        console.log('Regex not compile.');
+        return f => false;
+      }
+
+      return f =>
+        inputFilter === '' ||
+        new RegExp(inputFilter).test(f.sourceScope) ||
+        new RegExp(inputFilter).test(f.sourceName) ||
+        new RegExp(inputFilter).test(f.sourceValue) ||
+        new RegExp(inputFilter).test(f.targetScope) ||
+        new RegExp(inputFilter).test(f.targetName) ||
+        new RegExp(inputFilter).test(f.targetValue);
+    } catch (error) {
+      console.log(error);
+      return f => false;
+    }
+  }
+
   render() {
+    console.clear();
+    console.log(JSON.stringify(this.props.compareEnv, null, 4));
+
     let srcEnvLabel = '';
     if (!!this.props.compareEnv.selectedSrcEnv) {
       srcEnvLabel = this.props.compareEnv.selectedSrcEnv.label.toUpperCase();
@@ -204,21 +263,12 @@ class CompareEnv extends Component {
     let items = [];
     const inputFilter = this.props.compareEnv.inputFilter;
     const wrapText = {
-      'word-wrap': 'break-word',
+      wordWrap: 'break-word',
       height: '100px'
     };
     if (!!this.props.compareEnv.envsDiff) {
       items = this.props.compareEnv.envsDiff
-        .filter(
-          f =>
-            inputFilter === '' ||
-            f.sourceScope.includes(inputFilter) ||
-            f.sourceName.includes(inputFilter) ||
-            f.sourceValue.includes(inputFilter) ||
-            f.targetScope.includes(inputFilter) ||
-            f.targetName.includes(inputFilter) ||
-            f.targetValue.includes(inputFilter)
-        )
+        .filter(this.customFilter(inputFilter))
         .sort(this.sort)
         .map((item, key) => {
           const scope = item.sourceScope || item.targetScope;
@@ -267,6 +317,10 @@ class CompareEnv extends Component {
               addField={this.addField.bind(this)}
               handleFilterFieldChange={this.handleFilterFieldChange}
               removeField={this.removeField.bind(this)}
+              removeCustomField={this.removeCustomField.bind(this)}
+              selectFilterFieldType={this.selectFilterFieldType.bind(this)}
+              addFilterField={this.addFilterField}
+              fieldFilterExp={this.fieldFilterExp}
             />
           </Col>
         </Row>
@@ -315,6 +369,17 @@ class CompareEnv extends Component {
       </Container>
     );
   }
+
+  // customFilter(inputFilter) {
+  //   return f =>
+  //     inputFilter === '' ||
+  //     f.sourceScope.includes(inputFilter) ||
+  //     f.sourceName.includes(inputFilter) ||
+  //     f.sourceValue.includes(inputFilter) ||
+  //     f.targetScope.includes(inputFilter) ||
+  //     f.targetName.includes(inputFilter) ||
+  //     f.targetValue.includes(inputFilter);
+  // }
 }
 
 const mapStateToProps = state => ({

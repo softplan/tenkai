@@ -44,6 +44,24 @@ export function removeField(selectedField) {
   };
 }
 
+export function addCustomField(filterType, exp) {
+  return async dispatch => {
+    dispatch(types.addCustomField(filterType, exp));
+  };
+}
+
+export function removeCustomField(customField) {
+  return async dispatch => {
+    dispatch(types.removeCustomField(customField));
+  };
+}
+
+export function selectFilterFieldType(selectedFilterFieldType) {
+  return async dispatch => {
+    dispatch(types.selectFilterFieldType(selectedFilterFieldType));
+  };
+}
+
 export function selectFilterOnlyExcept(filterOnlyExceptChart) {
   return async dispatch => {
     dispatch(types.selectFilterOnlyExcept(filterOnlyExceptChart));
@@ -59,6 +77,12 @@ export function selectFilterOnlyExceptField(filterOnlyExceptField) {
 export function inputFilter(value) {
   return async dispatch => {
     dispatch(types.inputFilter(value));
+  };
+}
+
+export function fieldFilterExp(value) {
+  return async dispatch => {
+    dispatch(types.fieldFilterExp(value));
   };
 }
 
@@ -180,6 +204,20 @@ export function updateFields(vars) {
       dispatch(global.successWithParam(types.updateFields, fields));
     } catch (e) {
       dispatch(global.handleError(e, types.loadSrcVariablesError));
+    }
+  };
+}
+
+export function loadCustomFilterFieldTypes() {
+  return async dispatch => {
+    try {
+      dispatch(global.beginLoad());
+      const filterFields = await services.loadCustomFilterField();
+      dispatch(
+        global.successWithParam(types.loadCustomFilterField, filterFields)
+      );
+    } catch (e) {
+      dispatch(global.handleError(e, types.loadCustomFilterFieldError));
     }
   };
 }
