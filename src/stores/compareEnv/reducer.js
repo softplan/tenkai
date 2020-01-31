@@ -170,6 +170,10 @@ export default function reduce(state = initialState, action = {}) {
         filterFields: action.payload.filterFields
       };
 
+    case types.COPY_TO_LEFT_SUCCESS:
+    case types.COPY_TO_RIGHT_SUCCESS:
+      return state;
+
     case types.UPDATE_FIELDS:
       let uniqueFields = [];
 
@@ -197,6 +201,8 @@ export default function reduce(state = initialState, action = {}) {
     case types.LOAD_SRC_VARIABLES_ERROR:
     case types.LOAD_TAR_VARIABLES_ERROR:
     case types.LOAD_FILTER_FIELD_ERROR:
+    case types.COPY_TO_LEFT_ERROR:
+    case types.COPY_TO_RIGHT_ERROR:
       return {
         ...state,
         envsDiff: action.payload.error

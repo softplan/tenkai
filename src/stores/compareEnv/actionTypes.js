@@ -42,6 +42,12 @@ export const UPDATE_FIELDS = 'UPDATE_FIELDS';
 export const LOAD_FILTER_FIELD_SUCCESS = 'LOAD_FILTER_FIELD_SUCCESS';
 export const LOAD_FILTER_FIELD_ERROR = 'LOAD_FILTER_FIELD_ERROR';
 
+export const COPY_TO_LEFT_SUCCESS = 'COPY_TO_LEFT_SUCCESS';
+export const COPY_TO_LEFT_ERROR = 'COPY_TO_LEFT_ERROR';
+
+export const COPY_TO_RIGHT_SUCCESS = 'COPY_TO_RIGHT_SUCCESS';
+export const COPY_TO_RIGHT_ERROR = 'COPY_TO_RIGHT_ERROR';
+
 export const selectSourceEnvironment = selectedSrcEnv => ({
   type: SELECT_SOURCE_ENVIRONMENT,
   payload: { selectedSrcEnv }
@@ -177,5 +183,23 @@ export const loadCustomFilterField = filterFields => ({
 
 export const loadCustomFilterFieldError = error => ({
   type: LOAD_FILTER_FIELD_ERROR,
+  payload: { error }
+});
+
+export const copyToLeftSuccess = () => ({
+  type: COPY_TO_LEFT_SUCCESS
+});
+
+export const copyToLeftError = error => ({
+  type: COPY_TO_LEFT_ERROR,
+  payload: { error }
+});
+
+export const copyToRightSuccess = () => ({
+  type: COPY_TO_RIGHT_SUCCESS
+});
+
+export const copyToRightError = error => ({
+  type: COPY_TO_RIGHT_ERROR,
   payload: { error }
 });

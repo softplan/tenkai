@@ -221,3 +221,35 @@ export function loadCustomFilterFieldTypes() {
     }
   };
 }
+
+export function copyToLeft(item) {
+  return async dispatch => {
+    try {
+      dispatch(global.beginLoad());
+      await services.copyVariableValue({
+        srcVarId: parseInt(item.targetVarId),
+        tarVarId: parseInt(item.sourceVarId),
+        newValue: item.targetValue
+      });
+      dispatch(global.handleSuccess(types.copyToLeftSuccess));
+    } catch (e) {
+      dispatch(global.handleError(e, types.copyToLeftError));
+    }
+  };
+}
+
+export function copyToRight(item) {
+  return async dispatch => {
+    try {
+      dispatch(global.beginLoad());
+      await services.copyVariableValue({
+        srcVarId: parseInt(item.sourceVarId),
+        tarVarId: parseInt(item.targetVarId),
+        newValue: item.sourceValue
+      });
+      dispatch(global.handleSuccess(types.copyToRightSuccess));
+    } catch (e) {
+      dispatch(global.handleError(e, types.copyToRightError));
+    }
+  };
+}

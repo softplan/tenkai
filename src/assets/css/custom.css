@@ -117,8 +117,7 @@ table > tbody > tr > td > button > i {
 }
 
 #compareEnv, .table-responsive {
-    /* overflow-y: auto;  */
-    height: 800px;
+    height: 700px;
 }
 
 #compareEnv, thead, th {

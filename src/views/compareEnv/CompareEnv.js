@@ -246,6 +246,36 @@ class CompareEnv extends Component {
     }
   }
 
+  copyToLeft = async item => {
+    await this.props.dispatch(compareEnvActions.copyToLeft(item));
+    this.autoCompare();
+  };
+
+  copyToRight = async item => {
+    await this.props.dispatch(compareEnvActions.copyToRight(item));
+    this.autoCompare();
+  };
+
+  renderCopyToLeft = item => {
+    if (
+      item.targetName === '' ||
+      (item.targetName !== '' && item.sourceName === '')
+    ) {
+      return false;
+    }
+    return true;
+  };
+
+  renderCopyToRight = item => {
+    if (
+      item.sourceName === '' ||
+      (item.sourceName !== '' && item.targetName === '')
+    ) {
+      return false;
+    }
+    return true;
+  };
+
   render() {
     console.clear();
     console.log(JSON.stringify(this.props.compareEnv, null, 4));
@@ -262,10 +292,6 @@ class CompareEnv extends Component {
     let striped = false;
     let items = [];
     const inputFilter = this.props.compareEnv.inputFilter;
-    const wrapText = {
-      wordWrap: 'break-word',
-      height: '100px'
-    };
     if (!!this.props.compareEnv.envsDiff) {
       items = this.props.compareEnv.envsDiff
         .filter(this.customFilter(inputFilter))
@@ -280,10 +306,30 @@ class CompareEnv extends Component {
             <tr key={key} bgcolor={striped ? '#EAECEE' : '#FFFFFF'}>
               <td>{item.sourceScope}</td>
               <td>{item.sourceName}</td>
-              <td style={wrapText}>{item.sourceValue}</td>
+              <td>
+                {item.sourceValue}
+                {this.renderCopyToRight(item) ? (
+                  <Button
+                    className="link-button"
+                    onClick={this.copyToRight.bind(this, item)}
+                  >
+                    <i className="pe-7s-right-arrow" />
+                  </Button>
+                ) : null}
+              </td>
               <td>{item.targetScope}</td>
               <td>{item.targetName}</td>
-              <td style={wrapText}>{item.targetValue}</td>
+              <td>
+                {this.renderCopyToLeft(item) ? (
+                  <Button
+                    className="link-button"
+                    onClick={this.copyToLeft.bind(this, item)}
+                  >
+                    <i className="pe-7s-left-arrow" />
+                  </Button>
+                ) : null}
+                {item.targetValue}
+              </td>
             </tr>
           );
         });

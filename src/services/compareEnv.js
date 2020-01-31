@@ -25,3 +25,7 @@ export async function loadCustomFilterField() {
     { value: 'RegEx', label: 'RegEx' }
   ];
 }
+
+export async function copyVariableValue(data) {
+  return await axios.post(`${TENKAI_API_URL}/variables/copy-value`, data);
+}
