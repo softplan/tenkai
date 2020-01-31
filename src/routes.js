@@ -221,7 +221,7 @@ const dashboardRoutes = [
     component: CompareEnv,
     layout: '/admin',
     menu: true,
-    role: 'tenkai-user'
+    role: 'tenkai-admin'
   },
   {
     path: '/globalConfig',

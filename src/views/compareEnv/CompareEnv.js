@@ -256,20 +256,14 @@ class CompareEnv extends Component {
   };
 
   renderCopyToLeft = item => {
-    if (
-      item.targetName === '' ||
-      (item.targetName !== '' && item.sourceName === '')
-    ) {
+    if (item.targetName === '' && item.sourceName !== '') {
       return false;
     }
     return true;
   };
 
   renderCopyToRight = item => {
-    if (
-      item.sourceName === '' ||
-      (item.sourceName !== '' && item.targetName === '')
-    ) {
+    if (item.sourceName === '' && item.targetName !== '') {
       return false;
     }
     return true;
@@ -288,7 +282,10 @@ class CompareEnv extends Component {
     let striped = false;
     let items = [];
     const inputFilter = this.props.compareEnv.inputFilter;
-    if (!!this.props.compareEnv.envsDiff) {
+    if (
+      !!this.props.compareEnv.envsDiff &&
+      Array.isArray(this.props.compareEnv.envsDiff)
+    ) {
       items = this.props.compareEnv.envsDiff
         .filter(this.customFilter(inputFilter))
         .sort(this.sort)

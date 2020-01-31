@@ -227,8 +227,9 @@ export function copyToLeft(item) {
     try {
       dispatch(global.beginLoad());
       await services.copyVariableValue({
-        srcVarId: parseInt(item.targetVarId),
-        tarVarId: parseInt(item.sourceVarId),
+        srcVarId: toInt(item.targetVarId),
+        tarEnvId: toInt(item.sourceEnvId),
+        tarVarId: toInt(item.sourceVarId),
         newValue: item.targetValue
       });
       dispatch(global.handleSuccess(types.copyToLeftSuccess));
@@ -243,8 +244,9 @@ export function copyToRight(item) {
     try {
       dispatch(global.beginLoad());
       await services.copyVariableValue({
-        srcVarId: parseInt(item.sourceVarId),
-        tarVarId: parseInt(item.targetVarId),
+        srcVarId: toInt(item.sourceVarId),
+        tarEnvId: toInt(item.targetEnvId),
+        tarVarId: toInt(item.targetVarId),
         newValue: item.sourceValue
       });
       dispatch(global.handleSuccess(types.copyToRightSuccess));
@@ -252,4 +254,12 @@ export function copyToRight(item) {
       dispatch(global.handleError(e, types.copyToRightError));
     }
   };
+}
+
+function toInt(v) {
+  let x = parseInt(v);
+  if (isNaN(x)) {
+    return 0;
+  }
+  return x;
 }
