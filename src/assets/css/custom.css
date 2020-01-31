@@ -120,9 +120,10 @@ table > tbody > tr > td > button > i {
     height: 700px;
 }
 
-#compareEnv, thead, th {
+#compareEnv, th {
     border: 0px !important;
     position: sticky;
     top: 0;
     background-color: #eee;
+    z-index: 10;
 }

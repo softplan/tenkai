@@ -303,28 +303,36 @@ class CompareEnv extends Component {
               <td>{item.sourceScope}</td>
               <td>{item.sourceName}</td>
               <td>
-                {item.sourceValue}
-                {this.renderCopyToRight(item) ? (
-                  <Button
-                    className="link-button"
-                    onClick={this.copyToRight.bind(this, item)}
-                  >
-                    <i className="pe-7s-right-arrow" />
-                  </Button>
-                ) : null}
+                <Row>
+                  <Col md={11}>{item.sourceValue}</Col>
+                  <Col md={1}>
+                    {this.renderCopyToRight(item) ? (
+                      <Button
+                        className="link-button"
+                        onClick={this.copyToRight.bind(this, item)}
+                      >
+                        <i className="pe-7s-right-arrow" />
+                      </Button>
+                    ) : null}
+                  </Col>
+                </Row>
               </td>
               <td>{item.targetScope}</td>
               <td>{item.targetName}</td>
               <td>
-                {this.renderCopyToLeft(item) ? (
-                  <Button
-                    className="link-button"
-                    onClick={this.copyToLeft.bind(this, item)}
-                  >
-                    <i className="pe-7s-left-arrow" />
-                  </Button>
-                ) : null}
-                {item.targetValue}
+                <Row>
+                  <Col md={1}>
+                    {this.renderCopyToLeft(item) ? (
+                      <Button
+                        className="link-button"
+                        onClick={this.copyToLeft.bind(this, item)}
+                      >
+                        <i className="pe-7s-left-arrow" />
+                      </Button>
+                    ) : null}
+                  </Col>
+                  <Col md={11}>{item.targetValue}</Col>
+                </Row>
               </td>
             </tr>
           );
