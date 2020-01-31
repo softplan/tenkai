@@ -228,7 +228,6 @@ class CompareEnv extends Component {
       const regex = new RegExp(inputFilter);
 
       if (!regex.compile()) {
-        console.log('Regex not compile.');
         return f => false;
       }
 
@@ -277,9 +276,6 @@ class CompareEnv extends Component {
   };
 
   render() {
-    console.clear();
-    console.log(JSON.stringify(this.props.compareEnv, null, 4));
-
     let srcEnvLabel = '';
     if (!!this.props.compareEnv.selectedSrcEnv) {
       srcEnvLabel = this.props.compareEnv.selectedSrcEnv.label.toUpperCase();
@@ -415,17 +411,6 @@ class CompareEnv extends Component {
       </Container>
     );
   }
-
-  // customFilter(inputFilter) {
-  //   return f =>
-  //     inputFilter === '' ||
-  //     f.sourceScope.includes(inputFilter) ||
-  //     f.sourceName.includes(inputFilter) ||
-  //     f.sourceValue.includes(inputFilter) ||
-  //     f.targetScope.includes(inputFilter) ||
-  //     f.targetName.includes(inputFilter) ||
-  //     f.targetValue.includes(inputFilter);
-  // }
 }
 
 const mapStateToProps = state => ({
