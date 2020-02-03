@@ -223,25 +223,35 @@ class CompareEnv extends Component {
     this.props.dispatch(compareEnvActions.fieldFilterExp(evt.target.value));
   };
 
-  customFilter(inputFilter) {
+  match(exp, value) {
+    if (value.match(exp) === null) {
+      return false;
+    }
+    return true;
+  }
+
+  customFilter(f, inputFilter) {
     try {
-      const regex = new RegExp(inputFilter);
-
-      if (!regex.compile()) {
-        return f => false;
+      if (inputFilter !== '') {
+        return this.match(
+          inputFilter,
+          f.sourceScope +
+            ' ' +
+            f.sourceName +
+            ' ' +
+            f.sourceValue +
+            ' ' +
+            f.targetScope +
+            ' ' +
+            f.targetName +
+            ' ' +
+            f.targetValue
+        );
       }
-
-      return f =>
-        inputFilter === '' ||
-        new RegExp(inputFilter).test(f.sourceScope) ||
-        new RegExp(inputFilter).test(f.sourceName) ||
-        new RegExp(inputFilter).test(f.sourceValue) ||
-        new RegExp(inputFilter).test(f.targetScope) ||
-        new RegExp(inputFilter).test(f.targetName) ||
-        new RegExp(inputFilter).test(f.targetValue);
+      return true;
     } catch (error) {
       console.log(error);
-      return f => false;
+      return false;
     }
   }
 
@@ -287,7 +297,7 @@ class CompareEnv extends Component {
       Array.isArray(this.props.compareEnv.envsDiff)
     ) {
       items = this.props.compareEnv.envsDiff
-        .filter(this.customFilter(inputFilter))
+        .filter(f => this.customFilter(f, inputFilter))
         .sort(this.sort)
         .map((item, key) => {
           const scope = item.sourceScope || item.targetScope;
