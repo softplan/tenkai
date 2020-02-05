@@ -15,11 +15,16 @@ import ChartFilter from './ChartFilter';
 import FieldFilter from './FieldFilter';
 import Environment from './Environment';
 import * as global from 'stores/global/actions';
+import SaveFilter from './SaveFilter';
 
 class CompareEnv extends Component {
   componentDidMount() {
     this.props.dispatch(compareEnvActions.loadRepositories());
     this.props.dispatch(compareEnvActions.loadCustomFilterFieldTypes());
+    this.props.dispatch(compareEnvActions.loadCompareEnvQueries());
+    this.props.dispatch(
+      compareEnvActions.setEnvironments(this.props.environments)
+    );
   }
 
   selectSourceEnv = async selectedSrcEnv => {
@@ -39,6 +44,14 @@ class CompareEnv extends Component {
     );
     await this.props.dispatch(
       compareEnvActions.loadTarVariables(selectedTarEnv.value)
+    );
+
+    this.autoCompare();
+  };
+
+  selectCompareEnvQuery = async selectedQuery => {
+    await this.props.dispatch(
+      compareEnvActions.renderCompareEnvQuery(selectedQuery)
     );
 
     this.autoCompare();
@@ -123,6 +136,42 @@ class CompareEnv extends Component {
 
   clearFilter = () => {
     this.props.dispatch(compareEnvActions.clearFilter());
+  };
+
+  saveFilter = () => {
+    this.props.dispatch(compareEnvActions.showSaveDialog());
+  };
+
+  handleSaveCancel = () => {
+    this.props.dispatch(compareEnvActions.cancelSave());
+  };
+
+  handleSaveName = evt => {
+    this.props.dispatch(compareEnvActions.inputSaveName(evt.target.value));
+  };
+
+  handleSaveConfirm = () => {
+    if (this.isValid()) {
+      const payload = {
+        name: this.props.compareEnv.compareEnvQueryName,
+        userEmail: this.props.keycloak.userInfo.email,
+        data: {
+          sourceEnvId: this.props.compareEnv.selectedSrcEnv.value,
+          targetEnvId: this.props.compareEnv.selectedTarEnv.value,
+          exceptCharts: this.getExceptCharts(),
+          onlyCharts: this.getOnlyCharts(),
+          exceptFields: this.getExceptFields(),
+          onlyFields: this.getOnlyFields(),
+          customFields: this.getCustomFields(),
+          filterOnlyExceptChart: this.props.compareEnv.filterOnlyExceptChart,
+          filterOnlyExceptField: this.props.compareEnv.filterOnlyExceptField,
+          selectedFilterFieldType: this.props.compareEnv
+            .selectedFilterFieldType,
+          globalFilter: this.props.compareEnv.inputFilter
+        }
+      };
+      this.props.dispatch(compareEnvActions.handleSaveConfirm(payload));
+    }
   };
 
   handleRepositoryChange = repo => {
@@ -280,6 +329,8 @@ class CompareEnv extends Component {
   };
 
   render() {
+    console.clear();
+    console.log(JSON.stringify(this.props.compareEnv, null, 4));
     let srcEnvLabel = '';
     if (!!this.props.compareEnv.selectedSrcEnv) {
       srcEnvLabel = this.props.compareEnv.selectedSrcEnv.label.toUpperCase();
@@ -288,6 +339,12 @@ class CompareEnv extends Component {
     if (!!this.props.compareEnv.selectedTarEnv) {
       tarEnvLabel = this.props.compareEnv.selectedTarEnv.label.toUpperCase();
     }
+
+    let showSaveDialog = false;
+    if (!!this.props.compareEnv.showSaveDialog) {
+      showSaveDialog = this.props.compareEnv.showSaveDialog;
+    }
+
     let lastScope = '';
     let striped = false;
     let items = [];
@@ -347,20 +404,25 @@ class CompareEnv extends Component {
     }
     return (
       <Container fluid>
+        <SaveFilter
+          showModal={showSaveDialog}
+          handleCancel={this.handleSaveCancel}
+          handleSaveName={this.handleSaveName.bind(this)}
+          handleSaveConfirm={this.handleSaveConfirm}
+        />
         <Row>
           <Col md={12}>
             <Environment
-              environments={this.props.environments}
               state={this.props.compareEnv}
               selectSourceEnv={this.selectSourceEnv.bind(this)}
               selectTargetEnv={this.selectTargetEnv.bind(this)}
+              selectCompareEnvQuery={this.selectCompareEnvQuery.bind(this)}
             />
           </Col>
         </Row>
         <Row>
           <Col md={6}>
             <ChartFilter
-              environments={this.props.environments}
               state={this.props.compareEnv}
               handleRepositoryChange={this.handleRepositoryChange}
               addChart={this.addChart.bind(this)}
@@ -388,6 +450,7 @@ class CompareEnv extends Component {
               <Form.Control
                 type="text"
                 onChange={this.onInputFilter.bind(this)}
+                value={this.props.compareEnv.inputFilter}
               />
             </Form.Group>
           </Col>
@@ -399,6 +462,9 @@ class CompareEnv extends Component {
             </Button>
             <Button variant="danger" onClick={this.clearFilter}>
               Clear Filter
+            </Button>
+            <Button variant="secondary" onClick={this.saveFilter}>
+              Save as...
             </Button>
           </Col>
         </Row>

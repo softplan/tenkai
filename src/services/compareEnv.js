@@ -29,3 +29,14 @@ export async function loadCustomFilterField() {
 export async function copyVariableValue(data) {
   return await axios.post(`${TENKAI_API_URL}/variables/copy-value`, data);
 }
+
+export async function saveCompareEnvQuery(data) {
+  return await axios.post(
+    `${TENKAI_API_URL}/compare-environments/save-query`,
+    data
+  );
+}
+
+export async function loadCompareEnvQueries() {
+  return await axios.get(`${TENKAI_API_URL}/compare-environments/load-queries`);
+}

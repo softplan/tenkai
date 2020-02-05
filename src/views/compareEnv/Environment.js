@@ -10,23 +10,33 @@ export default class Environment extends Component {
         <Card.Body>
           <Form>
             <Row>
-              <Col md={6}>
+              <Col md={2}>
+                <Form.Group controlId="srcEnv">
+                  <Form.Label>Compare Env Query</Form.Label>
+                  <Select
+                    value={state.selectedCompareEnvQuery}
+                    onChange={this.props.selectCompareEnvQuery}
+                    options={state.compareEnvQueries}
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={5}>
                 <Form.Group controlId="srcEnv">
                   <Form.Label>Source environment</Form.Label>
                   <Select
                     value={state.selectedSrcEnv}
                     onChange={this.props.selectSourceEnv}
-                    options={this.props.environments}
+                    options={state.environments}
                   />
                 </Form.Group>
               </Col>
-              <Col md={6}>
+              <Col md={5}>
                 <Form.Group controlId="tarEnv">
                   <Form.Label>Target environment</Form.Label>
                   <Select
                     value={state.selectedTarEnv}
                     onChange={this.props.selectTargetEnv}
-                    options={this.props.environments}
+                    options={state.environments}
                   />
                 </Form.Group>
               </Col>
