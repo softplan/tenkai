@@ -107,6 +107,78 @@ export function clearFilter() {
   };
 }
 
+export function showSaveAsDialog() {
+  return async dispatch => {
+    dispatch(types.showSaveAsDialog());
+  };
+}
+
+export function cancelSaveAs() {
+  return async dispatch => {
+    dispatch(types.cancelSaveAs());
+  };
+}
+
+export function showSaveDialog() {
+  return async dispatch => {
+    dispatch(types.showSaveDialog());
+  };
+}
+
+export function showDeleteDialog() {
+  return async dispatch => {
+    dispatch(types.showDeleteDialog());
+  };
+}
+
+export function cancelSave() {
+  return async dispatch => {
+    dispatch(types.cancelSave());
+  };
+}
+
+export function inputSaveName(value) {
+  return async dispatch => {
+    dispatch(types.inputSaveName(value));
+  };
+}
+
+export function handleSaveConfirm(data) {
+  return async dispatch => {
+    try {
+      dispatch(global.beginLoad());
+
+      await services.saveCompareEnvQuery(data);
+
+      dispatch(global.handleSuccess(types.saveCompareEnvQuerySuccess));
+      dispatch(global.successDefaultMessage());
+    } catch (error) {
+      dispatch(global.handleError(error, types.saveCompareEnvQueryError));
+    }
+  };
+}
+
+export function deleteQuery(id) {
+  return async dispatch => {
+    try {
+      dispatch(global.beginLoad());
+
+      await services.deleteQuery(id);
+
+      dispatch(global.handleSuccess(types.deleteQuerySuccess));
+      dispatch(global.successDefaultMessage());
+    } catch (error) {
+      dispatch(global.handleError(error, types.deleteQueryError));
+    }
+  };
+}
+
+export function deleteQueryCancel() {
+  return async dispatch => {
+    dispatch(types.deleteQueryCancel());
+  };
+}
+
 export function loadRepositories() {
   return async dispatch => {
     try {
@@ -126,6 +198,39 @@ export function loadRepositories() {
     } catch (error) {
       dispatch(global.handleError(error, types.loadReposError));
     }
+  };
+}
+
+export function loadCompareEnvQueries() {
+  return async dispatch => {
+    try {
+      dispatch(global.beginLoad());
+
+      const result = await services.loadCompareEnvQueries();
+      const data = result.data;
+      const r = data.map(e => {
+        const x = {
+          label: e.name,
+          value: {
+            id: e.ID,
+            userId: e.userId,
+            name: e.name,
+            query: e.query
+          }
+        };
+        return x;
+      });
+
+      dispatch(global.successWithParam(types.loadCompareEnvQueriesSuccess, r));
+    } catch (error) {
+      dispatch(global.handleError(error, types.loadCompareEnvQueriesError));
+    }
+  };
+}
+
+export function setEnvironments(environments) {
+  return async dispatch => {
+    dispatch(global.successWithParam(types.setEnvironments, environments));
   };
 }
 
@@ -185,6 +290,25 @@ export function loadTarVariables(envId) {
     } catch (e) {
       dispatch(global.handleError(e, types.loadTarVariablesError));
     }
+  };
+}
+
+export function renderCompareEnvQuery(selectedQuery) {
+  return async dispatch => {
+    try {
+      dispatch(global.beginLoad());
+      dispatch(
+        global.successWithParam(types.renderCompareEnvQuery, selectedQuery)
+      );
+    } catch (e) {
+      dispatch(global.handleError(e, types.renderCompareEnvQueryError));
+    }
+  };
+}
+
+export function updateSelectedCompareEnvQuery() {
+  return async dispatch => {
+    dispatch(global.successWithParam(types.updateSelectedCompareEnvQuery));
   };
 }
 

@@ -86,6 +86,7 @@ export default class FieldFilter extends Component {
                           value={null}
                           onChange={this.props.addField}
                           options={state.fields}
+                          className="react-select-zindex-2"
                         />
                       </FormGroup>
                       {badges}
@@ -101,6 +102,7 @@ export default class FieldFilter extends Component {
                           value={state.selectedFilterFieldType}
                           onChange={this.props.selectFilterFieldType}
                           options={state.filterFields}
+                          className="react-select-zindex-2"
                         />
                       </FormGroup>
                       {badges}

@@ -13,6 +13,28 @@ export const SELECT_FILTER_FIELD_TYPE = 'SELECT_FILTER_FIELD_TYPE';
 
 export const CLEAR_FILTER = 'CLEAR_FILTER';
 
+export const SHOW_SAVE_AS_DIALOG = 'SHOW_SAVE_AS_DIALOG';
+export const CANCEL_SAVE_AS = 'CANCEL_SAVE_AS';
+export const SHOW_SAVE_DIALOG = 'SHOW_SAVE_DIALOG';
+export const SHOW_DELETE_DIALOG = 'SHOW_DELETE_DIALOG';
+export const CANCEL_SAVE = 'CANCEL_SAVE';
+export const DELETE_QUERY_CANCEL = 'DELETE_QUERY_CANCEL';
+
+export const INPUT_SAVE_NAME = 'INPUT_SAVE_NAME';
+export const SAVE_COMPARE_ENV_QUERY_SUCCESS = 'SAVE_COMPARE_ENV_QUERY_SUCCESS';
+export const DELETE_COMPARE_ENV_QUERY_SUCCESS =
+  'DELETE_COMPARE_ENV_QUERY_SUCCESS';
+export const DELETE_COMPARE_ENV_QUERY_ERROR = 'DELETE_COMPARE_ENV_QUERY_ERROR';
+export const SAVE_COMPARE_ENV_QUERY_ERROR = 'SAVE_COMPARE_ENV_QUERY_ERROR';
+export const LOAD_COMPARE_ENV_QUERIES_SUCCESS =
+  'LOAD_COMPARE_ENV_QUERIES_SUCCESS';
+export const SET_ENVIRONMENTS = 'SET_ENVIRONMENTS';
+export const LOAD_COMPARE_ENV_QUERIES_ERROR = 'LOAD_COMPARE_ENV_QUERIES_ERROR';
+export const RENDER_COMPARE_ENV_QUERY = 'RENDER_COMPARE_ENV_QUERY';
+export const RENDER_COMPARE_ENV_QUERY_ERROR = 'RENDER_COMPARE_ENV_QUERY_ERROR';
+export const UPDATE_SELECTED_COMPARE_ENV_QUERY =
+  'UPDATE_SELECTED_COMPARE_ENV_QUERY';
+
 export const ADD_CHART = 'ADD_CHART';
 export const REMOVE_CHART = 'REMOVE_CHART';
 
@@ -122,6 +144,53 @@ export const clearFilter = () => ({
   type: CLEAR_FILTER
 });
 
+export const showSaveAsDialog = () => ({
+  type: SHOW_SAVE_AS_DIALOG
+});
+
+export const cancelSaveAs = () => ({
+  type: CANCEL_SAVE_AS
+});
+
+export const showSaveDialog = () => ({
+  type: SHOW_SAVE_DIALOG
+});
+
+export const showDeleteDialog = () => ({
+  type: SHOW_DELETE_DIALOG
+});
+
+export const cancelSave = () => ({
+  type: CANCEL_SAVE
+});
+
+export const deleteQueryCancel = () => ({
+  type: DELETE_QUERY_CANCEL
+});
+
+export const inputSaveName = value => ({
+  type: INPUT_SAVE_NAME,
+  payload: { value }
+});
+
+export const saveCompareEnvQuerySuccess = data => ({
+  type: SAVE_COMPARE_ENV_QUERY_SUCCESS
+});
+
+export const deleteQuerySuccess = () => ({
+  type: DELETE_COMPARE_ENV_QUERY_SUCCESS
+});
+
+export const saveCompareEnvQueryError = error => ({
+  type: SAVE_COMPARE_ENV_QUERY_ERROR,
+  payload: { error }
+});
+
+export const deleteQueryError = error => ({
+  type: DELETE_COMPARE_ENV_QUERY_ERROR,
+  payload: { error }
+});
+
 export const compareEnvSuccess = envsDiff => ({
   type: COMPARE_ENV_SUCCESS,
   payload: { envsDiff }
@@ -135,6 +204,21 @@ export const compareEnvError = error => ({
 export const loadReposSuccess = repositories => ({
   type: LOAD_REPOS_SUCCESS,
   payload: { repositories }
+});
+
+export const loadCompareEnvQueriesSuccess = compareEnvQueries => ({
+  type: LOAD_COMPARE_ENV_QUERIES_SUCCESS,
+  payload: { compareEnvQueries }
+});
+
+export const setEnvironments = environments => ({
+  type: SET_ENVIRONMENTS,
+  payload: { environments }
+});
+
+export const loadCompareEnvQueriesError = error => ({
+  type: LOAD_COMPARE_ENV_QUERIES_ERROR,
+  payload: { error }
 });
 
 export const loadReposError = error => ({
@@ -165,6 +249,20 @@ export const loadSrcVariablesError = error => ({
 export const loadTarVariablesSuccess = tarVariables => ({
   type: LOAD_TAR_VARIABLES_SUCCESS,
   payload: { tarVariables }
+});
+
+export const renderCompareEnvQuery = compareEnvQuery => ({
+  type: RENDER_COMPARE_ENV_QUERY,
+  payload: { compareEnvQuery }
+});
+
+export const updateSelectedCompareEnvQuery = () => ({
+  type: UPDATE_SELECTED_COMPARE_ENV_QUERY
+});
+
+export const renderCompareEnvQueryError = error => ({
+  type: RENDER_COMPARE_ENV_QUERY_ERROR,
+  payload: { error }
 });
 
 export const loadTarVariablesError = error => ({

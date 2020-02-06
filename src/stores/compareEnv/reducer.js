@@ -17,13 +17,40 @@ const initialState = {
   tarVariables: [],
   fields: [],
   inputFilter: '',
-  selectedFilterFieldType: {}
+  selectedFilterFieldType: {},
+  showSaveAsDialog: false,
+  showDeleteDialog: false,
+  showSaveDialog: false,
+  compareEnvQueryName: '',
+  compareEnvQueries: [],
+  environments: [],
+  selectedCompareEnvQuery: {}
 };
 
 export default function reduce(state = initialState, action = {}) {
   switch (action.type) {
     case types.CLEAR_FILTER:
-      return initialState;
+      return {
+        ...state,
+        error: null,
+        envsDiff: [],
+        selectedRepository: {},
+        selectedCharts: [],
+        selectedFields: [],
+        customFields: [],
+        filterOnlyExceptChart: 0,
+        filterOnlyExceptField: 0,
+        selectedSrcEnv: null,
+        selectedTarEnv: null,
+        srcVariables: [],
+        tarVariables: [],
+        inputFilter: '',
+        selectedFilterFieldType: {},
+        showSaveAsDialog: false,
+        showSaveDialog: false,
+        compareEnvQueryName: '',
+        selectedCompareEnvQuery: {}
+      };
 
     case types.INPUT_FILTER:
       return {
@@ -40,8 +67,7 @@ export default function reduce(state = initialState, action = {}) {
     case types.SELECT_REPOSITORY:
       return {
         ...state,
-        selectedRepository: action.payload.selectedRepository,
-        selectedCharts: []
+        selectedRepository: action.payload.selectedRepository
       };
 
     case types.ADD_CHART:
@@ -132,6 +158,50 @@ export default function reduce(state = initialState, action = {}) {
         selectedFilterFieldType: action.payload.selectedFilterFieldType
       };
 
+    case types.SHOW_SAVE_AS_DIALOG:
+      return {
+        ...state,
+        showSaveAsDialog: true
+      };
+
+    case types.SHOW_DELETE_DIALOG:
+      return {
+        ...state,
+        showDeleteDialog: true
+      };
+
+    case types.CANCEL_SAVE_AS:
+      return {
+        ...state,
+        showSaveAsDialog: false,
+        compareEnvQueryName: ''
+      };
+
+    case types.SHOW_SAVE_DIALOG:
+      return {
+        ...state,
+        showSaveDialog: true
+      };
+
+    case types.CANCEL_SAVE:
+      return {
+        ...state,
+        showSaveDialog: false,
+        compareEnvQueryName: ''
+      };
+
+    case types.DELETE_QUERY_CANCEL:
+      return {
+        ...state,
+        showDeleteDialog: false
+      };
+
+    case types.INPUT_SAVE_NAME:
+      return {
+        ...state,
+        compareEnvQueryName: action.payload.value
+      };
+
     case types.COMPARE_ENV_SUCCESS:
       return {
         ...state,
@@ -174,6 +244,27 @@ export default function reduce(state = initialState, action = {}) {
     case types.COPY_TO_RIGHT_SUCCESS:
       return state;
 
+    case types.SAVE_COMPARE_ENV_QUERY_SUCCESS:
+      return {
+        ...state,
+        showSaveAsDialog: false,
+        showSaveDialog: false,
+        compareEnvQueryName: ''
+      };
+
+    case types.LOAD_COMPARE_ENV_QUERIES_SUCCESS:
+      return {
+        ...state,
+        compareEnvQueries: action.payload.compareEnvQueries
+      };
+
+    case types.DELETE_COMPARE_ENV_QUERY_SUCCESS:
+      return {
+        ...state,
+        selectedCompareEnvQuery: {},
+        showDeleteDialog: false
+      };
+
     case types.UPDATE_FIELDS:
       let uniqueFields = [];
 
@@ -195,6 +286,39 @@ export default function reduce(state = initialState, action = {}) {
         fields: newFields
       };
 
+    case types.SET_ENVIRONMENTS:
+      return {
+        ...state,
+        environments: action.payload.environments
+      };
+
+    case types.RENDER_COMPARE_ENV_QUERY:
+      const query = action.payload.compareEnvQuery.value.query;
+      const envs = state.environments;
+
+      return {
+        ...state,
+        selectedCompareEnvQuery: action.payload.compareEnvQuery,
+        selectedSrcEnv: envs.find(e => e.value === query.sourceEnvId),
+        selectedTarEnv: envs.find(e => e.value === query.targetEnvId),
+        filterOnlyExceptChart: query.filterOnlyExceptChart,
+        selectedCharts: getSelectedCharts(query),
+        filterOnlyExceptField: query.filterOnlyExceptField,
+        selectedFields: getSelectedFields(query),
+        customFields: query.customFields,
+        selectedFilterFieldType: query.selectedFilterFieldType,
+        inputFilter: query.globalFilter
+      };
+
+    case types.UPDATE_SELECTED_COMPARE_ENV_QUERY:
+      const updated = state.compareEnvQueries.find(
+        q => q.value.id === state.selectedCompareEnvQuery.value.id
+      );
+      return {
+        ...state,
+        selectedCompareEnvQuery: updated
+      };
+
     case types.LOAD_CHART_ERROR:
     case types.COMPARE_ENV_ERROR:
     case types.LOAD_REPOS_ERROR:
@@ -203,9 +327,19 @@ export default function reduce(state = initialState, action = {}) {
     case types.LOAD_FILTER_FIELD_ERROR:
     case types.COPY_TO_LEFT_ERROR:
     case types.COPY_TO_RIGHT_ERROR:
+    case types.SAVE_COMPARE_ENV_QUERY_ERROR:
+    case types.LOAD_COMPARE_ENV_QUERIES_ERROR:
+    case types.RENDER_COMPARE_ENV_QUERY_ERROR:
       return {
         ...state,
         envsDiff: action.payload.error
+      };
+
+    case types.DELETE_COMPARE_ENV_QUERY_ERROR:
+      return {
+        ...state,
+        envsDiff: action.payload.error,
+        showDeleteDialog: false
       };
 
     default:
@@ -250,4 +384,24 @@ function sort(a, b) {
     return -1;
   }
   return 0;
+}
+
+function getSelectedCharts(query) {
+  let selectedCharts = [];
+  if (query.filterOnlyExceptChart === 1) {
+    selectedCharts = query.onlyCharts;
+  } else if (query.filterOnlyExceptChart === 2) {
+    selectedCharts = query.exceptCharts;
+  }
+  return selectedCharts;
+}
+
+function getSelectedFields(query) {
+  let selectedFields = [];
+  if (query.filterOnlyExceptField === 1) {
+    selectedFields = query.onlyFields;
+  } else if (query.filterOnlyExceptField === 2) {
+    selectedFields = query.exceptFields;
+  }
+  return selectedFields;
 }
