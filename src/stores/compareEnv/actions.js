@@ -380,6 +380,62 @@ export function copyToRight(item) {
   };
 }
 
+export function showDeleteLeftVarDialog(varId) {
+  return async dispatch => {
+    dispatch(types.showDeleteLeftVarDialog(varId));
+  };
+}
+
+export function deleteLeftVar(id) {
+  return async dispatch => {
+    try {
+      dispatch(global.beginLoad());
+
+      await services.deleteVariable(id);
+
+      dispatch(global.successWithParam(types.deleteLeftVarSuccess, id));
+      dispatch(hideDeleteLeftVarDialog());
+      dispatch(global.successDefaultMessage());
+    } catch (error) {
+      dispatch(global.handleError(error, types.deleteLeftVarError));
+    }
+  };
+}
+
+export function showDeleteRightVarDialog(varId) {
+  return async dispatch => {
+    dispatch(types.showDeleteRightVarDialog(varId));
+  };
+}
+
+export function deleteRightVar(id) {
+  return async dispatch => {
+    try {
+      dispatch(global.beginLoad());
+
+      await services.deleteVariable(id);
+
+      dispatch(global.successWithParam(types.deleteRightVarSuccess, id));
+      dispatch(hideDeleteRightVarDialog());
+      dispatch(global.successDefaultMessage());
+    } catch (error) {
+      dispatch(global.handleError(error, types.deleteRightVarError));
+    }
+  };
+}
+
+export function hideDeleteLeftVarDialog() {
+  return async dispatch => {
+    dispatch(types.hideDeleteLeftVarDialog());
+  };
+}
+
+export function hideDeleteRightVarDialog() {
+  return async dispatch => {
+    dispatch(types.hideDeleteRightVarDialog());
+  };
+}
+
 function toInt(v) {
   let x = parseInt(v);
   if (isNaN(x)) {

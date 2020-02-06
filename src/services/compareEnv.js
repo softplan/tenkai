@@ -46,3 +46,7 @@ export async function deleteQuery(id) {
     `${TENKAI_API_URL}/compare-environments/delete-query/${id}`
   );
 }
+
+export async function deleteVariable(id) {
+  return await axios.delete(`${TENKAI_API_URL}/variables/delete/${id}`);
+}

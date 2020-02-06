@@ -24,7 +24,10 @@ const initialState = {
   compareEnvQueryName: '',
   compareEnvQueries: [],
   environments: [],
-  selectedCompareEnvQuery: {}
+  selectedCompareEnvQuery: {},
+  showDeleteLeftDialog: false,
+  showDeleteRightDialog: false,
+  variableToDelete: {}
 };
 
 export default function reduce(state = initialState, action = {}) {
@@ -183,6 +186,56 @@ export default function reduce(state = initialState, action = {}) {
         showSaveDialog: true
       };
 
+    case types.SHOW_DELETE_LEFT_DIALOG:
+      return {
+        ...state,
+        showDeleteLeftDialog: true,
+        variableToDelete: state.srcVariables.find(
+          v => v.ID === parseInt(action.payload.varId)
+        )
+      };
+
+    case types.SHOW_DELETE_RIGHT_DIALOG:
+      return {
+        ...state,
+        showDeleteRightDialog: true,
+        variableToDelete: state.tarVariables.find(
+          v => v.ID === parseInt(action.payload.varId)
+        )
+      };
+
+    case types.HIDE_DELETE_LEFT_DIALOG:
+      return {
+        ...state,
+        showDeleteLeftDialog: false,
+        variableToDelete: {}
+      };
+
+    case types.HIDE_DELETE_RIGHT_DIALOG:
+      return {
+        ...state,
+        showDeleteRightDialog: false,
+        variableToDelete: {}
+      };
+
+    case types.DELETE_LEFT_VAR_SUCCESS:
+      return {
+        ...state,
+        variableToDelete: {},
+        srcVariables: state.srcVariables.filter(
+          v => v.ID !== action.payload.varId
+        )
+      };
+
+    case types.DELETE_RIGHT_VAR_SUCCESS:
+      return {
+        ...state,
+        variableToDelete: {},
+        tarVariables: state.tarVariables.filter(
+          v => v.ID !== action.payload.varId
+        )
+      };
+
     case types.CANCEL_SAVE:
       return {
         ...state,
@@ -330,6 +383,8 @@ export default function reduce(state = initialState, action = {}) {
     case types.SAVE_COMPARE_ENV_QUERY_ERROR:
     case types.LOAD_COMPARE_ENV_QUERIES_ERROR:
     case types.RENDER_COMPARE_ENV_QUERY_ERROR:
+    case types.DELETE_LEFT_VAR_ERROR:
+    case types.DELETE_RIGHT_VAR_ERROR:
       return {
         ...state,
         envsDiff: action.payload.error

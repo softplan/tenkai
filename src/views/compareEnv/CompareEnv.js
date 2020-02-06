@@ -363,11 +363,55 @@ class CompareEnv extends Component {
     return true;
   };
 
+  renderDeleteRight = item => {
+    if (item.targetName !== '' && item.sourceName === '') {
+      return true;
+    }
+    return false;
+  };
+
   renderCopyToRight = item => {
     if (item.sourceName === '' && item.targetName !== '') {
       return false;
     }
     return true;
+  };
+
+  renderDeleteLeft = item => {
+    if (item.sourceName !== '' && item.targetName === '') {
+      return true;
+    }
+    return false;
+  };
+
+  deleteLeft = item => {
+    this.props.dispatch(actions.showDeleteLeftVarDialog(item.sourceVarId));
+  };
+
+  deleteRight = item => {
+    this.props.dispatch(actions.showDeleteRightVarDialog(item.targetVarId));
+  };
+
+  deleteLeftConfirm = async () => {
+    await this.props.dispatch(
+      actions.deleteLeftVar(this.props.compareEnv.variableToDelete.ID)
+    );
+    this.autoCompare();
+  };
+
+  deleteLeftCancel = item => {
+    this.props.dispatch(actions.hideDeleteLeftVarDialog());
+  };
+
+  deleteRightConfirm = async () => {
+    await this.props.dispatch(
+      actions.deleteRightVar(this.props.compareEnv.variableToDelete.ID)
+    );
+    this.autoCompare();
+  };
+
+  deleteRightCancel = item => {
+    this.props.dispatch(actions.hideDeleteRightVarDialog());
   };
 
   render() {
@@ -424,6 +468,14 @@ class CompareEnv extends Component {
                         <i className="pe-7s-right-arrow" />
                       </Button>
                     ) : null}
+                    {this.renderDeleteLeft(item) ? (
+                      <Button
+                        className="link-button"
+                        onClick={this.deleteLeft.bind(this, item)}
+                      >
+                        <i className="pe-7s-trash" />
+                      </Button>
+                    ) : null}
                   </Col>
                 </Row>
               </td>
@@ -438,6 +490,14 @@ class CompareEnv extends Component {
                         onClick={this.copyToLeft.bind(this, item)}
                       >
                         <i className="pe-7s-left-arrow" />
+                      </Button>
+                    ) : null}
+                    {this.renderDeleteRight(item) ? (
+                      <Button
+                        className="link-button"
+                        onClick={this.deleteRight.bind(this, item)}
+                      >
+                        <i className="pe-7s-trash" />
                       </Button>
                     ) : null}
                   </Col>
@@ -471,6 +531,22 @@ class CompareEnv extends Component {
           subTitle=""
           message={`The following environment comparison query will be deleted: ${this.props.compareEnv.selectedCompareEnvQuery.label}`}
           handleConfirmDelete={this.deleteQueryConfirm}
+        ></SimpleModal>
+        <SimpleModal
+          showConfirmDeleteModal={this.props.compareEnv.showDeleteLeftDialog}
+          handleConfirmDeleteModalClose={this.deleteLeftCancel}
+          title="Delete variable?"
+          subTitle=""
+          message={`The following variable will be deleted: ${this.props.compareEnv.variableToDelete.name}`}
+          handleConfirmDelete={this.deleteLeftConfirm}
+        ></SimpleModal>
+        <SimpleModal
+          showConfirmDeleteModal={this.props.compareEnv.showDeleteRightDialog}
+          handleConfirmDeleteModalClose={this.deleteRightCancel}
+          title="Delete variable?"
+          subTitle=""
+          message={`The following variable will be deleted: ${this.props.compareEnv.variableToDelete.name}`}
+          handleConfirmDelete={this.deleteRightConfirm}
         ></SimpleModal>
         <Row>
           <Col md={12}>

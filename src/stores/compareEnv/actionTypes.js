@@ -70,6 +70,15 @@ export const COPY_TO_LEFT_ERROR = 'COPY_TO_LEFT_ERROR';
 export const COPY_TO_RIGHT_SUCCESS = 'COPY_TO_RIGHT_SUCCESS';
 export const COPY_TO_RIGHT_ERROR = 'COPY_TO_RIGHT_ERROR';
 
+export const SHOW_DELETE_LEFT_DIALOG = 'SHOW_DELETE_LEFT_DIALOG';
+export const HIDE_DELETE_LEFT_DIALOG = 'HIDE_DELETE_LEFT_DIALOG';
+export const SHOW_DELETE_RIGHT_DIALOG = 'SHOW_DELETE_RIGHT_DIALOG';
+export const HIDE_DELETE_RIGHT_DIALOG = 'HIDE_DELETE_RIGHT_DIALOG';
+export const DELETE_LEFT_VAR_SUCCESS = 'DELETE_LEFT_VAR_SUCCESS';
+export const DELETE_LEFT_VAR_ERROR = 'DELETE_LEFT_VAR_ERROR';
+export const DELETE_RIGHT_VAR_SUCCESS = 'DELETE_RIGHT_VAR_SUCCESS';
+export const DELETE_RIGHT_VAR_ERROR = 'DELETE_RIGHT_VAR_ERROR';
+
 export const selectSourceEnvironment = selectedSrcEnv => ({
   type: SELECT_SOURCE_ENVIRONMENT,
   payload: { selectedSrcEnv }
@@ -300,4 +309,42 @@ export const copyToRightSuccess = () => ({
 export const copyToRightError = error => ({
   type: COPY_TO_RIGHT_ERROR,
   payload: { error }
+});
+
+export const showDeleteLeftVarDialog = varId => ({
+  type: SHOW_DELETE_LEFT_DIALOG,
+  payload: { varId }
+});
+
+export const deleteLeftVarSuccess = varId => ({
+  type: DELETE_LEFT_VAR_SUCCESS,
+  payload: { varId }
+});
+
+export const deleteLeftVarError = error => ({
+  type: DELETE_LEFT_VAR_ERROR,
+  payload: { error }
+});
+
+export const hideDeleteLeftVarDialog = () => ({
+  type: HIDE_DELETE_LEFT_DIALOG
+});
+
+export const showDeleteRightVarDialog = varId => ({
+  type: SHOW_DELETE_RIGHT_DIALOG,
+  payload: { varId }
+});
+
+export const deleteRightVarSuccess = varId => ({
+  type: DELETE_RIGHT_VAR_SUCCESS,
+  payload: { varId }
+});
+
+export const deleteRightVarError = error => ({
+  type: DELETE_RIGHT_VAR_ERROR,
+  payload: { error }
+});
+
+export const hideDeleteRightVarDialog = () => ({
+  type: HIDE_DELETE_RIGHT_DIALOG
 });
