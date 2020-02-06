@@ -18,6 +18,8 @@ const initialState = {
   fields: [],
   inputFilter: '',
   selectedFilterFieldType: {},
+  showSaveAsDialog: false,
+  showDeleteDialog: false,
   showSaveDialog: false,
   compareEnvQueryName: '',
   compareEnvQueries: [],
@@ -44,10 +46,11 @@ export default function reduce(state = initialState, action = {}) {
         tarVariables: [],
         inputFilter: '',
         selectedFilterFieldType: {},
+        showSaveAsDialog: false,
         showSaveDialog: false,
         compareEnvQueryName: '',
         selectedCompareEnvQuery: {}
-      }
+      };
 
     case types.INPUT_FILTER:
       return {
@@ -64,8 +67,7 @@ export default function reduce(state = initialState, action = {}) {
     case types.SELECT_REPOSITORY:
       return {
         ...state,
-        selectedRepository: action.payload.selectedRepository,
-        selectedCharts: []
+        selectedRepository: action.payload.selectedRepository
       };
 
     case types.ADD_CHART:
@@ -156,6 +158,25 @@ export default function reduce(state = initialState, action = {}) {
         selectedFilterFieldType: action.payload.selectedFilterFieldType
       };
 
+    case types.SHOW_SAVE_AS_DIALOG:
+      return {
+        ...state,
+        showSaveAsDialog: true
+      };
+
+    case types.SHOW_DELETE_DIALOG:
+      return {
+        ...state,
+        showDeleteDialog: true
+      };
+
+    case types.CANCEL_SAVE_AS:
+      return {
+        ...state,
+        showSaveAsDialog: false,
+        compareEnvQueryName: ''
+      };
+
     case types.SHOW_SAVE_DIALOG:
       return {
         ...state,
@@ -167,6 +188,12 @@ export default function reduce(state = initialState, action = {}) {
         ...state,
         showSaveDialog: false,
         compareEnvQueryName: ''
+      };
+
+    case types.DELETE_QUERY_CANCEL:
+      return {
+        ...state,
+        showDeleteDialog: false
       };
 
     case types.INPUT_SAVE_NAME:
@@ -220,6 +247,7 @@ export default function reduce(state = initialState, action = {}) {
     case types.SAVE_COMPARE_ENV_QUERY_SUCCESS:
       return {
         ...state,
+        showSaveAsDialog: false,
         showSaveDialog: false,
         compareEnvQueryName: ''
       };
@@ -228,6 +256,13 @@ export default function reduce(state = initialState, action = {}) {
       return {
         ...state,
         compareEnvQueries: action.payload.compareEnvQueries
+      };
+
+    case types.DELETE_COMPARE_ENV_QUERY_SUCCESS:
+      return {
+        ...state,
+        selectedCompareEnvQuery: {},
+        showDeleteDialog: false
       };
 
     case types.UPDATE_FIELDS:
@@ -258,7 +293,7 @@ export default function reduce(state = initialState, action = {}) {
       };
 
     case types.RENDER_COMPARE_ENV_QUERY:
-      const query = action.payload.compareEnvQuery.value;
+      const query = action.payload.compareEnvQuery.value.query;
       const envs = state.environments;
 
       return {
@@ -275,6 +310,15 @@ export default function reduce(state = initialState, action = {}) {
         inputFilter: query.globalFilter
       };
 
+    case types.UPDATE_SELECTED_COMPARE_ENV_QUERY:
+      const updated = state.compareEnvQueries.find(
+        q => q.value.id === state.selectedCompareEnvQuery.value.id
+      );
+      return {
+        ...state,
+        selectedCompareEnvQuery: updated
+      };
+
     case types.LOAD_CHART_ERROR:
     case types.COMPARE_ENV_ERROR:
     case types.LOAD_REPOS_ERROR:
@@ -289,6 +333,13 @@ export default function reduce(state = initialState, action = {}) {
       return {
         ...state,
         envsDiff: action.payload.error
+      };
+
+    case types.DELETE_COMPARE_ENV_QUERY_ERROR:
+      return {
+        ...state,
+        envsDiff: action.payload.error,
+        showDeleteDialog: false
       };
 
     default:

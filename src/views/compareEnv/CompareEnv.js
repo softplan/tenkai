@@ -9,51 +9,45 @@ import {
   Button,
   Form
 } from 'react-bootstrap';
-import * as compareEnvActions from 'stores/compareEnv/actions';
+import * as actions from 'stores/compareEnv/actions';
 import * as compareEnvSelectors from 'stores/compareEnv/reducer';
 import ChartFilter from './ChartFilter';
 import FieldFilter from './FieldFilter';
 import Environment from './Environment';
 import * as global from 'stores/global/actions';
-import SaveFilter from './SaveFilter';
+import ModalSaveAs from './ModalSaveAs';
+import SimpleModal from 'components/Modal/SimpleModal.jsx';
 
 class CompareEnv extends Component {
   componentDidMount() {
-    this.props.dispatch(compareEnvActions.loadRepositories());
-    this.props.dispatch(compareEnvActions.loadCustomFilterFieldTypes());
-    this.props.dispatch(compareEnvActions.loadCompareEnvQueries());
-    this.props.dispatch(
-      compareEnvActions.setEnvironments(this.props.environments)
-    );
+    this.props.dispatch(actions.loadRepositories());
+    this.props.dispatch(actions.loadCustomFilterFieldTypes());
+    this.props.dispatch(actions.loadCompareEnvQueries());
+    this.props.dispatch(actions.setEnvironments(this.props.environments));
   }
 
   selectSourceEnv = async selectedSrcEnv => {
-    await this.props.dispatch(
-      compareEnvActions.selectSourceEnvironment(selectedSrcEnv)
-    );
-    await this.props.dispatch(
-      compareEnvActions.loadSrcVariables(selectedSrcEnv.value)
-    );
+    await this.props.dispatch(actions.selectSourceEnvironment(selectedSrcEnv));
+    await this.props.dispatch(actions.loadSrcVariables(selectedSrcEnv.value));
 
     this.autoCompare();
   };
 
   selectTargetEnv = async selectedTarEnv => {
-    await this.props.dispatch(
-      compareEnvActions.selectTargetEnvironment(selectedTarEnv)
-    );
-    await this.props.dispatch(
-      compareEnvActions.loadTarVariables(selectedTarEnv.value)
-    );
+    await this.props.dispatch(actions.selectTargetEnvironment(selectedTarEnv));
+    await this.props.dispatch(actions.loadTarVariables(selectedTarEnv.value));
 
     this.autoCompare();
   };
 
   selectCompareEnvQuery = async selectedQuery => {
+    await this.props.dispatch(actions.renderCompareEnvQuery(selectedQuery));
     await this.props.dispatch(
-      compareEnvActions.renderCompareEnvQuery(selectedQuery)
+      actions.loadSrcVariables(selectedQuery.value.query.sourceEnvId)
     );
-
+    await this.props.dispatch(
+      actions.loadTarVariables(selectedQuery.value.query.targetEnvId)
+    );
     this.autoCompare();
   };
 
@@ -130,27 +124,53 @@ class CompareEnv extends Component {
         onlyFields: this.getOnlyFields(),
         customFields: this.getCustomFields()
       };
-      this.props.dispatch(compareEnvActions.compareEnv(payload));
+      this.props.dispatch(actions.compareEnv(payload));
     }
   };
 
   clearFilter = () => {
-    this.props.dispatch(compareEnvActions.clearFilter());
+    this.props.dispatch(actions.clearFilter());
   };
 
-  saveFilter = () => {
-    this.props.dispatch(compareEnvActions.showSaveDialog());
+  saveAsFilter = async () => {
+    this.props.dispatch(actions.showSaveAsDialog());
+    await this.props.dispatch(actions.loadCompareEnvQueries());
+  };
+
+  saveFilter = async () => {
+    this.props.dispatch(actions.showSaveDialog());
+  };
+
+  deleteQuery = () => {
+    this.props.dispatch(actions.showDeleteDialog());
+  };
+
+  deleteQueryConfirm = async () => {
+    await this.props.dispatch(
+      actions.deleteQuery(
+        this.props.compareEnv.selectedCompareEnvQuery.value.id
+      )
+    );
+    await this.props.dispatch(actions.loadCompareEnvQueries());
+  };
+
+  deleteQueryCancel = () => {
+    this.props.dispatch(actions.deleteQueryCancel());
+  };
+
+  handleSaveAsCancel = () => {
+    this.props.dispatch(actions.cancelSaveAs());
   };
 
   handleSaveCancel = () => {
-    this.props.dispatch(compareEnvActions.cancelSave());
+    this.props.dispatch(actions.cancelSave());
   };
 
-  handleSaveName = evt => {
-    this.props.dispatch(compareEnvActions.inputSaveName(evt.target.value));
+  handleSaveAsName = evt => {
+    this.props.dispatch(actions.inputSaveName(evt.target.value));
   };
 
-  handleSaveConfirm = () => {
+  handleSaveAsConfirm = async () => {
     if (this.isValid()) {
       const payload = {
         name: this.props.compareEnv.compareEnvQueryName,
@@ -170,13 +190,41 @@ class CompareEnv extends Component {
           globalFilter: this.props.compareEnv.inputFilter
         }
       };
-      this.props.dispatch(compareEnvActions.handleSaveConfirm(payload));
+      await this.props.dispatch(actions.handleSaveConfirm(payload));
+      await this.props.dispatch(actions.loadCompareEnvQueries());
+    }
+  };
+
+  handleSaveConfirm = async () => {
+    if (this.isValid()) {
+      const payload = {
+        id: this.props.compareEnv.selectedCompareEnvQuery.value.id,
+        name: this.props.compareEnv.selectedCompareEnvQuery.value.name,
+        userEmail: this.props.keycloak.userInfo.email,
+        data: {
+          sourceEnvId: this.props.compareEnv.selectedSrcEnv.value,
+          targetEnvId: this.props.compareEnv.selectedTarEnv.value,
+          exceptCharts: this.getExceptCharts(),
+          onlyCharts: this.getOnlyCharts(),
+          exceptFields: this.getExceptFields(),
+          onlyFields: this.getOnlyFields(),
+          customFields: this.getCustomFields(),
+          filterOnlyExceptChart: this.props.compareEnv.filterOnlyExceptChart,
+          filterOnlyExceptField: this.props.compareEnv.filterOnlyExceptField,
+          selectedFilterFieldType: this.props.compareEnv
+            .selectedFilterFieldType,
+          globalFilter: this.props.compareEnv.inputFilter
+        }
+      };
+      await this.props.dispatch(actions.handleSaveConfirm(payload));
+      await this.props.dispatch(actions.loadCompareEnvQueries());
+      await this.props.dispatch(actions.updateSelectedCompareEnvQuery());
     }
   };
 
   handleRepositoryChange = repo => {
-    this.props.dispatch(compareEnvActions.selectRepository(repo));
-    this.props.dispatch(compareEnvActions.loadCharts(repo.value, false));
+    this.props.dispatch(actions.selectRepository(repo));
+    this.props.dispatch(actions.loadCharts(repo.value, false));
   };
 
   sort = (a, b) => {
@@ -195,50 +243,46 @@ class CompareEnv extends Component {
   };
 
   addChart = async selectedChart => {
-    await this.props.dispatch(compareEnvActions.addChart(selectedChart.value));
+    await this.props.dispatch(actions.addChart(selectedChart.value));
     this.autoCompare();
   };
 
   removeChart = async selectedChart => {
-    await this.props.dispatch(compareEnvActions.removeChart(selectedChart));
+    await this.props.dispatch(actions.removeChart(selectedChart));
     this.autoCompare();
   };
 
   addField = async selectedField => {
-    await this.props.dispatch(compareEnvActions.addField(selectedField.value));
+    await this.props.dispatch(actions.addField(selectedField.value));
     this.autoCompare();
   };
 
   selectFilterFieldType = selectedFilterFieldType => {
-    this.props.dispatch(
-      compareEnvActions.selectFilterFieldType(selectedFilterFieldType)
-    );
+    this.props.dispatch(actions.selectFilterFieldType(selectedFilterFieldType));
   };
 
   addFilterField = async () => {
     const filterType = this.props.compareEnv.selectedFilterFieldType.value;
     const exp = this.props.compareEnv.fieldFilterExp;
-    await this.props.dispatch(
-      compareEnvActions.addCustomField(filterType, exp)
-    );
+    await this.props.dispatch(actions.addCustomField(filterType, exp));
     this.autoCompare();
   };
 
   removeField = async selectedField => {
-    await this.props.dispatch(compareEnvActions.removeField(selectedField));
+    await this.props.dispatch(actions.removeField(selectedField));
     this.autoCompare();
   };
 
   removeCustomField = async customField => {
-    await this.props.dispatch(compareEnvActions.removeCustomField(customField));
+    await this.props.dispatch(actions.removeCustomField(customField));
     this.autoCompare();
   };
 
   handleFilterChartChange = async filter => {
-    await this.props.dispatch(compareEnvActions.selectFilterOnlyExcept(filter));
+    await this.props.dispatch(actions.selectFilterOnlyExcept(filter));
 
     if (this.props.compareEnv.repositories.length === 0) {
-      this.props.dispatch(compareEnvActions.loadRepositories());
+      this.props.dispatch(actions.loadRepositories());
     }
     if (this.props.compareEnv.selectedCharts.length > 0) {
       this.autoCompare();
@@ -246,9 +290,7 @@ class CompareEnv extends Component {
   };
 
   handleFilterFieldChange = async filter => {
-    await this.props.dispatch(
-      compareEnvActions.selectFilterOnlyExceptField(filter)
-    );
+    await this.props.dispatch(actions.selectFilterOnlyExceptField(filter));
 
     if (this.props.compareEnv.selectedFields.length > 0) {
       this.autoCompare();
@@ -265,11 +307,11 @@ class CompareEnv extends Component {
   }
 
   onInputFilter = evt => {
-    this.props.dispatch(compareEnvActions.inputFilter(evt.target.value));
+    this.props.dispatch(actions.inputFilter(evt.target.value));
   };
 
   fieldFilterExp = evt => {
-    this.props.dispatch(compareEnvActions.fieldFilterExp(evt.target.value));
+    this.props.dispatch(actions.fieldFilterExp(evt.target.value));
   };
 
   match(exp, value) {
@@ -305,12 +347,12 @@ class CompareEnv extends Component {
   }
 
   copyToLeft = async item => {
-    await this.props.dispatch(compareEnvActions.copyToLeft(item));
+    await this.props.dispatch(actions.copyToLeft(item));
     this.autoCompare();
   };
 
   copyToRight = async item => {
-    await this.props.dispatch(compareEnvActions.copyToRight(item));
+    await this.props.dispatch(actions.copyToRight(item));
     this.autoCompare();
   };
 
@@ -340,6 +382,10 @@ class CompareEnv extends Component {
       tarEnvLabel = this.props.compareEnv.selectedTarEnv.label.toUpperCase();
     }
 
+    let showSaveAsDialog = false;
+    if (!!this.props.compareEnv.showSaveAsDialog) {
+      showSaveAsDialog = this.props.compareEnv.showSaveAsDialog;
+    }
     let showSaveDialog = false;
     if (!!this.props.compareEnv.showSaveDialog) {
       showSaveDialog = this.props.compareEnv.showSaveDialog;
@@ -404,12 +450,28 @@ class CompareEnv extends Component {
     }
     return (
       <Container fluid>
-        <SaveFilter
-          showModal={showSaveDialog}
-          handleCancel={this.handleSaveCancel}
-          handleSaveName={this.handleSaveName.bind(this)}
-          handleSaveConfirm={this.handleSaveConfirm}
+        <ModalSaveAs
+          showModal={showSaveAsDialog}
+          handleCancel={this.handleSaveAsCancel}
+          handleSaveName={this.handleSaveAsName.bind(this)}
+          handleSaveConfirm={this.handleSaveAsConfirm}
         />
+        <SimpleModal
+          showConfirmDeleteModal={showSaveDialog}
+          handleConfirmDeleteModalClose={this.handleSaveCancel}
+          title="Overwrite current environment comparison query?"
+          subTitle=""
+          message={`It will save the current environment comparison query with the name: ${this.props.compareEnv.selectedCompareEnvQuery.label}`}
+          handleConfirmDelete={this.handleSaveConfirm}
+        ></SimpleModal>
+        <SimpleModal
+          showConfirmDeleteModal={this.props.compareEnv.showDeleteDialog}
+          handleConfirmDeleteModalClose={this.deleteQueryCancel}
+          title="Delete environment comparison query?"
+          subTitle=""
+          message={`The following environment comparison query will be deleted: ${this.props.compareEnv.selectedCompareEnvQuery.label}`}
+          handleConfirmDelete={this.deleteQueryConfirm}
+        ></SimpleModal>
         <Row>
           <Col md={12}>
             <Environment
@@ -444,7 +506,7 @@ class CompareEnv extends Component {
           </Col>
         </Row>
         <Row>
-          <Col md={6}>
+          <Col md={12}>
             <Form.Group>
               <Form.Label>Global Filter</Form.Label>
               <Form.Control
@@ -460,11 +522,19 @@ class CompareEnv extends Component {
             <Button variant="primary" onClick={this.handleCompare}>
               Compare
             </Button>
-            <Button variant="danger" onClick={this.clearFilter}>
+            <Button variant="secondary" onClick={this.clearFilter}>
               Clear Filter
             </Button>
+          </Col>
+          <Col md={6}>
+            <Button variant="primary" onClick={this.saveAsFilter}>
+              Save query as...
+            </Button>
             <Button variant="secondary" onClick={this.saveFilter}>
-              Save as...
+              Save
+            </Button>
+            <Button variant="danger" onClick={this.deleteQuery}>
+              Delete query
             </Button>
           </Col>
         </Row>

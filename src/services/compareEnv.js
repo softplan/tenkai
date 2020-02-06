@@ -40,3 +40,9 @@ export async function saveCompareEnvQuery(data) {
 export async function loadCompareEnvQueries() {
   return await axios.get(`${TENKAI_API_URL}/compare-environments/load-queries`);
 }
+
+export async function deleteQuery(id) {
+  return await axios.delete(
+    `${TENKAI_API_URL}/compare-environments/delete-query/${id}`
+  );
+}

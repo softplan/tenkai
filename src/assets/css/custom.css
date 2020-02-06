@@ -127,3 +127,11 @@ table > tbody > tr > td > button > i {
     background-color: #eee;
     z-index: 10;
 }
+
+.react-select-zindex-3 {
+    z-index: 3;
+}
+
+.react-select-zindex-2 {
+    z-index: 2;
+}

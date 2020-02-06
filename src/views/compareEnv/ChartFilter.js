@@ -64,6 +64,7 @@ export default class ChartFilter extends Component {
                           value={this.props.selectedRepository}
                           onChange={this.props.handleRepositoryChange}
                           options={state.repositories}
+                          className="react-select-zindex-2"
                         />
                       </FormGroup>
                     </Col>
@@ -74,6 +75,7 @@ export default class ChartFilter extends Component {
                           value={null}
                           onChange={this.props.addChart}
                           options={state.charts}
+                          className="react-select-zindex-2"
                         />
                       </FormGroup>
                       {badges}

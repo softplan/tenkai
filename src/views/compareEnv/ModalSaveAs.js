@@ -1,7 +1,7 @@
 import React from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
 
-const SaveFilter = props => (
+const ModalSaveAs = props => (
   <Modal show={props.showModal} onHide={props.handleCancel}>
     <Modal.Header closeButton>
       <Modal.Title>Save compare environment query?</Modal.Title>
@@ -23,4 +23,4 @@ const SaveFilter = props => (
   </Modal>
 );
 
-export default SaveFilter;
+export default ModalSaveAs;

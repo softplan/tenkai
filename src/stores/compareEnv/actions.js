@@ -107,9 +107,27 @@ export function clearFilter() {
   };
 }
 
+export function showSaveAsDialog() {
+  return async dispatch => {
+    dispatch(types.showSaveAsDialog());
+  };
+}
+
+export function cancelSaveAs() {
+  return async dispatch => {
+    dispatch(types.cancelSaveAs());
+  };
+}
+
 export function showSaveDialog() {
   return async dispatch => {
     dispatch(types.showSaveDialog());
+  };
+}
+
+export function showDeleteDialog() {
+  return async dispatch => {
+    dispatch(types.showDeleteDialog());
   };
 }
 
@@ -137,6 +155,27 @@ export function handleSaveConfirm(data) {
     } catch (error) {
       dispatch(global.handleError(error, types.saveCompareEnvQueryError));
     }
+  };
+}
+
+export function deleteQuery(id) {
+  return async dispatch => {
+    try {
+      dispatch(global.beginLoad());
+
+      await services.deleteQuery(id);
+
+      dispatch(global.handleSuccess(types.deleteQuerySuccess));
+      dispatch(global.successDefaultMessage());
+    } catch (error) {
+      dispatch(global.handleError(error, types.deleteQueryError));
+    }
+  };
+}
+
+export function deleteQueryCancel() {
+  return async dispatch => {
+    dispatch(types.deleteQueryCancel());
   };
 }
 
@@ -172,7 +211,12 @@ export function loadCompareEnvQueries() {
       const r = data.map(e => {
         const x = {
           label: e.name,
-          value: e.query
+          value: {
+            id: e.ID,
+            userId: e.userId,
+            name: e.name,
+            query: e.query
+          }
         };
         return x;
       });
@@ -259,6 +303,12 @@ export function renderCompareEnvQuery(selectedQuery) {
     } catch (e) {
       dispatch(global.handleError(e, types.renderCompareEnvQueryError));
     }
+  };
+}
+
+export function updateSelectedCompareEnvQuery() {
+  return async dispatch => {
+    dispatch(global.successWithParam(types.updateSelectedCompareEnvQuery));
   };
 }
 

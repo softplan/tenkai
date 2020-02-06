@@ -17,26 +17,29 @@ export default class Environment extends Component {
                     value={state.selectedCompareEnvQuery}
                     onChange={this.props.selectCompareEnvQuery}
                     options={state.compareEnvQueries}
+                    className="react-select-zindex-3"
                   />
                 </Form.Group>
               </Col>
-              <Col md={5}>
+              <Col md={4}>
                 <Form.Group controlId="srcEnv">
                   <Form.Label>Source environment</Form.Label>
                   <Select
                     value={state.selectedSrcEnv}
                     onChange={this.props.selectSourceEnv}
                     options={state.environments}
+                    className="react-select-zindex-3"
                   />
                 </Form.Group>
               </Col>
-              <Col md={5}>
+              <Col md={4}>
                 <Form.Group controlId="tarEnv">
                   <Form.Label>Target environment</Form.Label>
                   <Select
                     value={state.selectedTarEnv}
                     onChange={this.props.selectTargetEnv}
                     options={state.environments}
+                    className="react-select-zindex-3"
                   />
                 </Form.Group>
               </Col>
