@@ -149,7 +149,7 @@ export class EditProductReleaseService extends Component {
 
     let payload = {
       chartName: this.getChartName(selectedChart.value),
-      chartVersion: selectedChart.version
+      chartVersion: this.getChartVersion(selectedChart.value)
     };
     getDockerImageFromHelmChart(this, payload, (self, dockerImage) => {
       if (dockerImage) {
@@ -181,6 +181,10 @@ export class EditProductReleaseService extends Component {
 
   getChartName(chartNameWithVersion) {
     return chartNameWithVersion.split(' - ')[0];
+  }
+
+  getChartVersion(chartNameWithVersion) {
+    return chartNameWithVersion.split(' - ')[1];
   }
 
   render() {
