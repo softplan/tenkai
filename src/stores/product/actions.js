@@ -1,17 +1,18 @@
-import * as types from "./actionTypes";
-import * as services from "services/products";
+import * as types from './actionTypes';
+import * as services from 'services/products';
+import * as global from 'stores/global/actions';
 
 export function allProducts() {
   return async dispatch => {
     try {
-      dispatch(types.allProductBegin());
+      dispatch(global.beginLoad());
 
       const result = await services.allProducts();
       const products = result.data.list;
 
-      dispatch(types.allProductSuccess(products));
+      dispatch(global.successWithParam(types.allProductSuccess, products));
     } catch (error) {
-      dispatch(types.allProductError(error));
+      dispatch(global.handleError(error, types.allProductError));
     }
   };
 }
@@ -19,15 +20,16 @@ export function allProducts() {
 export function deleteProduct(productId) {
   return async dispatch => {
     try {
-      dispatch(types.deleteProductBegin());
+      dispatch(global.beginLoad());
 
       await services.deleteProduct(productId);
       const result = await services.allProducts();
       const products = result.data.list;
 
-      dispatch(types.deleteProductSuccess(products));
+      dispatch(global.successWithParam(types.deleteProductSuccess, products));
+      dispatch(global.successDefaultMessage());
     } catch (error) {
-      dispatch(types.deleteProductError(error));
+      dispatch(global.handleError(error, types.deleteProductError));
     }
   };
 }
@@ -35,15 +37,16 @@ export function deleteProduct(productId) {
 export function createProduct(data) {
   return async dispatch => {
     try {
-      dispatch(types.createProductBegin());
+      dispatch(global.beginLoad());
 
       await services.createProduct(data);
       const result = await services.allProducts();
       const products = result.data.list;
 
-      dispatch(types.createProductSuccess(products));
+      dispatch(global.successWithParam(types.createProductSuccess, products));
+      dispatch(global.successDefaultMessage());
     } catch (error) {
-      dispatch(types.createProductError(error));
+      dispatch(global.handleError(error, types.createProductError));
     }
   };
 }
@@ -51,15 +54,16 @@ export function createProduct(data) {
 export function editProduct(data) {
   return async dispatch => {
     try {
-      dispatch(types.editProductBegin());
+      dispatch(global.beginLoad());
 
       await services.editProduct(data);
       const result = await services.allProducts();
       const products = result.data.list;
 
-      dispatch(types.editProductSuccess(products));
+      dispatch(global.successWithParam(types.editProductSuccess, products));
+      dispatch(global.successDefaultMessage());
     } catch (error) {
-      dispatch(types.editProductError(error));
+      dispatch(global.handleError(error, types.editProductError));
     }
   };
 }

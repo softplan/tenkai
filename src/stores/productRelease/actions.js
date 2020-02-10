@@ -1,17 +1,20 @@
-import * as types from "./actionTypes";
-import * as services from "services/productRelease";
+import * as types from './actionTypes';
+import * as services from 'services/productRelease';
+import * as global from 'stores/global/actions';
 
 export function allProductReleases(productId) {
   return async dispatch => {
     try {
-      dispatch(types.allProductReleaseBegin());
+      dispatch(global.beginLoad());
 
       const result = await services.allProductReleases(productId);
       const productReleases = result.data.list;
 
-      dispatch(types.allProductReleaseSuccess(productReleases));
+      dispatch(
+        global.successWithParam(types.allProductReleaseSuccess, productReleases)
+      );
     } catch (error) {
-      dispatch(types.allProductReleaseError(error));
+      dispatch(global.handleError(error, types.allProductReleaseError));
     }
   };
 }
@@ -19,15 +22,21 @@ export function allProductReleases(productId) {
 export function deleteProductRelease(productReleaseId, productId) {
   return async dispatch => {
     try {
-      dispatch(types.deleteProductReleaseBegin());
+      dispatch(global.beginLoad());
 
       await services.deleteProductRelease(productReleaseId);
       const result = await services.allProductReleases(productId);
       let productReleases = result.data.list;
 
-      dispatch(types.deleteProductReleaseSuccess(productReleases));
+      dispatch(
+        global.successWithParam(
+          types.deleteProductReleaseSuccess,
+          productReleases
+        )
+      );
+      dispatch(global.successDefaultMessage());
     } catch (error) {
-      dispatch(types.deleteProductReleaseError(error));
+      dispatch(global.handleError(error, types.deleteProductReleaseError));
     }
   };
 }
@@ -35,15 +44,21 @@ export function deleteProductRelease(productReleaseId, productId) {
 export function createProductRelease(data, productId) {
   return async dispatch => {
     try {
-      dispatch(types.createProductReleaseBegin());
+      dispatch(global.beginLoad());
 
       await services.createProductRelease(data);
       const result = await services.allProductReleases(productId);
       const productReleases = result.data.list;
 
-      dispatch(types.createProductReleaseSuccess(productReleases));
+      dispatch(
+        global.successWithParam(
+          types.createProductReleaseSuccess,
+          productReleases
+        )
+      );
+      dispatch(global.successDefaultMessage());
     } catch (error) {
-      dispatch(types.createProductReleaseError(error));
+      dispatch(global.handleError(error, types.createProductReleaseError));
     }
   };
 }
@@ -51,15 +66,21 @@ export function createProductRelease(data, productId) {
 export function editProductRelease(data, productId) {
   return async dispatch => {
     try {
-      dispatch(types.editProductReleaseBegin());
+      dispatch(global.beginLoad());
 
       await services.editProductRelease(data);
       const result = await services.allProductReleases(productId);
       const productReleases = result.data.list;
 
-      dispatch(types.editProductReleaseSuccess(productReleases));
+      dispatch(
+        global.successWithParam(
+          types.editProductReleaseSuccess,
+          productReleases
+        )
+      );
+      dispatch(global.successDefaultMessage());
     } catch (error) {
-      dispatch(types.editProductReleaseError(error));
+      dispatch(global.handleError(error, types.editProductReleaseError));
     }
   };
 }
@@ -67,15 +88,21 @@ export function editProductRelease(data, productId) {
 export function lockProductRelease(productReleaseId, productId) {
   return async dispatch => {
     try {
-      dispatch(types.lockProductReleaseBegin());
+      dispatch(global.beginLoad());
 
       await services.lockProductRelease(productReleaseId);
       const result = await services.allProductReleases(productId);
       const productReleases = result.data.list;
 
-      dispatch(types.lockProductReleaseSuccess(productReleases));
+      dispatch(
+        global.successWithParam(
+          types.lockProductReleaseSuccess,
+          productReleases
+        )
+      );
+      dispatch(global.successDefaultMessage());
     } catch (error) {
-      dispatch(types.lockProductReleaseError(error));
+      dispatch(global.handleError(error, types.lockProductReleaseError));
     }
   };
 }
@@ -83,16 +110,21 @@ export function lockProductRelease(productReleaseId, productId) {
 export function unlockProductRelease(productReleaseId, productId) {
   return async dispatch => {
     try {
-      dispatch(types.unlockProductReleaseBegin());
+      dispatch(global.beginLoad());
 
       await services.unlockProductRelease(productReleaseId);
       const result = await services.allProductReleases(productId);
       const productReleases = result.data.list;
 
-      dispatch(types.unlockProductReleaseSuccess(productReleases));
+      dispatch(
+        global.successWithParam(
+          types.unlockProductReleaseSuccess,
+          productReleases
+        )
+      );
+      dispatch(global.successDefaultMessage());
     } catch (error) {
-      dispatch(types.unlockProductReleaseError(error));
+      dispatch(global.handleError(error, types.unlockProductReleaseError));
     }
   };
 }
-

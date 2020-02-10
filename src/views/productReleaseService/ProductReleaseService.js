@@ -17,8 +17,8 @@ import Button from 'components/CustomButton/CustomButton.jsx';
 import EditProductReleaseService from 'views/productReleaseService/components/EditProductReleaseService';
 import queryString from 'query-string';
 
-import * as productReleaseServiceActions from 'stores/productReleaseService/actions';
-import * as productReleaseServiceSelectors from 'stores/productReleaseService/reducer';
+import * as actions from 'stores/productReleaseService/actions';
+import * as selectors from 'stores/productReleaseService/reducer';
 import * as productReleaseSelectors from 'stores/productRelease/reducer';
 
 class ProductReleaseService extends Component {
@@ -53,15 +53,13 @@ class ProductReleaseService extends Component {
 
   componentDidMount() {
     this.props.dispatch(
-      productReleaseServiceActions.allProductReleaseServices(
-        this.state.productVersionId
-      )
+      actions.allProductReleaseServices(this.state.productVersionId)
     );
   }
 
   handleConfirmDelete() {
     this.props.dispatch(
-      productReleaseServiceActions.deleteProductReleaseService(
+      actions.deleteProductReleaseService(
         this.state.itemToDelete.ID,
         this.state.productVersionId
       )
@@ -75,17 +73,11 @@ class ProductReleaseService extends Component {
 
     if (this.state.editMode) {
       this.props.dispatch(
-        productReleaseServiceActions.editProductReleaseService(
-          data,
-          this.state.productVersionId
-        )
+        actions.editProductReleaseService(data, this.state.productVersionId)
       );
     } else {
       this.props.dispatch(
-        productReleaseServiceActions.createProductReleaseService(
-          data,
-          this.state.productVersionId
-        )
+        actions.createProductReleaseService(data, this.state.productVersionId)
       );
     }
 
@@ -356,11 +348,7 @@ class ProductReleaseService extends Component {
 }
 
 const mapStateToProps = state => ({
-  loading: productReleaseServiceSelectors.getLoading(state),
-  productReleaseServices: productReleaseServiceSelectors.getProductReleaseServices(
-    state
-  ),
-  error: productReleaseServiceSelectors.getError(state),
+  productReleaseServices: selectors.getProductReleaseServices(state),
   productReleases: productReleaseSelectors.getProductReleases(state)
 });
 

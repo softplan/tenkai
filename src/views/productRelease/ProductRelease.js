@@ -17,8 +17,8 @@ import SimpleModal from 'components/Modal/SimpleModal.jsx';
 
 import queryString from 'query-string';
 
-import * as productReleaseActions from 'stores/productRelease/actions';
-import * as productReleaseSelectors from 'stores/productRelease/reducer';
+import * as actions from 'stores/productRelease/actions';
+import * as selectors from 'stores/productRelease/reducer';
 import CardButton from 'components/CardButton/CardButton';
 import * as utils from 'utils/sort';
 
@@ -41,14 +41,12 @@ class ProductRelease extends Component {
   }
 
   componentDidMount() {
-    this.props.dispatch(
-      productReleaseActions.allProductReleases(this.state.productId)
-    );
+    this.props.dispatch(actions.allProductReleases(this.state.productId));
   }
 
   handleConfirmDelete() {
     this.props.dispatch(
-      productReleaseActions.deleteProductRelease(
+      actions.deleteProductRelease(
         this.state.itemToDelete.ID,
         this.state.productId
       )
@@ -62,11 +60,11 @@ class ProductRelease extends Component {
 
     if (this.state.editMode) {
       this.props.dispatch(
-        productReleaseActions.editProductRelease(data, this.state.productId)
+        actions.editProductRelease(data, this.state.productId)
       );
     } else {
       this.props.dispatch(
-        productReleaseActions.createProductRelease(data, this.state.productId)
+        actions.createProductRelease(data, this.state.productId)
       );
     }
 
@@ -80,12 +78,10 @@ class ProductRelease extends Component {
   onLockVersion(data) {
     if (data.locked) {
       this.props.dispatch(
-        productReleaseActions.unlockProductRelease(data.ID, data.productId)
+        actions.unlockProductRelease(data.ID, data.productId)
       );
     } else {
-      this.props.dispatch(
-        productReleaseActions.lockProductRelease(data.ID, data.productId)
-      );
+      this.props.dispatch(actions.lockProductRelease(data.ID, data.productId));
     }
   }
 
@@ -105,7 +101,7 @@ class ProductRelease extends Component {
       .filter(
         d =>
           this.state.inputFilter === '' ||
-          d.chartName.includes(this.state.inputFilter)
+          d.version.includes(this.state.inputFilter)
       )
       .sort((a, b) => utils.sortNumber(a.ID, b.ID))
       .map((item, key) => (
@@ -249,9 +245,7 @@ class ProductRelease extends Component {
 }
 
 const mapStateToProps = state => ({
-  loading: productReleaseSelectors.getLoading(state),
-  productReleases: productReleaseSelectors.getProductReleases(state),
-  error: productReleaseSelectors.getError(state)
+  productReleases: selectors.getProductReleases(state)
 });
 
 export default connect(mapStateToProps)(ProductRelease);
