@@ -25,6 +25,19 @@ export class UserForm extends Component {
     });
   }
 
+  sort(a, b) {
+    const fieldA = a.name.toUpperCase();
+    const fieldB = b.name.toUpperCase();
+
+    if (fieldA > fieldB) {
+      return 1;
+    }
+    if (fieldA < fieldB) {
+      return -1;
+    }
+    return 0;
+}
+
   handleChange = event => {
     const { value, name } = event.target;
     this.setState(state => ({
@@ -51,7 +64,7 @@ export class UserForm extends Component {
 
   render() {
     const { editMode } = this.props;
-    const options = this.state.envs.map(e => ({
+    const options = this.state.envs.sort(this.sort).map(e => ({
       value: e.name,
       label: e.name
     }));
