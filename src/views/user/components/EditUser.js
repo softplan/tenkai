@@ -36,7 +36,7 @@ export class UserForm extends Component {
       return -1;
     }
     return 0;
-}
+  }
 
   handleChange = event => {
     const { value, name } = event.target;
