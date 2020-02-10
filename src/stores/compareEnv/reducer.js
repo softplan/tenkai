@@ -1,4 +1,5 @@
 import * as types from './actionTypes';
+import * as utils from 'utils/sort';
 
 const initialState = {
   error: null,
@@ -332,7 +333,7 @@ export default function reduce(state = initialState, action = {}) {
 
       const oldFields = state.fields;
       let newFields = oldFields.concat(uniqueFields);
-      newFields.sort(sort);
+      newFields.sort((a, b) => utils.sort(a.value, b.value));
 
       return {
         ...state,
@@ -426,19 +427,6 @@ function arrayHasValue(array, element) {
     }
   }
   return false;
-}
-
-function sort(a, b) {
-  const fieldA = a.value.toUpperCase();
-  const fieldB = b.value.toUpperCase();
-
-  if (fieldA > fieldB) {
-    return 1;
-  }
-  if (fieldA < fieldB) {
-    return -1;
-  }
-  return 0;
 }
 
 function getSelectedCharts(query) {

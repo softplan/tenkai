@@ -15,6 +15,7 @@ import axios from 'axios';
 import TENKAI_API_URL from 'env.js';
 import NotificationContainer from 'components/Notification/NotificationContainer';
 import Spinner from 'components/Spinner/Spinner';
+import * as utils from 'utils/sort';
 
 class Admin extends Component {
   constructor(props) {
@@ -65,8 +66,11 @@ class Admin extends Component {
       .get(TENKAI_API_URL + '/environments')
       .then(response => {
         var arr = [];
-        for (var x = 0; x < response.data.Envs.length; x++) {
-          var element = response.data.Envs[x];
+        let sortedEnvs = response.data.Envs.sort((a, b) =>
+          utils.sort(a.name, b.name)
+        );
+        for (var x = 0; x < sortedEnvs.length; x++) {
+          var element = sortedEnvs[x];
           arr.push({
             value: element.ID,
             label: element.name,

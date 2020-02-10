@@ -1,17 +1,18 @@
 import * as types from './actionTypes';
 import * as services from 'services/users';
+import * as global from 'stores/global/actions';
 
 export function allUsers() {
   return async dispatch => {
     try {
-      dispatch(types.allUserBegin());
+      dispatch(global.beginLoad());
 
       const result = await services.allUsers();
       const users = result.data.users;
 
-      dispatch(types.allUserSuccess(users));
+      dispatch(global.successWithParam(types.allUserSuccess, users));
     } catch (error) {
-      dispatch(types.allUserError(error));
+      dispatch(global.handleError(error, types.allUserError));
     }
   };
 }
@@ -19,15 +20,16 @@ export function allUsers() {
 export function deleteUser(userId) {
   return async dispatch => {
     try {
-      dispatch(types.deleteUserBegin());
+      dispatch(global.beginLoad());
 
       await services.deleteUser(userId);
       const result = await services.allUsers();
       const users = result.data.users;
 
-      dispatch(types.deleteUserSuccess(users));
+      dispatch(global.successWithParam(types.deleteUserSuccess, users));
+      dispatch(global.successDefaultMessage());
     } catch (error) {
-      dispatch(types.deleteUserError(error));
+      dispatch(global.handleError(error, types.deleteUserError));
     }
   };
 }
@@ -35,9 +37,10 @@ export function deleteUser(userId) {
 export function saveUser(data) {
   return async dispatch => {
     try {
-      dispatch(types.saveUserBegin());
+      dispatch(global.beginLoad());
 
       let user = {
+        ID: data.ID,
         email: data.email,
         environments: data.checkedEnvs.map(item => ({ ID: parseInt(item) }))
       };
@@ -46,9 +49,10 @@ export function saveUser(data) {
       const result = await services.allUsers();
       const users = result.data.users;
 
-      dispatch(types.saveUserSuccess(users));
+      dispatch(global.successWithParam(types.saveUserSuccess, users));
+      dispatch(global.successDefaultMessage());
     } catch (error) {
-      dispatch(types.saveUserError(error));
+      dispatch(global.handleError(error, types.saveUserError));
     }
   };
 }

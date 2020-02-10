@@ -20,6 +20,7 @@ import queryString from 'query-string';
 import * as productReleaseActions from 'stores/productRelease/actions';
 import * as productReleaseSelectors from 'stores/productRelease/reducer';
 import CardButton from 'components/CardButton/CardButton';
+import * as utils from 'utils/sort';
 
 class ProductRelease extends Component {
   constructor(props) {
@@ -106,6 +107,7 @@ class ProductRelease extends Component {
           this.state.inputFilter === '' ||
           d.chartName.includes(this.state.inputFilter)
       )
+      .sort((a, b) => utils.sortNumber(a.ID, b.ID))
       .map((item, key) => (
         <tr key={key} className={this.getRowClassName(item)}>
           <td>{item.ID}</td>
