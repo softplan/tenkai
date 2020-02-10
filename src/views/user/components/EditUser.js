@@ -3,6 +3,7 @@ import DualListBox from 'react-dual-listbox';
 import { CardTenkai } from 'components/Card/CardTenkai.jsx';
 import { Button, Form, Row, Col } from 'react-bootstrap';
 import { getAllEnvironments } from 'client-api/apicall.jsx';
+import * as utils from 'utils/sort';
 
 export class UserForm extends Component {
   state = {
@@ -23,19 +24,6 @@ export class UserForm extends Component {
     getAllEnvironments(this, envs => {
       this.setState({ envs: envs.map(e => ({ ID: e.ID, name: e.name })) });
     });
-  }
-
-  sort(a, b) {
-    const fieldA = a.name.toUpperCase();
-    const fieldB = b.name.toUpperCase();
-
-    if (fieldA > fieldB) {
-      return 1;
-    }
-    if (fieldA < fieldB) {
-      return -1;
-    }
-    return 0;
   }
 
   handleChange = event => {
@@ -64,10 +52,12 @@ export class UserForm extends Component {
 
   render() {
     const { editMode } = this.props;
-    const options = this.state.envs.sort(this.sort).map(e => ({
-      value: e.name,
-      label: e.name
-    }));
+    const options = this.state.envs
+      .sort((a, b) => utils.sort(a.name, b.name))
+      .map(e => ({
+        value: e.name,
+        label: e.name
+      }));
 
     return (
       <div>

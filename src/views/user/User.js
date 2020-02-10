@@ -19,6 +19,7 @@ import SimpleModal from 'components/Modal/SimpleModal.jsx';
 
 import * as userActions from 'stores/user/actions';
 import * as userSelectors from 'stores/user/reducer';
+import * as utils from 'utils/sort';
 
 class User extends Component {
   state = {
@@ -64,6 +65,7 @@ class User extends Component {
           this.state.inputFilter === '' ||
           d.email.includes(this.state.inputFilter)
       )
+      .sort((a, b) => utils.sort(a.email, b.email))
       .map((item, key) => (
         <tr key={key}>
           <td>{item.ID}</td>
