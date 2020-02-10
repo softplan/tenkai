@@ -14,13 +14,13 @@ import {
 import Button from 'components/CustomButton/CustomButton.jsx';
 import { CardTenkai } from 'components/Card/CardTenkai.jsx';
 import CButton from 'components/CustomButton/CustomButton.jsx';
-import UserForm from 'components/Users/UserForm.jsx';
+import UserForm from 'views/user/components/EditUser.js';
 import SimpleModal from 'components/Modal/SimpleModal.jsx';
 
 import * as userActions from 'stores/user/actions';
 import * as userSelectors from 'stores/user/reducer';
 
-class Users extends Component {
+class User extends Component {
   state = {
     showInsertUpdateForm: false,
     inputFilter: '',
@@ -48,6 +48,15 @@ class Users extends Component {
     this.setState({ showConfirmDeleteModal: false, itemToDelete: {} });
   }
 
+  onEdit(item) {
+    window.scrollTo(0, 0);
+    this.setState({
+      showInsertUpdateForm: true,
+      editItem: item,
+      editMode: true
+    });
+  }
+
   render() {
     const items = this.props.users
       .filter(
@@ -62,13 +71,7 @@ class Users extends Component {
           <td>
             <Button
               className="link-button"
-              onClick={() =>
-                this.setState({
-                  showInsertUpdateForm: true,
-                  editItem: item,
-                  editMode: true
-                })
-              }
+              onClick={this.onEdit.bind(this, item)}
             >
               <i className="pe-7s-edit" />
             </Button>
@@ -200,4 +203,4 @@ const mapStateToProps = state => ({
   error: userSelectors.getError(state)
 });
 
-export default connect(mapStateToProps)(Users);
+export default connect(mapStateToProps)(User);

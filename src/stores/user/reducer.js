@@ -10,26 +10,6 @@ const initialState = {
 
 export default function reduce(state = initialState, action = {}) {
   switch (action.type) {
-    case types.ALL_USER_BEGIN:
-      return {
-        ...state,
-        loading: true,
-        error: null
-      };
-
-    case types.DELETE_USER_BEGIN:
-      return {
-        loadingDelete: true,
-        ...state
-      };
-
-    case types.SAVE_USER_BEGIN:
-      return {
-        ...state,
-        loadingSave: true,
-        error: null
-      };
-
     case types.ALL_USER_ERROR:
     case types.DELETE_USER_ERROR:
     case types.SAVE_USER_ERROR:

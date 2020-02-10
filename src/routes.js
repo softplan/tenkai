@@ -10,7 +10,7 @@ import DepGraph from 'views/DepGraph';
 import Solution from 'views/Solution';
 import SolutionChart from 'views/SolutionChart';
 import DeploySolution from 'views/DeploySolution';
-import Users from 'views/Users';
+import User from 'views/user/User';
 import Workload from 'views/Workload';
 import BlueGreenWizard from 'views/BlueGreenWizard';
 import DockerRepo from 'views/DockerRepo';
@@ -182,7 +182,7 @@ const dashboardRoutes = [
     path: '/admin',
     name: 'Users Permissions',
     icon: 'pe-7s-add-user',
-    component: Users,
+    component: User,
     layout: '/admin',
     menu: true,
     role: 'tenkai-admin'
