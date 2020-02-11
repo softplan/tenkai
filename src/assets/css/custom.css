@@ -112,15 +112,16 @@ table > tbody > tr > td > button > i {
   font-size: 100%;
 }
 
-#compareEnv {
+.scroll-table table {
     table-layout: fixed;
 }
 
-#compareEnv, .table-responsive {
+.scroll-table > .table-responsive {
     height: 700px;
+    overflow-x: hidden;
 }
 
-#compareEnv, th {
+.scroll-table > th {
     border: 0px !important;
     position: sticky;
     top: 0;

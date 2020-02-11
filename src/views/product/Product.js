@@ -15,8 +15,8 @@ import { CardTenkai } from 'components/Card/CardTenkai.jsx';
 import EditProduct from 'views/product/components/EditProduct';
 import SimpleModal from 'components/Modal/SimpleModal.jsx';
 
-import * as productActions from 'stores/product/actions';
-import * as productSelectors from 'stores/product/reducer';
+import * as actions from 'stores/product/actions';
+import * as selectors from 'stores/product/reducer';
 import CardButton from 'components/CardButton/CardButton';
 
 class Product extends Component {
@@ -28,14 +28,14 @@ class Product extends Component {
   };
 
   componentDidMount() {
-    this.props.dispatch(productActions.allProducts());
+    this.props.dispatch(actions.allProducts());
   }
 
   onSaveClick(data) {
     if (this.state.editMode) {
-      this.props.dispatch(productActions.editProduct(data));
+      this.props.dispatch(actions.editProduct(data));
     } else {
-      this.props.dispatch(productActions.createProduct(data));
+      this.props.dispatch(actions.createProduct(data));
     }
 
     this.setState({
@@ -54,9 +54,7 @@ class Product extends Component {
   }
 
   handleConfirmDelete() {
-    this.props.dispatch(
-      productActions.deleteProduct(this.state.itemToDelete.ID)
-    );
+    this.props.dispatch(actions.deleteProduct(this.state.itemToDelete.ID));
 
     this.setState({ showConfirmDeleteModal: false, itemToDelete: {} });
   }
@@ -207,9 +205,7 @@ class Product extends Component {
 }
 
 const mapStateToProps = state => ({
-  loading: productSelectors.getLoading(state),
-  products: productSelectors.getProducts(state),
-  error: productSelectors.getError(state)
+  products: selectors.getProducts(state)
 });
 
 export default connect(mapStateToProps)(Product);

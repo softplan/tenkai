@@ -621,17 +621,19 @@ class CompareEnv extends Component {
                 Diff between source <strong>{srcEnvLabel}</strong> and target{' '}
                 <strong>{tarEnvLabel}</strong>
               </Card.Header>
-              <Table id="compareEnv" bordered responsive size="sm">
-                <thead>
-                  <th style={{ width: '10%' }}>Source Scope</th>
-                  <th style={{ width: '13%' }}>Source Variable Name</th>
-                  <th style={{ width: '27%' }}>Source Variable Value</th>
-                  <th style={{ width: '10%' }}>Target Scope</th>
-                  <th style={{ width: '13%' }}>Target Variable Name</th>
-                  <th style={{ width: '27%' }}>Target Variable Value</th>
-                </thead>
-                <tbody>{items}</tbody>
-              </Table>
+              <div className="scroll-table">
+                <Table id="compareEnv" bordered responsive size="sm">
+                  <thead>
+                    <th style={{ width: '10%' }}>Source Scope</th>
+                    <th style={{ width: '13%' }}>Source Variable Name</th>
+                    <th style={{ width: '27%' }}>Source Variable Value</th>
+                    <th style={{ width: '10%' }}>Target Scope</th>
+                    <th style={{ width: '13%' }}>Target Variable Name</th>
+                    <th style={{ width: '27%' }}>Target Variable Value</th>
+                  </thead>
+                  <tbody>{items}</tbody>
+                </Table>
+              </div>
             </Card>
           </Col>
         </Row>
