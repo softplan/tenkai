@@ -74,6 +74,11 @@ text-decoration: none;
     opacity: 1;
     color: #FFFFFF;
 }
+.sidebar .nav > li > ul {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0 15px;
+}
 
 .table-upgrade td:nth-child(2),
 .table-upgrade td:nth-child(3){
@@ -787,4 +792,12 @@ text-decoration: none;
   left: -6px;
   margin-top: -7px;
   border-width: 7px 7px 7px 0;
+}
+
+
+.nav-link[data-toggle].collapsed:before {
+  content: " ▾";
+}
+.nav-link[data-toggle]:not(.collapsed):before {
+  content: " ▴";
 }

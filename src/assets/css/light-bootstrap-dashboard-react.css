@@ -1334,6 +1334,8 @@ body > .navbar-collapse[data-color="purple"]:after {
 .nav > li > a:focus {
   background-color: transparent; }
 
+
+
 .navbar {
   border: 0;
   font-size: 16px;

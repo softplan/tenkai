@@ -3,7 +3,6 @@ import Deployment from 'views/Deployment';
 import Config from 'views/Config';
 import Variables from 'views/Variables';
 import VariablesWizard from 'views/VariablesWizard';
-// import Microservices from "views/Microservices";
 import Dependencies from 'views/Dependencies';
 import DepAnalysis from 'views/DepAnalysis';
 import DepGraph from 'views/DepGraph';
@@ -21,14 +20,13 @@ import ProductReleaseService from 'views/productReleaseService/ProductReleaseSer
 import VariablesNotUsed from 'views/VariablesNotUsed';
 import VariableRule from 'views/variableRule/VariableRule';
 import ValueRule from 'views/valueRule/ValueRule';
-import SimpleDeploy from 'views/simpleDeploy/SimpleDeploy';
 import CompareEnv from 'views/compareEnv/CompareEnv';
 
 const dashboardRoutes = [
   {
     path: '/deployment',
     name: 'Deployment',
-    icon: 'pe-7s-news-paper',
+    icon: 'pe-7s-pendrive',
     component: Deployment,
     layout: '/admin',
     menu: true,
@@ -42,6 +40,102 @@ const dashboardRoutes = [
     layout: '/admin',
     menu: true,
     role: 'tenkai-user'
+  },
+
+  {
+    path: '/admin-master',
+    name: 'Admin',
+    icon: 'pe-7s-news-paper',
+    component: null,
+    layout: '/admin',
+    menu: true,
+    role: 'tenkai-admin',
+    submenu: [
+      {
+        path: '/environments',
+        name: 'Environments',
+        icon: 'pe-7s-server',
+        component: Enviroments,
+        layout: '/admin',
+        menu: true,
+        role: 'tenkai-user'
+      },
+      {
+        path: '/config',
+        name: 'Helm Repo',
+        icon: 'pe-7s-helm',
+        component: Config,
+        layout: '/admin',
+        menu: true,
+        role: 'tenkai-user'
+      },
+      {
+        path: '/dockerRepo',
+        name: 'Docker Repo',
+        icon: 'pe-7s-albums',
+        component: DockerRepo,
+        layout: '/admin',
+        menu: true,
+        role: 'tenkai-admin'
+      },      
+      {
+        path: '/variable-rule',
+        name: 'Validation Rules',
+        icon: 'pe-7s-check',
+        component: VariableRule,
+        layout: '/admin',
+        menu: true,
+        role: 'tenkai-user'
+      },
+      {
+        path: '/globalConfig',
+        name: 'Settings',
+        icon: 'pe-7s-settings',
+        component: GlobalConfig,
+        layout: '/admin',
+        menu: true,
+        role: 'tenkai-admin'
+      },
+      {
+        path: '/admin',
+        name: 'Users Permissions',
+        icon: 'pe-7s-add-user',
+        component: User,
+        layout: '/admin',
+        menu: true,
+        role: 'tenkai-admin'
+      },
+    ]
+  },
+
+  {
+    path: '/product-master',
+    name: 'Solution',
+    icon: 'pe-7s-umbrella',
+    component: null,
+    layout: '/admin',
+    menu: true,
+    role: 'tenkai-user', 
+    submenu: [
+      {
+        path: '/product',
+        name: 'Product',
+        icon: 'pe-7s-box2',
+        component: Product,
+        layout: '/admin',
+        menu: true,
+        role: 'tenkai-beta'
+      },
+      {
+        path: '/solution',
+        name: 'Product Mesh',
+        icon: 'pe-7s-wallet',
+        component: Solution,
+        layout: '/admin',
+        menu: true,
+        role: 'tenkai-user'
+      },
+    ]
   },
   {
     path: '/deployment-wvars',
@@ -70,15 +164,7 @@ const dashboardRoutes = [
     menu: false,
     role: 'tenkai-user'
   },
-  {
-    path: '/environments',
-    name: 'Environments',
-    icon: 'pe-7s-server',
-    component: Enviroments,
-    layout: '/admin',
-    menu: true,
-    role: 'tenkai-user'
-  },
+ 
   {
     path: '/environments-envvars',
     name: 'Variables',
@@ -87,33 +173,6 @@ const dashboardRoutes = [
     layout: '/admin',
     menu: false,
     role: 'tenkai-user'
-  },
-  {
-    path: '/config',
-    name: 'Helm Repo',
-    icon: 'pe-7s-helm',
-    component: Config,
-    layout: '/admin',
-    menu: true,
-    role: 'tenkai-user'
-  },
-  {
-    path: '/dockerRepo',
-    name: 'Docker Repo',
-    icon: 'pe-7s-albums',
-    component: DockerRepo,
-    layout: '/admin',
-    menu: true,
-    role: 'tenkai-admin'
-  },
-  {
-    path: '/product',
-    name: 'Product',
-    icon: 'pe-7s-box2',
-    component: Product,
-    layout: '/admin',
-    menu: true,
-    role: 'tenkai-beta'
   },
   {
     path: '/product-version',
@@ -131,15 +190,6 @@ const dashboardRoutes = [
     component: ProductReleaseService,
     layout: '/admin',
     menu: false,
-    role: 'tenkai-user'
-  },
-  {
-    path: '/solution',
-    name: 'Solution',
-    icon: 'pe-7s-umbrella',
-    component: Solution,
-    layout: '/admin',
-    menu: true,
     role: 'tenkai-user'
   },
   {
@@ -179,15 +229,6 @@ const dashboardRoutes = [
     role: 'tenkai-user'
   },
   {
-    path: '/admin',
-    name: 'Users Permissions',
-    icon: 'pe-7s-add-user',
-    component: User,
-    layout: '/admin',
-    menu: true,
-    role: 'tenkai-admin'
-  },
-  {
     path: '/blueGreenWizard',
     name: 'Blue Green Wizard',
     icon: 'pe-7s-shuffle',
@@ -195,15 +236,6 @@ const dashboardRoutes = [
     layout: '/admin',
     menu: false,
     role: 'tenkai-admin'
-  },
-  {
-    path: '/variable-rule',
-    name: 'Validation Rules',
-    icon: 'pe-7s-check',
-    component: VariableRule,
-    layout: '/admin',
-    menu: true,
-    role: 'tenkai-user'
   },
   {
     path: '/value-rule',
@@ -215,24 +247,6 @@ const dashboardRoutes = [
     role: 'tenkai-user'
   },
   {
-    path: '/compareEnv',
-    name: 'Compare Envs',
-    icon: 'pe-7s-way',
-    component: CompareEnv,
-    layout: '/admin',
-    menu: true,
-    role: 'tenkai-admin'
-  },
-  {
-    path: '/globalConfig',
-    name: 'Settings',
-    icon: 'pe-7s-settings',
-    component: GlobalConfig,
-    layout: '/admin',
-    menu: true,
-    role: 'tenkai-admin'
-  },
-  {
     path: '/variablesNotUsed',
     name: 'Settings',
     icon: 'pe-7s-config',
@@ -242,14 +256,27 @@ const dashboardRoutes = [
     role: 'tenkai-admin'
   },
   {
-    path: '/simpleDeploy',
-    name: 'Simple Deploy',
-    icon: 'pe-7s-news-paper',
-    component: SimpleDeploy,
+    path: '/util-master',
+    name: 'Util',
+    icon: 'pe-7s-config',
+    component: null,
     layout: '/admin',
     menu: true,
-    role: 'tenkai-limited-user'
-  }
+    role: 'tenkai-user',
+    submenu: [
+      {
+        path: '/compareEnv',
+        name: 'Compare Envs',
+        icon: 'pe-7s-way',
+        component: CompareEnv,
+        layout: '/admin',
+        menu: true,
+        role: 'tenkai-admin'
+      },
+    ]
+  },
+
+
 ];
 
 export default dashboardRoutes;

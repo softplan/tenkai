@@ -227,28 +227,58 @@ class Admin extends Component {
   getRoutes = routes => {
     return routes.map((prop, key) => {
       let auth = this.state.keycloak.hasRealmRole(prop.role);
+      console.log(prop.layout + prop.path);
       if (prop.layout === '/admin' && auth) {
-        return (
-          <Route
-            path={prop.layout + prop.path}
-            render={props => (
-              <prop.component
-                {...props}
-                handleClick={this.handleNotificationClick}
-                handleNotification={this.handleNotification}
-                handleLoading={this.handleLoading}
-                keycloak={this.state.keycloak}
-                environments={this.state.environmentList}
-                selectedEnvironment={this.state.selectedEnvironment}
-                selectedChartsToDeploy={this.state.selectedChartsToDeploy}
-                updateSelectedChartsToDeploy={this.updateSelectedChartsToDeploy.bind(
-                  this
-                )}
-              />
-            )}
-            key={key}
-          />
-        );
+
+        if (prop.submenu !== undefined) {
+          return prop.submenu.map((prop, key) => {
+            return (
+              <Route
+              path={prop.layout + prop.path}
+              render={props => (
+                <prop.component
+                  {...props}
+                  handleClick={this.handleNotificationClick}
+                  handleNotification={this.handleNotification}
+                  handleLoading={this.handleLoading}
+                  keycloak={this.state.keycloak}
+                  environments={this.state.environmentList}
+                  selectedEnvironment={this.state.selectedEnvironment}
+                  selectedChartsToDeploy={this.state.selectedChartsToDeploy}
+                  updateSelectedChartsToDeploy={this.updateSelectedChartsToDeploy.bind(
+                    this
+                  )}
+                />
+              )}
+              key={key}
+            />
+            );
+          });
+
+        } else {
+          return (
+            <Route
+              path={prop.layout + prop.path}
+              render={props => (
+                <prop.component
+                  {...props}
+                  handleClick={this.handleNotificationClick}
+                  handleNotification={this.handleNotification}
+                  handleLoading={this.handleLoading}
+                  keycloak={this.state.keycloak}
+                  environments={this.state.environmentList}
+                  selectedEnvironment={this.state.selectedEnvironment}
+                  selectedChartsToDeploy={this.state.selectedChartsToDeploy}
+                  updateSelectedChartsToDeploy={this.updateSelectedChartsToDeploy.bind(
+                    this
+                  )}
+                />
+              )}
+              key={key}
+            />
+          );
+        }
+
       } else {
         return null;
       }
