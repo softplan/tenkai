@@ -9,6 +9,7 @@ import {
   FormLabel
 } from 'react-bootstrap';
 import TenkaiTable from 'components/Table/TenkaiTable';
+import * as col from 'components/Table/TenkaiColumn';
 
 import Button from 'components/CustomButton/CustomButton.jsx';
 import { CardTenkai } from 'components/Card/CardTenkai.jsx';
@@ -148,38 +149,13 @@ class ProductRelease extends Component {
   };
 
   render() {
-    const columns = [
-      {
-        dataField: 'date',
-        text: 'Date',
-        sort: true
-      },
-      {
-        dataField: 'version',
-        text: 'Version',
-        sort: true
-      },
-      {
-        dataField: 'lock',
-        text: 'Lock version',
-        sort: false,
-        isDummyField: true,
-        formatter: this.lockButton,
-        headerStyle: {
-          width: '8%'
-        }
-      },
-      {
-        dataField: 'items',
-        text: 'Services',
-        sort: false,
-        isDummyField: true,
-        formatter: this.viewItemsButton,
-        headerStyle: {
-          width: '8%'
-        }
-      }
-    ];
+    let columns = [];
+    columns.push(col.addCol('date', 'Date', '25%'));
+    columns.push(col.addCol('version', 'Version', '25%'));
+    columns.push(col.addColBtn('lock', 'Lock version', this.lockButton));
+    columns.push(col.addEdit(this.onEdit));
+    columns.push(col.addDelete(this.onDelete));
+    columns.push(col.addColBtn('svc', 'Services', this.viewItemsButton));
 
     let data = this.props.productReleases.filter(
       d =>
@@ -252,12 +228,7 @@ class ProductRelease extends Component {
                           ></FormControl>
                         </FormGroup>
                       </div>
-                      <TenkaiTable
-                        columns={columns}
-                        data={data}
-                        edit={this.onEdit}
-                        delete={this.onDelete}
-                      />
+                      <TenkaiTable columns={columns} data={data} />
                     </div>
                   </form>
                 }

@@ -99,9 +99,9 @@
     margin-left: 1em;
 }
 
-table > tbody > tr > td > button > i {
+.cell-button-icon {
   padding-top: 12px;
-  padding-right: 2px;
+  padding-right: 5px;
 }
 
 .bg-disabled {

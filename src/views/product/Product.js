@@ -17,6 +17,7 @@ import * as actions from 'stores/product/actions';
 import * as selectors from 'stores/product/reducer';
 import CardButton from 'components/CardButton/CardButton';
 import TenkaiTable from 'components/Table/TenkaiTable';
+import * as col from 'components/Table/TenkaiColumn';
 
 class Product extends Component {
   state = {
@@ -80,13 +81,11 @@ class Product extends Component {
   };
 
   render() {
-    const columns = [
-      {
-        dataField: 'name',
-        text: 'Product Name',
-        sort: true
-      }
-    ];
+    let columns = [];
+    columns.push(col.addCol('name', 'Product Name', '60%'));
+    columns.push(col.addEdit(this.onEdit));
+    columns.push(col.addDelete(this.onDelete));
+    columns.push(col.addViewItems(this.onViewItems));
 
     let data = this.props.products.filter(
       d =>
@@ -158,13 +157,7 @@ class Product extends Component {
                         ></FormControl>
                       </FormGroup>
                     </div>
-                    <TenkaiTable
-                      columns={columns}
-                      data={data}
-                      edit={this.onEdit}
-                      delete={this.onDelete}
-                      viewItems={this.onViewItems}
-                    />
+                    <TenkaiTable columns={columns} data={data} />
                   </form>
                 }
               />

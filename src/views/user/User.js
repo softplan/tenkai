@@ -10,6 +10,7 @@ import {
   ButtonToolbar
 } from 'react-bootstrap';
 import TenkaiTable from 'components/Table/TenkaiTable';
+import * as col from 'components/Table/TenkaiColumn';
 
 import { CardTenkai } from 'components/Card/CardTenkai.jsx';
 import CButton from 'components/CustomButton/CustomButton.jsx';
@@ -63,13 +64,10 @@ class User extends Component {
   };
 
   render() {
-    const columns = [
-      {
-        dataField: 'email',
-        text: 'Email',
-        sort: true
-      }
-    ];
+    let columns = [];
+    columns.push(col.addCol('email', 'Email'));
+    columns.push(col.addEdit(this.onEdit));
+    columns.push(col.addDelete(this.onDelete));
 
     let data = this.props.users.filter(
       d =>
@@ -158,12 +156,7 @@ class User extends Component {
                         ></FormControl>
                       </FormGroup>
                     </div>
-                    <TenkaiTable
-                      columns={columns}
-                      data={data}
-                      edit={this.onEdit}
-                      delete={this.onDelete}
-                    />
+                    <TenkaiTable columns={columns} data={data} />
                   </form>
                 }
               />
