@@ -15,6 +15,7 @@ import Button from 'components/CustomButton/CustomButton.jsx';
 import { CardTenkai } from 'components/Card/CardTenkai.jsx';
 import CButton from 'components/CustomButton/CustomButton.jsx';
 import UserForm from 'views/user/components/EditUser.js';
+import EditRole from 'views/user/EditRole.js';
 import SimpleModal from 'components/Modal/SimpleModal.jsx';
 
 import * as userActions from 'stores/user/actions';
@@ -33,11 +34,14 @@ class User extends Component {
     this.props.dispatch(userActions.allUsers());
   }
 
+  onSaveRoleClick(data) {}
+
   onSaveClick(data) {
     this.props.dispatch(userActions.saveUser(data));
 
     this.setState({
       showInsertUpdateForm: false,
+      showEditRoleForm: false,
       editItem: {},
       editMode: false
     });
@@ -47,6 +51,15 @@ class User extends Component {
     this.props.dispatch(userActions.deleteUser(this.state.itemToDelete.ID));
 
     this.setState({ showConfirmDeleteModal: false, itemToDelete: {} });
+  }
+
+  onHandleRole(item) {
+    window.scrollTo(0, 0);
+    this.setState({
+      showEditRoleForm: true,
+      editItem: item,
+      editMode: true
+    });
   }
 
   onEdit(item) {
@@ -75,7 +88,15 @@ class User extends Component {
               className="link-button"
               onClick={this.onEdit.bind(this, item)}
             >
-              <i className="pe-7s-edit" />
+              <i className="pe-7s-home" />
+            </Button>
+          </td>
+          <td>
+            <Button
+              className="link-button"
+              onClick={this.onHandleRole.bind(this, item)}
+            >
+              <i className="pe-7s-ticket" />
             </Button>
           </td>
           <td>
@@ -136,6 +157,25 @@ class User extends Component {
 
           <Row>
             <Col md={12}>
+              {this.state.showEditRoleForm ? (
+                <EditRole
+                  editMode={this.state.editMode}
+                  editItem={this.state.editItem}
+                  saveClick={this.onSaveRoleClick.bind(this)}
+                  cancelClick={() =>
+                    this.setState({
+                      showEditRoleForm: false,
+                      editItem: {},
+                      editMode: false
+                    })
+                  }
+                />
+              ) : null}
+            </Col>
+          </Row>
+
+          <Row>
+            <Col md={12}>
               {this.state.showInsertUpdateForm ? (
                 <UserForm
                   editMode={this.state.editMode}
@@ -181,7 +221,8 @@ class User extends Component {
                           <tr>
                             <th>#</th>
                             <th>Email</th>
-                            <th>Edit</th>
+                            <th>Handle Environments</th>
+                            <th>Handle Role</th>
                             <th>Delete</th>
                           </tr>
                         </thead>

@@ -12,6 +12,7 @@ import simpleDeploy from './simpleDeploy/reducer';
 import spinner from './spinner/reducer';
 import { reducer as notifications } from 'react-notification-system-redux';
 import compareEnv from './compareEnv/reducer';
+import securityOperation from './securityOperation/reducer';
 
 export {
   notifications,
@@ -27,5 +28,6 @@ export {
   variableRule,
   simpleDeploy,
   spinner,
-  compareEnv
+  compareEnv,
+  securityOperation
 };

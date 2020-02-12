@@ -21,6 +21,7 @@ import VariablesNotUsed from 'views/VariablesNotUsed';
 import VariableRule from 'views/variableRule/VariableRule';
 import ValueRule from 'views/valueRule/ValueRule';
 import CompareEnv from 'views/compareEnv/CompareEnv';
+import SecurityOperation from 'views/securityOperation/SecurityOperation';
 
 const dashboardRoutes = [
   {
@@ -92,15 +93,6 @@ const dashboardRoutes = [
         name: 'Settings',
         icon: 'pe-7s-settings',
         component: GlobalConfig,
-        layout: '/admin',
-        menu: true,
-        role: 'tenkai-admin'
-      },
-      {
-        path: '/admin',
-        name: 'Users Permissions',
-        icon: 'pe-7s-add-user',
-        component: User,
         layout: '/admin',
         menu: true,
         role: 'tenkai-admin'
@@ -275,6 +267,36 @@ const dashboardRoutes = [
       },
     ]
   },
+  {
+    path: '/security-master',
+    name: 'Security',
+    icon: 'pe-7s-news-paper',
+    component: null,
+    layout: '/admin',
+    menu: true,
+    role: 'tenkai-admin',
+    submenu: [
+      {
+        path: '/admin',
+        name: 'User Authorization',
+        icon: 'pe-7s-add-user',
+        component: User,
+        layout: '/admin',
+        menu: true,
+        role: 'tenkai-admin'
+      },
+      {
+        path: '/security-operation',
+        name: 'Security Operations',
+        icon: 'pe-7s-note2',
+        component: SecurityOperation,
+        layout: '/admin',
+        menu: true,
+        role: 'tenkai-admin'
+      },
+
+    ]
+    }  
 
 
 ];

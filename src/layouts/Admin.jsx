@@ -227,7 +227,6 @@ class Admin extends Component {
   getRoutes = routes => {
     return routes.map((prop, key) => {
       let auth = this.state.keycloak.hasRealmRole(prop.role);
-      console.log(prop.layout + prop.path);
       if (prop.layout === '/admin' && auth) {
 
         if (prop.submenu !== undefined) {

@@ -136,3 +136,8 @@ table > tbody > tr > td > button > i {
 .react-select-zindex-2 {
     z-index: 2;
 }
+
+.sidebar .nav p i {
+    float: none;
+    font-size: 14px;
+}
