@@ -65,7 +65,8 @@ class User extends Component {
 
   render() {
     let columns = [];
-    columns.push(col.addCol('email', 'Email'));
+    columns.push(col.addId());
+    columns.push(col.addCol('email', 'Email', '70%'));
     columns.push(col.addEdit(this.onEdit));
     columns.push(col.addDelete(this.onDelete));
 

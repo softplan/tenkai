@@ -1,5 +1,9 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { Button } from 'react-bootstrap';
+
+export const addId = (wdt = '10%') => {
+  return addCol('ID', 'ID', wdt);
+};
 
 export const addEdit = (onEdit, wdt = '10%') => {
   return addColBtn('edit', 'Edit', renderBtn(onEdit, 'pe-7s-edit'), wdt);
@@ -41,7 +45,7 @@ function renderBtn(handleEvt, icon) {
   return (cell, row) => {
     return (
       <Button className="link-button" onClick={handleEvt.bind(this, row)}>
-        <i className={icon} />
+        <i className={icon + ' cell-button-icon'} />
       </Button>
     );
   };

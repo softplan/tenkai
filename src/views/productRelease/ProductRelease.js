@@ -143,13 +143,14 @@ class ProductRelease extends Component {
         }
         disabled={!this.props.keycloak.hasRealmRole('tenkai-lock-version')}
       >
-        <i className="pe-7s-news-paper" />
+        <i className="pe-7s-news-paper cell-button-icon" />
       </Button>
     );
   };
 
   render() {
     let columns = [];
+    columns.push(col.addId());
     columns.push(col.addCol('date', 'Date', '25%'));
     columns.push(col.addCol('version', 'Version', '25%'));
     columns.push(col.addColBtn('lock', 'Lock version', this.lockButton));

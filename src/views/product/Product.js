@@ -82,6 +82,7 @@ class Product extends Component {
 
   render() {
     let columns = [];
+    columns.push(col.addId());
     columns.push(col.addCol('name', 'Product Name', '60%'));
     columns.push(col.addEdit(this.onEdit));
     columns.push(col.addDelete(this.onDelete));

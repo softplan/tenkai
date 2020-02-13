@@ -7,8 +7,7 @@ import {
   FormGroup,
   FormLabel,
   FormControl,
-  ButtonToolbar,
-  Table
+  ButtonToolbar
 } from 'react-bootstrap';
 import TenkaiTable from 'components/Table/TenkaiTable';
 import * as col from 'components/Table/TenkaiColumn';
@@ -210,13 +209,14 @@ class ProductReleaseService extends Component {
         className="link-button"
         onClick={this.goToServiceDeploy.bind(this, row)}
       >
-        <i className="pe-7s-news-paper" />
+        <i className="pe-7s-news-paper cell-button-icon" />
       </Button>
     );
   };
 
   render() {
     let columns = [];
+    columns.push(col.addId());
     columns.push(col.addCol('serviceName', 'Chart Name', '30%'));
     columns.push(
       col.addColBtn(
@@ -333,12 +333,7 @@ class ProductReleaseService extends Component {
                           ></FormControl>
                         </FormGroup>
                       </div>
-                      <TenkaiTable
-                        columns={columns}
-                        data={data}
-                        edit={this.onEdit}
-                        delete={this.onDelete}
-                      />
+                      <TenkaiTable columns={columns} data={data} />
                     </div>
                   </form>
                 }
