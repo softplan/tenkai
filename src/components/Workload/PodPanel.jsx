@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import { Table } from 'react-bootstrap';
 import Button from 'components/CustomButton/CustomButton.jsx';
 import SimpleModal from 'components/Modal/SimpleModal.jsx';
 import { deletePod } from 'client-api/apicall.jsx';
+import TenkaiTable from 'components/Table/TenkaiTable';
+import * as col from 'components/Table/TenkaiColumn';
 
 export class PodPanel extends Component {
   state = {
@@ -29,25 +30,28 @@ export class PodPanel extends Component {
     this.setState({ showConfirmDeleteModal: true, itemToDelete: item });
   }
 
+  btnDeletePod = (cell, row) => {
+    return (
+      <Button
+        className="link-button"
+        onClick={this.showDeleteConfirmModal.bind(this, row)}
+      >
+        <i className="pe-7s-less cell-button-icon" />
+      </Button>
+    );
+  };
+
   render() {
-    const list = this.props.list.map((item, key) => (
-      <tr key={key}>
-        <td>{item.name}</td>
-        <td>{item.image}</td>
-        <td>{item.ready}</td>
-        <td>{item.status}</td>
-        <td>{item.restarts}</td>
-        <td>{item.age}</td>
-        <td>
-          <Button
-            className="link-button"
-            onClick={this.showDeleteConfirmModal.bind(this, item)}
-          >
-            <i className="pe-7s-less" />
-          </Button>
-        </td>
-      </tr>
-    ));
+    let columns = [];
+    columns.push(col.addCol('name', 'Name', '25%'));
+    columns.push(col.addCol('image', 'Image', '35%'));
+    columns.push(col.addCol('ready', 'Ready', '5%'));
+    columns.push(col.addCol('status', 'Status'));
+    columns.push(col.addCol('restarts', 'Restarts'));
+    columns.push(col.addCol('age', 'Age'));
+    columns.push(col.addColBtn('delPod', 'Delete', this.btnDeletePod, '5%'));
+
+    const data = this.props.list;
 
     return (
       <div>
@@ -61,21 +65,7 @@ export class PodPanel extends Component {
           message="Are you sure you want to delete this pod?"
           handleConfirmDelete={this.handleConfirmDelete.bind(this)}
         />
-
-        <Table responsive>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Image</th>
-              <th>Ready</th>
-              <th>Status</th>
-              <th>Restarts</th>
-              <th>Age</th>
-              <th>Delete</th>
-            </tr>
-          </thead>
-          <tbody>{list}</tbody>
-        </Table>
+        <TenkaiTable columns={columns} data={data} bordered={false} />
       </div>
     );
   }

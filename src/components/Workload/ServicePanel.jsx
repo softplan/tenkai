@@ -1,7 +1,8 @@
-import React, { Component } from "react";
-import { Table } from "react-bootstrap";
-import SimpleModal from "components/Modal/SimpleModal.jsx";
-import { deletePod } from "client-api/apicall.jsx";
+import React, { Component } from 'react';
+import SimpleModal from 'components/Modal/SimpleModal.jsx';
+import { deletePod } from 'client-api/apicall.jsx';
+import TenkaiTable from 'components/Table/TenkaiTable';
+import * as col from 'components/Table/TenkaiColumn';
 
 export class ServicePanel extends Component {
   state = {
@@ -29,16 +30,15 @@ export class ServicePanel extends Component {
   }
 
   render() {
-    const list = this.props.list.map((item, key) => (
-      <tr key={key}>
-        <td>{item.name}</td>
-        <td>{item.type}</td>
-        <td>{item.clusterIP}</td>
-        <td>{item.externalIP}</td>
-        <td>{item.ports}</td>
-        <td>{item.age}</td>
-      </tr>
-    ));
+    let columns = [];
+    columns.push(col.addCol('name', 'Name', '25%'));
+    columns.push(col.addCol('type', 'Type', '15%'));
+    columns.push(col.addCol('clusterIP', 'ClusterIP', '15%'));
+    columns.push(col.addCol('externalIP', 'ExternalIP'));
+    columns.push(col.addCol('ports', 'Ports', '25%'));
+    columns.push(col.addCol('age', 'Age'));
+
+    const data = this.props.list;
 
     return (
       <div>
@@ -52,20 +52,7 @@ export class ServicePanel extends Component {
           message="Are you sure you want to delete this service?"
           handleConfirmDelete={this.handleConfirmDelete.bind(this)}
         />
-
-        <Table responsive>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Type</th>
-              <th>Cluster IP</th>
-              <th>External IP</th>
-              <th>Ports</th>
-              <th>Age</th>
-            </tr>
-          </thead>
-          <tbody>{list}</tbody>
-        </Table>
+        <TenkaiTable columns={columns} data={data} bordered={false} />
       </div>
     );
   }
