@@ -34,7 +34,16 @@ class User extends Component {
     this.props.dispatch(userActions.allUsers());
   }
 
-  onSaveRoleClick(data) {}
+  onSaveRoleClick(data) {
+    console.log(data);
+    this.props.dispatch(userActions.saveRoles(data));
+    this.setState({
+      showInsertUpdateForm: false,
+      showEditRoleForm: false,
+      editItem: {},
+      editMode: false
+    });
+  }
 
   onSaveClick(data) {
     this.props.dispatch(userActions.saveUser(data));

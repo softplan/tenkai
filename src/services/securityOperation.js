@@ -8,3 +8,4 @@ export async function load() {
 export async function save(data) {
   return await axios.post(`${TENKAI_API_URL}/security-operations`, data);
 }
+

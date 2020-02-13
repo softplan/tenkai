@@ -54,7 +54,6 @@ class SecurityOperation extends Component {
                 {policyItem} - {security_policies.get(policyItem)}
               </div>
             ))}
-            ))}
           </td>
         </tr>
       ));
