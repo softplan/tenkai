@@ -15,7 +15,8 @@ export default class TenkaiTable extends Component {
         keyField={this.getKeyField()}
         data={this.props.data}
         columns={columns}
-        bordered={this.bordered()}
+        bordered={this.props.bordered}
+        rowClasses={this.props.rowClasses}
       />
     );
   }
@@ -29,9 +30,5 @@ export default class TenkaiTable extends Component {
 
   renderColumnsFromProps(columns) {
     this.props.columns.forEach(c => columns.push(c));
-  }
-
-  bordered() {
-    return this.props.bordered !== undefined ? this.props.bordered : true;
   }
 }
