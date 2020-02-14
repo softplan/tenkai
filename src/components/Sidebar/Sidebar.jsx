@@ -54,12 +54,12 @@ class Sidebar extends Component {
           <div className="sidebar-background" style={sidebarBackground} />
         ) : null}
         <div className="logo">
-          <a href="/" className="simple-text logo-mini">
+          <a href="# " className="simple-text logo-mini">
             <div className="logo-img">
               <img src={logo} alt="logo_image" />
             </div>
           </a>
-          <a href="/" className="simple-text logo-normal">
+          <a href="# " className="simple-text logo-normal">
             Tenkai
           </a>
         </div>
@@ -94,7 +94,7 @@ class Sidebar extends Component {
 
                   return (
                     <li key={key}>
-                      <a className="nav-link " onClick={this.setColapsed.bind(this, prop.path)} href="#" >
+                      <a className="nav-link " onClick={this.setColapsed.bind(this, prop.path)} href="# " >
                           <i className={prop.icon} />
                           <p>{prop.name}<i className={!valuex ? "fa fa-caret-down" : "fa fa-caret-up"}></i></p>
                       </a>
