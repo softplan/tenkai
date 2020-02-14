@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Container, Row, Col, Table, ButtonToolbar } from 'react-bootstrap';
+import { Container, Row, Col, ButtonToolbar } from 'react-bootstrap';
 
 import { CardTenkai } from 'components/Card/CardTenkai.jsx';
 import Button from 'components/CustomButton/CustomButton.jsx';
@@ -49,7 +49,7 @@ class Config extends Component {
       });
   }
 
-  handleNewRepoClick(e) {
+  handleNewRepoClick() {
     this.setState(() => ({
       showInsertUpdateForm: true,
       editItem: {},
@@ -57,7 +57,7 @@ class Config extends Component {
     }));
   }
 
-  handleCancelEnvironmentClick(e) {
+  handleCancelEnvironmentClick() {
     this.setState(() => ({
       showInsertUpdateForm: false,
       editItem: {},
@@ -68,7 +68,7 @@ class Config extends Component {
   onConfirmDelete(item) {
     axios
       .delete(TENKAI_API_URL + '/repositories/' + item.name)
-      .then(res => {
+      .then(() => {
         this.getRepositories();
       })
       .catch(error => {
@@ -81,18 +81,18 @@ class Config extends Component {
     this.setState({ itemToDelete: item }, () => {
       this.handleConfirmDeleteModalShow();
     });
-  }
+  };
 
   setDefault(item) {
     this.props.handleLoading(true);
     let payload = { reponame: item.name };
     axios
       .post(TENKAI_API_URL + '/repo/default', payload)
-      .then(res => {
+      .then(() => {
         this.getRepositories();
         this.props.handleLoading(false);
       })
-      .catch(error => {
+      .catch(() => {
         this.props.handleLoading(false);
         this.props.handleNotification('general_fail', 'error');
       });
@@ -103,10 +103,10 @@ class Config extends Component {
 
     axios
       .get(TENKAI_API_URL + '/repoUpdate')
-      .then(res => {
+      .then(() => {
         this.props.handleLoading(false);
       })
-      .catch(error => {
+      .catch(() => {
         this.props.handleLoading(false);
         this.props.handleNotification('general_fail', 'error');
       });
@@ -118,7 +118,7 @@ class Config extends Component {
         .delete(
           TENKAI_API_URL + '/repositories/' + this.state.itemToDelete.name
         )
-        .then(res => {
+        .then(() => {
           this.getRepositories();
         })
         .catch(error => {
@@ -133,7 +133,7 @@ class Config extends Component {
     if (this.state.editMode) {
       axios
         .put(TENKAI_API_URL + '/repositories', data)
-        .then(res => {
+        .then(() => {
           this.setState({
             repoResult: {
               repositories: [...this.state.repoResult.repositories, data]
@@ -153,7 +153,7 @@ class Config extends Component {
     } else {
       axios
         .post(TENKAI_API_URL + '/repositories', data)
-        .then(res => {
+        .then(() => {
           this.setState({
             repoResult: {
               repositories: [...this.state.repoResult.repositories, data]
@@ -173,7 +173,7 @@ class Config extends Component {
     }
   }
 
-  getHighLight = (row, rowIndex) => {
+  getHighLight = row => {
     let result = '';
     if (row.name === this.state.defaultRepo) {
       result = 'bg-info';
