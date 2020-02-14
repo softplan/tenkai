@@ -5,11 +5,12 @@ import {
   Row,
   Col,
   FormControl,
-  Table,
   FormGroup,
   FormLabel,
   ButtonToolbar
 } from 'react-bootstrap';
+import TenkaiTable from 'components/Table/TenkaiTable';
+import * as col from 'components/Table/TenkaiColumn';
 
 import Button from 'components/CustomButton/CustomButton.jsx';
 import { CardTenkai } from 'components/Card/CardTenkai.jsx';
@@ -80,48 +81,50 @@ class User extends Component {
     });
   }
 
+  btnHandleEnv = (cell, row) => {
+    return (
+      <Button className="link-button" onClick={this.onEdit.bind(this, row)}>
+        <i className="pe-7s-home" />
+      </Button>
+    );
+  };
+
+  btnHandleRole = (cell, row) => {
+    return (
+      <Button
+        className="link-button"
+        onClick={this.onHandleRole.bind(this, row)}
+      >
+        <i className="pe-7s-ticket" />
+      </Button>
+    );
+  };
+
+  onDelete = item => {
+    this.setState({ itemToDelete: item }, () => {
+      this.setState({ showConfirmDeleteModal: true });
+    });
+  };
+
   render() {
-    const items = this.props.users
+    let columns = [];
+    columns.push(col.addId());
+    columns.push(col.addCol('email', 'Email', '60%'));
+    columns.push(
+      col.addColBtn('handleEnv', 'Handle Environments', this.btnHandleEnv)
+    );
+    columns.push(
+      col.addColBtn('handleRole', 'Handle Role', this.btnHandleRole)
+    );
+    columns.push(col.addDelete(this.onDelete));
+
+    const data = this.props.users
       .filter(
         d =>
           this.state.inputFilter === '' ||
           d.email.includes(this.state.inputFilter)
       )
-      .sort((a, b) => utils.sort(a.email, b.email))
-      .map((item, key) => (
-        <tr key={key}>
-          <td>{item.ID}</td>
-          <td>{item.email}</td>
-          <td>
-            <Button
-              className="link-button"
-              onClick={this.onEdit.bind(this, item)}
-            >
-              <i className="pe-7s-home" />
-            </Button>
-          </td>
-          <td>
-            <Button
-              className="link-button"
-              onClick={this.onHandleRole.bind(this, item)}
-            >
-              <i className="pe-7s-ticket" />
-            </Button>
-          </td>
-          <td>
-            <Button
-              className="link-button"
-              onClick={e =>
-                this.setState({ itemToDelete: item }, () => {
-                  this.setState({ showConfirmDeleteModal: true });
-                })
-              }
-            >
-              <i className="pe-7s-trash" />
-            </Button>
-          </td>
-        </tr>
-      ));
+      .sort((a, b) => utils.sort(a.email, b.email));
 
     return (
       <div className="content">
@@ -223,21 +226,7 @@ class User extends Component {
                         ></FormControl>
                       </FormGroup>
                     </div>
-
-                    <div>
-                      <Table bordered hover size="sm">
-                        <thead>
-                          <tr>
-                            <th>#</th>
-                            <th>Email</th>
-                            <th>Handle Environments</th>
-                            <th>Handle Role</th>
-                            <th>Delete</th>
-                          </tr>
-                        </thead>
-                        <tbody>{items}</tbody>
-                      </Table>
-                    </div>
+                    <TenkaiTable columns={columns} data={data} />
                   </form>
                 }
               />

@@ -240,7 +240,7 @@ class Admin extends Component {
 
   hasEnvironmentPolicy = policy => {
     let result = false;
-    if (this.props.master.role != undefined) {
+    if (this.props.master.role !== undefined) {
       if (
         this.props.master.role.policies !== undefined &&
         this.props.master.role.policies.length > 0) {
