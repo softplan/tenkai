@@ -1,14 +1,17 @@
-import React, { Component } from "react";
-import { Container, Row, Col, Table, ButtonToolbar } from "react-bootstrap";
+import React, { Component } from 'react';
+import { Container, Row, Col, ButtonToolbar } from 'react-bootstrap';
 
-import { CardTenkai } from "components/Card/CardTenkai.jsx";
-import Button from "components/CustomButton/CustomButton.jsx";
-import DockerRepoForm from "components/Forms/DockerRepoForm.jsx";
-import SimpleModal from "components/Modal/SimpleModal.jsx";
-import { getDefaultRepo } from "client-api/apicall.jsx";
+import { CardTenkai } from 'components/Card/CardTenkai.jsx';
+import Button from 'components/CustomButton/CustomButton.jsx';
+import DockerRepoForm from 'components/Forms/DockerRepoForm.jsx';
+import SimpleModal from 'components/Modal/SimpleModal.jsx';
+import { getDefaultRepo } from 'client-api/apicall.jsx';
 
-import axios from "axios";
-import TENKAI_API_URL from "env.js";
+import axios from 'axios';
+import TENKAI_API_URL from 'env.js';
+
+import TenkaiTable from 'components/Table/TenkaiTable';
+import * as col from 'components/Table/TenkaiColumn';
 
 class DockerRepo extends Component {
   state = {
@@ -17,7 +20,7 @@ class DockerRepo extends Component {
     editItem: {},
     showConfirmDeleteModal: false,
     itemToDelete: {},
-    defaultRepo: ""
+    defaultRepo: ''
   };
 
   componentDidMount() {
@@ -34,7 +37,7 @@ class DockerRepo extends Component {
 
   getRepositories() {
     axios
-      .get(TENKAI_API_URL + "/dockerRepo")
+      .get(TENKAI_API_URL + '/dockerRepo')
       .then(response =>
         this.setState({ repoResult: response.data }, () => {
           getDefaultRepo(this);
@@ -42,11 +45,11 @@ class DockerRepo extends Component {
       )
       .catch(error => {
         console.log(error.message);
-        this.props.handleNotification("general_fail", "error");
+        this.props.handleNotification('general_fail', 'error');
       });
   }
 
-  handleNewRepoClick(e) {
+  handleNewRepoClick() {
     this.setState(() => ({
       showInsertUpdateForm: true,
       editItem: {},
@@ -54,7 +57,7 @@ class DockerRepo extends Component {
     }));
   }
 
-  handleCancelEnvironmentClick(e) {
+  handleCancelEnvironmentClick() {
     this.setState(() => ({
       showInsertUpdateForm: false,
       editItem: {},
@@ -64,32 +67,32 @@ class DockerRepo extends Component {
 
   onConfirmDelete(item) {
     axios
-      .delete(TENKAI_API_URL + "/dockerRepo/" + item.name)
-      .then(res => {
+      .delete(TENKAI_API_URL + '/dockerRepo/' + item.name)
+      .then(() => {
         this.getRepositories();
       })
       .catch(error => {
         console.log(error.message);
-        this.props.handleNotification("general_fail", "error");
+        this.props.handleNotification('general_fail', 'error');
       });
   }
 
-  onDelete(item) {
+  onDelete = item => {
     this.setState({ itemToDelete: item }, () => {
       this.handleConfirmDeleteModalShow();
     });
-  }
+  };
 
   handleConfirmDelete() {
     if (this.state.itemToDelete !== undefined) {
       axios
-        .delete(TENKAI_API_URL + "/dockerRepo/" + this.state.itemToDelete.name)
-        .then(res => {
+        .delete(TENKAI_API_URL + '/dockerRepo/' + this.state.itemToDelete.name)
+        .then(() => {
           this.getRepositories();
         })
         .catch(error => {
           console.log(error.message);
-          this.props.handleNotification("general_fail", "error");
+          this.props.handleNotification('general_fail', 'error');
         });
     }
     this.setState({ showConfirmDeleteModal: false, itemToDelete: {} });
@@ -97,8 +100,8 @@ class DockerRepo extends Component {
 
   onSaveClick(data) {
     axios
-      .post(TENKAI_API_URL + "/dockerRepo", data)
-      .then(res => {
+      .post(TENKAI_API_URL + '/dockerRepo', data)
+      .then(() => {
         this.setState({
           repoResult: {
             repositories: [...this.state.repoResult.repositories, data]
@@ -113,26 +116,18 @@ class DockerRepo extends Component {
       })
       .catch(error => {
         console.log(error.message);
-        this.props.handleNotification("general_fail", "error");
+        this.props.handleNotification('general_fail', 'error');
       });
   }
 
   render() {
-    const items = this.state.repoResult.repositories.map((item, key) => (
-      <tr key={key}>
-        <td>{item.host}</td>
-        <td>{item.username}</td>
-        <td>
-          <Button
-            className="link-button"
-            disabled={!this.props.keycloak.hasRealmRole("tenkai-admin")}
-            onClick={this.onDelete.bind(this, item)}
-          >
-            <i className="pe-7s-trash" />
-          </Button>
-        </td>
-      </tr>
-    ));
+    let columns = [];
+    columns.push(col.addCol('host', 'Host'));
+    columns.push(col.addCol('username', 'Username'));
+    let hasDeletePermission = !this.props.keycloak.hasRealmRole('tenkai-admin');
+    columns.push(col.addDelete(this.onDelete, '10%', hasDeletePermission));
+
+    const data = this.state.repoResult.repositories;
 
     return (
       <div className="content">
@@ -160,7 +155,7 @@ class DockerRepo extends Component {
                         variant="primary"
                         onClick={this.handleNewRepoClick.bind(this)}
                         disabled={
-                          !this.props.keycloak.hasRealmRole("tenkai-admin")
+                          !this.props.keycloak.hasRealmRole('tenkai-admin')
                         }
                       >
                         New Repo
@@ -191,18 +186,7 @@ class DockerRepo extends Component {
                 title="Docker Repositories"
                 content={
                   <form>
-                    <div>
-                      <Table bordered size="sm">
-                        <thead>
-                          <tr>
-                            <th>Host</th>
-                            <th>username</th>
-                            <th>Delete</th>
-                          </tr>
-                        </thead>
-                        <tbody>{items}</tbody>
-                      </Table>
-                    </div>
+                    <TenkaiTable columns={columns} data={data} />
                   </form>
                 }
               />

@@ -99,9 +99,9 @@
     margin-left: 1em;
 }
 
-table > tbody > tr > td > button > i {
+.cell-button-icon {
   padding-top: 12px;
-  padding-right: 2px;
+  padding-right: 5px;
 }
 
 .bg-disabled {
@@ -116,17 +116,20 @@ table > tbody > tr > td > button > i {
     table-layout: fixed;
 }
 
-.scroll-table > .table-responsive {
-    height: 700px;
-    overflow-x: hidden;
+.scroll-table .react-bootstrap-table {
+  height: 700px;
+  overflow-x: hidden;
 }
 
-.scroll-table > th {
-    border: 0px !important;
+.scroll-table th {
     position: sticky;
     top: 0;
-    background-color: #eee;
     z-index: 10;
+    background-color: #eee;
+}
+
+.react-select-zindex-4 {
+    z-index: 4;
 }
 
 .react-select-zindex-3 {
@@ -137,7 +140,12 @@ table > tbody > tr > td > button > i {
     z-index: 2;
 }
 
+.bg-silver {
+    background-color: #C0C0C0;
+}
+
 .sidebar .nav p i {
     float: none;
     font-size: 14px;
 }
+

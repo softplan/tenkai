@@ -1,7 +1,7 @@
 import * as types from './actionTypes';
 
 const initialState = {
-  list: [],
+  list: []
 };
 
 export default function reduce(state = initialState, action = {}) {
@@ -12,15 +12,19 @@ export default function reduce(state = initialState, action = {}) {
         ...state,
         list: action.payload.list
       };
-
-      
+    case types.DELETE_SUCCESS:
+      return {
+        ...state,
+        list: state.list.filter(i => i.ID !== action.payload.id)
+      };
     case types.LOAD_ERROR:
     case types.SAVE_ERROR:
+    case types.DELETE_ERROR:
       return {
         ...state,
         error: action.payload.error
       };
-  
+
     default:
       return state;
   }
@@ -28,4 +32,8 @@ export default function reduce(state = initialState, action = {}) {
 
 export function getState(state) {
   return state.securityOperation;
+}
+
+export function getUserEnvironmentPolicies(state) {
+  return state.policies;
 }

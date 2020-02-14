@@ -193,8 +193,7 @@ class Environments extends Component {
                   <div align="right">
                     <ButtonToolbar style={{ display: 'block' }}>
                       <CButton
-                        disabled={
-                          !this.props.keycloak.hasRealmRole('tenkai-admin')
+                        disabled={!this.props.keycloak.hasRealmRole('tenkai-admin')
                         }
                         className="pull-right"
                         variant="primary"

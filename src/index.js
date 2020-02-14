@@ -15,6 +15,7 @@ import './assets/css/pe-icon-7-stroke.css';
 
 import 'react-dual-listbox/lib/react-dual-listbox.css';
 import 'font-awesome/css/font-awesome.min.css';
+import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 
 import AdminLayout from 'layouts/Admin.jsx';
 

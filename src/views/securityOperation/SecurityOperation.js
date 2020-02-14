@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
+import Button from 'components/CustomButton/CustomButton.jsx';
 import {
   Container,
   Row,
@@ -19,6 +20,7 @@ import * as actions from 'stores/securityOperation/actions';
 import * as selectors from 'stores/securityOperation/reducer';
 import EditSecurityOperation from 'views/securityOperation/editSecurityOperation';
 import security_policies from 'policies.js';
+import SimpleModal from 'components/Modal/SimpleModal.jsx';
 
 class SecurityOperation extends Component {
   state = {
@@ -38,6 +40,13 @@ class SecurityOperation extends Component {
     });
   }
 
+  handleConfirmDelete() {
+    this.props.dispatch(
+      actions.deleteSecurityOperation(this.state.itemToDelete.ID)
+    );
+    this.setState({ showConfirmDeleteModal: false, itemToDelete: {} });
+  }
+
   render() {
     const items = this.props.securityOperation.list
       .filter(
@@ -55,11 +64,48 @@ class SecurityOperation extends Component {
               </div>
             ))}
           </td>
+          <td>
+            <Button
+              className="link-button"
+              onClick={() => {
+                this.setState({
+                  showInsertUpdateForm: true,
+                  editItem: item,
+                  editMode: true
+                });
+                window.scrollTo(0, 0);
+              }}
+            >
+              <i className="pe-7s-edit" />
+            </Button>
+          </td>
+          <td>
+            <Button
+              className="link-button"
+              onClick={e =>
+                this.setState({ itemToDelete: item }, () => {
+                  this.setState({ showConfirmDeleteModal: true });
+                })
+              }
+            >
+              <i className="pe-7s-trash" />
+            </Button>
+          </td>
         </tr>
       ));
 
     return (
       <div className="content">
+        <SimpleModal
+          showConfirmDeleteModal={this.state.showConfirmDeleteModal}
+          handleConfirmDeleteModalClose={() =>
+            this.setState({ showConfirmDeleteModal: false, itemToDelete: {} })
+          }
+          title="Confirm"
+          subTitle="Delete"
+          message="Are you sure you want to delete this Role?"
+          handleConfirmDelete={this.handleConfirmDelete.bind(this)}
+        ></SimpleModal>
         <Container fluid>
           <Row>
             <Col md={12}>
@@ -135,6 +181,8 @@ class SecurityOperation extends Component {
                           <tr>
                             <th>Role</th>
                             <th>Policies</th>
+                            <th>Edit</th>
+                            <th>Delete</th>
                           </tr>
                         </thead>
                         <tbody>{items}</tbody>

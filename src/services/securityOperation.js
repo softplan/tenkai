@@ -9,3 +9,6 @@ export async function save(data) {
   return await axios.post(`${TENKAI_API_URL}/security-operations`, data);
 }
 
+export async function deleteSecurityOperation(id) {
+  return await axios.delete(`${TENKAI_API_URL}/security-operations/${id}`);
+}

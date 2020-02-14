@@ -32,3 +32,20 @@ export function save(data) {
   };
 }
 
+export function deleteSecurityOperation(id) {
+  return async dispatch => {
+    try {
+      dispatch(global.beginLoad());
+
+      await services.deleteSecurityOperation(id);
+
+      //const result = await services.load();
+      //const list = result.data.list;
+
+      dispatch(global.successWithParam(types.deleteSuccess, id));
+      dispatch(global.successDefaultMessage());
+    } catch (error) {
+      dispatch(global.handleError(error, types.deleteError));
+    }
+  };
+}

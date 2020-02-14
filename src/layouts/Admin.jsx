@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+
 import { Route, Switch } from 'react-router-dom';
 import NotificationSystem from 'react-notification-system';
 
@@ -16,6 +18,9 @@ import TENKAI_API_URL from 'env.js';
 import NotificationContainer from 'components/Notification/NotificationContainer';
 import Spinner from 'components/Spinner/Spinner';
 import * as utils from 'utils/sort';
+import * as actions from 'stores/master/actions';
+import * as selectors from 'stores/master/reducer';
+
 
 class Admin extends Component {
   constructor(props) {
@@ -47,9 +52,13 @@ class Admin extends Component {
     });
   }
 
+  async getUserRole(environmentId) {
+     await this.props.dispatch(actions.loadRole(this.state.keycloak.email, environmentId));
+  }
+
   handleEnvironmentChange = selectedEnvironment => {
     this.setState({ selectedEnvironment }, () => {
-      console.log(JSON.stringify(selectedEnvironment));
+      
       window.localStorage.setItem(
         'currentEnvironment',
         JSON.stringify(selectedEnvironment)
@@ -58,6 +67,7 @@ class Admin extends Component {
       this.props.history.push({
         pathname: '/admin/deployment'
       });
+      this.getUserRole(selectedEnvironment.value);
     });
   };
 
@@ -85,9 +95,13 @@ class Admin extends Component {
             );
 
             if (localEnvironment !== null) {
-              this.setState({ selectedEnvironment: localEnvironment });
+              this.setState({ selectedEnvironment: localEnvironment }, () => {
+                this.getUserRole(localEnvironment.value);
+              });
             } else {
-              this.setState({ selectedEnvironment: arr[0] });
+              this.setState({ selectedEnvironment: arr[0] }, () => {
+                this.getUserRole(arr[0].value);
+              });
             }
           }
         });
@@ -224,6 +238,23 @@ class Admin extends Component {
     });
   };
 
+  hasEnvironmentPolicy = policy => {
+    let result = false;
+    if (this.props.master.role != undefined) {
+      if (
+        this.props.master.role.policies !== undefined &&
+        this.props.master.role.policies.length > 0) {
+        for (let x = 0; x < this.props.master.role.policies.length; x++) {
+          if (this.props.master.role.policies[x] === policy) {
+            result = true;
+            break;
+          }
+        }
+      }
+    } 
+    return result;
+  };
+
   getRoutes = routes => {
     return routes.map((prop, key) => {
       let auth = this.state.keycloak.hasRealmRole(prop.role);
@@ -241,6 +272,7 @@ class Admin extends Component {
                   handleNotification={this.handleNotification}
                   handleLoading={this.handleLoading}
                   keycloak={this.state.keycloak}
+                  hasEnvironmentPolicy={this.hasEnvironmentPolicy.bind(this)}
                   environments={this.state.environmentList}
                   selectedEnvironment={this.state.selectedEnvironment}
                   selectedChartsToDeploy={this.state.selectedChartsToDeploy}
@@ -382,4 +414,10 @@ class Admin extends Component {
   }
 }
 
-export default Admin;
+//export default Admin;
+
+const mapStateToProps = state => ({
+  master: selectors.getState(state)
+});
+
+export default connect(mapStateToProps)(Admin);
