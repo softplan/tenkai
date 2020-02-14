@@ -9,7 +9,7 @@ export default class TenkaiTable extends Component {
     return (
       <BootstrapTable
         bootstrap4
-        striped
+        striped={this.striped()}
         hover
         condensed
         keyField={this.getKeyField()}
@@ -30,5 +30,12 @@ export default class TenkaiTable extends Component {
 
   renderColumnsFromProps(columns) {
     this.props.columns.forEach(c => columns.push(c));
+  }
+
+  striped() {
+    if (this.props.striped !== undefined) {
+      return this.props.striped;
+    }
+    return true;
   }
 }
