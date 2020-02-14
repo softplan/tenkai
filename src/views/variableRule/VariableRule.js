@@ -5,10 +5,11 @@ import {
   Row,
   Col,
   FormControl,
-  Table,
   FormGroup,
   FormLabel
 } from 'react-bootstrap';
+import TenkaiTable from 'components/Table/TenkaiTable';
+import * as col from 'components/Table/TenkaiColumn';
 
 import Button from 'components/CustomButton/CustomButton.jsx';
 import { CardTenkai } from 'components/Card/CardTenkai.jsx';
@@ -69,54 +70,46 @@ class VariableRule extends Component {
     });
   }
 
+  onEdit = item => {
+    this.setState({
+      showInsertUpdateForm: true,
+      editItem: item,
+      editMode: true
+    });
+    window.scrollTo(0, 0);
+  };
+
+  onDelete = item => {
+    this.setState({ itemToDelete: item }, () => {
+      this.setState({ showConfirmDeleteModal: true });
+    });
+  };
+
+  btnRules = (cell, row) => {
+    return (
+      <Button
+        className="link-button"
+        onClick={this.handleValueRule.bind(this, row)}
+      >
+        <i className="pe-7s-note2 cell-button-icon" />
+      </Button>
+    );
+  };
+
   render() {
-    const items = this.props.variableRules
-      .filter(
-        d =>
-          this.state.inputFilter === '' ||
-          d.name.includes(this.state.inputFilter)
-      )
-      .map((item, key) => (
-        <tr key={key}>
-          <td>{item.ID}</td>
-          <td>{item.name}</td>
-          <td>
-            <Button
-              className="link-button"
-              onClick={() => {
-                this.setState({
-                  showInsertUpdateForm: true,
-                  editItem: item,
-                  editMode: true
-                });
-                window.scrollTo(0, 0);
-              }}
-            >
-              <i className="pe-7s-edit" />
-            </Button>
-          </td>
-          <td>
-            <Button
-              className="link-button"
-              onClick={() =>
-                this.setState({ itemToDelete: item }, () => {
-                  this.setState({ showConfirmDeleteModal: true });
-                })
-              }
-            >
-              <i className="pe-7s-trash" />
-            </Button>
-          </td>
-          <td>
-            <Button
-              className="link-button"
-              onClick={this.handleValueRule.bind(this, item)}
-            >
-              <i className="pe-7s-note2" />
-            </Button>
-          </td>
-        </tr>
-      ));
+    let columns = [];
+    columns.push(col.addId());
+    columns.push(col.addCol('name', 'Name', '50%'));
+    columns.push(col.addEdit(this.onEdit));
+    columns.push(col.addDelete(this.onDelete));
+    columns.push(
+      col.addColBtn('btnRules', 'Associate Rules', this.btnRules, '20%')
+    );
+
+    const data = this.props.variableRules.filter(
+      d =>
+        this.state.inputFilter === '' || d.name.includes(this.state.inputFilter)
+    );
 
     return (
       <div className="content">
@@ -183,21 +176,7 @@ class VariableRule extends Component {
                         ></FormControl>
                       </FormGroup>
                     </div>
-
-                    <div>
-                      <Table bordered hover size="sm">
-                        <thead>
-                          <tr>
-                            <th>#</th>
-                            <th>Name</th>
-                            <th>Edit</th>
-                            <th>Delete</th>
-                            <th>Associate Rules</th>
-                          </tr>
-                        </thead>
-                        <tbody>{items}</tbody>
-                      </Table>
-                    </div>
+                    <TenkaiTable columns={columns} data={data} />
                   </form>
                 }
               />
