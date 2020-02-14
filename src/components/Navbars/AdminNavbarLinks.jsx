@@ -48,6 +48,7 @@ class AdminNavbarLinks extends Component {
             value={this.props.selectedEnvironment}
             onChange={this.props.handleEnvironmentChange}
             options={this.props.environments}
+            className="react-select-zindex-4"
           />
         </Nav.Item>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />

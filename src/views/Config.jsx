@@ -1,14 +1,17 @@
-import React, { Component } from "react";
-import { Container, Row, Col, Table, ButtonToolbar } from "react-bootstrap";
+import React, { Component } from 'react';
+import { Container, Row, Col, ButtonToolbar } from 'react-bootstrap';
 
-import { CardTenkai } from "components/Card/CardTenkai.jsx";
-import Button from "components/CustomButton/CustomButton.jsx";
-import RepoForm from "components/Config/RepoForm.jsx";
-import SimpleModal from "components/Modal/SimpleModal.jsx";
-import { getDefaultRepo } from "client-api/apicall.jsx";
+import { CardTenkai } from 'components/Card/CardTenkai.jsx';
+import Button from 'components/CustomButton/CustomButton.jsx';
+import RepoForm from 'components/Config/RepoForm.jsx';
+import SimpleModal from 'components/Modal/SimpleModal.jsx';
+import { getDefaultRepo } from 'client-api/apicall.jsx';
 
-import axios from "axios";
-import TENKAI_API_URL from "env.js";
+import axios from 'axios';
+import TENKAI_API_URL from 'env.js';
+
+import TenkaiTable from 'components/Table/TenkaiTable';
+import * as col from 'components/Table/TenkaiColumn';
 
 class Config extends Component {
   state = {
@@ -17,7 +20,7 @@ class Config extends Component {
     editItem: {},
     showConfirmDeleteModal: false,
     itemToDelete: {},
-    defaultRepo: ""
+    defaultRepo: ''
   };
 
   componentDidMount() {
@@ -34,7 +37,7 @@ class Config extends Component {
 
   getRepositories() {
     axios
-      .get(TENKAI_API_URL + "/repositories")
+      .get(TENKAI_API_URL + '/repositories')
       .then(response =>
         this.setState({ repoResult: response.data }, () => {
           getDefaultRepo(this);
@@ -42,11 +45,11 @@ class Config extends Component {
       )
       .catch(error => {
         console.log(error.message);
-        this.props.handleNotification("general_fail", "error");
+        this.props.handleNotification('general_fail', 'error');
       });
   }
 
-  handleNewRepoClick(e) {
+  handleNewRepoClick() {
     this.setState(() => ({
       showInsertUpdateForm: true,
       editItem: {},
@@ -54,7 +57,7 @@ class Config extends Component {
     }));
   }
 
-  handleCancelEnvironmentClick(e) {
+  handleCancelEnvironmentClick() {
     this.setState(() => ({
       showInsertUpdateForm: false,
       editItem: {},
@@ -64,34 +67,34 @@ class Config extends Component {
 
   onConfirmDelete(item) {
     axios
-      .delete(TENKAI_API_URL + "/repositories/" + item.name)
-      .then(res => {
+      .delete(TENKAI_API_URL + '/repositories/' + item.name)
+      .then(() => {
         this.getRepositories();
       })
       .catch(error => {
         console.log(error.message);
-        this.props.handleNotification("general_fail", "error");
+        this.props.handleNotification('general_fail', 'error');
       });
   }
 
-  onDelete(item) {
+  onDelete = item => {
     this.setState({ itemToDelete: item }, () => {
       this.handleConfirmDeleteModalShow();
     });
-  }
+  };
 
   setDefault(item) {
     this.props.handleLoading(true);
     let payload = { reponame: item.name };
     axios
-      .post(TENKAI_API_URL + "/repo/default", payload)
-      .then(res => {
+      .post(TENKAI_API_URL + '/repo/default', payload)
+      .then(() => {
         this.getRepositories();
         this.props.handleLoading(false);
       })
-      .catch(error => {
+      .catch(() => {
         this.props.handleLoading(false);
-        this.props.handleNotification("general_fail", "error");
+        this.props.handleNotification('general_fail', 'error');
       });
   }
 
@@ -99,13 +102,13 @@ class Config extends Component {
     this.props.handleLoading(true);
 
     axios
-      .get(TENKAI_API_URL + "/repoUpdate")
-      .then(res => {
+      .get(TENKAI_API_URL + '/repoUpdate')
+      .then(() => {
         this.props.handleLoading(false);
       })
-      .catch(error => {
+      .catch(() => {
         this.props.handleLoading(false);
-        this.props.handleNotification("general_fail", "error");
+        this.props.handleNotification('general_fail', 'error');
       });
   }
 
@@ -113,14 +116,14 @@ class Config extends Component {
     if (this.state.itemToDelete !== undefined) {
       axios
         .delete(
-          TENKAI_API_URL + "/repositories/" + this.state.itemToDelete.name
+          TENKAI_API_URL + '/repositories/' + this.state.itemToDelete.name
         )
-        .then(res => {
+        .then(() => {
           this.getRepositories();
         })
         .catch(error => {
           console.log(error.message);
-          this.props.handleNotification("general_fail", "error");
+          this.props.handleNotification('general_fail', 'error');
         });
     }
     this.setState({ showConfirmDeleteModal: false, itemToDelete: {} });
@@ -129,8 +132,8 @@ class Config extends Component {
   onSaveClick(data) {
     if (this.state.editMode) {
       axios
-        .put(TENKAI_API_URL + "/repositories", data)
-        .then(res => {
+        .put(TENKAI_API_URL + '/repositories', data)
+        .then(() => {
           this.setState({
             repoResult: {
               repositories: [...this.state.repoResult.repositories, data]
@@ -145,12 +148,12 @@ class Config extends Component {
         })
         .catch(error => {
           console.log(error.message);
-          this.props.handleNotification("general_fail", "error");
+          this.props.handleNotification('general_fail', 'error');
         });
     } else {
       axios
-        .post(TENKAI_API_URL + "/repositories", data)
-        .then(res => {
+        .post(TENKAI_API_URL + '/repositories', data)
+        .then(() => {
           this.setState({
             repoResult: {
               repositories: [...this.state.repoResult.repositories, data]
@@ -165,44 +168,41 @@ class Config extends Component {
         })
         .catch(error => {
           console.log(error.message);
-          this.props.handleNotification("general_fail", "error");
+          this.props.handleNotification('general_fail', 'error');
         });
     }
   }
 
-  getHighLight(item) {
-    let result = "";
-    if (item.name === this.state.defaultRepo) {
-      result = "bg-info";
+  getHighLight = row => {
+    let result = '';
+    if (row.name === this.state.defaultRepo) {
+      result = 'bg-info';
     }
     return result;
-  }
+  };
+
+  btnSetDefault = (cell, row) => {
+    return (
+      <Button className="link-button" onClick={this.setDefault.bind(this, row)}>
+        <i className="pe-7s-arc cell-button-icon" />
+      </Button>
+    );
+  };
 
   render() {
-    const items = this.state.repoResult.repositories.map((item, key) => (
-      <tr key={key} className={this.getHighLight(item)}>
-        <td>{item.name}</td>
-        <td>{item.url}</td>
-        <td>{item.username}</td>
-        <td>
-          <Button
-            className="link-button"
-            disabled={!this.props.keycloak.hasRealmRole("tenkai-admin")}
-            onClick={this.onDelete.bind(this, item)}
-          >
-            <i className="pe-7s-trash" />
-          </Button>
-        </td>
-        <td>
-          <Button
-            className="link-button"
-            onClick={this.setDefault.bind(this, item)}
-          >
-            <i className="pe-7s-arc" />
-          </Button>
-        </td>
-      </tr>
-    ));
+    let columns = [];
+    columns.push(col.addCol('name', 'Name'));
+    columns.push(col.addCol('url', 'Url'));
+    columns.push(col.addCol('username', 'Username'));
+
+    let hasDeletePermission = !this.props.keycloak.hasRealmRole('tenkai-admin');
+    columns.push(col.addDelete(this.onDelete, '10%', hasDeletePermission));
+
+    columns.push(
+      col.addColBtn('setDefault', 'Set Default', this.btnSetDefault)
+    );
+
+    const data = this.state.repoResult.repositories;
 
     return (
       <div className="content">
@@ -230,7 +230,7 @@ class Config extends Component {
                         variant="info"
                         onClick={this.onRepoUpdateClick.bind(this)}
                         disabled={
-                          !this.props.keycloak.hasRealmRole("tenkai-admin")
+                          !this.props.keycloak.hasRealmRole('tenkai-admin')
                         }
                       >
                         Repo Update
@@ -241,7 +241,7 @@ class Config extends Component {
                         variant="primary"
                         onClick={this.handleNewRepoClick.bind(this)}
                         disabled={
-                          !this.props.keycloak.hasRealmRole("tenkai-admin")
+                          !this.props.keycloak.hasRealmRole('tenkai-admin')
                         }
                       >
                         New Repo
@@ -272,20 +272,11 @@ class Config extends Component {
                 title="Repositories"
                 content={
                   <form>
-                    <div>
-                      <Table bordered size="sm">
-                        <thead>
-                          <tr>
-                            <th>Name</th>
-                            <th>URL</th>
-                            <th>username</th>
-                            <th>Delete</th>
-                            <th>Set Default</th>
-                          </tr>
-                        </thead>
-                        <tbody>{items}</tbody>
-                      </Table>
-                    </div>
+                    <TenkaiTable
+                      columns={columns}
+                      data={data}
+                      rowClasses={this.getHighLight}
+                    />
                   </form>
                 }
               />

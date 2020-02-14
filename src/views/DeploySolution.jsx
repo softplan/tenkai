@@ -1,10 +1,13 @@
 import React, { Component } from 'react';
-import { Container, Row, Col, Table, ButtonToolbar } from 'react-bootstrap';
+import { Container, Row, Col, ButtonToolbar } from 'react-bootstrap';
 
 import { CardTenkai } from 'components/Card/CardTenkai.jsx';
 import Button from 'components/CustomButton/CustomButton.jsx';
 import queryString from 'query-string';
 import { retrieveSolutionChart } from 'client-api/solutionchart-apicall.jsx';
+
+import TenkaiTable from 'components/Table/TenkaiTable';
+import * as col from 'components/Table/TenkaiColumn';
 
 import axios from 'axios';
 
@@ -37,7 +40,7 @@ class DeploySolution extends Component {
 
   //TODO - CREATE AN ENDPOINT THAT RECEIVE A POST AND ALL REQUESTS SIMULTANEOUS
   async getChartsAsync(searchTerm) {
-    searchTerm = this.getChartName(searchTerm)
+    searchTerm = this.getChartName(searchTerm);
 
     let url = '/charts/' + searchTerm + '?all=false';
 
@@ -65,7 +68,7 @@ class DeploySolution extends Component {
     return splited.length >= 1 ? splited[0] : '';
   }
 
-  navigateToCheckVariables(charts, selected) {
+  navigateToCheckVariables(charts) {
     this.props.updateSelectedChartsToDeploy([]);
 
     let selectedCharts = [];
@@ -81,14 +84,13 @@ class DeploySolution extends Component {
   }
 
   render() {
-    const items = this.state.chartsResult.charts.map((item, key) => (
-      <tr key={key}>
-        <td>{item.name}</td>
-        <td>{item.chartVersion}</td>
-        <td>{item.appVersion}</td>
-        <td>{item.description}</td>
-      </tr>
-    ));
+    let columns = [];
+    columns.push(col.addCol('name', 'name', '40%'));
+    columns.push(col.addCol('chartVersion', 'chartVersion'));
+    columns.push(col.addCol('appVersion', 'appVersion'));
+    columns.push(col.addCol('description', 'description', '40%'));
+
+    const data = this.state.chartsResult.charts;
 
     return (
       <div className="content">
@@ -101,17 +103,7 @@ class DeploySolution extends Component {
                   <div>
                     <Row>
                       <div className="col-md-11">
-                        <Table bordered hover size="sm">
-                          <thead>
-                            <tr>
-                              <th>Helm Chart</th>
-                              <th>Version</th>
-                              <th>App Version</th>
-                              <th>Description</th>
-                            </tr>
-                          </thead>
-                          <tbody>{items}</tbody>
-                        </Table>
+                        <TenkaiTable columns={columns} data={data} />
                       </div>
                     </Row>
 

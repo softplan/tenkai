@@ -1,5 +1,5 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import {
   Container,
   Row,
@@ -7,18 +7,20 @@ import {
   FormGroup,
   FormLabel,
   FormControl,
-  Table,
   ButtonToolbar
-} from "react-bootstrap";
-import SimpleModal from "components/Modal/SimpleModal.jsx";
+} from 'react-bootstrap';
+import SimpleModal from 'components/Modal/SimpleModal.jsx';
 
-import { CardTenkai } from "components/Card/CardTenkai.jsx";
-import Button from "components/CustomButton/CustomButton.jsx";
-import SolutionChartForm from "components/Solution/SolutionChartForm.jsx";
-import queryString from "query-string";
+import { CardTenkai } from 'components/Card/CardTenkai.jsx';
+import Button from 'components/CustomButton/CustomButton.jsx';
+import SolutionChartForm from 'components/Solution/SolutionChartForm.jsx';
+import queryString from 'query-string';
 
-import * as solutionChartActions from "stores/solutionChart/actions";
-import * as solutionChartSelectors from "stores/solutionChart/reducer";
+import * as solutionChartActions from 'stores/solutionChart/actions';
+import * as solutionChartSelectors from 'stores/solutionChart/reducer';
+
+import TenkaiTable from 'components/Table/TenkaiTable';
+import * as col from 'components/Table/TenkaiColumn';
 
 class SolutionChart extends Component {
   constructor(props) {
@@ -28,13 +30,13 @@ class SolutionChart extends Component {
       solutionId: values.solutionId,
       item: {},
       showInsertUpdateForm: false,
-      header: "",
+      header: '',
       showConfirmDeleteModal: false,
       itemToDelete: {},
-      inputFilter: "",
+      inputFilter: '',
       editMode: false,
       editItem: {},
-      solutionName: ""
+      solutionName: ''
     };
   }
 
@@ -75,30 +77,22 @@ class SolutionChart extends Component {
     });
   }
 
+  onDelete = item => {
+    this.setState({ itemToDelete: item }, () => {
+      this.setState({ showConfirmDeleteModal: true });
+    });
+  };
+
   render() {
-    const items = this.props.solutionCharts
-      .filter(
-        d =>
-          this.state.inputFilter === "" ||
-          d.chartName.includes(this.state.inputFilter)
-      )
-      .map((item, key) => (
-        <tr key={key}>
-          <td>{item.chartName}</td>
-          <td>
-            <Button
-              className="link-button"
-              onClick={() =>
-                this.setState({ itemToDelete: item }, () => {
-                  this.setState({ showConfirmDeleteModal: true });
-                })
-              }
-            >
-              <i className="pe-7s-trash" />
-            </Button>
-          </td>
-        </tr>
-      ));
+    let columns = [];
+    columns.push(col.addCol('chartName', 'Chart Name', '90%'));
+    columns.push(col.addDelete(this.onDelete));
+
+    const data = this.props.solutionCharts.filter(
+      d =>
+        this.state.inputFilter === '' ||
+        d.chartName.includes(this.state.inputFilter)
+    );
 
     return (
       <div className="content">
@@ -175,25 +169,14 @@ class SolutionChart extends Component {
                             onChange={e =>
                               this.setState({ inputFilter: e.target.value })
                             }
-                            style={{ width: "100%" }}
+                            style={{ width: '100%' }}
                             type="text"
                             placeholder="Search using any field"
                             aria-label="Search using any field"
                           ></FormControl>
                         </FormGroup>
                       </div>
-
-                      <div>
-                        <Table bordered hover size="sm">
-                          <thead>
-                            <tr>
-                              <th>Helm Chart</th>
-                              <th>Delete</th>
-                            </tr>
-                          </thead>
-                          <tbody>{items}</tbody>
-                        </Table>
-                      </div>
+                      <TenkaiTable columns={columns} data={data} />
                     </div>
                   </form>
                 }

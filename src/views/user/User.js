@@ -5,13 +5,13 @@ import {
   Row,
   Col,
   FormControl,
-  Table,
   FormGroup,
   FormLabel,
   ButtonToolbar
 } from 'react-bootstrap';
+import TenkaiTable from 'components/Table/TenkaiTable';
+import * as col from 'components/Table/TenkaiColumn';
 
-import Button from 'components/CustomButton/CustomButton.jsx';
 import { CardTenkai } from 'components/Card/CardTenkai.jsx';
 import CButton from 'components/CustomButton/CustomButton.jsx';
 import UserForm from 'views/user/components/EditUser.js';
@@ -19,7 +19,6 @@ import SimpleModal from 'components/Modal/SimpleModal.jsx';
 
 import * as userActions from 'stores/user/actions';
 import * as userSelectors from 'stores/user/reducer';
-import * as utils from 'utils/sort';
 
 class User extends Component {
   state = {
@@ -49,49 +48,33 @@ class User extends Component {
     this.setState({ showConfirmDeleteModal: false, itemToDelete: {} });
   }
 
-  onEdit(item) {
+  onEdit = item => {
     window.scrollTo(0, 0);
     this.setState({
       showInsertUpdateForm: true,
       editItem: item,
       editMode: true
     });
-  }
+  };
+
+  onDelete = item => {
+    this.setState({ itemToDelete: item }, () => {
+      this.setState({ showConfirmDeleteModal: true });
+    });
+  };
 
   render() {
-    const items = this.props.users
-      .filter(
-        d =>
-          this.state.inputFilter === '' ||
-          d.email.includes(this.state.inputFilter)
-      )
-      .sort((a, b) => utils.sort(a.email, b.email))
-      .map((item, key) => (
-        <tr key={key}>
-          <td>{item.ID}</td>
-          <td>{item.email}</td>
-          <td>
-            <Button
-              className="link-button"
-              onClick={this.onEdit.bind(this, item)}
-            >
-              <i className="pe-7s-edit" />
-            </Button>
-          </td>
-          <td>
-            <Button
-              className="link-button"
-              onClick={e =>
-                this.setState({ itemToDelete: item }, () => {
-                  this.setState({ showConfirmDeleteModal: true });
-                })
-              }
-            >
-              <i className="pe-7s-trash" />
-            </Button>
-          </td>
-        </tr>
-      ));
+    let columns = [];
+    columns.push(col.addId());
+    columns.push(col.addCol('email', 'Email', '70%'));
+    columns.push(col.addEdit(this.onEdit));
+    columns.push(col.addDelete(this.onDelete));
+
+    let data = this.props.users.filter(
+      d =>
+        this.state.inputFilter === '' ||
+        d.email.includes(this.state.inputFilter)
+    );
 
     return (
       <div className="content">
@@ -174,20 +157,7 @@ class User extends Component {
                         ></FormControl>
                       </FormGroup>
                     </div>
-
-                    <div>
-                      <Table bordered hover size="sm">
-                        <thead>
-                          <tr>
-                            <th>#</th>
-                            <th>Email</th>
-                            <th>Edit</th>
-                            <th>Delete</th>
-                          </tr>
-                        </thead>
-                        <tbody>{items}</tbody>
-                      </Table>
-                    </div>
+                    <TenkaiTable columns={columns} data={data} />
                   </form>
                 }
               />

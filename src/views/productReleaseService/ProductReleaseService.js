@@ -7,9 +7,10 @@ import {
   FormGroup,
   FormLabel,
   FormControl,
-  Table,
   ButtonToolbar
 } from 'react-bootstrap';
+import TenkaiTable from 'components/Table/TenkaiTable';
+import * as col from 'components/Table/TenkaiColumn';
 import SimpleModal from 'components/Modal/SimpleModal.jsx';
 
 import { CardTenkai } from 'components/Card/CardTenkai.jsx';
@@ -149,81 +150,96 @@ class ProductReleaseService extends Component {
     return splited.length === 2 ? splited[1] : '';
   }
 
-  render() {
-    const items = this.props.productReleaseServices
-      .filter(
-        d =>
-          this.state.inputFilter === '' ||
-          d.serviceName.includes(this.state.inputFilter)
-      )
-      .map((item, key) => (
-        <tr key={key}>
-          <td>{item.ID}</td>
-          <td>{item.serviceName}</td>
-          <td>
-            {item.chartLatestVersion !== '' ? (
-              <Button
-                className="link-button"
-                onClick={this.setChartLatestVersion.bind(this, item)}
-                disabled={this.state.locked}
-              >
-                <i className="pe-7s-left-arrow" />
-              </Button>
-            ) : null}
-            {item.chartLatestVersion}
-          </td>
-          <td>{item.dockerImageTag}</td>
-          <td>
-            {item.latestVersion !== '' ? (
-              <Button
-                className="link-button"
-                onClick={this.setVersion.bind(this, item)}
-                disabled={this.state.locked}
-              >
-                <i className="pe-7s-left-arrow" />
-              </Button>
-            ) : null}
-            {item.latestVersion}
-          </td>
-          <td>
-            <Button
-              className="link-button"
-              disabled={this.state.locked}
-              onClick={() =>
-                this.setState({
-                  showInsertUpdateForm: true,
-                  editItem: item,
-                  editMode: true
-                })
-              }
-            >
-              <i className="pe-7s-edit" />
-            </Button>
-          </td>
+  latestChartButton = (cell, row) => {
+    if (row.chartLatestVersion !== '') {
+      return (
+        <Container fluid>
+          <Button
+            className="link-button"
+            onClick={this.setChartLatestVersion.bind(this, row)}
+            disabled={this.state.locked}
+          >
+            <i className="pe-7s-left-arrow cell-button-icon" />
+          </Button>
+          <span>{row.chartLatestVersion}</span>
+        </Container>
+      );
+    } else {
+      return <span>{row.chartLatestVersion}</span>;
+    }
+  };
 
-          <td>
-            <Button
-              className="link-button"
-              disabled={this.state.locked}
-              onClick={() =>
-                this.setState({ itemToDelete: item }, () => {
-                  this.setState({ showConfirmDeleteModal: true });
-                })
-              }
-            >
-              <i className="pe-7s-trash" />
-            </Button>
-          </td>
-          <td>
-            <Button
-              className="link-button"
-              onClick={this.goToServiceDeploy.bind(this, item)}
-            >
-              <i className="pe-7s-news-paper" />
-            </Button>
-          </td>
-        </tr>
-      ));
+  latestImageTag = (cell, row) => {
+    if (row.latestVersion !== '') {
+      return (
+        <Container>
+          <Button
+            className="link-button"
+            onClick={this.setVersion.bind(this, row)}
+            disabled={this.state.locked}
+          >
+            <i className="pe-7s-left-arrow cell-button-icon" />
+          </Button>
+          <span>{row.latestVersion}</span>
+        </Container>
+      );
+    } else {
+      return <span>{row.latestVersion}</span>;
+    }
+  };
+
+  onEdit = item => {
+    this.setState({
+      showInsertUpdateForm: true,
+      editItem: item,
+      editMode: true
+    });
+    window.scrollTo(0, 0);
+  };
+
+  onDelete = item => {
+    this.setState({ itemToDelete: item }, () => {
+      this.setState({ showConfirmDeleteModal: true });
+    });
+  };
+
+  goToDeployButton = (cell, row) => {
+    return (
+      <Button
+        className="link-button"
+        onClick={this.goToServiceDeploy.bind(this, row)}
+      >
+        <i className="pe-7s-news-paper cell-button-icon" />
+      </Button>
+    );
+  };
+
+  render() {
+    let columns = [];
+    columns.push(col.addId());
+    columns.push(col.addCol('serviceName', 'Chart Name', '30%'));
+    columns.push(
+      col.addColBtn(
+        'chartLatestVersion',
+        'Latest Chart',
+        this.latestChartButton
+      )
+    );
+    columns.push(col.addCol('dockerImageTag', 'Desired Image Tag'));
+    columns.push(
+      col.addColBtn('latestVersion', 'Latest Image Tag', this.latestImageTag)
+    );
+    columns.push(col.addEdit(this.onEdit));
+    columns.push(col.addDelete(this.onDelete));
+    columns.push(
+      col.addColBtn('goDeploy', 'Go To Deploy', this.goToDeployButton)
+    );
+
+    let data = this.props.productReleaseServices.filter(
+      d =>
+        this.state.inputFilter === '' ||
+        d.serviceName.includes(this.state.inputFilter)
+    );
 
     return (
       <div className="content">
@@ -317,24 +333,7 @@ class ProductReleaseService extends Component {
                           ></FormControl>
                         </FormGroup>
                       </div>
-
-                      <div>
-                        <Table bordered hover size="sm">
-                          <thead>
-                            <tr>
-                              <th>#</th>
-                              <th>Chart Name</th>
-                              <th>Latest Chart</th>
-                              <th>Desired Image Tag</th>
-                              <th>Latest Image Tag</th>
-                              <th>Edit</th>
-                              <th>Delete</th>
-                              <th>Go Deploy</th>
-                            </tr>
-                          </thead>
-                          <tbody>{items}</tbody>
-                        </Table>
-                      </div>
+                      <TenkaiTable columns={columns} data={data} />
                     </div>
                   </form>
                 }

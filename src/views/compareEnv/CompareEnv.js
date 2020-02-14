@@ -1,14 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import {
-  Container,
-  Row,
-  Col,
-  Table,
-  Card,
-  Button,
-  Form
-} from 'react-bootstrap';
+import { Container, Row, Col, Card, Button, Form } from 'react-bootstrap';
+import TenkaiTable from 'components/Table/TenkaiTable';
+import * as col from 'components/Table/TenkaiColumn';
+
 import * as actions from 'stores/compareEnv/actions';
 import * as compareEnvSelectors from 'stores/compareEnv/reducer';
 import ChartFilter from './ChartFilter';
@@ -414,100 +409,145 @@ class CompareEnv extends Component {
     this.props.dispatch(actions.hideDeleteRightVarDialog());
   };
 
-  render() {
-    console.clear();
-    console.log(JSON.stringify(this.props.compareEnv, null, 4));
-    let srcEnvLabel = '';
-    if (!!this.props.compareEnv.selectedSrcEnv) {
-      srcEnvLabel = this.props.compareEnv.selectedSrcEnv.label.toUpperCase();
-    }
-    let tarEnvLabel = '';
-    if (!!this.props.compareEnv.selectedTarEnv) {
-      tarEnvLabel = this.props.compareEnv.selectedTarEnv.label.toUpperCase();
-    }
+  scopeStriped(data, striped) {
+    return (row, rowIndex) => {
+      if (rowIndex === 0) {
+        striped = false;
+      } else {
+        const last = rowIndex - 1;
+        const lastScope = data[last].sourceScope || data[last].targetScope;
+        const currentScope = row.sourceScope || row.targetScope;
 
-    let showSaveAsDialog = false;
-    if (!!this.props.compareEnv.showSaveAsDialog) {
-      showSaveAsDialog = this.props.compareEnv.showSaveAsDialog;
-    }
+        if (lastScope !== currentScope) {
+          striped = !striped;
+        }
+      }
+      return striped ? 'bg-silver' : '';
+    };
+  }
+
+  btnSrcValue = (cell, row) => {
+    return (
+      <Row>
+        <Col md={11}>{row.sourceValue}</Col>
+        <Col md={1}>
+          {this.renderCopyToRight(row) ? (
+            <Button
+              className="link-button"
+              onClick={this.copyToRight.bind(this, row)}
+            >
+              <i className="pe-7s-right-arrow" />
+            </Button>
+          ) : null}
+          {this.renderDeleteLeft(row) ? (
+            <Button
+              className="link-button"
+              onClick={this.deleteLeft.bind(this, row)}
+            >
+              <i className="pe-7s-trash" />
+            </Button>
+          ) : null}
+        </Col>
+      </Row>
+    );
+  };
+
+  btnTarValue = (cell, row) => {
+    return (
+      <Row>
+        <Col md={1}>
+          {this.renderCopyToLeft(row) ? (
+            <Button
+              className="link-button"
+              onClick={this.copyToLeft.bind(this, row)}
+            >
+              <i className="pe-7s-left-arrow" />
+            </Button>
+          ) : null}
+          {this.renderDeleteRight(row) ? (
+            <Button
+              className="link-button"
+              onClick={this.deleteRight.bind(this, row)}
+            >
+              <i className="pe-7s-trash" />
+            </Button>
+          ) : null}
+        </Col>
+        <Col md={11}>{row.targetValue}</Col>
+      </Row>
+    );
+  };
+
+  showSaveDialog() {
     let showSaveDialog = false;
     if (!!this.props.compareEnv.showSaveDialog) {
       showSaveDialog = this.props.compareEnv.showSaveDialog;
     }
+    return showSaveDialog;
+  }
 
-    let lastScope = '';
-    let striped = false;
-    let items = [];
-    const inputFilter = this.props.compareEnv.inputFilter;
+  showSaveAsDialog() {
+    let showSaveAsDialog = false;
+    if (!!this.props.compareEnv.showSaveAsDialog) {
+      showSaveAsDialog = this.props.compareEnv.showSaveAsDialog;
+    }
+    return showSaveAsDialog;
+  }
+
+  getTarEnvLabel() {
+    let tarEnvLabel = '';
+    if (!!this.props.compareEnv.selectedTarEnv) {
+      tarEnvLabel = this.props.compareEnv.selectedTarEnv.label.toUpperCase();
+    }
+    return tarEnvLabel;
+  }
+
+  getSrcEnvLabel() {
+    let srcEnvLabel = '';
+    if (!!this.props.compareEnv.selectedSrcEnv) {
+      srcEnvLabel = this.props.compareEnv.selectedSrcEnv.label.toUpperCase();
+    }
+    return srcEnvLabel;
+  }
+
+  render() {
+    let columns = [];
+    columns.push(col.addCol('sourceScope', 'Source Scope', '10%'));
+    columns.push(col.addCol('sourceName', 'Source Variable Name', '13%'));
+    columns.push(
+      col.addColBtn(
+        'sourceValue',
+        'Source Variable Value',
+        this.btnSrcValue,
+        '27%'
+      )
+    );
+    columns.push(col.addCol('targetScope', 'Target Scope', '10%'));
+    columns.push(col.addCol('targetName', 'Target Variable Name', '13%'));
+    columns.push(
+      col.addColBtn(
+        'targetValue',
+        'Target Variable Value',
+        this.btnTarValue,
+        '27%'
+      )
+    );
+
+    let srcEnvLabel = this.getSrcEnvLabel();
+    let tarEnvLabel = this.getTarEnvLabel();
+    let showSaveAsDialog = this.showSaveAsDialog();
+    let showSaveDialog = this.showSaveDialog();
+
+    let data = [];
     if (
       !!this.props.compareEnv.envsDiff &&
       Array.isArray(this.props.compareEnv.envsDiff)
     ) {
-      items = this.props.compareEnv.envsDiff
-        .filter(f => this.customFilter(f, inputFilter))
-        .sort(this.sort)
-        .map((item, key) => {
-          const scope = item.sourceScope || item.targetScope;
-          if (lastScope !== scope) {
-            lastScope = scope;
-            striped = !striped;
-          }
-          return (
-            <tr key={key} bgcolor={striped ? '#EAECEE' : '#FFFFFF'}>
-              <td>{item.sourceScope}</td>
-              <td>{item.sourceName}</td>
-              <td>
-                <Row>
-                  <Col md={11}>{item.sourceValue}</Col>
-                  <Col md={1}>
-                    {this.renderCopyToRight(item) ? (
-                      <Button
-                        className="link-button"
-                        onClick={this.copyToRight.bind(this, item)}
-                      >
-                        <i className="pe-7s-right-arrow" />
-                      </Button>
-                    ) : null}
-                    {this.renderDeleteLeft(item) ? (
-                      <Button
-                        className="link-button"
-                        onClick={this.deleteLeft.bind(this, item)}
-                      >
-                        <i className="pe-7s-trash" />
-                      </Button>
-                    ) : null}
-                  </Col>
-                </Row>
-              </td>
-              <td>{item.targetScope}</td>
-              <td>{item.targetName}</td>
-              <td>
-                <Row>
-                  <Col md={1}>
-                    {this.renderCopyToLeft(item) ? (
-                      <Button
-                        className="link-button"
-                        onClick={this.copyToLeft.bind(this, item)}
-                      >
-                        <i className="pe-7s-left-arrow" />
-                      </Button>
-                    ) : null}
-                    {this.renderDeleteRight(item) ? (
-                      <Button
-                        className="link-button"
-                        onClick={this.deleteRight.bind(this, item)}
-                      >
-                        <i className="pe-7s-trash" />
-                      </Button>
-                    ) : null}
-                  </Col>
-                  <Col md={11}>{item.targetValue}</Col>
-                </Row>
-              </td>
-            </tr>
-          );
-        });
+      data = this.props.compareEnv.envsDiff
+        .filter(f => this.customFilter(f, this.props.compareEnv.inputFilte))
+        .sort(this.sort);
     }
+    let striped = false;
     return (
       <Container fluid>
         <ModalSaveAs
@@ -622,17 +662,13 @@ class CompareEnv extends Component {
                 <strong>{tarEnvLabel}</strong>
               </Card.Header>
               <div className="scroll-table">
-                <Table id="compareEnv" bordered responsive size="sm">
-                  <thead>
-                    <th style={{ width: '10%' }}>Source Scope</th>
-                    <th style={{ width: '13%' }}>Source Variable Name</th>
-                    <th style={{ width: '27%' }}>Source Variable Value</th>
-                    <th style={{ width: '10%' }}>Target Scope</th>
-                    <th style={{ width: '13%' }}>Target Variable Name</th>
-                    <th style={{ width: '27%' }}>Target Variable Value</th>
-                  </thead>
-                  <tbody>{items}</tbody>
-                </Table>
+                <TenkaiTable
+                  id="compareEnv"
+                  columns={columns}
+                  data={data}
+                  rowClasses={this.scopeStriped(data, striped)}
+                  striped={false}
+                />
               </div>
             </Card>
           </Col>

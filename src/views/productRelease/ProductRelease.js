@@ -5,10 +5,11 @@ import {
   Row,
   Col,
   FormControl,
-  Table,
   FormGroup,
   FormLabel
 } from 'react-bootstrap';
+import TenkaiTable from 'components/Table/TenkaiTable';
+import * as col from 'components/Table/TenkaiColumn';
 
 import Button from 'components/CustomButton/CustomButton.jsx';
 import { CardTenkai } from 'components/Card/CardTenkai.jsx';
@@ -20,7 +21,6 @@ import queryString from 'query-string';
 import * as actions from 'stores/productRelease/actions';
 import * as selectors from 'stores/productRelease/reducer';
 import CardButton from 'components/CardButton/CardButton';
-import * as utils from 'utils/sort';
 
 class ProductRelease extends Component {
   constructor(props) {
@@ -96,60 +96,73 @@ class ProductRelease extends Component {
     this.setState({ showInsertUpdateForm: true });
   }
 
+  onEdit = item => {
+    this.setState({
+      showInsertUpdateForm: true,
+      editItem: item,
+      editMode: true
+    });
+    window.scrollTo(0, 0);
+  };
+
+  onDelete = item => {
+    this.setState({ itemToDelete: item }, () => {
+      this.setState({ showConfirmDeleteModal: true });
+    });
+  };
+
+  onViewItems = item => {
+    this.props.history.push({
+      pathname: '/admin/product-version-service',
+      search: '?productVersionId=' + item.ID
+    });
+  };
+
+  lockButton = (cell, row) => {
+    return (
+      <Button
+        className="link-button"
+        variant={row.locked ? 'primary' : 'danger'}
+        onClick={this.onLockVersion.bind(this, row)}
+      >
+        <i className={row.locked ? 'pe-7s-lock' : 'pe-7s-unlock'} />
+        {row.locked ? 'Unlock' : 'Lock'}
+      </Button>
+    );
+  };
+
+  viewItemsButton = (cell, row) => {
+    return (
+      <Button
+        className="link-button"
+        onClick={() =>
+          this.props.history.push({
+            pathname: '/admin/product-version-service',
+            search: '?productVersionId=' + row.ID
+          })
+        }
+        disabled={!this.props.keycloak.hasRealmRole('tenkai-lock-version')}
+      >
+        <i className="pe-7s-news-paper cell-button-icon" />
+      </Button>
+    );
+  };
+
   render() {
-    const items = this.props.productReleases
-      .filter(
-        d =>
-          this.state.inputFilter === '' ||
-          d.version.includes(this.state.inputFilter)
-      )
-      .sort((a, b) => utils.sortNumber(a.ID, b.ID))
-      .map((item, key) => (
-        <tr key={key} className={this.getRowClassName(item)}>
-          <td>{item.ID}</td>
-          <td>{item.date}</td>
-          <td>{item.version}</td>
-          <td>
-            <Button
-              variant="danger"
-              className="link-button"
-              onClick={() =>
-                this.setState({ itemToDelete: item }, () => {
-                  this.setState({ showConfirmDeleteModal: true });
-                })
-              }
-            >
-              <i className="pe-7s-trash" />
-            </Button>
-          </td>
-          <td>
-            <Button
-              className="link-button"
-              onClick={() =>
-                this.props.history.push({
-                  pathname: '/admin/product-version-service',
-                  search: '?productVersionId=' + item.ID
-                })
-              }
-              disabled={
-                !this.props.keycloak.hasRealmRole('tenkai-lock-version')
-              }
-            >
-              <i className="pe-7s-news-paper" />
-            </Button>
-          </td>
-          <td>
-            <Button
-              className="link-button"
-              variant={item.locked ? 'primary' : 'danger'}
-              onClick={this.onLockVersion.bind(this, item)}
-            >
-              <i className={item.locked ? 'pe-7s-lock' : 'pe-7s-unlock'} />
-              {item.locked ? 'Unlock' : 'Lock'}
-            </Button>
-          </td>
-        </tr>
-      ));
+    let columns = [];
+    columns.push(col.addId());
+    columns.push(col.addCol('date', 'Date', '25%'));
+    columns.push(col.addCol('version', 'Version', '25%'));
+    columns.push(col.addColBtn('lock', 'Lock version', this.lockButton));
+    columns.push(col.addEdit(this.onEdit));
+    columns.push(col.addDelete(this.onDelete));
+    columns.push(col.addColBtn('svc', 'Services', this.viewItemsButton));
+
+    let data = this.props.productReleases.filter(
+      d =>
+        this.state.inputFilter === '' ||
+        d.version.includes(this.state.inputFilter)
+    );
 
     return (
       <div className="content">
@@ -216,22 +229,7 @@ class ProductRelease extends Component {
                           ></FormControl>
                         </FormGroup>
                       </div>
-
-                      <div>
-                        <Table bordered condensed size="sm">
-                          <thead>
-                            <tr>
-                              <th>#</th>
-                              <th>Date</th>
-                              <th>Version</th>
-                              <th>Delete</th>
-                              <th>Services</th>
-                              <th>Lock Version</th>
-                            </tr>
-                          </thead>
-                          <tbody>{items}</tbody>
-                        </Table>
-                      </div>
+                      <TenkaiTable columns={columns} data={data} />
                     </div>
                   </form>
                 }

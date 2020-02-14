@@ -5,13 +5,13 @@ import {
   Row,
   Col,
   FormControl,
-  Table,
   FormGroup,
   FormLabel
 } from 'react-bootstrap';
 import queryString from 'query-string';
+import TenkaiTable from 'components/Table/TenkaiTable';
+import * as col from 'components/Table/TenkaiColumn';
 
-import Button from 'components/CustomButton/CustomButton.jsx';
 import { CardTenkai } from 'components/Card/CardTenkai.jsx';
 import EditRule from 'views/valueRule/components/EditValueRule';
 import SimpleModal from 'components/Modal/SimpleModal.jsx';
@@ -85,6 +85,12 @@ class Rule extends Component {
     window.scrollTo(0, 0);
   };
 
+  onDelete = item => {
+    this.setState({ itemToDelete: item }, () => {
+      this.setState({ showConfirmDeleteModal: true });
+    });
+  };
+
   getHeader() {
     const parent = this.props.variableRules.find(
       e => e.ID === parseInt(this.state.variableRuleId)
@@ -93,39 +99,17 @@ class Rule extends Component {
   }
 
   render() {
-    const items = this.props.rules
-      .filter(
-        d =>
-          this.state.inputFilter === '' ||
-          d.type.includes(this.state.inputFilter)
-      )
-      .map((item, key) => (
-        <tr key={key}>
-          <td>{item.ID}</td>
-          <td>{item.type}</td>
-          <td>{item.value}</td>
-          <td>
-            <Button
-              className="link-button"
-              onClick={this.onEdit.bind(this, item)}
-            >
-              <i className="pe-7s-edit" />
-            </Button>
-          </td>
-          <td>
-            <Button
-              className="link-button"
-              onClick={() =>
-                this.setState({ itemToDelete: item }, () => {
-                  this.setState({ showConfirmDeleteModal: true });
-                })
-              }
-            >
-              <i className="pe-7s-trash" />
-            </Button>
-          </td>
-        </tr>
-      ));
+    let columns = [];
+    columns.push(col.addId());
+    columns.push(col.addCol('type', 'type', '15%'));
+    columns.push(col.addCol('value', 'Value', '65%'));
+    columns.push(col.addEdit(this.onEdit));
+    columns.push(col.addDelete(this.onDelete));
+
+    const data = this.props.rules.filter(
+      d =>
+        this.state.inputFilter === '' || d.type.includes(this.state.inputFilter)
+    );
 
     return (
       <div className="content">
@@ -194,21 +178,7 @@ class Rule extends Component {
                         ></FormControl>
                       </FormGroup>
                     </div>
-
-                    <div>
-                      <Table bordered hover size="sm">
-                        <thead>
-                          <tr>
-                            <th>#</th>
-                            <th>Type</th>
-                            <th>Value</th>
-                            <th>Edit</th>
-                            <th>Delete</th>
-                          </tr>
-                        </thead>
-                        <tbody>{items}</tbody>
-                      </Table>
-                    </div>
+                    <TenkaiTable columns={columns} data={data} />
                   </form>
                 }
               />
