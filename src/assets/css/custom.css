@@ -116,17 +116,20 @@
     table-layout: fixed;
 }
 
-.scroll-table > .table-responsive {
-    height: 700px;
-    overflow-x: hidden;
+.scroll-table .react-bootstrap-table {
+  height: 700px;
+  overflow-x: hidden;
 }
 
-.scroll-table > th {
-    border: 0px !important;
+.scroll-table th {
     position: sticky;
     top: 0;
-    background-color: #eee;
     z-index: 10;
+    background-color: #eee;
+}
+
+.react-select-zindex-4 {
+    z-index: 4;
 }
 
 .react-select-zindex-3 {
@@ -135,4 +138,8 @@
 
 .react-select-zindex-2 {
     z-index: 2;
+}
+
+.bg-silver {
+    background-color: #C0C0C0;
 }
