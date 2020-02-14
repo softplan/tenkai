@@ -40,7 +40,7 @@ class DeploySolution extends Component {
 
   //TODO - CREATE AN ENDPOINT THAT RECEIVE A POST AND ALL REQUESTS SIMULTANEOUS
   async getChartsAsync(searchTerm) {
-    searchTerm = this.getChartName(searchTerm)
+    searchTerm = this.getChartName(searchTerm);
 
     let url = '/charts/' + searchTerm + '?all=false';
 
