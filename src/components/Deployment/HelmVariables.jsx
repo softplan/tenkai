@@ -20,7 +20,7 @@ import Button from 'components/CustomButton/CustomButton.jsx';
 import { CanaryCard } from 'components/Deployment/CanaryCard.jsx';
 import { getTagsOfImage, retrieveSettings } from 'client-api/apicall.jsx';
 import Select from 'react-select';
-import { ACTION_SAVE_VARIABLES, ACTION_DEPLOY } from 'policies.js';
+import { ACTION_SAVE_VARIABLES } from 'policies.js';
 
 export class HelmVariables extends Component {
   state = {
@@ -54,7 +54,7 @@ export class HelmVariables extends Component {
     data.push('commonVariablesConfigMapChart');
     data.push('canaryChart');
 
-    retrieveSettings({ list: data }, this, (result, self) => {
+    retrieveSettings({ list: data }, this, (result) => {
       let vCommonValuesConfigMapChart = '';
       let vCommonVariablesConfigMapChart = '';
       let vCanaryChart = '';
@@ -160,7 +160,7 @@ export class HelmVariables extends Component {
 
     axios
       .post(TENKAI_API_URL + '/saveVariableValues', { data })
-      .then(res => {
+      .then(() => {
         let list = [];
         //Main
         let installPayload = {};
@@ -188,7 +188,7 @@ export class HelmVariables extends Component {
 
     const elements = this.state.values;
 
-    Object.keys(this.state.values).map(function(key, index) {
+    Object.keys(this.state.values).map(function(key) {
       payload.data.push({
         scope: scope,
         chartVersion: chartVersion,
@@ -243,7 +243,7 @@ export class HelmVariables extends Component {
     });
 
     const hosts = this.state.hosts;
-    Object.keys(hosts).map(function(key, index) {
+    Object.keys(hosts).map(function(key) {
       payload.data.push({
         scope: scope,
         chartVersion: chartVersion,
@@ -258,7 +258,7 @@ export class HelmVariables extends Component {
 
     axios
       .post(TENKAI_API_URL + '/saveVariableValues', { data })
-      .then(res => {
+      .then(() => {
         if (this.state.applyConfigMap && this.refs.hConfigMap !== undefined) {
           this.refs.hConfigMap.save(data => {
             let list = [];
@@ -320,8 +320,8 @@ export class HelmVariables extends Component {
         })
         .then(response => {
           this.addToValues(this, response.data.Variables);
-          this.fillIstioFields(this, response.data.Variables);
-          this.fillImageFields(this, response.data.Variables);
+          this.fillIstioFields(response.data.Variables);
+          this.fillImageFields(response.data.Variables);
 
           if (
             this.state.applyConfigMap &&
@@ -418,8 +418,8 @@ export class HelmVariables extends Component {
           .then(response => {
             this.props.handleLoading(false);
             this.addToValues(this, response.data.Variables);
-            this.fillIstioFields(this, response.data.Variables);
-            this.fillImageFields(this, response.data.Variables);
+            this.fillIstioFields(response.data.Variables);
+            this.fillImageFields(response.data.Variables);
           })
           .catch(error => {
             console.log(error.message);
@@ -440,8 +440,8 @@ export class HelmVariables extends Component {
     return value;
   }
 
-  fillImageFields(self, variables) {
-    variables.forEach((value, index, array) => {
+  fillImageFields(variables) {
+    variables.forEach((value) => {
       switch (value.name) {
         case 'image.repository':
           if (this.state.containerImage !== value.value && value.value !== '') {
@@ -478,8 +478,8 @@ export class HelmVariables extends Component {
     });
   }
 
-  fillIstioFields(self, variables) {
-    variables.forEach((value, index, array) => {
+  fillIstioFields(variables) {
+    variables.forEach((value) => {
       switch (value.name) {
         case 'istio.enabled':
           this.setState({
@@ -510,13 +510,13 @@ export class HelmVariables extends Component {
     });
   }
 
-  getTagsOfImage(imageName) {}
+  getTagsOfImage() {}
 
   addToValues(self, variables) {
     let dynamicEntries = new Map();
     let valuesMap = new Map();
 
-    variables.forEach((value, index, array) => {
+    variables.forEach((value) => {
       valuesMap[value.name] = value.value;
       if (value.name.indexOf('].') > -1) {
         if (dynamicEntries[this.getRootName(value.name)] !== undefined) {

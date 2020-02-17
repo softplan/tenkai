@@ -60,7 +60,9 @@
      &:disabled,
      &[disabled],
      &.disabled{
-        @include opacity(.5);
+        @include opacity(.4);
+        color: $primary-states-color;
+        cursor: not-allowed;
     }
 }
 .btn-round{
