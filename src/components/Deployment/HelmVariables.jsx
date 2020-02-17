@@ -20,6 +20,7 @@ import Button from 'components/CustomButton/CustomButton.jsx';
 import { CanaryCard } from 'components/Deployment/CanaryCard.jsx';
 import { getTagsOfImage, retrieveSettings } from 'client-api/apicall.jsx';
 import Select from 'react-select';
+import { ACTION_SAVE_VARIABLES, ACTION_DEPLOY } from 'policies.js';
 
 export class HelmVariables extends Component {
   state = {
@@ -139,6 +140,44 @@ export class HelmVariables extends Component {
       }
     }));
   };
+
+  saveTag(callbackFunction) {
+    console.log('save ' + this.props.envId);
+    const scope = this.state.chartName;
+    const chartVersion = this.state.chartVersion;
+    const environmentId = parseInt(this.props.envId);
+    let payload = { data: [] };
+
+    payload.data.push({
+      scope: scope,
+      chartVersion: chartVersion,
+      name: 'image.repository',
+      value: this.state.containerImage,
+      environmentId: environmentId
+    });
+
+    let data = payload.data;
+
+    axios
+      .post(TENKAI_API_URL + '/saveVariableValues', { data })
+      .then(res => {
+        let list = [];
+        //Main
+        let installPayload = {};
+        const environmentId = parseInt(this.props.envId);
+
+        installPayload.name = this.state.releaseName;
+        installPayload.chart = scope;
+        installPayload.environmentId = environmentId;
+        installPayload.chartVersion = this.state.chartVersion;
+        list.push(installPayload);
+        callbackFunction(list);
+      })
+      .catch(error => {
+        this.props.handleNotification('general_fail', 'error');
+        console.log('Error saveVariableValues: ' + error.message);
+      });
+  }
 
   save(callbackFunction) {
     console.log('save ' + this.props.envId);
@@ -621,6 +660,7 @@ export class HelmVariables extends Component {
           <ArrayVariable
             key={key}
             name={key}
+            disabled={!this.props.hasEnvironmentPolicy(ACTION_SAVE_VARIABLES)}
             variables={this.state.variables[key]}
             values={this.state.values}
             onCreateDynamicVariable={this.addDynamicVariableClick.bind(this)}
@@ -643,6 +683,9 @@ export class HelmVariables extends Component {
               >
                 <input
                   name={key}
+                  disabled={
+                    !this.props.hasEnvironmentPolicy(ACTION_SAVE_VARIABLES)
+                  }
                   value={value}
                   onChange={this.onInputChange}
                   type="text"
@@ -650,15 +693,14 @@ export class HelmVariables extends Component {
                   className={this.isValid(key)}
                 />
               </OverlayTrigger>
-              {this.hasInvalidVar(key) && (
+              {this.hasInvalidVar(key) &&
                 this.props.invalidVariables[key].map(key => {
                   return (
                     <div key={key} className="invalid-feedback">
                       {this.getInvalidMsg(key.name, key.ruleType)}
                     </div>
                   );
-                })
-              )}
+                })}
             </td>
           </tr>
         );
@@ -677,7 +719,12 @@ export class HelmVariables extends Component {
                     <ButtonToolbar>
                       <Button
                         className="btn-primary"
-                        disabled={this.props.canary}
+                        disabled={
+                          this.props.canary ||
+                          !this.props.hasEnvironmentPolicy(
+                            ACTION_SAVE_VARIABLES
+                          )
+                        }
                         onClick={this.props.copyVariables.bind(
                           this,
                           this.props.xref
@@ -690,7 +737,12 @@ export class HelmVariables extends Component {
 
                       <Button
                         className="btn-warning"
-                        disabled={this.props.canary}
+                        disabled={
+                          this.props.canary ||
+                          !this.props.hasEnvironmentPolicy(
+                            ACTION_SAVE_VARIABLES
+                          )
+                        }
                         onClick={this.showHideCanaryOptions.bind(this)}
                         size="sm"
                       >
@@ -758,6 +810,11 @@ export class HelmVariables extends Component {
                   {this.state.chartName !== this.state.simpleChart ? (
                     <div>
                       <IstioVariable
+                        disabled={
+                          !this.props.hasEnvironmentPolicy(
+                            ACTION_SAVE_VARIABLES
+                          )
+                        }
                         defaultApiPath={this.state.defaultApiPath}
                         injectIstioCar={this.state.injectIstioCar}
                         enableVirtualService={this.state.enableVirtualService}

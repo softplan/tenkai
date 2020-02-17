@@ -10,6 +10,8 @@ import HelmCommandModal from 'components/Modal/HelmCommandModal.jsx';
 import queryString from 'query-string';
 import { validateVariables } from 'client-api/apicall.jsx';
 import SimpleModal from 'components/Modal/SimpleModal.jsx';
+import { ACTION_SAVE_VARIABLES, ACTION_DEPLOY } from 'policies.js';
+import { getAllEnvironments } from "client-api/apicall.jsx";
 
 class VariablesWizard extends Component {
   state = {
@@ -23,7 +25,8 @@ class VariablesWizard extends Component {
     showConfirmInstallModal: false,
     installPayload: [],
     invalidVariables: {},
-    chartsValidated: 0
+    chartsValidated: 0,
+    envsToCopy: []
   };
 
   componentDidMount() {
@@ -134,6 +137,40 @@ class VariablesWizard extends Component {
     });
   };
 
+  install = () => {
+    let onlyInstall = !this.props.hasEnvironmentPolicy(ACTION_SAVE_VARIABLES);
+    if (onlyInstall) {
+      this.onlySaveTagAndInstall();
+    } else {
+      this.installUpdate();
+    }
+  };
+
+  onlySaveTagAndInstall = () => {
+    let payload = {
+      productVersionId: parseInt(this.state.productVersionId),
+      environmentId: parseInt(this.state.envId),
+      deployables: []
+    };
+    let count = 0;
+    const totalCharts = this.state.charts.length;
+
+    this.state.charts.forEach((item, key) => {
+      this.refs['h' + key].saveTag(list => {
+        for (let x = 0; x < list.length; x++) {
+          let data = list[x];
+          payload.deployables.push(data);
+        }
+        count++;
+        if (count === totalCharts) {
+          this.setState({ installPayload: payload }, () => {
+            multipleInstall(payload, this);
+          });
+        }
+      });
+    });
+  };
+
   installUpdate = () => {
     this.setState({ invalidVariables: {}, chartsValidated: 0 }, () => {
       let payload = {
@@ -234,7 +271,19 @@ class VariablesWizard extends Component {
   }
 
   showConfirmCopyModal(ref) {
-    this.setState({ onShowCopyModal: true, chartToManipulate: ref });
+    getAllEnvironments(this, (envs, error) => {
+      if (error) {
+        this.props.handleNotification('custom', 'error', error.message);
+      } else {
+        let options = [];
+        for (let x = 0; x < envs.length; x++) {
+          options.push({ label: envs[x].name, value: envs[x].ID });
+        }
+        this.setState({ envsToCopy: options }, () => {
+          this.setState({ onShowCopyModal: true, chartToManipulate: ref });
+        });
+      }
+    });
   }
 
   closeEditorModal() {
@@ -262,6 +311,7 @@ class VariablesWizard extends Component {
       return (
         <HelmVariables
           handleLoading={this.props.handleLoading}
+          hasEnvironmentPolicy={this.props.hasEnvironmentPolicy.bind(this)}
           canary={false}
           copyVariables={this.showConfirmCopyModal.bind(this)}
           handleNotification={this.props.handleNotification}
@@ -291,7 +341,7 @@ class VariablesWizard extends Component {
           title="Copy config from another environment"
           subTitle="Select environment"
           onConfirm={this.onConfirmCopyModal.bind(this)}
-          environments={this.props.environments}
+          environments={this.state.envsToCopy}
         ></CopyModal>
 
         <SimpleModal
@@ -331,8 +381,8 @@ class VariablesWizard extends Component {
                         type="button"
                         onClick={this.onSaveVariablesClick}
                         disabled={
-                          !this.props.keycloak.hasRealmRole(
-                            'tenkai-variables-save'
+                          !this.props.hasEnvironmentPolicy(
+                            ACTION_SAVE_VARIABLES
                           )
                         }
                       >
@@ -342,11 +392,9 @@ class VariablesWizard extends Component {
                       <Button
                         className="btn-primary pull-right"
                         type="button"
-                        onClick={this.installUpdate}
+                        onClick={this.install}
                         disabled={
-                          !this.props.keycloak.hasRealmRole(
-                            'tenkai-helm-upgrade'
-                          )
+                          !this.props.hasEnvironmentPolicy(ACTION_DEPLOY)
                         }
                       >
                         Install/Update

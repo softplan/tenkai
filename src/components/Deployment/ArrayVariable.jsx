@@ -27,6 +27,7 @@ class TableRow extends Component {
               delayHide={150}
             >
               <input
+                disabled={this.props.disabled}
                 name={variableName}
                 type="text"
                 value={value}
@@ -53,6 +54,7 @@ export class ArrayVariable extends Component {
       return (
         <TableRow
           key={index}
+          disabled={this.props.disabled}
           baseVarName={this.props.name}
           index={index}
           element={this.props.variables[index]}

@@ -28,7 +28,7 @@ class Header extends Component {
   render() {
     return (
       <AdminNavbarLinks 
-        keycloak={this.props.keycloak} 
+        keycloak={this.props.keycloak}
         history={this.props.history}
         environments={this.props.environments}
         selectedEnvironment={this.props.selectedEnvironment}

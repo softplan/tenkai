@@ -297,6 +297,7 @@ class Admin extends Component {
                   handleNotification={this.handleNotification}
                   handleLoading={this.handleLoading}
                   keycloak={this.state.keycloak}
+                  hasEnvironmentPolicy={this.hasEnvironmentPolicy.bind(this)}
                   environments={this.state.environmentList}
                   selectedEnvironment={this.state.selectedEnvironment}
                   selectedChartsToDeploy={this.state.selectedChartsToDeploy}

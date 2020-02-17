@@ -19,6 +19,7 @@ export const IstioVariable = props => {
         type="text"
         placeholder="Add URL"
         value={props.hosts[item]}
+        disabled={props.disabled}
         onChange={e => props.onHostChange(e.target.name, e.target.value)}
       />
     );
@@ -34,6 +35,7 @@ export const IstioVariable = props => {
           checked={props.injectIstioCar}
           onChange={e => props.onInjectIstioCar(e.target.checked)}
           label="Inject IstioCar"
+          disabled={props.disabled}
         ></Form.Check>
 
         <Form.Check
@@ -43,6 +45,7 @@ export const IstioVariable = props => {
           checked={props.enableVirtualService}
           onChange={e => props.onEnableVirtualService(e.target.checked)}
           label="Enable VirtualService"
+          disabled={props.disabled}
         ></Form.Check>
 
         <FormInputs
@@ -55,6 +58,7 @@ export const IstioVariable = props => {
               placeholder: '/xpto',
               bsPrefix: 'form-control',
               value: props.defaultApiPath,
+              disabled: props.disabled,
               onChange: e => props.onApiGatewayPathChange(e.target.value)
             }
           ]}
@@ -71,6 +75,7 @@ export const IstioVariable = props => {
           <Button
             variant="info"
             type="button"
+            disabled={props.disabled}
             onClick={() => props.onAddHost()}
           >
             Add Domain

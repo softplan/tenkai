@@ -40,7 +40,7 @@
     position: relative;
 }
 
-.stepwizard .btn.disabled, .stepwizard .btn[disabled], .stepwizard fieldset[disabled] .btn {
+.stepwizard .stepwizard .stepwizard fieldset[disabled] .btn {
     opacity:1 !important;
     color:#bbb;
 }
