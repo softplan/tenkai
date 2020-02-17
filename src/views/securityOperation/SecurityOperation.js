@@ -1,17 +1,17 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import Button from 'components/CustomButton/CustomButton.jsx';
 import {
   Container,
   Row,
   Col,
   FormControl,
-  Table,
   FormGroup,
   FormLabel,
   ButtonToolbar
 } from 'react-bootstrap';
+import TenkaiTable from 'components/Table/TenkaiTable';
+import * as col from 'components/Table/TenkaiColumn';
 
 import { CardTenkai } from 'components/Card/CardTenkai.jsx';
 import CButton from 'components/CustomButton/CustomButton.jsx';
@@ -47,52 +47,40 @@ class SecurityOperation extends Component {
     this.setState({ showConfirmDeleteModal: false, itemToDelete: {} });
   }
 
+  policies = (cell, row) => {
+    return row.policies.map(policyItem => (
+      <div key={security_policies.get(policyItem)}>
+        {policyItem} - {security_policies.get(policyItem)}
+      </div>
+    ));
+  };
+
+  onEdit = item => {
+    this.setState({
+      showInsertUpdateForm: true,
+      editItem: item,
+      editMode: true
+    });
+    window.scrollTo(0, 0);
+  };
+
+  onDelete = item => {
+    this.setState({ itemToDelete: item }, () => {
+      this.setState({ showConfirmDeleteModal: true });
+    });
+  };
+
   render() {
-    const items = this.props.securityOperation.list
-      .filter(
-        d =>
-          this.state.inputFilter === '' ||
-          d.name.includes(this.state.inputFilter)
-      )
-      .map((item, key) => (
-        <tr key={key}>
-          <td>{item.name}</td>
-          <td>
-            {item.policies.map((policyItem, policyKey) => (
-              <div key={security_policies.get(policyItem)}>
-                {policyItem} - {security_policies.get(policyItem)}
-              </div>
-            ))}
-          </td>
-          <td>
-            <Button
-              className="link-button"
-              onClick={() => {
-                this.setState({
-                  showInsertUpdateForm: true,
-                  editItem: item,
-                  editMode: true
-                });
-                window.scrollTo(0, 0);
-              }}
-            >
-              <i className="pe-7s-edit" />
-            </Button>
-          </td>
-          <td>
-            <Button
-              className="link-button"
-              onClick={e =>
-                this.setState({ itemToDelete: item }, () => {
-                  this.setState({ showConfirmDeleteModal: true });
-                })
-              }
-            >
-              <i className="pe-7s-trash" />
-            </Button>
-          </td>
-        </tr>
-      ));
+    let columns = [];
+    columns.push(col.addCol('name', 'Role', '30%'));
+    columns.push(col.addColBtn('policies', 'Policies', this.policies, '50%'));
+    columns.push(col.addEdit(this.onEdit));
+    columns.push(col.addDelete(this.onDelete));
+
+    const data = this.props.securityOperation.list.filter(
+      d =>
+        this.state.inputFilter === '' || d.name.includes(this.state.inputFilter)
+    );
 
     return (
       <div className="content">
@@ -174,20 +162,7 @@ class SecurityOperation extends Component {
                         ></FormControl>
                       </FormGroup>
                     </div>
-
-                    <div>
-                      <Table bordered hover size="sm">
-                        <thead>
-                          <tr>
-                            <th>Role</th>
-                            <th>Policies</th>
-                            <th>Edit</th>
-                            <th>Delete</th>
-                          </tr>
-                        </thead>
-                        <tbody>{items}</tbody>
-                      </Table>
-                    </div>
+                    <TenkaiTable columns={columns} data={data} />
                   </form>
                 }
               />
