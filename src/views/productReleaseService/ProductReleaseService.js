@@ -229,8 +229,8 @@ class ProductReleaseService extends Component {
     columns.push(
       col.addColBtn('latestVersion', 'Latest Image Tag', this.latestImageTag)
     );
-    columns.push(col.addEdit(this.onEdit));
-    columns.push(col.addDelete(this.onDelete));
+    columns.push(col.addEdit(this.onEdit, '10%', this.state.locked));
+    columns.push(col.addDelete(this.onDelete, '10%', this.state.locked));
     columns.push(
       col.addColBtn('goDeploy', 'Go To Deploy', this.goToDeployButton)
     );

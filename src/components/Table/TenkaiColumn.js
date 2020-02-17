@@ -5,8 +5,13 @@ export const addId = (wdt = '10%') => {
   return addCol('ID', 'ID', wdt);
 };
 
-export const addEdit = (onEdit, wdt = '10%') => {
-  return addColBtn('edit', 'Edit', renderBtn(onEdit, 'pe-7s-edit'), wdt);
+export const addEdit = (onEdit, wdt = '10%', disabled = false) => {
+  return addColBtn(
+    'edit',
+    'Edit',
+    renderBtn(onEdit, 'pe-7s-edit', disabled),
+    wdt
+  );
 };
 
 export const addDelete = (onDelete, wdt = '10%', disabled = false) => {

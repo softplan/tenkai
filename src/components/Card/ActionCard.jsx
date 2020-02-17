@@ -16,7 +16,7 @@ export const ActionCard = props => (
           <div align="right">
             <ButtonToolbar style={{ display: 'block' }}>
               <Button
-                className="btn btn-primary pull-right btn-fill"
+                variant="primary"
                 type="button"
                 disabled={props.buttonsDisabled}
                 onClick={props.directDeployOnClick}
