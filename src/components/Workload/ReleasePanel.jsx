@@ -126,7 +126,7 @@ export class ReleasePanel extends Component {
         <td>
           <Button
             className="link-button"
-            disabled={!this.props.keycloak.hasRealmRole('tenkai-promote')}
+            disabled={!this.props.keycloak.hasRealmRole('tenkai-admin')}
             onClick={this.showRollbackConfirmModal.bind(this, item.revision)}
           >
             <i className="pe-7s-back-2" />
@@ -136,7 +136,7 @@ export class ReleasePanel extends Component {
         <td>
           <Button
             className="link-button"
-            disabled={!this.props.keycloak.hasRealmRole('tenkai-promote')}
+            disabled={!this.props.keycloak.hasRealmRole('tenkai-admin')}
             onClick={this.showEditorModal.bind(this, item)}
           >
             <i className="pe-7s-note2" />

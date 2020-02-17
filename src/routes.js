@@ -59,16 +59,16 @@ const dashboardRoutes = [
         component: Enviroments,
         layout: '/admin',
         menu: true,
-        role: 'tenkai-user'
+        role: 'tenkai-admin'
       },
       {
-        path: '/config',
-        name: 'Helm Repo',
-        icon: 'pe-7s-helm',
-        component: Config,
+        path: '/variable-rule',
+        name: 'Validation Rules',
+        icon: 'pe-7s-check',
+        component: VariableRule,
         layout: '/admin',
         menu: true,
-        role: 'tenkai-user'
+        role: 'tenkai-admin'
       },
       {
         path: '/dockerRepo',
@@ -78,15 +78,6 @@ const dashboardRoutes = [
         layout: '/admin',
         menu: true,
         role: 'tenkai-admin'
-      },      
-      {
-        path: '/variable-rule',
-        name: 'Validation Rules',
-        icon: 'pe-7s-check',
-        component: VariableRule,
-        layout: '/admin',
-        menu: true,
-        role: 'tenkai-user'
       },
       {
         path: '/globalConfig',
@@ -96,7 +87,7 @@ const dashboardRoutes = [
         layout: '/admin',
         menu: true,
         role: 'tenkai-admin'
-      },
+      }
     ]
   },
 
@@ -107,7 +98,7 @@ const dashboardRoutes = [
     component: null,
     layout: '/admin',
     menu: true,
-    role: 'tenkai-user', 
+    role: 'tenkai-admin',
     submenu: [
       {
         path: '/product',
@@ -116,7 +107,7 @@ const dashboardRoutes = [
         component: Product,
         layout: '/admin',
         menu: true,
-        role: 'tenkai-beta'
+        role: 'tenkai-admin'
       },
       {
         path: '/solution',
@@ -125,8 +116,8 @@ const dashboardRoutes = [
         component: Solution,
         layout: '/admin',
         menu: true,
-        role: 'tenkai-user'
-      },
+        role: 'tenkai-admin'
+      }
     ]
   },
   {
@@ -156,7 +147,7 @@ const dashboardRoutes = [
     menu: false,
     role: 'tenkai-user'
   },
- 
+
   {
     path: '/environments-envvars',
     name: 'Variables',
@@ -173,7 +164,7 @@ const dashboardRoutes = [
     component: ProductRelease,
     layout: '/admin',
     menu: false,
-    role: 'tenkai-user'
+    role: 'tenkai-admin'
   },
   {
     path: '/product-version-service',
@@ -182,7 +173,7 @@ const dashboardRoutes = [
     component: ProductReleaseService,
     layout: '/admin',
     menu: false,
-    role: 'tenkai-user'
+    role: 'tenkai-admin'
   },
   {
     path: '/solution-deps',
@@ -191,7 +182,7 @@ const dashboardRoutes = [
     component: SolutionChart,
     layout: '/admin',
     menu: false,
-    role: 'tenkai-user'
+    role: 'tenkai-admin'
   },
   {
     path: '/solution-deploy',
@@ -200,17 +191,8 @@ const dashboardRoutes = [
     component: DeploySolution,
     layout: '/admin',
     menu: false,
-    role: 'tenkai-user'
+    role: 'tenkai-admin'
   },
-  // {
-  //   path: "/microservices",
-  //   name: "Releases",
-  //   icon: "pe-7s-tools",
-  //   component: Microservices,
-  //   layout: "/admin",
-  //   menu: true,
-  //   role: "tenkai-user"
-  // },
   {
     path: '/microservices-deps',
     name: 'Dependencies',
@@ -218,7 +200,7 @@ const dashboardRoutes = [
     component: Dependencies,
     layout: '/admin',
     menu: false,
-    role: 'tenkai-user'
+    role: 'tenkai-admin'
   },
   {
     path: '/blueGreenWizard',
@@ -254,8 +236,17 @@ const dashboardRoutes = [
     component: null,
     layout: '/admin',
     menu: true,
-    role: 'tenkai-user',
+    role: 'tenkai-admin',
     submenu: [
+      {
+        path: '/config',
+        name: 'Helm Repo',
+        icon: 'pe-7s-helm',
+        component: Config,
+        layout: '/admin',
+        menu: true,
+        role: 'tenkai-user'
+      },
       {
         path: '/compareEnv',
         name: 'Compare Envs',
@@ -264,7 +255,7 @@ const dashboardRoutes = [
         layout: '/admin',
         menu: true,
         role: 'tenkai-admin'
-      },
+      }
     ]
   },
   {
@@ -293,12 +284,9 @@ const dashboardRoutes = [
         layout: '/admin',
         menu: true,
         role: 'tenkai-admin'
-      },
-
+      }
     ]
-    }  
-
-
+  }
 ];
 
 export default dashboardRoutes;

@@ -141,7 +141,7 @@ class ProductRelease extends Component {
             search: '?productVersionId=' + row.ID
           })
         }
-        disabled={!this.props.keycloak.hasRealmRole('tenkai-lock-version')}
+        disabled={!this.props.keycloak.hasRealmRole('tenkai-admin')}
       >
         <i className="pe-7s-news-paper cell-button-icon" />
       </Button>

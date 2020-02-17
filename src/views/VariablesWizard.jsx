@@ -367,11 +367,6 @@ class VariablesWizard extends Component {
                         className="btn-primary pull-right"
                         type="button"
                         onClick={this.onHelmCommand}
-                        disabled={
-                          !this.props.keycloak.hasRealmRole(
-                            'tenkai-helm-upgrade'
-                          )
-                        }
                       >
                         Show Helm Command
                       </Button>

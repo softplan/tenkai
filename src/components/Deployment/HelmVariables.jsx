@@ -151,8 +151,8 @@ export class HelmVariables extends Component {
     payload.data.push({
       scope: scope,
       chartVersion: chartVersion,
-      name: 'image.repository',
-      value: this.state.containerImage,
+      name: 'image.tag',
+      value: this.state.containerTag,
       environmentId: environmentId
     });
 
