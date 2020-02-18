@@ -7,7 +7,7 @@ import Button from "components/CustomButton/CustomButton.jsx";
 import HelmVariables from "components/Deployment/HelmVariables.jsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { CardTenkai } from "components/Card/CardTenkai.jsx";
-import { multipleInstall } from "client-api/apicall.jsx";
+import { multipleInstall, retrieveSettings } from "client-api/apicall.jsx";
 import CopyModal from "components/Modal/CopyModal.jsx";
 
 class DepGraph extends Component {
@@ -35,6 +35,24 @@ class DepGraph extends Component {
     for (const [chartName, versionObject] of entries) {
       retrieveDependency(environmentId, chartName, versionObject.value, this);
     }
+    let data = [];
+    data.push('commonValuesConfigMapChart');
+
+    retrieveSettings({ list: data }, this, (result, self) => {
+      let vCommonValuesConfigMapChart = '';
+
+      for (let x = 0; x < result.List.length; x++) {
+        let field = result.List[x].name;
+        let value = result.List[x].value;
+        if (field === 'commonValuesConfigMapChart') {
+          vCommonValuesConfigMapChart = value;
+        }
+      }
+
+      this.setState({
+        vCommonValuesConfigMapChart: vCommonValuesConfigMapChart
+      });
+    });    
   }
 
   onCloseCopyModal() {
@@ -322,6 +340,7 @@ class DepGraph extends Component {
 
                 <div>
                   <HelmVariables
+                    vCommonValuesConfigMapChart={this.state.vCommonValuesConfigMapChart}
                     handleLoading={this.props.handleLoading}
                     canary={false}
                     copyVariables={this.showConfirmCopyModal.bind(this)}

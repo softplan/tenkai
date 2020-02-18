@@ -18,7 +18,7 @@ import TENKAI_API_URL from 'env.js';
 import { ConfigMap } from 'components/Deployment/ConfigMap.jsx';
 import Button from 'components/CustomButton/CustomButton.jsx';
 import { CanaryCard } from 'components/Deployment/CanaryCard.jsx';
-import { getTagsOfImage, retrieveSettings } from 'client-api/apicall.jsx';
+import { getTagsOfImage } from 'client-api/apicall.jsx';
 import Select from 'react-select';
 import { ACTION_SAVE_VARIABLES } from 'policies.js';
 
@@ -36,7 +36,6 @@ export class HelmVariables extends Component {
     selectedTag: {},
     hosts: {},
     hostCount: 0,
-    configMapChart: '',
     simpleChart: '',
     canaryChart: '',
     canaryShowing: false,
@@ -48,40 +47,6 @@ export class HelmVariables extends Component {
 
   constructor(props) {
     super(props);
-
-    let data = [];
-    data.push('commonValuesConfigMapChart');
-    data.push('commonVariablesConfigMapChart');
-    data.push('canaryChart');
-
-    retrieveSettings({ list: data }, this, (result) => {
-      let vCommonValuesConfigMapChart = '';
-      let vCommonVariablesConfigMapChart = '';
-      let vCanaryChart = '';
-
-      for (let x = 0; x < result.List.length; x++) {
-        let field = result.List[x].name;
-        let value = result.List[x].value;
-
-        if (field === 'commonValuesConfigMapChart') {
-          vCommonValuesConfigMapChart = value;
-        } else {
-          if (field === 'commonVariablesConfigMapChart') {
-            vCommonVariablesConfigMapChart = value;
-          } else {
-            if (field === 'canaryChart') {
-              vCanaryChart = value;
-            }
-          }
-        }
-      }
-
-      this.setState({
-        configMapChart: vCommonValuesConfigMapChart,
-        simpleChart: vCommonVariablesConfigMapChart,
-        canaryChart: vCanaryChart
-      });
-    });
 
     this.state.chartName = props.chartName;
     this.state.chartVersion = props.chartVersion;
@@ -95,6 +60,9 @@ export class HelmVariables extends Component {
       this.state.releaseName = this.state.releaseName + '-beta';
       this.state.dontCreateService = true;
       this.state.canaryShowing = true;
+      this.state.vCommonValuesConfigMapChart = this.props.vCommonValuesConfigMapChart;
+      this.state.vCommonVariablesConfigMapChart = this.props.vCommonVariablesConfigMapChart;
+      this.state.vCanaryChart = this.props.vCanaryChart;
     }
   }
 
@@ -441,7 +409,7 @@ export class HelmVariables extends Component {
   }
 
   fillImageFields(variables) {
-    variables.forEach((value) => {
+    variables.forEach(value => {
       switch (value.name) {
         case 'image.repository':
           if (this.state.containerImage !== value.value && value.value !== '') {
@@ -479,7 +447,7 @@ export class HelmVariables extends Component {
   }
 
   fillIstioFields(variables) {
-    variables.forEach((value) => {
+    variables.forEach(value => {
       switch (value.name) {
         case 'istio.enabled':
           this.setState({
@@ -516,7 +484,7 @@ export class HelmVariables extends Component {
     let dynamicEntries = new Map();
     let valuesMap = new Map();
 
-    variables.forEach((value) => {
+    variables.forEach(value => {
       valuesMap[value.name] = value.value;
       if (value.name.indexOf('].') > -1) {
         if (dynamicEntries[this.getRootName(value.name)] !== undefined) {
@@ -854,14 +822,18 @@ export class HelmVariables extends Component {
 
                   {this.renderCM() ? (
                     <ConfigMap
+                      vCommonValuesConfigMapChart={
+                        this.props.vCommonValuesConfigMapChart
+                      }
                       handleLoading={this.props.handleLoading}
                       handleNotification={this.props.handleNotification}
                       key="ConfigMap"
-                      chartName={this.state.configMapChart}
+                      chartName={this.props.vCommonValuesConfigMapChart}
                       chartVersion={this.state.configMapChartVersion}
                       ref="hConfigMap"
                       configMapName={this.getConfigMapName()}
                       envId={this.props.envId}
+                      hasEnvironmentPolicy={this.props.hasEnvironmentPolicy.bind(this)}
                     />
                   ) : (
                     <div></div>

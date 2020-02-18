@@ -5,7 +5,7 @@ import { Container, Row, Col, ButtonToolbar } from 'react-bootstrap';
 
 import HelmVariables from 'components/Deployment/HelmVariables.jsx';
 import TrafficPanel from 'components/Traffic/TrafficPanel.jsx';
-import { multipleInstall } from 'client-api/apicall.jsx';
+import { multipleInstall, retrieveSettings } from 'client-api/apicall.jsx';
 
 // eslint-disable-next-line
 const NAMESPACE = '${NAMESPACE}';
@@ -53,6 +53,40 @@ class Step1 extends React.Component {
       this.props.chartName,
       this.props.chartVersion
     );
+
+    let data = [];
+    data.push('commonValuesConfigMapChart');
+    data.push('commonVariablesConfigMapChart');
+    data.push('canaryChart');
+
+    retrieveSettings({ list: data }, this, result => {
+      let vCommonValuesConfigMapChart = '';
+      let vCommonVariablesConfigMapChart = '';
+      let vCanaryChart = '';
+
+      for (let x = 0; x < result.List.length; x++) {
+        let field = result.List[x].name;
+        let value = result.List[x].value;
+
+        if (field === 'commonValuesConfigMapChart') {
+          vCommonValuesConfigMapChart = value;
+        } else {
+          if (field === 'commonVariablesConfigMapChart') {
+            vCommonVariablesConfigMapChart = value;
+          } else {
+            if (field === 'canaryChart') {
+              vCanaryChart = value;
+            }
+          }
+        }
+      }
+
+      this.setState({
+        vCommonValuesConfigMapChart: vCommonValuesConfigMapChart,
+        vCommonVariablesConfigMapChart: vCommonVariablesConfigMapChart,
+        vCanaryChart: vCanaryChart
+      });
+    });
   }
 
   saveVariablesAndDeploy() {
@@ -75,6 +109,11 @@ class Step1 extends React.Component {
     return (
       <div>
         <HelmVariables
+          vCommonValuesConfigMapChart={this.state.vCommonValuesConfigMapChart}
+          vCommonVariablesConfigMapChart={
+            this.state.vCommonVariablesConfigMapChart
+          }
+          vCanaryChart={this.state.vCanaryChart}
           handleLoading={this.props.handleLoading}
           canary={true}
           copyVariables={this.showConfirmCopyModal.bind(this)}
@@ -82,8 +121,8 @@ class Step1 extends React.Component {
           key="h1"
           chartName={this.props.chartName}
           chartVersion={this.props.chartVersion}
-          xref={'h1'}
-          ref={'h1'}
+          xref="h1"
+          ref="h1"
           envId={this.props.envId}
         />
       </div>
@@ -100,7 +139,7 @@ class Step2 extends React.Component {
     return (
       <div>
         <TrafficPanel
-          ref={'trafficPanel'}
+          ref="trafficPanel"
           host={this.props.host}
           apiPath={this.props.apiPath}
           serviceName={this.props.serviceName}
@@ -344,7 +383,7 @@ class BlueGreenWizard extends Component {
                 content={
                   <div>
                     <Step1
-                      ref={'step1'}
+                      ref="step1"
                       currentStep={this.state.currentStep}
                       chartName={this.state.chartName}
                       chartVersion={this.state.chartVersion}
@@ -365,7 +404,7 @@ class BlueGreenWizard extends Component {
                     ></Step1>
 
                     <Step2
-                      ref={'step2'}
+                      ref="step2"
                       currentStep={this.state.currentStep}
                       host={this.state.host}
                       apiPath={this.state.apiPath}

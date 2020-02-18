@@ -11,7 +11,7 @@ import queryString from 'query-string';
 import { validateVariables } from 'client-api/apicall.jsx';
 import SimpleModal from 'components/Modal/SimpleModal.jsx';
 import { ACTION_SAVE_VARIABLES, ACTION_DEPLOY } from 'policies.js';
-import { getAllEnvironments } from "client-api/apicall.jsx";
+import { getAllEnvironments, retrieveSettings } from 'client-api/apicall.jsx';
 
 class VariablesWizard extends Component {
   state = {
@@ -62,6 +62,40 @@ class VariablesWizard extends Component {
         chartVersions[value] = chartVersion;
       }
     }
+
+    let data = [];
+    data.push('commonValuesConfigMapChart');
+    data.push('commonVariablesConfigMapChart');
+    data.push('canaryChart');
+
+    retrieveSettings({ list: data }, this, result => {
+      let vCommonValuesConfigMapChart = '';
+      let vCommonVariablesConfigMapChart = '';
+      let vCanaryChart = '';
+
+      for (let x = 0; x < result.List.length; x++) {
+        let field = result.List[x].name;
+        let value = result.List[x].value;
+
+        if (field === 'commonValuesConfigMapChart') {
+          vCommonValuesConfigMapChart = value;
+        } else {
+          if (field === 'commonVariablesConfigMapChart') {
+            vCommonVariablesConfigMapChart = value;
+          } else {
+            if (field === 'canaryChart') {
+              vCanaryChart = value;
+            }
+          }
+        }
+      }
+      this.setState({
+        vCommonValuesConfigMapChart: vCommonValuesConfigMapChart,
+        vCommonVariablesConfigMapChart: vCommonVariablesConfigMapChart,
+        vCanaryChart: vCanaryChart
+      });
+    });
+
     this.setState(
       {
         charts: helmCharts,
@@ -310,6 +344,11 @@ class VariablesWizard extends Component {
     const items = this.state.charts.map((item, key) => {
       return (
         <HelmVariables
+          vCommonValuesConfigMapChart={this.state.vCommonValuesConfigMapChart}
+          vCommonVariablesConfigMapChart={
+            this.state.vCommonVariablesConfigMapChart
+          }
+          vCanaryChart={this.state.vCanaryChart}
           handleLoading={this.props.handleLoading}
           hasEnvironmentPolicy={this.props.hasEnvironmentPolicy.bind(this)}
           canary={false}

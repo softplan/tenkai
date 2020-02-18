@@ -3,7 +3,7 @@ import { Table, FormGroup, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import axios from 'axios';
 import TENKAI_API_URL from 'env.js';
 import { FormInputs } from 'components/FormInputs/FormInputs.jsx';
-import { retrieveSettings } from 'client-api/apicall.jsx';
+import { ACTION_SAVE_VARIABLES } from 'policies.js';
 import { validateVariables } from 'client-api/apicall.jsx';
 
 export class ConfigMap extends Component {
@@ -18,25 +18,8 @@ export class ConfigMap extends Component {
 
   constructor(props) {
     super(props);
-
-    let data = [];
-    data.push('commonValuesConfigMapChart');
-
-    retrieveSettings({ list: data }, this, (result, self) => {
-      let vCommonValuesConfigMapChart = '';
-
-      for (let x = 0; x < result.List.length; x++) {
-        let field = result.List[x].name;
-        let value = result.List[x].value;
-        if (field === 'commonValuesConfigMapChart') {
-          vCommonValuesConfigMapChart = value;
-        }
-      }
-
-      this.setState({
-        configMapChart: vCommonValuesConfigMapChart
-      });
-    });
+    console.log(this.props.vCommonValuesConfigMapChart);
+    this.state.configMapChart = this.props.vCommonValuesConfigMapChart;
   }
 
   componentDidMount() {
@@ -105,9 +88,9 @@ export class ConfigMap extends Component {
       const chartName = this.state.chartName;
       const environmentId = parseInt(this.props.envId);
       let payload = { data: [] };
-  
+
       const elements = this.state.values;
-  
+
       Object.keys(this.state.values).map(function(key, index) {
         payload.data.push({
           scope: scope,
@@ -117,9 +100,9 @@ export class ConfigMap extends Component {
         });
         return null;
       });
-  
+
       let data = payload.data;
-  
+
       axios
         .post(TENKAI_API_URL + '/saveVariableValues', { data })
         .then(res => {
@@ -323,7 +306,6 @@ export class ConfigMap extends Component {
 
       const tooltip = <Tooltip id="tooltip">{keyValue}</Tooltip>;
 
-
       return (
         <tr key={key}>
           <td>{key}</td>
@@ -335,6 +317,9 @@ export class ConfigMap extends Component {
               delayHide={150}
             >
               <input
+                disabled={
+                  !this.props.hasEnvironmentPolicy(ACTION_SAVE_VARIABLES)
+                }
                 name={key}
                 value={value}
                 onChange={this.onInputChange}
@@ -343,15 +328,14 @@ export class ConfigMap extends Component {
                 className={this.isValid(key)}
               />
             </OverlayTrigger>
-            {this.hasInvalidVar(key) && (
+            {this.hasInvalidVar(key) &&
               this.state.invalidVariables[key].map(k => {
                 return (
                   <div key={k} className="invalid-feedback">
                     {this.getInvalidMsg(k.name, k.ruleType)}
                   </div>
                 );
-              })
-            )}
+              })}
           </td>
         </tr>
       );
