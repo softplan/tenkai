@@ -276,6 +276,7 @@ class Config extends Component {
                       columns={columns}
                       data={data}
                       rowClasses={this.getHighLight}
+                      keyfield="name"
                     />
                   </form>
                 }

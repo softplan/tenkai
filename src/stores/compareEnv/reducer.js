@@ -267,7 +267,6 @@ export default function reduce(state = initialState, action = {}) {
         ...state,
         repositories: action.payload.repositories
       };
-      console.log(newState);
       return newState;
 
     case types.LOAD_CHART_SUCCESS:

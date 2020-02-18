@@ -53,9 +53,6 @@ class Admin extends Component {
   }
 
   async getUserRole(environmentId) {
-    console.log(environmentId);
-    console.log(this.state.keycloak.idTokenParsed.email);
-
      await this.props.dispatch(actions.loadRole(this.state.keycloak.idTokenParsed.email, environmentId));
   }
 
@@ -243,9 +240,6 @@ class Admin extends Component {
 
   hasEnvironmentPolicy = policy => {
     let result = false;
-    
-    console.log(this.props.master);
-
     if (this.props.master.role !== undefined) {
       if (
         this.props.master.role.policies !== undefined &&

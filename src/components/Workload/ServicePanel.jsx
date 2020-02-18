@@ -52,7 +52,12 @@ export class ServicePanel extends Component {
           message="Are you sure you want to delete this service?"
           handleConfirmDelete={this.handleConfirmDelete.bind(this)}
         />
-        <TenkaiTable columns={columns} data={data} bordered={false} />
+        <TenkaiTable
+          columns={columns}
+          data={data}
+          bordered={false}
+          keyfield="name"
+        />
       </div>
     );
   }

@@ -25,6 +25,7 @@ import { EndpointPanel } from 'components/Workload/EndpointPanel.jsx';
 import Button from 'components/CustomButton/CustomButton.jsx';
 import CopyModal from 'components/Modal/CopyModal.jsx';
 import EditModal from 'components/Modal/EditModal';
+import { ACTION_DELETE_POD, ACTION_HELM_PURGE } from 'policies.js';
 
 class Workload extends Component {
   state = {
@@ -222,6 +223,7 @@ class Workload extends Component {
       )
       .map((item, key) => (
         <ReleasePanel
+          allowPurge={!this.props.hasEnvironmentPolicy(ACTION_HELM_PURGE)}
           eventKey={key}
           keycloak={this.props.keycloak}
           key={key}
@@ -276,6 +278,9 @@ class Workload extends Component {
                 <Row>
                   <Col xs={12}>
                     <PodPanel
+                      allowDeletePod={
+                        !this.props.hasEnvironmentPolicy(ACTION_DELETE_POD)
+                      }
                       selectedEnvironment={this.props.selectedEnvironment}
                       handleLoading={this.props.handleLoading}
                       handleNotification={this.props.handleNotification}

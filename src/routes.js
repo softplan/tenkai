@@ -6,9 +6,6 @@ import VariablesWizard from 'views/VariablesWizard';
 import Dependencies from 'views/Dependencies';
 import DepAnalysis from 'views/DepAnalysis';
 import DepGraph from 'views/DepGraph';
-import Solution from 'views/Solution';
-import SolutionChart from 'views/SolutionChart';
-import DeploySolution from 'views/DeploySolution';
 import User from 'views/user/User';
 import Workload from 'views/Workload';
 import BlueGreenWizard from 'views/BlueGreenWizard';
@@ -42,7 +39,15 @@ const dashboardRoutes = [
     menu: true,
     role: 'tenkai-user'
   },
-
+  {
+    path: '/product',
+    name: 'Product',
+    icon: 'pe-7s-box2',
+    component: Product,
+    layout: '/admin',
+    menu: true,
+    role: 'tenkai-admin'
+  },
   {
     path: '/admin-master',
     name: 'Admin',
@@ -84,36 +89,6 @@ const dashboardRoutes = [
         name: 'Settings',
         icon: 'pe-7s-settings',
         component: GlobalConfig,
-        layout: '/admin',
-        menu: true,
-        role: 'tenkai-admin'
-      }
-    ]
-  },
-
-  {
-    path: '/product-master',
-    name: 'Solution',
-    icon: 'pe-7s-umbrella',
-    component: null,
-    layout: '/admin',
-    menu: true,
-    role: 'tenkai-admin',
-    submenu: [
-      {
-        path: '/product',
-        name: 'Product',
-        icon: 'pe-7s-box2',
-        component: Product,
-        layout: '/admin',
-        menu: true,
-        role: 'tenkai-admin'
-      },
-      {
-        path: '/solution',
-        name: 'Product Mesh',
-        icon: 'pe-7s-wallet',
-        component: Solution,
         layout: '/admin',
         menu: true,
         role: 'tenkai-admin'
@@ -171,24 +146,6 @@ const dashboardRoutes = [
     name: 'Product',
     icon: 'pe-7s-umbrella',
     component: ProductReleaseService,
-    layout: '/admin',
-    menu: false,
-    role: 'tenkai-admin'
-  },
-  {
-    path: '/solution-deps',
-    name: 'Solution',
-    icon: 'pe-7s-umbrella',
-    component: SolutionChart,
-    layout: '/admin',
-    menu: false,
-    role: 'tenkai-admin'
-  },
-  {
-    path: '/solution-deploy',
-    name: 'Solution',
-    icon: 'pe-7s-umbrella',
-    component: DeploySolution,
     layout: '/admin',
     menu: false,
     role: 'tenkai-admin'

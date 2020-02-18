@@ -103,7 +103,10 @@ class DeploySolution extends Component {
                   <div>
                     <Row>
                       <div className="col-md-11">
-                        <TenkaiTable columns={columns} data={data} />
+                        <TenkaiTable
+                          columns={columns}
+                          data={data}
+                        />
                       </div>
                     </Row>
 

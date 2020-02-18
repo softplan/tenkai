@@ -22,7 +22,7 @@ export class EditSecurityOperation extends Component {
     this.setState({ allPolicies: allPolicies });
 
     if (this.props.editMode) {
-      let selected = this.props.editItem.Policies.map(e => e.name);
+      let selected = this.props.editItem.policies;
       this.setState({ formData: this.props.editItem, selected: selected });
     } else {
       this.setState(() => ({

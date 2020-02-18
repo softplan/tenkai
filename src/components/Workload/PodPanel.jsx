@@ -33,6 +33,7 @@ export class PodPanel extends Component {
   btnDeletePod = (cell, row) => {
     return (
       <Button
+        disabled={this.props.allowDeletePod}
         className="link-button"
         onClick={this.showDeleteConfirmModal.bind(this, row)}
       >
@@ -65,7 +66,12 @@ export class PodPanel extends Component {
           message="Are you sure you want to delete this pod?"
           handleConfirmDelete={this.handleConfirmDelete.bind(this)}
         />
-        <TenkaiTable columns={columns} data={data} bordered={false} />
+        <TenkaiTable
+          columns={columns}
+          data={data}
+          bordered={false}
+          keyfield="name"
+        />
       </div>
     );
   }

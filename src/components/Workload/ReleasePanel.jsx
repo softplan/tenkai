@@ -146,7 +146,7 @@ export class ReleasePanel extends Component {
     ));
 
     return (
-      <Card eventKey={this.props.eventKey}>
+      <Card eventkey={this.props.eventKey}>
         <SimpleModal
           showConfirmDeleteModal={this.state.showConfirmDeleteModal}
           handleConfirmDeleteModalClose={this.handleConfirmDeleteClose.bind(
@@ -200,6 +200,7 @@ export class ReleasePanel extends Component {
               </Button>
 
               <Button
+                disabled={this.props.allowPurge}
                 className="btn btn-danger"
                 size="sm"
                 onClick={this.showDeleteConfirmModal.bind(
@@ -211,6 +212,7 @@ export class ReleasePanel extends Component {
               </Button>
 
               <Button
+                disabled={!this.props.keycloak.hasRealmRole('tenkai-admin')}
                 className="btn btn-info btn-fill"
                 size="sm"
                 onClick={this.navigateToBlueGreenWizard.bind(
