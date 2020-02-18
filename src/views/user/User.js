@@ -84,7 +84,7 @@ class User extends Component {
   btnHandleEnv = (cell, row) => {
     return (
       <Button className="link-button" onClick={this.onEdit.bind(this, row)}>
-        <i className="pe-7s-home" />
+        <i className="pe-7s-id" />
       </Button>
     );
   };

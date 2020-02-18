@@ -74,7 +74,7 @@ class SecurityOperation extends Component {
     let columns = [];
     columns.push(col.addCol('name', 'Role', '30%'));
     columns.push(col.addColBtn('policies', 'Policies', this.policies, '50%'));
-    columns.push(col.addEdit(this.onEdit));
+    columns.push(col.addEdit(this.onEdit, '10%', true));
     columns.push(col.addDelete(this.onDelete));
 
     const data = this.props.securityOperation.list.filter(
