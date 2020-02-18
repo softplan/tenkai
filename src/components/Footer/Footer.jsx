@@ -1,17 +1,16 @@
-import React, { Component } from "react";
-import { Container } from "react-bootstrap";
+import React, { Component } from 'react';
+import { Container } from 'react-bootstrap';
 
 class Footer extends Component {
   render() {
     return (
       <footer className="footer">
         <Container fluid>
-          <nav className="pull-left">
-          </nav>
+          <nav className="pull-left"></nav>
           <p className="copyright pull-right">
-            &copy; {new Date().getFullYear()}{" "}
-            <a href="http://www.softplan.com.br">
-              Softplan
+            &copy; 2019-2020
+            <a href="https://github.com/softplan/tenkai">
+              https://github.com/softplan/tenkai
             </a>
           </p>
         </Container>
