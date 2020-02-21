@@ -241,7 +241,6 @@ export class HelmVariables extends Component {
 
             list.push(installPayload);
             list.push(data);
-
             callbackFunction(list);
           });
         } else {
@@ -621,15 +620,15 @@ export class HelmVariables extends Component {
     );
   }
 
-  render() {
-    const items = Object.keys(this.state.variables).map(key => {
-      if (typeof this.state.variables[key] == 'object') {
+  renderVariables(variables) {
+    return Object.keys(variables).map(key => {
+      if (typeof variables[key] == 'object') {
         return (
           <ArrayVariable
             key={key}
             name={key}
             disabled={!this.props.hasEnvironmentPolicy(ACTION_SAVE_VARIABLES)}
-            variables={this.state.variables[key]}
+            variables={variables[key]}
             values={this.state.values}
             onCreateDynamicVariable={this.addDynamicVariableClick.bind(this)}
             onInputChange={this.onInputChangeFromChild.bind(this)}
@@ -637,7 +636,7 @@ export class HelmVariables extends Component {
         );
       } else {
         const value = this.state.values[key] || '';
-        const keyValue = '' + this.state.variables[key];
+        const keyValue = '' + variables[key];
         const tooltip = <Tooltip id="tooltip">{keyValue}</Tooltip>;
         return (
           <tr key={key}>
@@ -674,7 +673,10 @@ export class HelmVariables extends Component {
         );
       }
     });
+  }
 
+  render() {
+    let items = this.renderVariables(this.state.variables);
     return (
       <div>
         <Row>
@@ -742,8 +744,7 @@ export class HelmVariables extends Component {
                     <div></div>
                   )}
 
-                  {this.state.chartName !== this.state.simpleChart &&
-                  this.state.chartName !== this.state.canaryChart ? (
+                  {this.shouldRenderImageAndTag() ? (
                     <form>
                       <Row>
                         <Col xs={6}>
@@ -833,7 +834,9 @@ export class HelmVariables extends Component {
                       ref="hConfigMap"
                       configMapName={this.getConfigMapName()}
                       envId={this.props.envId}
-                      hasEnvironmentPolicy={this.props.hasEnvironmentPolicy.bind(this)}
+                      hasEnvironmentPolicy={this.props.hasEnvironmentPolicy.bind(
+                        this
+                      )}
                     />
                   ) : (
                     <div></div>
@@ -844,6 +847,13 @@ export class HelmVariables extends Component {
           </Col>
         </Row>
       </div>
+    );
+  }
+
+  shouldRenderImageAndTag() {
+    return (
+      this.state.chartName !== this.state.simpleChart &&
+      this.state.chartName !== this.state.canaryChart
     );
   }
 }

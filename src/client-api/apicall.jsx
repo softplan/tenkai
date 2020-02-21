@@ -327,7 +327,7 @@ function listServices(self, id, callback) {
 function getReleaseHistory(self, environmentID, releaseName, callback) {
   self.props.handleLoading(true);
   axios
-    .post(TENKAI_API_URL + `/listReleaseHistory`, {
+    .post(TENKAI_API_URL + '/listReleaseHistory', {
       environmentID,
       releaseName
     })
@@ -346,7 +346,7 @@ function getReleaseHistory(self, environmentID, releaseName, callback) {
 function getRevisionYaml(self, environmentID, releaseName, revision, callback) {
   self.props.handleLoading(true);
   axios
-    .post(TENKAI_API_URL + `/revision`, {
+    .post(TENKAI_API_URL + '/revision', {
       environmentID,
       releaseName,
       revision
@@ -366,7 +366,7 @@ function getRevisionYaml(self, environmentID, releaseName, revision, callback) {
 function rollbackHelmRelease(self, environmentID, item, callback) {
   self.props.handleLoading(true);
   axios
-    .post(TENKAI_API_URL + `/rollback`, {
+    .post(TENKAI_API_URL + '/rollback', {
       environmentID: environmentID,
       releaseName: item.releaseName,
       revision: item.revision
@@ -479,7 +479,7 @@ function getDockerImageFromHelmChart(self, payload, callback) {
     });
 }
 
-async function validateVariables(self, envId, chartName, callback, cmRef) {
+async function validateVariables(self, envId, chartName, callback) {
   self.props.handleLoading(true);
   await axios
     .post(TENKAI_API_URL + '/validateVariables', {
@@ -487,7 +487,7 @@ async function validateVariables(self, envId, chartName, callback, cmRef) {
       scope: chartName
     })
     .then(response => {
-      callback(response.data.InvalidVariables, cmRef);
+      callback(response.data.InvalidVariables);
       self.props.handleLoading(false);
     })
     .catch(error => {

@@ -14,6 +14,7 @@ import { reducer as notifications } from 'react-notification-system-redux';
 import compareEnv from './compareEnv/reducer';
 import securityOperation from './securityOperation/reducer';
 import master from './master/reducer';
+import deploy from './deploy/reducer';
 
 export {
   notifications,
@@ -31,5 +32,6 @@ export {
   spinner,
   compareEnv,
   securityOperation,
-  master
+  master,
+  deploy
 };
