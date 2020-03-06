@@ -25,7 +25,7 @@ class Deployment extends Component {
     chartsResult: { charts: [] },
     repositories: [],
     selectedRepository: {},
-    latestVersionOnly: false
+    latestVersionOnly: true
   };
 
   componentDidMount() {
