@@ -1,25 +1,32 @@
-import React from "react";
-import { ButtonToolbar } from "react-bootstrap";
-import Button from "components/CustomButton/CustomButton.jsx";
+import React from 'react';
+import { ButtonToolbar } from 'react-bootstrap';
+import Button from 'components/CustomButton/CustomButton.jsx';
 
 export const EnvironmentCard = props => (
-  <div className={"card"}>
-    <div className={"header"}>
+  <div className="card">
+    <div className="header">
       <h4 className="title">{props.name}</h4>
       <p className="category">{props.group}</p>
     </div>
-    <div className={"content"}>
-      <i>Namespace: </i>
-      {props.namespace}
-      <div className="footer">
-        {props.clusterUri}
-        <hr />
-      </div>
+    <div className="content">
+      <i>Type: {props.envType}</i>
+      <br />
+      {props.envType === 'k8s' && (
+        <>
+          <i>Namespace: </i>
+          {props.namespace}
+          <div className="footer">
+            <i>Api Url: </i> {props.clusterUri}
+            <hr />
+          </div>
+        </>
+      )}
+
       <ButtonToolbar>
         <Button
           className="btn-primary"
           size="sm"
-          disabled={!props.keycloak.hasRealmRole("tenkai-admin")}
+          disabled={!props.keycloak.hasRealmRole('tenkai-admin')}
           onClick={() => props.navigateToEditEnvironment(props.item)}
         >
           <i className="pe-7s-edit" /> Edit
@@ -42,7 +49,7 @@ export const EnvironmentCard = props => (
         <Button
           className="btn-primary"
           size="sm"
-          disabled={!props.keycloak.hasRealmRole("tenkai-admin")}
+          disabled={!props.keycloak.hasRealmRole('tenkai-admin')}
           onClick={() => props.duplicateEnvironment(props.item)}
         >
           <i className="pe-7s-magic-wand" /> Duplicate
@@ -59,7 +66,7 @@ export const EnvironmentCard = props => (
         <Button
           className="btn-danger"
           size="sm"
-          disabled={!props.keycloak.hasRealmRole("tenkai-admin")}
+          disabled={!props.keycloak.hasRealmRole('tenkai-admin')}
           onClick={() => props.onDelete(props.item)}
         >
           <i className="pe-7s-trash" /> Delete
