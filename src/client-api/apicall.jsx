@@ -1,5 +1,5 @@
 import axios from 'axios';
-import TENKAI_API_URL from 'env.js';
+import { TENKAI_API_URL, TENKAI_DOCKER_API_URL } from 'env.js';
 
 function handlerError(self, response) {
   if (response !== undefined) {
@@ -445,7 +445,7 @@ function promote(self, srcEnvID, targetEnvID, full) {
 
 function getTagsOfImage(self, imageName, callback) {
   self.props.handleLoading(true);
-  let url = TENKAI_API_URL + '/listDockerTags';
+  let url = TENKAI_DOCKER_API_URL + '/listDockerTags';
   axios
     .post(url, { imageName })
     .then(res => {

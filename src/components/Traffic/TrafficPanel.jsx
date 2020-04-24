@@ -7,7 +7,7 @@ import { CardTenkai } from "components/Card/CardTenkai.jsx";
 import { FormInputs } from "components/FormInputs/FormInputs.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
 import axios from 'axios';
-import TENKAI_API_URL from 'env.js';
+import { TENKAI_API_URL } from 'env.js';
 
 export class TrafficPanel extends Component {
 

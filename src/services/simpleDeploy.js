@@ -1,5 +1,5 @@
 import axios from 'axios';
-import TENKAI_API_URL from 'env.js';
+import { TENKAI_API_URL } from 'env.js';
 
 export async function loadRepositories() {
   return await axios.get(`${TENKAI_API_URL}/repositories`);
@@ -17,7 +17,7 @@ export async function loadVariables(envId, chart) {
 }
 
 export async function loadDockerTags(imageName) {
-  return await axios.post(`${TENKAI_API_URL}/listDockerTags`, { imageName });
+  return await axios.post(`${TENKAI_DOCKER_API_URL}/listDockerTags`, { imageName });
 }
 
 export async function saveVariables(data) {

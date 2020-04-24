@@ -17,7 +17,7 @@ import { getDefaultRepo } from 'client-api/apicall.jsx';
 import ChartCard from 'components/Card/ChartCard.jsx';
 
 import axios from 'axios';
-import TENKAI_API_URL from 'env.js';
+import { TENKAI_API_URL } from 'env.js';
 
 class Deployment extends Component {
   state = {

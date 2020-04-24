@@ -14,7 +14,7 @@ import image from 'assets/img/sidebar-8.jpg';
 import 'assets/css/custom.css';
 import Keycloak from 'keycloak-js';
 import axios from 'axios';
-import TENKAI_API_URL from 'env.js';
+import { TENKAI_API_URL } from 'env.js';
 import NotificationContainer from 'components/Notification/NotificationContainer';
 import Spinner from 'components/Spinner/Spinner';
 import * as utils from 'utils/sort';
@@ -58,7 +58,7 @@ class Admin extends Component {
 
   handleEnvironmentChange = selectedEnvironment => {
     this.setState({ selectedEnvironment }, () => {
-      
+
       window.localStorage.setItem(
         'currentEnvironment',
         JSON.stringify(selectedEnvironment)
@@ -251,7 +251,7 @@ class Admin extends Component {
           }
         }
       }
-    } 
+    }
     return result;
   };
 

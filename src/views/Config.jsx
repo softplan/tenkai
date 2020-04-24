@@ -8,7 +8,7 @@ import SimpleModal from 'components/Modal/SimpleModal.jsx';
 import { getDefaultRepo } from 'client-api/apicall.jsx';
 
 import axios from 'axios';
-import TENKAI_API_URL from 'env.js';
+import { TENKAI_API_URL } from 'env.js';
 
 import TenkaiTable from 'components/Table/TenkaiTable';
 import * as col from 'components/Table/TenkaiColumn';

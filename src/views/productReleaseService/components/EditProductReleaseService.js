@@ -9,7 +9,7 @@ import {
   getDefaultRepo
 } from 'client-api/apicall.jsx';
 import axios from 'axios';
-import TENKAI_API_URL from 'env.js';
+import { TENKAI_API_URL } from 'env.js';
 
 export class EditProductReleaseService extends Component {
   state = {

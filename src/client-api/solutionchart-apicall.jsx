@@ -1,5 +1,5 @@
 import axios from 'axios';
-import TENKAI_API_URL from 'env.js';
+import { TENKAI_API_URL } from 'env.js';
 
 function retrieveSolutionChart(id, self, cb) {
   let url = `/solutionCharts?solutionId=${id}`;

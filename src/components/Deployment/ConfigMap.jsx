@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Table, FormGroup, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import axios from 'axios';
-import TENKAI_API_URL from 'env.js';
+import { TENKAI_API_URL } from 'env.js';
 import { FormInputs } from 'components/FormInputs/FormInputs.jsx';
 import { ACTION_SAVE_VARIABLES } from 'policies.js';
 import { validateVariables } from 'client-api/apicall.jsx';
