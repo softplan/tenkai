@@ -22,6 +22,8 @@ import * as actions from 'stores/productReleaseService/actions';
 import * as selectors from 'stores/productReleaseService/reducer';
 import * as productReleaseSelectors from 'stores/productRelease/reducer';
 
+import * as actionsDeploy from 'stores/deploy/actions';
+
 class ProductReleaseService extends Component {
   constructor(props) {
     super(props);
@@ -90,38 +92,53 @@ class ProductReleaseService extends Component {
   }
 
   goToDeploy() {
-    this.props.handleLoading(true);
     let array = [];
     let services = this.props.productReleaseServices;
     for (var i = 0; i < services.length; i++) {
       let item = services[i];
       let serviceName = this.getChartName(item.serviceName);
       let serviceVersion = this.getChartVersion(item.serviceName);
-      let chart =
-        serviceName + '@' + serviceVersion + '#' + item.dockerImageTag;
+
+      let chart = {
+        chartName: serviceName,
+        chartVersion: serviceVersion,
+        dockerTag: item.dockerImageTag
+      };
+
       array.push(chart);
     }
-    this.props.handleLoading(false);
-    this.props.updateSelectedChartsToDeploy(array, () => {
-      this.props.history.push({
-        pathname: '/admin/deployment-wvars',
-        search: '?productVersionId=' + this.state.productVersionId
-      });
+
+    let deployProduct = {
+      productVersionId: this.state.productVersionId,
+      chartsToDeploy: array
+    };
+
+    this.props.dispatch(actionsDeploy.loadProductCharts(deployProduct));
+    this.props.history.push({
+      pathname: '/admin/deploy',
+      search: '?productVersionId=' + this.state.productVersionId
     });
   }
 
   goToServiceDeploy(item) {
     let serviceName = this.getChartName(item.serviceName);
     let serviceVersion = this.getChartVersion(item.serviceName);
-    let chart = serviceName + '@' + serviceVersion + '#' + item.dockerImageTag;
 
     let array = [];
-    array.push(chart);
+    array.push({
+      chartName: serviceName,
+      chartVersion: serviceVersion,
+      dockerTag: item.dockerImageTag
+    });
 
-    this.props.updateSelectedChartsToDeploy(array, () => {
-      this.props.history.push({
-        pathname: '/admin/deployment-wvars'
-      });
+    let deployProduct = {
+      productVersionId: this.state.productVersionId,
+      chartsToDeploy: array
+    };
+
+    this.props.dispatch(actionsDeploy.loadProductCharts(deployProduct));
+    this.props.history.push({
+      pathname: '/admin/deploy'
     });
   }
 

@@ -30,13 +30,17 @@ export class ConfigMap extends Component {
       },
       () => {
         this.getVariables(this.state.chartName, this.state.chartVersion);
-        this.validateVars(this.props.configMapName, this.callbackValidate);
       }
     );
   }
 
-  async validateVars(chart, callback) {
-    await validateVariables(this, parseInt(this.props.envId), chart, callback);
+  async validateConfigMap(self) {
+    await validateVariables(
+      self,
+      parseInt(this.props.envId),
+      this.props.configMapName,
+      this.callbackValidate
+    );
   }
 
   callbackValidate = invalidVars => {
@@ -111,7 +115,6 @@ export class ConfigMap extends Component {
           installPayload.name = this.props.configMapName;
           installPayload.chart = chartName;
           installPayload.environmentId = environmentId;
-          this.validateVars(this.props.configMapName, this.callbackValidate);
           callbackFunction(installPayload);
         })
         .catch(error => {
@@ -140,7 +143,10 @@ export class ConfigMap extends Component {
   getVariables(chartName, chartVersion) {
     this.props.handleLoading(true);
     axios
-      .post(TENKAI_API_URL + '/getChartVariables', { chartName, chartVersion })
+      .post(TENKAI_API_URL + '/getChartVariables', {
+        chartName,
+        chartVersion
+      })
       .then(response => {
         if (response.data.istio != null) {
           this.setState({

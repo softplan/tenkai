@@ -9,7 +9,6 @@ import { multipleInstall, getHelmCommand } from 'client-api/apicall.jsx';
 import HelmCommandModal from 'components/Modal/HelmCommandModal.jsx';
 import queryString from 'query-string';
 import { validateVariables } from 'client-api/apicall.jsx';
-import SimpleModal from 'components/Modal/SimpleModal.jsx';
 import { ACTION_SAVE_VARIABLES, ACTION_DEPLOY } from 'policies.js';
 import { getAllEnvironments, retrieveSettings } from 'client-api/apicall.jsx';
 
@@ -29,7 +28,7 @@ class VariablesWizard extends Component {
     envsToCopy: []
   };
 
-  componentDidMount() {
+  async componentDidMount() {
     this.props.handleLoading(true);
     let total = this.props.selectedChartsToDeploy.length;
     let chartsToDeploy = this.props.selectedChartsToDeploy;
@@ -68,7 +67,7 @@ class VariablesWizard extends Component {
     data.push('commonVariablesConfigMapChart');
     data.push('canaryChart');
 
-    retrieveSettings({ list: data }, this, result => {
+    await retrieveSettings({ list: data }, this, result => {
       let vCommonValuesConfigMapChart = '';
       let vCommonVariablesConfigMapChart = '';
       let vCanaryChart = '';
@@ -109,7 +108,6 @@ class VariablesWizard extends Component {
   didMountCallback = async helmCharts => {
     await this.getChildVariables();
     this.props.handleLoading(false);
-    this.validateVars(helmCharts, this.callbackValidate);
   };
 
   async getChildVariables() {
@@ -145,9 +143,8 @@ class VariablesWizard extends Component {
               'Variables saved!'
             );
             this.props.handleLoading(false);
-            this.validateVars([item], this.callbackValidate);
           }
-        }, this.validateVars);
+        });
       });
     });
   };
@@ -220,31 +217,46 @@ class VariablesWizard extends Component {
         this.refs['h' + key].save(list => {
           for (let x = 0; x < list.length; x++) {
             let data = list[x];
+            if (data.name.includes('-gcm')) {
+              continue;
+            }
             payload.deployables.push(data);
           }
           count++;
           if (count === totalCharts) {
-            this.setState({ installPayload: payload }, () => {
-              this.validateVars(
-                this.state.charts,
-                this.callbackValidateAndInstall,
-                this.refs['h' + key]
-              );
-            });
+            multipleInstall(payload, this);
           }
         });
       });
     });
   };
 
-  validateVars(helmCharts, callback, cmRef) {
+  onValidateVariablesClick = async () => {
+    this.validateVars(this.state.charts);
+
+    this.state.charts.forEach((item, key) => {
+      const currentRef = this.refs['h' + key];
+      if (this.hasConfigMap(currentRef)) {
+        currentRef.refs.hConfigMap.validateConfigMap(this);
+      }
+    });
+  };
+
+  hasConfigMap(currentRef) {
+    return (
+      currentRef !== undefined &&
+      currentRef.refs !== undefined &&
+      currentRef.refs.hConfigMap !== undefined
+    );
+  }
+
+  validateVars(helmCharts) {
     helmCharts.forEach(async chart => {
       await validateVariables(
         this,
         parseInt(this.props.selectedEnvironment.value),
         chart,
-        callback,
-        cmRef
+        this.callbackValidate
       );
     });
   }
@@ -269,18 +281,6 @@ class VariablesWizard extends Component {
       Object.entries(cmRef.refs.hConfigMap.state.invalidVariables).length > 0
     );
   }
-
-  callbackValidateAndInstall = (invalidVars, cmRef) => {
-    this.callbackValidate(invalidVars);
-
-    if (this.state.chartsValidated === this.state.charts.length) {
-      if (this.hasInvalidVarsInConfigMap(cmRef) || invalidVars.length > 0) {
-        this.setState({ showConfirmInstallModal: true });
-      } else {
-        multipleInstall(this.state.installPayload, this);
-      }
-    }
-  };
 
   arrayToMap(invalidVariables) {
     const invalidToMap = {};
@@ -330,15 +330,6 @@ class VariablesWizard extends Component {
     });
   };
 
-  handleConfirmInstallClose = () => {
-    this.setState({ showConfirmInstallModal: false });
-  };
-
-  handleConfirmInstall = () => {
-    multipleInstall(this.state.installPayload, this);
-    this.setState({ installPayload: [], showConfirmInstallModal: false });
-  };
-
   render() {
     const envId = this.state.envId;
     const items = this.state.charts.map((item, key) => {
@@ -383,17 +374,6 @@ class VariablesWizard extends Component {
           environments={this.state.envsToCopy}
         ></CopyModal>
 
-        <SimpleModal
-          showConfirmDeleteModal={this.state.showConfirmInstallModal}
-          handleConfirmDeleteModalClose={this.handleConfirmInstallClose.bind(
-            this
-          )}
-          title="Invalid variables detected!"
-          subTitle="Install anyway?"
-          message="There are variables with invalid values. Please, review and then install it again."
-          handleConfirmDelete={this.handleConfirmInstall.bind(this)}
-        />
-
         <Container fluid>
           <Row>
             <Col md={12}>
@@ -402,17 +382,19 @@ class VariablesWizard extends Component {
                 content={
                   <div align="right">
                     <ButtonToolbar style={{ display: 'block' }}>
-                      <Button
-                        className="btn-primary pull-right"
-                        type="button"
-                        onClick={this.onHelmCommand}
-                      >
+                      <Button variant="secondary" onClick={this.onHelmCommand}>
                         Show Helm Command
                       </Button>
 
                       <Button
-                        className="btn-info pull-right"
-                        type="button"
+                        variant="secondary"
+                        onClick={this.onValidateVariablesClick}
+                      >
+                        Validate Variables
+                      </Button>
+
+                      <Button
+                        variant="secondary"
                         onClick={this.onSaveVariablesClick}
                         disabled={
                           !this.props.hasEnvironmentPolicy(
@@ -424,8 +406,7 @@ class VariablesWizard extends Component {
                       </Button>
 
                       <Button
-                        className="btn-primary pull-right"
-                        type="button"
+                        variant="primary"
                         onClick={this.install}
                         disabled={
                           !this.props.hasEnvironmentPolicy(ACTION_DEPLOY)

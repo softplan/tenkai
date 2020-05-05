@@ -19,6 +19,7 @@ import VariableRule from 'views/variableRule/VariableRule';
 import ValueRule from 'views/valueRule/ValueRule';
 import CompareEnv from 'views/compareEnv/CompareEnv';
 import SecurityOperation from 'views/securityOperation/SecurityOperation';
+import Deploy from 'views/deploy/Deploy';
 
 const dashboardRoutes = [
   {
@@ -243,6 +244,15 @@ const dashboardRoutes = [
         role: 'tenkai-admin'
       }
     ]
+  },
+  {
+    path: '/deploy',
+    name: 'Deploy',
+    icon: 'pe-7s-news-paper',
+    component: Deploy,
+    layout: '/admin',
+    menu: false,
+    role: 'tenkai-user'
   }
 ];
 
