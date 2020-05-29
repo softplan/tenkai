@@ -1,29 +1,24 @@
 import React, { Component } from 'react';
+import Select from 'react-select';
 import { CardTenkai } from 'components/Card/CardTenkai.jsx';
 import { FormInputs } from 'components/FormInputs/FormInputs.jsx';
-import { Button, Row, Col, Form } from 'react-bootstrap';
+import { Button, Row, Col, Form, FormLabel } from 'react-bootstrap';
 
 export class EditProductRelease extends Component {
   state = {
     formData: {
-      ID: '',
+      ID: 0,
       version: '',
-      copyLatestRelease: false
-    }
+      baseRelease: 0
+    },
+    selectedBaseRelease: {}
   };
 
   componentDidMount() {
     if (this.props.editMode) {
       this.setState(() => ({
         formData: {
-          ...this.props.editItem,
-          copyLatestRelease: false
-        }
-      }));
-    } else {
-      this.setState(() => ({
-        formData: {
-          copyLatestRelease: true
+          ...this.props.editItem
         }
       }));
     }
@@ -39,13 +34,13 @@ export class EditProductRelease extends Component {
     }));
   };
 
-  handleChangeCopyRelease = event => {
-    const { checked } = event.target;
+  handleBaseReleaseChange = selectedBaseRelease => {
     this.setState(state => ({
       formData: {
         ...state.formData,
-        copyLatestRelease: checked
-      }
+        baseRelease: selectedBaseRelease.value.ID
+      },
+      selectedBaseRelease
     }));
   };
 
@@ -56,8 +51,11 @@ export class EditProductRelease extends Component {
   };
 
   render() {
-    const { editMode } = this.props;
+    const { editMode, productReleases } = this.props;
+    const { selectedBaseRelease } = this.state;
+    const releases = productReleases.map(e => ({ label: e.version, value: e }));
 
+    console.log(`State: ${JSON.stringify(this.state, null, 2)}`);
     return (
       <div>
         <CardTenkai
@@ -84,37 +82,38 @@ export class EditProductRelease extends Component {
 
               <Row>
                 <Col md={6}>
-                  <Form.Check
-                    id="handleChangeCopyRelease"
-                    type="switch"
-                    name="handleChangeCopyRelease"
-                    inline
-                    checked={this.state.formData.copyLatestRelease}
-                    onChange={this.handleChangeCopyRelease}
-                    label="Associate services from latest version"
-                  ></Form.Check>
+                  <FormLabel>Associate services from version</FormLabel>
+                  <Select
+                    value={selectedBaseRelease}
+                    onChange={this.handleBaseReleaseChange}
+                    options={releases}
+                  />
                 </Col>
               </Row>
               <Row>
-                <Col md={6}> </Col>
+                <Col md={6}>
+                  <div style={{ paddingTop: '15px' }} className="btn-toolbar">
+                    <div className="btn-group">
+                      <Button
+                        variant="info"
+                        type="button"
+                        onClick={this.saveClick}
+                      >
+                        Save
+                      </Button>
+                    </div>
+                    <div className="btn-group">
+                      <Button
+                        variant="info"
+                        type="button"
+                        onClick={this.props.cancelClick}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  </div>
+                </Col>
               </Row>
-
-              <div className="btn-toolbar">
-                <div className="btn-group">
-                  <Button variant="info" type="button" onClick={this.saveClick}>
-                    Save
-                  </Button>
-                </div>
-                <div className="btn-group">
-                  <Button
-                    variant="info"
-                    type="button"
-                    onClick={this.props.cancelClick}
-                  >
-                    Cancel
-                  </Button>
-                </div>
-              </div>
             </form>
           }
         />
