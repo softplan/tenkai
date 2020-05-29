@@ -195,6 +195,7 @@ class ProductRelease extends Component {
                   handleLoading={this.props.handleLoading}
                   editItem={this.state.editItem}
                   saveClick={this.onSaveClick.bind(this)}
+                  productReleases={this.props.productReleases}
                   cancelClick={() =>
                     this.setState({
                       showInsertUpdateForm: false,
