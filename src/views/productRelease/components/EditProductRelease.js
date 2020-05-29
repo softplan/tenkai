@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Select from 'react-select';
 import { CardTenkai } from 'components/Card/CardTenkai.jsx';
 import { FormInputs } from 'components/FormInputs/FormInputs.jsx';
-import { Button, Row, Col, Form, FormLabel } from 'react-bootstrap';
+import { Button, Row, Col, FormLabel } from 'react-bootstrap';
 
 export class EditProductRelease extends Component {
   state = {
