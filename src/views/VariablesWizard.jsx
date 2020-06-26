@@ -7,6 +7,7 @@ import HelmVariables from 'components/Deployment/HelmVariables.jsx';
 import CopyModal from 'components/Modal/CopyModal.jsx';
 import { multipleInstall, getHelmCommand } from 'client-api/apicall.jsx';
 import HelmCommandModal from 'components/Modal/HelmCommandModal.jsx';
+import NotesModal from 'components/Modal/NotesModal.jsx';
 import queryString from 'query-string';
 import { validateVariables } from 'client-api/apicall.jsx';
 import { ACTION_SAVE_VARIABLES, ACTION_DEPLOY } from 'policies.js';
@@ -19,8 +20,10 @@ class VariablesWizard extends Component {
     chartVersions: new Map(),
     onShowCopyModal: false,
     desiredTags: new Map(),
+    showNotesModal: false,
     showEditorModal: false,
     helmValue: '',
+    notesValue: '',
     showConfirmInstallModal: false,
     installPayload: [],
     invalidVariables: {},
@@ -95,6 +98,7 @@ class VariablesWizard extends Component {
       });
     });
 
+    console.log(chartVersions);
     this.setState(
       {
         charts: helmCharts,
@@ -324,6 +328,13 @@ class VariablesWizard extends Component {
     this.setState({ showEditorModal: false, yaml: '' });
   }
 
+  closeNotesModal() {
+    this.setState({ showNotesModal: false });
+  }
+  openNotesModal = () => {
+    this.setState({ showNotesModal: true });
+  };
+
   onSaveHelmCommand = payload => {
     getHelmCommand(payload, this, res => {
       this.setState({ helmValue: res.data, showEditorModal: true });
@@ -347,7 +358,7 @@ class VariablesWizard extends Component {
           handleNotification={this.props.handleNotification}
           key={key}
           chartName={item}
-          chartVersion={this.state.chartVersions[item]}
+          chartVersions={this.state.chartVersions[item]}
           desiredTag={this.state.desiredTags[item]}
           xref={'h' + key}
           ref={'h' + key}
@@ -359,6 +370,14 @@ class VariablesWizard extends Component {
 
     return (
       <div className="content">
+        <NotesModal
+          charts={this.state.charts}
+          chartVersions={this.state.chartVersions}
+          value={this.state.notesValue}
+          show={this.state.showNotesModal}
+          close={this.closeNotesModal.bind(this)}
+        />
+
         <HelmCommandModal
           value={this.state.helmValue}
           show={this.state.showEditorModal}
@@ -382,6 +401,10 @@ class VariablesWizard extends Component {
                 content={
                   <div align="right">
                     <ButtonToolbar style={{ display: 'block' }}>
+                      <Button variant="secondary" onClick={this.openNotesModal}>
+                        Notes
+                      </Button>
+
                       <Button variant="secondary" onClick={this.onHelmCommand}>
                         Show Helm Command
                       </Button>

@@ -91,34 +91,27 @@ class ProductReleaseService extends Component {
     });
   }
 
-
   goToDeployUnit = (cell, row) => {
     return (
-      <Button
-        className="link-button"
-        onClick={this.deployUnit.bind(this, row)}
-      >
+      <Button className="link-button" onClick={this.deployUnit.bind(this, row)}>
         <i className="pe-7s-pendrive cell-button-icon" />
       </Button>
     );
   };
 
   deployUnit(item) {
-    
     let serviceName = this.getChartName(item.serviceName);
     let serviceVersion = this.getChartVersion(item.serviceName);
 
     let array = [];
-    array.push(serviceName + "@" + serviceVersion + "#" + item.dockerImageTag);
+    array.push(serviceName + '@' + serviceVersion + '#' + item.dockerImageTag);
 
     this.props.updateSelectedChartsToDeploy(array, () => {
       this.props.history.push({
         pathname: '/admin/deployment-wvars'
       });
     });
-
   }
-
 
   goToDeploy() {
     let array = [];

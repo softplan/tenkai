@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import { UnControlled as CodeMirror } from 'react-codemirror2';
-import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { ButtonToolbar } from 'react-bootstrap';
-import 'codemirror/mode/shell/shell.js';
+import 'codemirror/theme/3024-night.css';
+import 'codemirror/mode/markdown/markdown.js';
 
-class HelmCommandModal extends Component {
+class NotesModal extends Component {
   constructor(props) {
     super(props);
     this.instance = null;
@@ -15,16 +15,18 @@ class HelmCommandModal extends Component {
     return (
       <Modal show={this.props.show} onHide={this.props.close} size="xl">
         <Modal.Header closeButton>
-          <Modal.Title>Helm</Modal.Title>
+          <Modal.Title>
+            Notes for Helm Chart {this.props.charts} - {this.props.chartVersions[this.props.charts[0]]}
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <CodeMirror
             value={this.props.value}
             options={{
-              mode: 'shell',
-              theme: 'dracula',
+              mode: 'markdown',
+              theme: '3024-night',
               lineNumbers: false,
-              readOnly: true
+              readOnly: false
             }}
             editorDidMount={editor => {
               setTimeout(() => editor.refresh(), 200);
@@ -33,9 +35,7 @@ class HelmCommandModal extends Component {
         </Modal.Body>
         <Modal.Footer>
           <ButtonToolbar>
-            <CopyToClipboard text={this.props.value}>
-              <Button>Copy to clipboard</Button>
-            </CopyToClipboard>
+            <Button onClick={this.props.close}>Save</Button>
             <Button onClick={this.props.close}>Close</Button>
           </ButtonToolbar>
         </Modal.Footer>
@@ -44,4 +44,4 @@ class HelmCommandModal extends Component {
   }
 }
 
-export default HelmCommandModal;
+export default NotesModal;
