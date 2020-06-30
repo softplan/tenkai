@@ -26,6 +26,21 @@ function retriveRepo(self) {
     });
 }
 
+function retrieveNotes(self, serviceName, callback) {
+  axios
+    .get(TENKAI_API_URL + `/notes/?serviceName=${serviceName}`)
+    .then(response => {
+      self.setState({ notesValue: response.text });
+      if (callback) {
+        callback(self, response);
+      }
+    })
+    .catch(error => {
+      console.log(error.message);
+      handlerError(self, error.response);
+    });
+}
+
 function retrieveCharts(self, repo, allVersions, callback) {
   self.props.handleLoading(true);
   let url = '/charts/' + repo + '?all=' + allVersions;
@@ -512,6 +527,7 @@ async function validateEnvVars(self, envId, callback) {
 
 export {
   retriveRepo,
+  retrieveNotes,
   retrieveCharts,
   retrieveReleases,
   saveReleases,

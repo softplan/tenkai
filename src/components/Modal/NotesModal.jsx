@@ -16,7 +16,7 @@ class NotesModal extends Component {
       <Modal show={this.props.show} onHide={this.props.close} size="xl">
         <Modal.Header closeButton>
           <Modal.Title>
-            Notes for Helm Chart {this.props.charts} - {this.props.chartVersions[this.props.charts[0]]}
+            Notes for Helm Chart {this.props.serviceName}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>

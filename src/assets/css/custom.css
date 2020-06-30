@@ -26,6 +26,11 @@
     width: 60%;
 }
 
+.modal-900w {
+    width: 90%;
+}
+
+
 .stepwizard-step p {
     margin-top: 0px;
     color:#666;

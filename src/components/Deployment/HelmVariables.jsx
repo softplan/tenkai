@@ -21,6 +21,8 @@ import { CanaryCard } from 'components/Deployment/CanaryCard.jsx';
 import { getTagsOfImage } from 'client-api/apicall.jsx';
 import Select from 'react-select';
 import { ACTION_SAVE_VARIABLES } from 'policies.js';
+import NotesModal from 'components/Modal/NotesModal.jsx';
+import { retrieveNotes } from 'client-api/apicall.jsx';
 
 export class HelmVariables extends Component {
   state = {
@@ -42,14 +44,18 @@ export class HelmVariables extends Component {
     releaseName: '',
     dontCreateService: false,
     applyConfigMap: false,
-    tags: []
+    showNotesModal: false,
+    notesValue: '',
+    tags: [],
+    serviceName: ''
   };
 
   constructor(props) {
     super(props);
 
     this.state.chartName = props.chartName;
-    this.state.chartVersion = props.chartVersion;
+    this.state.chartVersion = props.chartVersions;
+    this.state.serviceName = `${props.chartName}-${props.chartVersions}`;
 
     let scope = this.state.chartName;
     var n = scope.indexOf('/');
@@ -64,6 +70,16 @@ export class HelmVariables extends Component {
       this.state.vCommonVariablesConfigMapChart = this.props.vCommonVariablesConfigMapChart;
       this.state.vCanaryChart = this.props.vCanaryChart;
     }
+  }
+
+  closeNotesModal() {
+    this.setState({ showNotesModal: false });
+  }
+
+  async openNotesModal() {
+    retrieveNotes(this, this.state.serviceName, result => {
+      this.setState({ showNotesModal: true, notesValue: 'alfa' });
+    });
   }
 
   async componentDidMount() {
@@ -679,10 +695,16 @@ export class HelmVariables extends Component {
     let items = this.renderVariables(this.state.variables);
     return (
       <div>
+        <NotesModal
+          serviceName={this.state.charts}
+          value={this.state.notesValue}
+          show={this.state.showNotesModal}
+          close={this.closeNotesModal.bind(this)}
+        />
         <Row>
           <Col md={12}>
             <CardTenkai
-              title={this.state.chartName}
+              title={this.state.serviceName}
               content={
                 <div>
                   <div>
@@ -720,6 +742,13 @@ export class HelmVariables extends Component {
                         {this.state.canaryShowing
                           ? 'Hide Advanved Option'
                           : 'Show Advanced Options'}
+                      </Button>
+
+                      <Button
+                        size="sm"
+                        onClick={this.openNotesModal.bind(this)}
+                      >
+                        <i className="pe-7s-note2" /> Notes
                       </Button>
                     </ButtonToolbar>
 
