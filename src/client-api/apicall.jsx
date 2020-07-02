@@ -26,13 +26,29 @@ function retriveRepo(self) {
     });
 }
 
-function retrieveNotes(self, serviceName, callback) {
+function retrieveNotes(serviceName, self, callback) {
+  const encodedServiceName = encodeURIComponent(serviceName);
   axios
-    .get(TENKAI_API_URL + `/notes/?serviceName=${serviceName}`)
+    .get(TENKAI_API_URL + `/notes?serviceName=${encodedServiceName}`)
     .then(response => {
       self.setState({ notesValue: response.text });
       if (callback) {
         callback(self, response);
+      }
+    })
+    .catch(error => {
+      console.log(error.message);
+      handlerError(self, error.response);
+    });
+}
+
+function saveNotes(data, self, onSuccess) {
+  let uri = '/notes';
+  axios
+    .post(TENKAI_API_URL + uri, data)
+    .then(res => {
+      if (onSuccess !== undefined) {
+        onSuccess(self);
       }
     })
     .catch(error => {
@@ -528,6 +544,7 @@ async function validateEnvVars(self, envId, callback) {
 export {
   retriveRepo,
   retrieveNotes,
+  saveNotes,
   retrieveCharts,
   retrieveReleases,
   saveReleases,

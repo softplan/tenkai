@@ -22,7 +22,7 @@ import { getTagsOfImage } from 'client-api/apicall.jsx';
 import Select from 'react-select';
 import { ACTION_SAVE_VARIABLES } from 'policies.js';
 import NotesModal from 'components/Modal/NotesModal.jsx';
-import { retrieveNotes } from 'client-api/apicall.jsx';
+import { retrieveNotes, saveNotes } from 'client-api/apicall.jsx';
 
 export class HelmVariables extends Component {
   state = {
@@ -55,7 +55,7 @@ export class HelmVariables extends Component {
 
     this.state.chartName = props.chartName;
     this.state.chartVersion = props.chartVersions;
-    this.state.serviceName = `${props.chartName}-${props.chartVersions}`;
+    this.state.serviceName = `${props.chartName} - ${props.chartVersions}`;
 
     let scope = this.state.chartName;
     var n = scope.indexOf('/');
@@ -72,13 +72,25 @@ export class HelmVariables extends Component {
     }
   }
 
+  saveNotesModal(text) {
+    console.log('text: ' + text);
+    let data = {};
+    data.serviceName = this.state.serviceName;
+    data.text = text;
+    console.log(JSON.stringify(data));
+    saveNotes(data, this, result => {
+      this.setState({ showNotesModal: false });
+    });
+  }
+
   closeNotesModal() {
     this.setState({ showNotesModal: false });
   }
 
   async openNotesModal() {
-    retrieveNotes(this, this.state.serviceName, result => {
-      this.setState({ showNotesModal: true, notesValue: 'alfa' });
+    retrieveNotes(this.state.serviceName, this, (self, response) => {
+      console.log('aqui: ' + JSON.stringify(response.data.text));
+      this.setState({ showNotesModal: true, notesValue: response.data.text });
     });
   }
 
@@ -696,10 +708,12 @@ export class HelmVariables extends Component {
     return (
       <div>
         <NotesModal
-          serviceName={this.state.charts}
+          title={'Notes for helm chart ' + this.state.chartName}
           value={this.state.notesValue}
           show={this.state.showNotesModal}
           close={this.closeNotesModal.bind(this)}
+          enableSave={true}
+          save={this.saveNotesModal.bind(this)}
         />
         <Row>
           <Col md={12}>
