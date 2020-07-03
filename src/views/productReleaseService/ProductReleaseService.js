@@ -23,6 +23,7 @@ import * as selectors from 'stores/productReleaseService/reducer';
 import * as productReleaseSelectors from 'stores/productRelease/reducer';
 
 import * as actionsDeploy from 'stores/deploy/actions';
+import NotesModal from 'components/Modal/NotesModal.jsx';
 
 class ProductReleaseService extends Component {
   constructor(props) {
@@ -40,8 +41,29 @@ class ProductReleaseService extends Component {
       editItem: {},
       ProductName: '',
       Version: '',
-      locked: this.isLocked()
+      locked: this.isLocked(),
+      showNotesModal: false,
+      notesValue: ''
     };
+  }
+
+  showReleaseNotes() {
+    let data = this.props.productReleaseServices.filter(
+      d =>
+        this.state.inputFilter === '' ||
+        d.serviceName.includes(this.state.inputFilter)
+    );
+
+    let items = data.map((item, key) => {
+      return '# ' + item.serviceName + '\n' + item.notes + '\n\n';
+    });
+
+    let text = '';
+    for (var i = 0; i < items.length; i++) {
+      text = text + items[i];
+    }
+
+    this.setState({ showNotesModal: true, notesValue: text });
   }
 
   isLocked() {
@@ -71,6 +93,10 @@ class ProductReleaseService extends Component {
     this.setState({ showConfirmDeleteModal: false, itemToDelete: {} });
   }
 
+  closeNotesModal() {
+    this.setState({ showNotesModal: false });
+  }
+
   onSaveClick(data) {
     data.productVersionId = parseInt(this.state.productVersionId);
 
@@ -88,6 +114,28 @@ class ProductReleaseService extends Component {
       showInsertUpdateForm: false,
       editItem: {},
       editMode: false
+    });
+  }
+
+  goToDeployUnit = (cell, row) => {
+    return (
+      <Button className="link-button" onClick={this.deployUnit.bind(this, row)}>
+        <i className="pe-7s-pendrive cell-button-icon" />
+      </Button>
+    );
+  };
+
+  deployUnit(item) {
+    let serviceName = this.getChartName(item.serviceName);
+    let serviceVersion = this.getChartVersion(item.serviceName);
+
+    let array = [];
+    array.push(serviceName + '@' + serviceVersion + '#' + item.dockerImageTag);
+
+    this.props.updateSelectedChartsToDeploy(array, () => {
+      this.props.history.push({
+        pathname: '/admin/deployment-wvars'
+      });
     });
   }
 
@@ -249,6 +297,10 @@ class ProductReleaseService extends Component {
     columns.push(col.addEdit(this.onEdit, '10%', this.state.locked));
     columns.push(col.addDelete(this.onDelete, '10%', this.state.locked));
     columns.push(
+      col.addColBtn('goDeployConfig', 'Config Variables', this.goToDeployUnit)
+    );
+
+    columns.push(
       col.addColBtn('goDeploy', 'Go To Deploy', this.goToDeployButton)
     );
 
@@ -271,6 +323,14 @@ class ProductReleaseService extends Component {
           handleConfirmDelete={this.handleConfirmDelete.bind(this)}
         ></SimpleModal>
 
+        <NotesModal
+          title="Notes for release"
+          value={this.state.notesValue}
+          show={this.state.showNotesModal}
+          close={this.closeNotesModal.bind(this)}
+          enableSave={false}
+        />
+
         <Container fluid>
           <Row>
             <Col md={12}>
@@ -281,6 +341,14 @@ class ProductReleaseService extends Component {
                     <h2>{this.state.solutionName}</h2>
                     <div align="right">
                       <ButtonToolbar style={{ display: 'block' }}>
+                        <Button
+                          className="btn-primary pull-right"
+                          variant="primary"
+                          onClick={this.showReleaseNotes.bind(this)}
+                        >
+                          Release Notes
+                        </Button>
+
                         <Button
                           className="btn-primary pull-right"
                           variant="primary"

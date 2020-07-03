@@ -7,6 +7,7 @@ import HelmVariables from 'components/Deployment/HelmVariables.jsx';
 import CopyModal from 'components/Modal/CopyModal.jsx';
 import { multipleInstall, getHelmCommand } from 'client-api/apicall.jsx';
 import HelmCommandModal from 'components/Modal/HelmCommandModal.jsx';
+
 import queryString from 'query-string';
 import { validateVariables } from 'client-api/apicall.jsx';
 import { ACTION_SAVE_VARIABLES, ACTION_DEPLOY } from 'policies.js';
@@ -95,6 +96,7 @@ class VariablesWizard extends Component {
       });
     });
 
+    console.log(chartVersions);
     this.setState(
       {
         charts: helmCharts,
@@ -347,7 +349,7 @@ class VariablesWizard extends Component {
           handleNotification={this.props.handleNotification}
           key={key}
           chartName={item}
-          chartVersion={this.state.chartVersions[item]}
+          chartVersions={this.state.chartVersions[item]}
           desiredTag={this.state.desiredTags[item]}
           xref={'h' + key}
           ref={'h' + key}
