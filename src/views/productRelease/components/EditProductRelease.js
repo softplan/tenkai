@@ -1,15 +1,15 @@
 import React, { Component } from 'react';
 import Select from 'react-select';
 import { CardTenkai } from 'components/Card/CardTenkai.jsx';
-import { FormInputs } from 'components/FormInputs/FormInputs.jsx';
-import { Button, Row, Col, FormLabel } from 'react-bootstrap';
+import { Button, Row, Col, FormLabel, Form, FormGroup } from 'react-bootstrap';
 
 export class EditProductRelease extends Component {
   state = {
     formData: {
       ID: 0,
       version: '',
-      baseRelease: 0
+      baseRelease: 0,
+      hotFix: false
     },
     selectedBaseRelease: {}
   };
@@ -50,12 +50,20 @@ export class EditProductRelease extends Component {
     this.props.saveClick(data);
   };
 
+  handleHotFix = event => {
+    const { checked } = event.target;
+    this.setState(state => ({
+      formData: {
+        ...state.formData,
+        hotFix: checked
+      }
+    }));
+  };
+
   render() {
     const { editMode, productReleases } = this.props;
     const { selectedBaseRelease } = this.state;
     const releases = productReleases.map(e => ({ label: e.version, value: e }));
-
-    console.log(`State: ${JSON.stringify(this.state, null, 2)}`);
     return (
       <div>
         <CardTenkai
@@ -63,25 +71,34 @@ export class EditProductRelease extends Component {
           content={
             <form>
               <Row>
-                <Col md={12}>
-                  <FormInputs
-                    ncols={['col-md-3']}
-                    properties={[
-                      {
-                        name: 'version',
-                        label: 'Version',
-                        type: 'text',
-                        bsPrefix: 'form-control',
-                        value: this.state.formData.version,
-                        onChange: this.handleChange
-                      }
-                    ]}
-                  />
+                <Col md={4}>
+                  <FormGroup>
+                    <Form.Label>Version</Form.Label>
+                    <Form.Control
+                      name="version"
+                      label="Version"
+                      type="text"
+                      onChange={this.handleChange}
+                      value={this.state.formData.version}
+                    />
+                  </FormGroup>
+                </Col>
+                <Col md={2}>
+                  <FormGroup>
+                    <Form.Label>Hotfix Release</Form.Label>
+                    <Form.Switch
+                      id="hotFix"
+                      inline={false}
+                      checked={this.state.formData.hotFix}
+                      onChange={e => this.handleHotFix(e)}
+                      label=""
+                    ></Form.Switch>
+                  </FormGroup>
                 </Col>
               </Row>
 
               <Row>
-                <Col md={6}>
+                <Col md={4}>
                   <FormLabel>Associate services from version</FormLabel>
                   <Select
                     value={selectedBaseRelease}
