@@ -50,6 +50,15 @@ const dashboardRoutes = [
     role: 'tenkai-admin'
   },
   {
+    path: '/environments',
+    name: 'Environments',
+    icon: 'pe-7s-server',
+    component: Enviroments,
+    layout: '/admin',
+    menu: true,
+    role: 'tenkai-user'
+  },  
+  {
     path: '/admin-master',
     name: 'Admin',
     icon: 'pe-7s-news-paper',
@@ -58,15 +67,6 @@ const dashboardRoutes = [
     menu: true,
     role: 'tenkai-admin',
     submenu: [
-      {
-        path: '/environments',
-        name: 'Environments',
-        icon: 'pe-7s-server',
-        component: Enviroments,
-        layout: '/admin',
-        menu: true,
-        role: 'tenkai-admin'
-      },
       {
         path: '/variable-rule',
         name: 'Validation Rules',
