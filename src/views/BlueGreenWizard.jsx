@@ -58,35 +58,36 @@ class Step1 extends React.Component {
     data.push('commonValuesConfigMapChart');
     data.push('commonVariablesConfigMapChart');
     data.push('canaryChart');
+  
+    let vCommonValuesConfigMapChart = '';
+    let vCommonVariablesConfigMapChart = '';
+    let vCanaryChart = '';
 
-    retrieveSettings({ list: data }, this, result => {
-      let vCommonValuesConfigMapChart = '';
-      let vCommonVariablesConfigMapChart = '';
-      let vCanaryChart = '';
+    const result = await retrieveSettings({ list: data }, this);    
 
-      for (let x = 0; x < result.List.length; x++) {
-        let field = result.List[x].name;
-        let value = result.List[x].value;
+    for (let x = 0; x < result.List.length; x++) {
+      let field = result.List[x].name;
+      let value = result.List[x].value;
 
-        if (field === 'commonValuesConfigMapChart') {
-          vCommonValuesConfigMapChart = value;
+      if (field === 'commonValuesConfigMapChart') {
+        vCommonValuesConfigMapChart = value;
+      } else {
+        if (field === 'commonVariablesConfigMapChart') {
+          vCommonVariablesConfigMapChart = value;
         } else {
-          if (field === 'commonVariablesConfigMapChart') {
-            vCommonVariablesConfigMapChart = value;
-          } else {
-            if (field === 'canaryChart') {
-              vCanaryChart = value;
-            }
+          if (field === 'canaryChart') {
+            vCanaryChart = value;
           }
         }
       }
+    }
 
-      this.setState({
-        vCommonValuesConfigMapChart: vCommonValuesConfigMapChart,
-        vCommonVariablesConfigMapChart: vCommonVariablesConfigMapChart,
-        vCanaryChart: vCanaryChart
-      });
+    this.setState({
+      vCommonValuesConfigMapChart: vCommonValuesConfigMapChart,
+      vCommonVariablesConfigMapChart: vCommonVariablesConfigMapChart,
+      vCanaryChart: vCanaryChart
     });
+
   }
 
   saveVariablesAndDeploy() {
