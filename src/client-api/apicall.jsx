@@ -82,16 +82,14 @@ function retrieveCharts(self, repo, allVersions, callback) {
     });
 }
 
-function retrieveSettings(list, self, callback) {
+function retrieveSettings(list, self) {
   self.props.handleLoading(true);
   let url = '/getSettingList';
-  axios
+  return axios
     .post(TENKAI_API_URL + url, list)
     .then(response => {
-      if (callback !== undefined) {
-        callback(response.data, self);
-      }
       self.props.handleLoading(false);
+      return response.data;
     })
     .catch(error => {
       self.props.handleLoading(false);

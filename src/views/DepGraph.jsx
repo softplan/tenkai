@@ -29,7 +29,7 @@ class DepGraph extends Component {
     console.log(props.location.state.environmentName);
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     let environmentId = parseInt(this.state.envId);
     const entries = Object.entries(this.state.charts);
     for (const [chartName, versionObject] of entries) {
@@ -38,20 +38,20 @@ class DepGraph extends Component {
     let data = [];
     data.push('commonValuesConfigMapChart');
 
-    retrieveSettings({ list: data }, this, (result, self) => {
-      let vCommonValuesConfigMapChart = '';
+    
+    let vCommonValuesConfigMapChart = ''; 
+    const result = await retrieveSettings({ list: data }, this);    
 
-      for (let x = 0; x < result.List.length; x++) {
-        let field = result.List[x].name;
-        let value = result.List[x].value;
-        if (field === 'commonValuesConfigMapChart') {
-          vCommonValuesConfigMapChart = value;
-        }
+    for (let x = 0; x < result.List.length; x++) {
+      let field = result.List[x].name;
+      let value = result.List[x].value;
+      if (field === 'commonValuesConfigMapChart') {
+        vCommonValuesConfigMapChart = value;
       }
+    }
 
-      this.setState({
-        vCommonValuesConfigMapChart: vCommonValuesConfigMapChart
-      });
+    this.setState({
+      vCommonValuesConfigMapChart: vCommonValuesConfigMapChart
     });    
   }
 
