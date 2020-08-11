@@ -15,6 +15,7 @@ import compareEnv from './compareEnv/reducer';
 import securityOperation from './securityOperation/reducer';
 import master from './master/reducer';
 import deploy from './deploy/reducer';
+import webHook from './webHook/reducer';
 
 export {
   notifications,
@@ -33,5 +34,6 @@ export {
   compareEnv,
   securityOperation,
   master,
-  deploy
+  deploy,
+  webHook
 };

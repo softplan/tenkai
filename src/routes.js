@@ -20,6 +20,7 @@ import ValueRule from 'views/valueRule/ValueRule';
 import CompareEnv from 'views/compareEnv/CompareEnv';
 import SecurityOperation from 'views/securityOperation/SecurityOperation';
 import Deploy from 'views/deploy/Deploy';
+import WebHook from 'views/webHooks/WebHook';
 
 const dashboardRoutes = [
   {
@@ -57,7 +58,7 @@ const dashboardRoutes = [
     layout: '/admin',
     menu: true,
     role: 'tenkai-user'
-  },  
+  },
   {
     path: '/admin-master',
     name: 'Admin',
@@ -210,6 +211,15 @@ const dashboardRoutes = [
         name: 'Compare Envs',
         icon: 'pe-7s-way',
         component: CompareEnv,
+        layout: '/admin',
+        menu: true,
+        role: 'tenkai-admin'
+      },
+      {
+        path: '/webhook',
+        name: 'Web Hooks',
+        icon: 'pe-7s-way',
+        component: WebHook,
         layout: '/admin',
         menu: true,
         role: 'tenkai-admin'
