@@ -14,7 +14,7 @@ import {
 import axios from 'axios';
 import ArrayVariable from 'components/Deployment/ArrayVariable.jsx';
 import IstioVariable from './IstioVariable';
-import TENKAI_API_URL from 'env.js';
+import { TENKAI_API_URL } from 'env.js';
 import { ConfigMap } from 'components/Deployment/ConfigMap.jsx';
 import Button from 'components/CustomButton/CustomButton.jsx';
 import { CanaryCard } from 'components/Deployment/CanaryCard.jsx';

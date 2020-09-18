@@ -9,7 +9,7 @@ import {
 } from "react-bootstrap";
 import SimpleModal from "components/Modal/SimpleModal.jsx";
 import axios from "axios";
-import TENKAI_API_URL from "env.js";
+import { TENKAI_API_URL } from 'env.js';
 import VariableCard from "components/Card/VariableCard.jsx";
 import { CardTenkai } from "components/Card/CardTenkai.jsx";
 import { getVariablesNotUsed } from "client-api/apicall.jsx";

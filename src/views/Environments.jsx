@@ -144,6 +144,7 @@ class Environments extends Component {
         <EnvironmentCard
           key={item.ID}
           id={item.id}
+          envType={item.envType}
           keycloak={this.props.keycloak}
           item={item}
           group={item.group}

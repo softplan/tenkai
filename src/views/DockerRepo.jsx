@@ -8,7 +8,7 @@ import SimpleModal from 'components/Modal/SimpleModal.jsx';
 import { getDefaultRepo } from 'client-api/apicall.jsx';
 
 import axios from 'axios';
-import TENKAI_API_URL from 'env.js';
+import { TENKAI_DOCKER_API_URL } from 'env.js';
 
 import TenkaiTable from 'components/Table/TenkaiTable';
 import * as col from 'components/Table/TenkaiColumn';
@@ -37,7 +37,7 @@ class DockerRepo extends Component {
 
   getRepositories() {
     axios
-      .get(TENKAI_API_URL + '/dockerRepo')
+      .get(TENKAI_DOCKER_API_URL + '/dockerRepo')
       .then(response =>
         this.setState({ repoResult: response.data }, () => {
           getDefaultRepo(this);
@@ -67,7 +67,7 @@ class DockerRepo extends Component {
 
   onConfirmDelete(item) {
     axios
-      .delete(TENKAI_API_URL + '/dockerRepo/' + item.name)
+      .delete(TENKAI_DOCKER_API_URL + '/dockerRepo/' + item.name)
       .then(() => {
         this.getRepositories();
       })
@@ -86,7 +86,7 @@ class DockerRepo extends Component {
   handleConfirmDelete() {
     if (this.state.itemToDelete !== undefined) {
       axios
-        .delete(TENKAI_API_URL + '/dockerRepo/' + this.state.itemToDelete.name)
+        .delete(TENKAI_DOCKER_API_URL + '/dockerRepo/' + this.state.itemToDelete.name)
         .then(() => {
           this.getRepositories();
         })
@@ -100,7 +100,7 @@ class DockerRepo extends Component {
 
   onSaveClick(data) {
     axios
-      .post(TENKAI_API_URL + '/dockerRepo', data)
+      .post(TENKAI_DOCKER_API_URL + '/dockerRepo', data)
       .then(() => {
         this.setState({
           repoResult: {

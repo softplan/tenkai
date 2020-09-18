@@ -12,7 +12,7 @@ import SimpleModal from "components/Modal/SimpleModal.jsx";
 import EditModal from "components/Modal/EditModal.jsx";
 import queryString from "query-string";
 import axios from "axios";
-import TENKAI_API_URL from "env.js";
+import { TENKAI_API_URL } from 'env.js';
 import VariableCard from "components/Card/VariableCard.jsx";
 import { ButtonToolbar } from "react-bootstrap";
 
