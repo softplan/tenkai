@@ -41,7 +41,7 @@ class Admin extends Component {
     };
 
     const keycloak = Keycloak('/keycloak.json');
-    keycloak.init({ onLoad: 'login-required' }).then(authenticated => {
+    keycloak.init({ onLoad: 'login-required', checkLoginIframe : false }).then(authenticated => {
       this.state.keycloak = keycloak;
       this.state.authenticated = authenticated;
       this.state._notificationSystem = this.refs.notificationSystem;
@@ -58,7 +58,7 @@ class Admin extends Component {
 
   handleEnvironmentChange = selectedEnvironment => {
     this.setState({ selectedEnvironment }, () => {
-      
+
       window.localStorage.setItem(
         'currentEnvironment',
         JSON.stringify(selectedEnvironment)
@@ -251,7 +251,7 @@ class Admin extends Component {
           }
         }
       }
-    } 
+    }
     return result;
   };
 
