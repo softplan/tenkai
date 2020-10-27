@@ -21,7 +21,6 @@ import * as utils from 'utils/sort';
 import * as actions from 'stores/master/actions';
 import * as selectors from 'stores/master/reducer';
 
-
 class Admin extends Component {
   constructor(props) {
     super(props);
@@ -41,24 +40,27 @@ class Admin extends Component {
     };
 
     const keycloak = Keycloak('/keycloak.json');
-    keycloak.init({ onLoad: 'login-required', checkLoginIframe : false }).then(authenticated => {
-      this.state.keycloak = keycloak;
-      this.state.authenticated = authenticated;
-      this.state._notificationSystem = this.refs.notificationSystem;
-      axios.defaults.headers.common[
-        'Authorization'
-      ] = `Bearer ${keycloak.token}`;
-      this.getEnvironments();
-    });
+    keycloak
+      .init({ onLoad: 'login-required', checkLoginIframe: false })
+      .then(authenticated => {
+        this.state.keycloak = keycloak;
+        this.state.authenticated = authenticated;
+        this.state._notificationSystem = this.refs.notificationSystem;
+        axios.defaults.headers.common[
+          'Authorization'
+        ] = `Bearer ${keycloak.token}`;
+        this.getEnvironments();
+      });
   }
 
   async getUserRole(environmentId) {
-     await this.props.dispatch(actions.loadRole(this.state.keycloak.idTokenParsed.email, environmentId));
+    await this.props.dispatch(
+      actions.loadRole(this.state.keycloak.idTokenParsed.email, environmentId)
+    );
   }
 
   handleEnvironmentChange = selectedEnvironment => {
     this.setState({ selectedEnvironment }, () => {
-
       window.localStorage.setItem(
         'currentEnvironment',
         JSON.stringify(selectedEnvironment)
@@ -243,7 +245,8 @@ class Admin extends Component {
     if (this.props.master.role !== undefined) {
       if (
         this.props.master.role.policies !== undefined &&
-        this.props.master.role.policies.length > 0) {
+        this.props.master.role.policies.length > 0
+      ) {
         for (let x = 0; x < this.props.master.role.policies.length; x++) {
           if (this.props.master.role.policies[x] === policy) {
             result = true;
@@ -259,33 +262,31 @@ class Admin extends Component {
     return routes.map((prop, key) => {
       let auth = this.state.keycloak.hasRealmRole(prop.role);
       if (prop.layout === '/admin' && auth) {
-
         if (prop.submenu !== undefined) {
           return prop.submenu.map((prop, key) => {
             return (
               <Route
-              path={prop.layout + prop.path}
-              render={props => (
-                <prop.component
-                  {...props}
-                  handleClick={this.handleNotificationClick}
-                  handleNotification={this.handleNotification}
-                  handleLoading={this.handleLoading}
-                  keycloak={this.state.keycloak}
-                  hasEnvironmentPolicy={this.hasEnvironmentPolicy.bind(this)}
-                  environments={this.state.environmentList}
-                  selectedEnvironment={this.state.selectedEnvironment}
-                  selectedChartsToDeploy={this.state.selectedChartsToDeploy}
-                  updateSelectedChartsToDeploy={this.updateSelectedChartsToDeploy.bind(
-                    this
-                  )}
-                />
-              )}
-              key={key}
-            />
+                path={prop.layout + prop.path}
+                render={props => (
+                  <prop.component
+                    {...props}
+                    handleClick={this.handleNotificationClick}
+                    handleNotification={this.handleNotification}
+                    handleLoading={this.handleLoading}
+                    keycloak={this.state.keycloak}
+                    hasEnvironmentPolicy={this.hasEnvironmentPolicy.bind(this)}
+                    environments={this.state.environmentList}
+                    selectedEnvironment={this.state.selectedEnvironment}
+                    selectedChartsToDeploy={this.state.selectedChartsToDeploy}
+                    updateSelectedChartsToDeploy={this.updateSelectedChartsToDeploy.bind(
+                      this
+                    )}
+                  />
+                )}
+                key={key}
+              />
             );
           });
-
         } else {
           return (
             <Route
@@ -310,7 +311,6 @@ class Admin extends Component {
             />
           );
         }
-
       } else {
         return null;
       }
@@ -369,8 +369,8 @@ class Admin extends Component {
     }
 
     if (this.state.keycloak) {
-      if (this.state.authenticated)
-        {return (
+      if (this.state.authenticated) {
+        return (
           <div className="wrapper">
             <NotificationSystem ref="notificationSystem" style={style} />
             <NotificationContainer />
@@ -402,8 +402,10 @@ class Admin extends Component {
               <Footer />
             </div>
           </div>
-        );}
-      else {return <div>Unable to authenticate!</div>;}
+        );
+      } else {
+        return <div>Unable to authenticate!</div>;
+      }
     }
     return (
       <div>
