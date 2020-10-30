@@ -16,6 +16,7 @@ import securityOperation from './securityOperation/reducer';
 import master from './master/reducer';
 import deploy from './deploy/reducer';
 import webHook from './webHook/reducer';
+import deployment from './deployment/reducer';
 
 export {
   notifications,
@@ -35,5 +36,6 @@ export {
   securityOperation,
   master,
   deploy,
-  webHook
+  webHook,
+  deployment
 };
