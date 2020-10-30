@@ -1,4 +1,8 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import * as selectors from 'stores/deployment/reducer';
+import * as actionsDeploy from 'stores/deploy/actions';
+
 import {
   Container,
   Row,
@@ -25,7 +29,8 @@ class Deployment extends Component {
     chartsResult: { charts: [] },
     repositories: [],
     selectedRepository: {},
-    latestVersionOnly: true
+    latestVersionOnly: true,
+    selectedEnvironments: []
   };
 
   componentDidMount() {
@@ -85,10 +90,39 @@ class Deployment extends Component {
       });
   }
 
-  navigateToCheckVariables() {
-    this.props.history.push({
-      pathname: '/admin/deployment-wvars'
+  isMultiEnvDeployment() {
+    return this.state.selectedEnvironments.length > 1;
+  }
+
+  getMultiEnvCharts() {
+    return this.props.selectedChartsToDeploy.map(c => {
+      let spl = c.split('@');
+      return {
+        chartName: spl[0],
+        chartVersion: spl[1],
+        dockerTag: null
+      };
     });
+  }
+
+  navigateToCheckVariables() {
+    if (this.isMultiEnvDeployment()) {
+      let deployProduct = {
+        productVersionId: null,
+        chartsToDeploy: this.getMultiEnvCharts(),
+        selectedEnvironments: this.state.selectedEnvironments
+      };
+      this.props.dispatch(
+        actionsDeploy.loadMultiEnvDeployWithoutProduct(deployProduct)
+      );
+      this.props.history.push({
+        pathname: '/admin/deploy'
+      });
+    } else {
+      this.props.history.push({
+        pathname: '/admin/deployment-wvars'
+      });
+    }
   }
 
   navigateToDependencyAnalysis() {
@@ -169,6 +203,17 @@ class Deployment extends Component {
     });
   }
 
+  deployButtonDisabled() {
+    return (
+      this.props.selectedEnvironments.lenght <= 0 ||
+      this.props.selectedChartsToDeploy.length <= 0
+    );
+  }
+
+  handleEnvironmentChange = selectedEnvironments => {
+    this.setState({ selectedEnvironments });
+  };
+
   render() {
     const { selectedRepository } = this.state;
 
@@ -205,12 +250,7 @@ class Deployment extends Component {
           <Row>
             <Col md={12}>
               <ActionCard
-                buttonsDisabled={
-                  (Object.entries(this.props.selectedEnvironment).length ===
-                    0 &&
-                    this.props.selectedEnvironment.constructor === Object) ||
-                  this.props.selectedChartsToDeploy.length <= 0
-                }
+                buttonsDisabled={this.deployButtonDisabled()}
                 directDeployOnClick={this.navigateToCheckVariables.bind(
                   this,
                   this
@@ -220,7 +260,22 @@ class Deployment extends Component {
                 content={
                   <div>
                     <Row>
-                      <Col xs={2}>
+                      <Col md={4}>
+                        <FormGroup>
+                          <FormLabel>Environments</FormLabel>
+                          <Select
+                            value={this.state.selectedEnvironments}
+                            onChange={this.handleEnvironmentChange}
+                            options={this.props.environments}
+                            className="react-select-zindex-4"
+                            isMulti
+                            closeMenuOnSelect={false}
+                          />
+                        </FormGroup>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col xs={4}>
                         <FormGroup>
                           <FormLabel>Repository</FormLabel>
                           <Select
@@ -231,7 +286,7 @@ class Deployment extends Component {
                         </FormGroup>
                       </Col>
 
-                      <Col xs={8}>
+                      <Col xs={6}>
                         <FormGroup>
                           <FormLabel>Chart Search</FormLabel>
                           <FormControl
@@ -295,4 +350,8 @@ class Deployment extends Component {
   }
 }
 
-export default Deployment;
+const mapStateToProps = state => ({
+  deployment: selectors.getDeployment(state)
+});
+
+export default connect(mapStateToProps)(Deployment);
