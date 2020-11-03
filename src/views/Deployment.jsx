@@ -120,7 +120,8 @@ class Deployment extends Component {
       });
     } else {
       this.props.history.push({
-        pathname: '/admin/deployment-wvars'
+        pathname: '/admin/deployment-wvars',
+        search: '?selectedEnvId=' + this.state.selectedEnvironments[0].value
       });
     }
   }
@@ -177,7 +178,8 @@ class Deployment extends Component {
     array.push(item);
     this.props.updateSelectedChartsToDeploy(array, () => {
       this.props.history.push({
-        pathname: '/admin/deployment-wvars'
+        pathname: '/admin/deployment-wvars',
+        search: '?selectedEnvId=' + this.state.selectedEnvironments[0].value
       });
     });
   }
@@ -204,10 +206,27 @@ class Deployment extends Component {
   }
 
   deployButtonDisabled() {
-    return (
-      this.props.selectedEnvironments.lenght <= 0 ||
-      this.props.selectedChartsToDeploy.length <= 0
-    );
+    if (
+      this.state.selectedEnvironments &&
+      this.state.selectedEnvironments.length > 0 &&
+      this.props.selectedChartsToDeploy &&
+      this.props.selectedChartsToDeploy.length > 0
+    ) {
+      return false;
+    }
+    return true;
+  }
+
+  singleEnvDeployBtnDisabled() {
+    if (
+      this.state.selectedEnvironments &&
+      this.state.selectedEnvironments.length === 1 &&
+      (!this.props.selectedChartsToDeploy ||
+        this.props.selectedChartsToDeploy.length === 0)
+    ) {
+      return false;
+    }
+    return true;
   }
 
   handleEnvironmentChange = selectedEnvironments => {
@@ -241,6 +260,7 @@ class Deployment extends Component {
           deploy={this.deployUnit.bind(this)}
           analysis={this.analysisUnit.bind(this)}
           canary={this.canary.bind(this)}
+          disabled={this.singleEnvDeployBtnDisabled()}
         />
       ));
 

@@ -31,8 +31,6 @@ class Header extends Component {
         keycloak={this.props.keycloak}
         history={this.props.history}
         environments={this.props.environments}
-        selectedEnvironment={this.props.selectedEnvironment}
-        handleEnvironmentChange={this.props.handleEnvironmentChange.bind(this)}
       />
     );
   }
