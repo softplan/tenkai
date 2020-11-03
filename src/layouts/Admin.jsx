@@ -35,7 +35,6 @@ class Admin extends Component {
       hasImage: true,
       fixedClasses: 'dropdown show-dropdown open',
       environmentList: [],
-      selectedEnvironment: {},
       selectedChartsToDeploy: []
     };
 
@@ -53,25 +52,11 @@ class Admin extends Component {
       });
   }
 
-  async getUserRole(environmentId) {
+  async getUserRole(envs) {
     await this.props.dispatch(
-      actions.loadRole(this.state.keycloak.idTokenParsed.email, environmentId)
+      actions.loadRole(this.state.keycloak.idTokenParsed.email, envs)
     );
   }
-
-  handleEnvironmentChange = selectedEnvironment => {
-    this.setState({ selectedEnvironment }, () => {
-      window.localStorage.setItem(
-        'currentEnvironment',
-        JSON.stringify(selectedEnvironment)
-      );
-
-      this.props.history.push({
-        pathname: '/admin/deployment'
-      });
-      this.getUserRole(selectedEnvironment.value);
-    });
-  };
 
   getEnvironments() {
     axios
@@ -92,18 +77,15 @@ class Admin extends Component {
         }
         this.setState({ environmentList: arr }, () => {
           if (arr.length > 0) {
-            let localEnvironment = JSON.parse(
-              window.localStorage.getItem('currentEnvironment')
+            let localEnvironments = JSON.parse(
+              window.localStorage.getItem('currentEnvironments')
             );
 
-            if (localEnvironment !== null) {
-              this.setState({ selectedEnvironment: localEnvironment }, () => {
-                this.getUserRole(localEnvironment.value);
-              });
+            if (localEnvironments !== null) {
+              this.getUserRole(localEnvironments);
             } else {
-              this.setState({ selectedEnvironment: arr[0] }, () => {
-                this.getUserRole(arr[0].value);
-              });
+              let selectFirstEnv = [arr[0]];
+              this.getUserRole(selectFirstEnv);
             }
           }
         });
@@ -241,21 +223,17 @@ class Admin extends Component {
   };
 
   hasEnvironmentPolicy = policy => {
-    let result = false;
-    if (this.props.master.role !== undefined) {
-      if (
-        this.props.master.role.policies !== undefined &&
-        this.props.master.role.policies.length > 0
-      ) {
-        for (let x = 0; x < this.props.master.role.policies.length; x++) {
-          if (this.props.master.role.policies[x] === policy) {
-            result = true;
-            break;
-          }
+    if (this.props.master.roles) {
+      for (let i = 0; i < this.props.master.roles.length; i++) {
+        let r = this.props.master.roles[i];
+        let foundPolicy = r.policies.find(p => p === policy);
+
+        if (foundPolicy) {
+          return true;
         }
       }
     }
-    return result;
+    return false;
   };
 
   getRoutes = routes => {
@@ -276,7 +254,6 @@ class Admin extends Component {
                     keycloak={this.state.keycloak}
                     hasEnvironmentPolicy={this.hasEnvironmentPolicy.bind(this)}
                     environments={this.state.environmentList}
-                    selectedEnvironment={this.state.selectedEnvironment}
                     selectedChartsToDeploy={this.state.selectedChartsToDeploy}
                     updateSelectedChartsToDeploy={this.updateSelectedChartsToDeploy.bind(
                       this
@@ -300,7 +277,6 @@ class Admin extends Component {
                   keycloak={this.state.keycloak}
                   hasEnvironmentPolicy={this.hasEnvironmentPolicy.bind(this)}
                   environments={this.state.environmentList}
-                  selectedEnvironment={this.state.selectedEnvironment}
                   selectedChartsToDeploy={this.state.selectedChartsToDeploy}
                   updateSelectedChartsToDeploy={this.updateSelectedChartsToDeploy.bind(
                     this
@@ -393,10 +369,6 @@ class Admin extends Component {
                 keycloak={this.state.keycloak}
                 history={this.props.history}
                 environments={this.state.environmentList}
-                selectedEnvironment={this.state.selectedEnvironment}
-                handleEnvironmentChange={this.handleEnvironmentChange.bind(
-                  this
-                )}
               />
               <Switch>{this.getRoutes(routes)}</Switch>
               <Footer />
