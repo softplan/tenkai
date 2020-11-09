@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Navbar, NavDropdown, Form } from 'react-bootstrap';
+import { Navbar, NavDropdown } from 'react-bootstrap';
 
 class AdminNavbarLinks extends Component {
   constructor(props) {
@@ -35,17 +35,16 @@ class AdminNavbarLinks extends Component {
   render() {
     return (
       <Navbar collapseOnSelect bg="light" expand="lg">
+        <Navbar.Brand href="#"></Navbar.Brand>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-        <Navbar.Collapse id="responsive-navbar-nav">
-          <Form inline>
-            <NavDropdown
-              onSelect={this.handleDropdown}
-              title={this.state.name}
-              id="basic-nav-dropdown-right"
-            >
-              <NavDropdown.Item eventKey="logout">Logout</NavDropdown.Item>
-            </NavDropdown>
-          </Form>
+        <Navbar.Collapse id="responsive-navbar-nav" className="justify-content-end">
+          <NavDropdown
+            onSelect={this.handleDropdown}
+            title={this.state.name}
+            id="basic-nav-dropdown-right"
+          >
+            <NavDropdown.Item eventKey="logout">Logout</NavDropdown.Item>
+          </NavDropdown>
         </Navbar.Collapse>
       </Navbar>
     );
