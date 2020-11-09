@@ -232,12 +232,16 @@ class Workload extends Component {
       switch (tab) {
         case 'pod':
           this.listPods();
+          break;
         case 'svc':
           this.listServices();
+          break;
         case 'ep':
           this.listEndpoints();
+          break;
         case 'helm':
           this.listDeploymentsByEnv();
+          break;
         default:
           break;
       }
