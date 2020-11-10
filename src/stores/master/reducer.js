@@ -1,7 +1,7 @@
 import * as types from './actionTypes';
 
 const initialState = {
-  role: {}
+  roles: {}
 };
 
 export default function reduce(state = initialState, action = {}) {
@@ -9,7 +9,7 @@ export default function reduce(state = initialState, action = {}) {
     case types.LOAD_ROLE_SUCCESS:
       return {
         ...state,
-        role: action.payload.result
+        roles: action.payload.result
       };
 
     case types.LOAD_ERROR:

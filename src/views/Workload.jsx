@@ -10,6 +10,7 @@ import {
   FormControl,
   ButtonToolbar
 } from 'react-bootstrap';
+import Select from 'react-select';
 import { CardTenkai } from 'components/Card/CardTenkai.jsx';
 import {
   listHelmDeploymentsByEnvironment,
@@ -41,7 +42,8 @@ class Workload extends Component {
     mode: 'workload',
     onShowConfirmModal: false,
     targetEnvToPromote: {},
-    confirmInput: ''
+    confirmInput: '',
+    selectedEnvironment: {}
   };
 
   navigateToBlueGreenWizard(item) {
@@ -54,16 +56,27 @@ class Workload extends Component {
     this.props.updateSelectedChartsToDeploy(chartsToDeploy);
 
     this.props.history.push({
-      pathname: '/admin/blueGreenWizard'
+      pathname: '/admin/blueGreenWizard',
+      search: '?envId=' + this.state.selectedEnvironment.value
     });
   }
 
   componentDidMount() {
+    this.selectFirstEnv();
     this.listDeploymentsByEnv();
     this.listPods();
     this.listServices();
     this.listEndpoints();
   }
+
+  selectFirstEnv = () => {
+    if (
+      Object.keys(this.state.selectedEnvironment).length === 0 &&
+      this.props.environments.length > 0
+    ) {
+      this.setState({ selectedEnvironment: this.props.environments[0] });
+    }
+  };
 
   refreshPods() {
     this.listPods();
@@ -96,7 +109,7 @@ class Workload extends Component {
       this.setState({ targetEnvToPromote: item }, () => {
         promote(
           this,
-          this.props.selectedEnvironment.value,
+          this.state.selectedEnvironment.value,
           this.state.targetEnvToPromote.value,
           false
         );
@@ -113,7 +126,7 @@ class Workload extends Component {
     if (this.state.confirmInput === this.state.targetEnvToPromote.label) {
       promote(
         this,
-        this.props.selectedEnvironment.value,
+        this.state.selectedEnvironment.value,
         this.state.targetEnvToPromote.value,
         true
       );
@@ -130,7 +143,7 @@ class Workload extends Component {
   }
 
   listEndpoints() {
-    listEndpoints(this, this.props.selectedEnvironment.value, function(
+    listEndpoints(this, this.state.selectedEnvironment.value, function(
       self,
       res
     ) {
@@ -143,7 +156,7 @@ class Workload extends Component {
   }
 
   listPods() {
-    listPods(this, this.props.selectedEnvironment.value, function(self, res) {
+    listPods(this, this.state.selectedEnvironment.value, function(self, res) {
       if (res !== undefined && res.data !== null) {
         self.setState({ podList: res.data.pods });
       } else {
@@ -153,7 +166,7 @@ class Workload extends Component {
   }
 
   listServices() {
-    listServices(this, this.props.selectedEnvironment.value, function(
+    listServices(this, this.state.selectedEnvironment.value, function(
       self,
       res
     ) {
@@ -168,7 +181,7 @@ class Workload extends Component {
   listDeploymentsByEnv() {
     listHelmDeploymentsByEnvironment(
       this,
-      this.props.selectedEnvironment.value,
+      this.state.selectedEnvironment.value,
       function(self, res) {
         if (res !== undefined && res.data !== null && res.data !== undefined) {
           self.setState({ list: res.data.Releases });
@@ -214,6 +227,45 @@ class Workload extends Component {
     this.setState({ confirmInput: value });
   }
 
+  handleEnvironmentChange = (selectedEnvironment, tab) => {
+    const afterChange = () => {
+      switch (tab) {
+        case 'pod':
+          this.listPods();
+          break;
+        case 'svc':
+          this.listServices();
+          break;
+        case 'ep':
+          this.listEndpoints();
+          break;
+        case 'helm':
+          this.listDeploymentsByEnv();
+          break;
+        default:
+          break;
+      }
+    };
+
+    this.setState({ selectedEnvironment }, afterChange);
+  };
+
+  renderSelectEnv = tab => {
+    return (
+      <Col md={3}>
+        <FormGroup>
+          <FormLabel>Environment</FormLabel>
+          <Select
+            value={this.state.selectedEnvironment}
+            onChange={e => this.handleEnvironmentChange(e, tab)}
+            options={this.props.environments}
+            className="react-select-zindex-4"
+          />
+        </FormGroup>
+      </Col>
+    );
+  };
+
   render() {
     const items = this.state.list
       .filter(
@@ -228,7 +280,7 @@ class Workload extends Component {
           keycloak={this.props.keycloak}
           key={key}
           item={item}
-          selectedEnvironment={this.props.selectedEnvironment}
+          selectedEnvironment={this.state.selectedEnvironment}
           handleLoading={this.props.handleLoading}
           handleNotification={this.props.handleNotification}
           historyList={this.state.historyList}
@@ -252,6 +304,8 @@ class Workload extends Component {
             content={
               <div>
                 <Row>
+                  {this.renderSelectEnv('pod')}
+
                   <Col xs={4}>
                     <FormGroup>
                       <FormLabel>Pod Search</FormLabel>
@@ -265,7 +319,7 @@ class Workload extends Component {
                     </FormGroup>
                   </Col>
 
-                  <Col xs={8}>
+                  <Col xs={5}>
                     <Button
                       className="btn btn-info pull-right"
                       size="sm"
@@ -281,7 +335,7 @@ class Workload extends Component {
                       allowDeletePod={
                         !this.props.hasEnvironmentPolicy(ACTION_DELETE_POD)
                       }
-                      selectedEnvironment={this.props.selectedEnvironment}
+                      selectedEnvironment={this.state.selectedEnvironment}
                       handleLoading={this.props.handleLoading}
                       handleNotification={this.props.handleNotification}
                       list={this.state.podList.filter(
@@ -302,6 +356,8 @@ class Workload extends Component {
             content={
               <div>
                 <Row>
+                  {this.renderSelectEnv('svc')}
+
                   <Col xs={4}>
                     <FormGroup>
                       <FormLabel>Service Search</FormLabel>
@@ -315,7 +371,7 @@ class Workload extends Component {
                     </FormGroup>
                   </Col>
 
-                  <Col xs={8}>
+                  <Col xs={5}>
                     <Button
                       className="btn btn-info pull-right"
                       size="sm"
@@ -328,7 +384,7 @@ class Workload extends Component {
                 <Row>
                   <Col xs={12}>
                     <ServicePanel
-                      selectedEnvironment={this.props.selectedEnvironment}
+                      selectedEnvironment={this.state.selectedEnvironment}
                       handleLoading={this.props.handleLoading}
                       handleNotification={this.props.handleNotification}
                       list={this.state.serviceList.filter(
@@ -350,6 +406,8 @@ class Workload extends Component {
             content={
               <div>
                 <Row>
+                  {this.renderSelectEnv('ep')}
+
                   <Col xs={4}>
                     <FormGroup>
                       <FormLabel>Public endpoint search</FormLabel>
@@ -363,7 +421,7 @@ class Workload extends Component {
                     </FormGroup>
                   </Col>
 
-                  <Col xs={8}>
+                  <Col xs={5}>
                     <Button
                       className="btn btn-info pull-right"
                       size="sm"
@@ -450,6 +508,8 @@ class Workload extends Component {
                 />
 
                 <Row>
+                  {this.renderSelectEnv('helm')}
+
                   <Col xs={4}>
                     <FormGroup>
                       <FormLabel>Release Search</FormLabel>
@@ -463,7 +523,7 @@ class Workload extends Component {
                     </FormGroup>
                   </Col>
 
-                  <Col xs={2}>
+                  <Col xs={1}>
                     <Button
                       className="btn btn-info pull-right"
                       size="sm"
@@ -473,7 +533,7 @@ class Workload extends Component {
                     </Button>
                   </Col>
 
-                  <Col xs={6}>
+                  <Col xs={4}>
                     <ButtonToolbar>
                       <Button
                         className="btn btn-success btn-fill pull-right"

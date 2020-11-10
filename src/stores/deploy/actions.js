@@ -8,6 +8,12 @@ export function loadProductCharts(data) {
   };
 }
 
+export function loadMultiEnvDeployWithoutProduct(data) {
+  return async dispatch => {
+    dispatch(types.loadMultiEnvDeployWithoutProduct(data));
+  };
+}
+
 export function deploy(data) {
   return async dispatch => {
     try {

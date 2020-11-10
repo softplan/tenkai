@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { CardTenkai } from 'components/Card/CardTenkai.jsx';
 
 import { Container, Row, Col, ButtonToolbar } from 'react-bootstrap';
+import queryString from 'query-string';
 
 import HelmVariables from 'components/Deployment/HelmVariables.jsx';
 import TrafficPanel from 'components/Traffic/TrafficPanel.jsx';
@@ -49,21 +50,23 @@ class Step1 extends React.Component {
   }
 
   async componentDidMount() {
-    await this.refs['h1'].getVariables(
-      this.props.chartName,
-      this.props.chartVersion
-    );
+    if (this.refs['h1']) {
+      await this.refs['h1'].getVariables(
+        this.props.chartName,
+        this.props.chartVersion
+      );
+    }
 
     let data = [];
     data.push('commonValuesConfigMapChart');
     data.push('commonVariablesConfigMapChart');
     data.push('canaryChart');
-  
+
     let vCommonValuesConfigMapChart = '';
     let vCommonVariablesConfigMapChart = '';
     let vCanaryChart = '';
 
-    const result = await retrieveSettings({ list: data }, this);    
+    const result = await retrieveSettings({ list: data }, this);
 
     for (let x = 0; x < result.List.length; x++) {
       let field = result.List[x].name;
@@ -96,24 +99,36 @@ class Step1 extends React.Component {
       for (let x = 0; x < list.length; x++) {
         let data = list[x];
         payload.deployables.push(data);
-        payload.environmentId = this.props.envId;
+        payload.environmentId = this.state.envId;
       }
       multipleInstall(payload, this);
     });
   }
 
+  getValuesCM() {
+    if (this.state && this.state.vCommonValuesConfigMapChart) {
+      return this.state.vCommonValuesConfigMapChart;
+    }
+    return '';
+  }
+
+  getVariablesCM() {
+    if (this.state && this.state.vCommonVariablesConfigMapChart) {
+      return this.state.vCommonVariablesConfigMapChart;
+    }
+    return '';
+  }
+
   render() {
-    if (this.props.currentStep !== 1) {
+    if (this.props.currentStep !== 1 || !this.state) {
       // Prop: The current step
       return null;
     }
     return (
       <div>
         <HelmVariables
-          vCommonValuesConfigMapChart={this.state.vCommonValuesConfigMapChart}
-          vCommonVariablesConfigMapChart={
-            this.state.vCommonVariablesConfigMapChart
-          }
+          vCommonValuesConfigMapChart={this.getValuesCM()}
+          vCommonVariablesConfigMapChart={this.getVariablesCM()}
           vCanaryChart={this.state.vCanaryChart}
           handleLoading={this.props.handleLoading}
           canary={true}
@@ -124,7 +139,7 @@ class Step1 extends React.Component {
           chartVersion={this.props.chartVersion}
           xref="h1"
           ref="h1"
-          envId={this.props.envId}
+          envId={this.state.envId}
         />
       </div>
     );
@@ -183,10 +198,12 @@ class BlueGreenWizard extends Component {
   constructor(props) {
     super(props);
 
-    this.state.envId = this.props.selectedEnvironment.value;
+    const values = queryString.parse(props.location.search);
+
+    this.state.envId = values.envId;
     this.state.envName = NAMESPACE;
 
-    console.log('Env: ' + this.props.selectedEnvironment.value);
+    console.log('Env: ' + values.envId);
 
     let charts = this.props.selectedChartsToDeploy;
     if (charts !== undefined && charts.length > 0) {
