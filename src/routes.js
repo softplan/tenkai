@@ -21,7 +21,6 @@ import CompareEnv from 'views/compareEnv/CompareEnv';
 import SecurityOperation from 'views/securityOperation/SecurityOperation';
 import Deploy from 'views/deploy/Deploy';
 import WebHook from 'views/webHooks/WebHook';
-import DeploymentStatus from 'views/deploymentStatus/DeploymentStatus';
 
 const dashboardRoutes = [
   {
@@ -29,15 +28,6 @@ const dashboardRoutes = [
     name: 'Deployment',
     icon: 'pe-7s-pendrive',
     component: Deployment,
-    layout: '/admin',
-    menu: true,
-    role: 'tenkai-user'
-  },
-  {
-    path: '/deployment-status',
-    name: 'Deployment Status',
-    icon: 'pe-7s-news-paper',
-    component: DeploymentStatus,
     layout: '/admin',
     menu: true,
     role: 'tenkai-user'
