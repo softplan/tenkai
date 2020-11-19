@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import * as col from 'components/Table/TenkaiColumn';
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 
@@ -36,13 +35,6 @@ const TableDeploymentList = props => {
     totalSize
   };
 
-  let columns = [];
-  columns.push(col.addCol('ID', 'Request Ids', '15%'));
-  columns.push(col.addCol('chart', 'Chart', '40%'));
-  columns.push(col.addCol('CreatedAt', 'Created At', '15%'));
-  columns.push(col.addCol('UpdatedAt', 'Updated At', '15%'));
-  columns.push(col.addCol('success', 'Success', '15%'));
-
   return (
     <BootstrapTable
       remote
@@ -52,7 +44,7 @@ const TableDeploymentList = props => {
       condensed
       keyField="ID"
       data={data}
-      columns={columns}
+      columns={props.columns}
       pagination={paginationFactory(options)}
       onTableChange={handleTableChange}
     />

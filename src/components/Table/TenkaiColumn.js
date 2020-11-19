@@ -51,7 +51,7 @@ export const addColBtn = (dataField, text, button, wdt = '10%') => {
   };
 };
 
-function renderBtn(handleEvt, icon, disabled = false) {
+export const renderBtn = (handleEvt, icon, disabled = false) => {
   return (cell, row) => {
     return (
       <Button
@@ -63,4 +63,4 @@ function renderBtn(handleEvt, icon, disabled = false) {
       </Button>
     );
   };
-}
+};

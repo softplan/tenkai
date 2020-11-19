@@ -29,6 +29,7 @@ import EditModal from 'components/Modal/EditModal';
 import { ACTION_DELETE_POD, ACTION_HELM_PURGE } from 'policies.js';
 import TableDeploymentList from './TableDeploymentList';
 import getDeploymentRequests from 'services/workload';
+import * as col from 'components/Table/TenkaiColumn';
 
 class Workload extends Component {
   state = {
@@ -254,7 +255,6 @@ class Workload extends Component {
         this.state.deploymentStartDate,
         this.state.deploymentEndDate,
         this.state.selectedEnvironment.value,
-        null,
         this.state.deploymentPage,
         this.state.deploymentPageSize
       )
@@ -351,6 +351,28 @@ class Workload extends Component {
         </FormGroup>
       </Col>
     );
+  };
+
+  renderDeploymentColumns = () => {
+    let columns = [];
+    columns.push(col.addCol('ID', 'Request Ids', '10%'));
+    columns.push(col.addCol('CreatedAt', 'Created At', '25%'));
+    columns.push(col.addCol('success', 'Success', '25%'));
+    columns.push(
+      col.addColBtn(
+        'items',
+        'Items',
+        col.renderBtn(this.onViewItems, 'pe-7s-more')
+      )
+    );
+    return columns;
+  };
+
+  onViewItems = item => {
+    this.props.history.push({
+      pathname: '/admin/workload',
+      search: '?deploymentReqId=' + item.ID
+    });
   };
 
   render() {
@@ -459,6 +481,7 @@ class Workload extends Component {
                     data={this.state.deploymentRequests}
                     count={this.state.deploymentCount}
                     onLoad={this.updadeDeploymentTable}
+                    columns={this.renderDeploymentColumns()}
                   />
                 </Row>
               </div>
