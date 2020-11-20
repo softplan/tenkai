@@ -27,6 +27,10 @@ import Button from 'components/CustomButton/CustomButton.jsx';
 import CopyModal from 'components/Modal/CopyModal.jsx';
 import EditModal from 'components/Modal/EditModal';
 import { ACTION_DELETE_POD, ACTION_HELM_PURGE } from 'policies.js';
+import { getDeploymentRequests, getDeployments } from 'services/workload';
+import * as col from 'components/Table/TenkaiColumn';
+import TableDeploymentList from './TableDeploymentList';
+import ModalDeployment from './ModalDeployment';
 
 class Workload extends Component {
   state = {
@@ -43,8 +47,47 @@ class Workload extends Component {
     onShowConfirmModal: false,
     targetEnvToPromote: {},
     confirmInput: '',
-    selectedEnvironment: {}
+    selectedEnvironment: {},
+    deploymentRequests: [],
+    deploymentCount: 0,
+    deploymentStartDate: this.formatDate(new Date()),
+    deploymentEndDate: this.formatDate(new Date()),
+    deploymentPageSize: 10,
+    deploymentPage: 1,
+    deploymentModalShow: false,
+    deploymentModalTitle: '',
+    deploymentModalData: [],
+    deploymentModalCount: 0,
+    deploymentModalItem: 0,
+    deploymentModalPageSize: 10,
+    deploymentModalPage: 1
   };
+
+  formatDate(date) {
+    const month = this.checkZero(date.getMonth() + 1);
+    const day = this.checkZero(date.getDate());
+    const year = date.getFullYear();
+
+    return `${year}-${month}-${day}`;
+  }
+
+  checkZero(n) {
+    if (String(n).length === 1) {
+      return '0' + n;
+    }
+    return String(n);
+  }
+
+  formatTime(date) {
+    const hour = this.checkZero(date.getHours());
+    const min = this.checkZero(date.getMinutes());
+    const sec = this.checkZero(date.getSeconds());
+    return `${hour}:${min}:${sec}`;
+  }
+
+  formatDateTime(date) {
+    return this.formatDate(date) + ' ' + this.formatTime(date);
+  }
 
   navigateToBlueGreenWizard(item) {
     let chartsToDeploy = [];
@@ -62,19 +105,17 @@ class Workload extends Component {
   }
 
   componentDidMount() {
-    this.selectFirstEnv();
-    this.listDeploymentsByEnv();
-    this.listPods();
-    this.listServices();
-    this.listEndpoints();
+    this.loadDeploymentsTabData();
   }
 
-  selectFirstEnv = () => {
+  loadDeploymentsTabData = () => {
     if (
       Object.keys(this.state.selectedEnvironment).length === 0 &&
       this.props.environments.length > 0
     ) {
-      this.setState({ selectedEnvironment: this.props.environments[0] });
+      this.setState({ selectedEnvironment: this.props.environments[0] }, () => {
+        this.listDeploymentRequests();
+      });
     }
   };
 
@@ -134,11 +175,11 @@ class Workload extends Component {
     }
   }
 
-  showConfirmCopyModal(ref) {
+  showConfirmCopyModal(_ref) {
     this.setState({ mode: 'workload', onShowCopyModal: true });
   }
 
-  showConfirmCopyModalFull(ref) {
+  showConfirmCopyModalFull(_ref) {
     this.setState({ mode: 'full', onShowCopyModal: true });
   }
 
@@ -192,7 +233,119 @@ class Workload extends Component {
     );
   }
 
-  onTabSelect(tabName) {}
+  processResponse(response) {
+    if (response.data.data) {
+      const transform = response.data.data.map(i => {
+        let status = 'Success';
+        if (!i.processed) {
+          status = 'Processing';
+        } else if (!i.success) {
+          status = 'Error';
+        }
+        return {
+          ID: i.ID,
+          chart: i.chart,
+          CreatedAt: this.formatDateTime(new Date(i.CreatedAt)),
+          UpdatedAt: this.formatDateTime(new Date(i.UpdatedAt)),
+          status
+        };
+      });
+
+      this.setState({
+        deploymentRequests: transform,
+        deploymentCount: response.data.count
+      });
+    } else {
+      this.setState({
+        deploymentRequests: [],
+        deploymentCount: response.data.count
+      });
+    }
+  }
+
+  listDeploymentRequests = () => {
+    if (this.state && this.state.selectedEnvironment) {
+      getDeploymentRequests(
+        this.state.deploymentStartDate,
+        this.state.deploymentEndDate,
+        this.state.selectedEnvironment.value,
+        this.state.deploymentPage,
+        this.state.deploymentPageSize
+      )
+        .then(response => this.processResponse(response))
+        .catch(error => {
+          console.log('error');
+          console.log(JSON.stringify(error));
+        });
+    }
+  };
+
+  listDeploymentModal = () => {
+    if (this.state && this.state.selectedEnvironment) {
+      getDeployments(
+        this.state.deploymentModalItem,
+        this.state.selectedEnvironment.value,
+        this.state.deploymentModalPage,
+        this.state.deploymentModalPageSize
+      )
+        .then(response => {
+          console.log(response);
+          if (response.data) {
+            const transform = response.data.data.map(i => {
+              let status = 'Success';
+              if (!i.processed) {
+                status = 'Processing';
+              } else if (!i.success) {
+                status = 'Error';
+              }
+              return {
+                ID: i.ID,
+                chart: i.chart,
+                CreatedAt: this.formatDateTime(new Date(i.CreatedAt)),
+                status
+              };
+            });
+
+            this.setState({
+              deploymentModalShow: true,
+              deploymentModalTitle: `Request ID: ${this.state.deploymentModalItem}`,
+              deploymentModalData: transform,
+              deploymentModalCount: response.data.count
+            });
+          } else {
+            this.setState({
+              deploymentModalShow: true,
+              deploymentModalTitle: 'No items found.',
+              deploymentModalData: [],
+              deploymentModalCount: 0
+            });
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    }
+  };
+
+  updateDeploymentTable = (page, sizePerPage) => {
+    this.setState(
+      { deploymentPageSize: sizePerPage, deploymentPage: page },
+      () => {
+        this.listDeploymentRequests(page, sizePerPage);
+      }
+    );
+  };
+
+  updateDeploymentModalTable = (page, sizePerPage) => {
+    this.setState(
+      { deploymentModalPageSize: sizePerPage, deploymentModalPage: page },
+      () => {
+        this.listDeploymentModal(page, sizePerPage);
+      }
+    );
+  };
+
+  onTabSelect(_tabName) { }
 
   onChangeInputHandler(e) {
     this.setState({
@@ -242,6 +395,10 @@ class Workload extends Component {
         case 'helm':
           this.listDeploymentsByEnv();
           break;
+        case 'deployments':
+          this.setState({ selectedEnvironment });
+          this.listDeploymentRequests();
+          break;
         default:
           break;
       }
@@ -263,6 +420,45 @@ class Workload extends Component {
           />
         </FormGroup>
       </Col>
+    );
+  };
+
+  renderDeploymentColumns = () => {
+    let columns = [];
+    columns.push(col.addId());
+    columns.push(col.addCol('CreatedAt', 'Created At', '25%'));
+    columns.push(col.addCol('status', 'Status', '25%'));
+    columns.push(
+      col.addColBtn(
+        'items',
+        'Items',
+        col.renderBtn(this.onViewItems, 'pe-7s-more')
+      )
+    );
+    return columns;
+  };
+
+  renderDeploymentModalColumns = () => {
+    let columns = [];
+    columns.push(col.addId());
+    columns.push(col.addCol('CreatedAt', 'Created At', '20%'));
+    columns.push(col.addCol('chart', 'Chart', '50%'));
+    columns.push(col.addCol('status', 'Status', '20%'));
+    return columns;
+  };
+
+  onCloseDeploymentModal = () => {
+    this.setState({ deploymentModalShow: false });
+  };
+
+  onViewItems = item => {
+    this.setState(
+      {
+        deploymentModalItem: item.ID
+      },
+      () => {
+        this.listDeploymentModal();
+      }
     );
   };
 
@@ -294,16 +490,95 @@ class Workload extends Component {
       ));
     return (
       <Tabs
-        defaultActiveKey="pods"
+        defaultActiveKey="deployments"
         id="workload-tab"
         onSelect={this.onTabSelect.bind(this)}
       >
-        <Tab eventKey="pods" title="Pods">
+        <Tab eventKey="deployments" title="Deployments">
           <CardTenkai
             title=""
             content={
               <div>
                 <Row>
+                  <Col md={12}>
+                    <ModalDeployment
+                      show={this.state.deploymentModalShow}
+                      title={this.state.deploymentModalTitle}
+                      data={this.state.deploymentModalData}
+                      count={this.state.deploymentModalCount}
+                      onLoad={this.updateDeploymentModalTable}
+                      columns={this.renderDeploymentModalColumns()}
+                      close={() => this.onCloseDeploymentModal()}
+                    />
+                  </Col>
+                </Row>
+                <Row className="align-items-md-end">
+                  {this.renderSelectEnv('deployments')}
+                  <Col md={2}>
+                    <FormGroup>
+                      <FormLabel>Start Date</FormLabel>
+                      <FormControl
+                        value={this.state.deploymentStartDate}
+                        onChange={e =>
+                          this.setState({
+                            deploymentStartDate: e.target.value
+                          })
+                        }
+                        style={{ width: '100%' }}
+                        type="date"
+                        placeholder="Start Date"
+                        aria-label="Start Date"
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col md={2}>
+                    <FormGroup>
+                      <FormLabel>End Date</FormLabel>
+                      <FormControl
+                        value={this.state.deploymentEndDate}
+                        onChange={e =>
+                          this.setState({
+                            deploymentEndDate: e.target.value
+                          })
+                        }
+                        style={{ width: '100%' }}
+                        type="date"
+                        placeholder="End Date"
+                        aria-label="End Date"
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col md={2}>
+                    <Button
+                      className="btn btn-info"
+                      size="sm"
+                      style={{ marginBottom: '20px' }}
+                      onClick={() => this.listDeploymentRequests()}
+                    >
+                      <i className="pe-7s-refresh-2" /> Refresh
+                    </Button>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col md={12}>
+                    <TableDeploymentList
+                      data={this.state.deploymentRequests}
+                      count={this.state.deploymentCount}
+                      onLoad={this.updateDeploymentTable}
+                      columns={this.renderDeploymentColumns()}
+                    />
+                  </Col>
+                </Row>
+              </div>
+            }
+          />
+        </Tab>
+        <Tab eventKey="pods" title="Pods">
+          <CardTenkai
+            title=""
+            content={
+              <div>
+                <Row className="align-items-md-end">
                   {this.renderSelectEnv('pod')}
 
                   <Col xs={4}>
@@ -315,15 +590,16 @@ class Workload extends Component {
                         style={{ width: '100%' }}
                         type="text"
                         aria-label="Search"
-                      ></FormControl>
+                      />
                     </FormGroup>
                   </Col>
 
                   <Col xs={5}>
                     <Button
-                      className="btn btn-info pull-right"
+                      className="btn btn-info"
                       size="sm"
                       onClick={this.refreshPods.bind(this)}
+                      style={{ marginBottom: '20px' }}
                     >
                       <i className="pe-7s-refresh-2" /> Refresh
                     </Button>
@@ -355,7 +631,7 @@ class Workload extends Component {
             title=""
             content={
               <div>
-                <Row>
+                <Row className="align-items-md-end">
                   {this.renderSelectEnv('svc')}
 
                   <Col xs={4}>
@@ -367,15 +643,16 @@ class Workload extends Component {
                         style={{ width: '100%' }}
                         type="text"
                         aria-label="Search"
-                      ></FormControl>
+                      />
                     </FormGroup>
                   </Col>
 
                   <Col xs={5}>
                     <Button
-                      className="btn btn-info pull-right"
+                      className="btn btn-info"
                       size="sm"
                       onClick={this.refreshServices.bind(this)}
+                      style={{ marginBottom: '20px' }}
                     >
                       <i className="pe-7s-refresh-2" /> Refresh
                     </Button>
@@ -405,7 +682,7 @@ class Workload extends Component {
             title=""
             content={
               <div>
-                <Row>
+                <Row className="align-items-md-end">
                   {this.renderSelectEnv('ep')}
 
                   <Col xs={4}>
@@ -417,15 +694,16 @@ class Workload extends Component {
                         style={{ width: '100%' }}
                         type="text"
                         aria-label="Search"
-                      ></FormControl>
+                      />
                     </FormGroup>
                   </Col>
 
                   <Col xs={5}>
                     <Button
-                      className="btn btn-info pull-right"
+                      className="btn btn-info"
                       size="sm"
                       onClick={this.refreshEndpoints.bind(this)}
+                      style={{ marginBottom: '20px' }}
                     >
                       <i className="pe-7s-refresh-2" /> Refresh
                     </Button>
@@ -459,7 +737,7 @@ class Workload extends Component {
                   onConfirm={this.onConfirmCopyModal.bind(this)}
                   environments={this.props.environments}
                   onlyMyEnvironments={true}
-                ></CopyModal>
+                />
 
                 <EditModal
                   title="Confirm"
@@ -477,7 +755,7 @@ class Workload extends Component {
                         Please, enter the target environment name to confirm!
                       </p>
                       <input
-                        text
+                        type="text"
                         name="confirmInput"
                         value={this.state.confirmInput}
                         onChange={this.handleConfirmInputChange.bind(this)}
@@ -507,7 +785,7 @@ class Workload extends Component {
                   }
                 />
 
-                <Row>
+                <Row className="align-items-md-end">
                   {this.renderSelectEnv('helm')}
 
                   <Col xs={4}>
@@ -519,41 +797,42 @@ class Workload extends Component {
                         style={{ width: '100%' }}
                         type="text"
                         aria-label="Search"
-                      ></FormControl>
+                      />
                     </FormGroup>
                   </Col>
 
-                  <Col xs={1}>
-                    <Button
-                      className="btn btn-info pull-right"
-                      size="sm"
-                      onClick={this.refreshReleases.bind(this)}
-                    >
-                      <i className="pe-7s-refresh-2" /> Refresh
-                    </Button>
-                  </Col>
-
-                  <Col xs={4}>
+                  <Col xs={5}>
                     <ButtonToolbar>
                       <Button
-                        className="btn btn-success btn-fill pull-right"
+                        className="btn btn-info"
+                        size="sm"
+                        onClick={this.refreshReleases.bind(this)}
+                        style={{ marginBottom: '20px' }}
+                      >
+                        <i className="pe-7s-refresh-2" /> Refresh
+                      </Button>
+
+                      <Button
+                        className="btn btn-success btn-fill"
                         size="sm"
                         onClick={this.showConfirmCopyModal.bind(this)}
                         disabled={
                           !this.props.keycloak.hasRealmRole('tenkai-admin')
                         }
+                        style={{ marginBottom: '20px' }}
                       >
                         <i className="pe-7s-smile" /> Copy Releases to another
                         namespace
                       </Button>
 
                       <Button
-                        className="btn btn-danger btn-fill pull-right"
+                        className="btn btn-danger btn-fill"
                         size="sm"
                         onClick={this.showConfirmCopyModalFull.bind(this)}
                         disabled={
                           !this.props.keycloak.hasRealmRole('tenkai-admin')
                         }
+                        style={{ marginBottom: '20px' }}
                       >
                         <i className="pe-7s-smile" /> Replicate full environment
                       </Button>
