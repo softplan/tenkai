@@ -425,7 +425,7 @@ class Workload extends Component {
 
   renderDeploymentColumns = () => {
     let columns = [];
-    columns.push(col.addCol('ID', 'Request Ids', '10%'));
+    columns.push(col.addId());
     columns.push(col.addCol('CreatedAt', 'Created At', '25%'));
     columns.push(col.addCol('status', 'Status', '25%'));
     columns.push(
@@ -440,7 +440,7 @@ class Workload extends Component {
 
   renderDeploymentModalColumns = () => {
     let columns = [];
-    columns.push(col.addCol('ID', 'ID', '10%'));
+    columns.push(col.addId());
     columns.push(col.addCol('CreatedAt', 'Created At', '20%'));
     columns.push(col.addCol('chart', 'Chart', '50%'));
     columns.push(col.addCol('status', 'Status', '20%'));
