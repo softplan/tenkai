@@ -225,7 +225,7 @@ class VariablesWizard extends Component {
     this.setState({ invalidVariables: {}, chartsValidated: 0 }, () => {
       let payload = {
         productVersionId: parseInt(this.state.productVersionId),
-        environmentId: parseInt(this.state.envId),
+        environmentIds: [parseInt(this.state.envId)],
         deployables: []
       };
 

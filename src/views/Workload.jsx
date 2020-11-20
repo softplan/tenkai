@@ -31,7 +31,6 @@ import { getDeploymentRequests, getDeployments } from 'services/workload';
 import * as col from 'components/Table/TenkaiColumn';
 import TableDeploymentList from './TableDeploymentList';
 import ModalDeployment from './ModalDeployment';
-import { getDeployment } from 'stores/deployment/reducer';
 
 class Workload extends Component {
   state = {
