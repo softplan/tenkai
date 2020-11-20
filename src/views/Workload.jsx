@@ -58,7 +58,9 @@ class Workload extends Component {
     deploymentModalTitle: '',
     deploymentModalData: [],
     deploymentModalCount: 0,
-    deploymentModalItem: 0
+    deploymentModalItem: 0,
+    deploymentModalPageSize: 10,
+    deploymentModalPage: 1
   };
 
   formatDate(date) {
@@ -103,19 +105,17 @@ class Workload extends Component {
   }
 
   componentDidMount() {
-    this.selectFirstEnv();
-    this.listDeploymentsByEnv();
-    // this.listPods();
-    // this.listServices();
-    // this.listEndpoints();
+    this.loadDeploymentsTabData();
   }
 
-  selectFirstEnv = () => {
+  loadDeploymentsTabData = () => {
     if (
       Object.keys(this.state.selectedEnvironment).length === 0 &&
       this.props.environments.length > 0
     ) {
-      this.setState({ selectedEnvironment: this.props.environments[0] });
+      this.setState({ selectedEnvironment: this.props.environments[0] }, () => {
+        this.listDeploymentRequests();
+      });
     }
   };
 
@@ -285,8 +285,8 @@ class Workload extends Component {
       getDeployments(
         this.state.deploymentModalItem,
         this.state.selectedEnvironment.value,
-        this.state.deploymentPage,
-        this.state.deploymentPageSize
+        this.state.deploymentModalPage,
+        this.state.deploymentModalPageSize
       )
         .then(response => {
           console.log(response);
@@ -338,7 +338,7 @@ class Workload extends Component {
 
   updateDeploymentModalTable = (page, sizePerPage) => {
     this.setState(
-      { deploymentPageSize: sizePerPage, deploymentPage: page },
+      { deploymentModalPageSize: sizePerPage, deploymentModalPage: page },
       () => {
         this.listDeploymentModal(page, sizePerPage);
       }
