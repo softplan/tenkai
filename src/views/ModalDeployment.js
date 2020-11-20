@@ -4,7 +4,11 @@ import TableDeploymentList from './TableDeploymentList';
 
 export default function ModalDeployment(props) {
   return (
-    <Modal show={props.show} onHide={props.close}>
+    <Modal
+      show={props.show}
+      onHide={props.close}
+      dialogClassName="deployment-modal"
+    >
       <Modal.Header closeButton>
         <Modal.Title>{props.title}</Modal.Title>
       </Modal.Header>

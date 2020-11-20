@@ -449,7 +449,7 @@ class VariablesWizard extends Component {
                               !this.props.hasEnvironmentPolicy(ACTION_DEPLOY)
                             }
                           >
-                            Install/Update
+                            Request Install
                           </Button>
                         </ButtonToolbar>
                       </div>

@@ -235,13 +235,21 @@ class Workload extends Component {
 
   processResponse(response) {
     if (response.data.data) {
-      const transform = response.data.data.map(i => ({
-        ID: i.ID,
-        chart: i.chart,
-        CreatedAt: this.formatDateTime(new Date(i.CreatedAt)),
-        UpdatedAt: this.formatDateTime(new Date(i.UpdatedAt)),
-        success: i.success === true ? 'Yes' : 'No'
-      }));
+      const transform = response.data.data.map(i => {
+        let status = 'Success';
+        if (!i.processed) {
+          status = 'Processing';
+        } else if (!i.success) {
+          status = 'Error';
+        }
+        return {
+          ID: i.ID,
+          chart: i.chart,
+          CreatedAt: this.formatDateTime(new Date(i.CreatedAt)),
+          UpdatedAt: this.formatDateTime(new Date(i.UpdatedAt)),
+          status
+        };
+      });
 
       this.setState({
         deploymentRequests: transform,
@@ -419,7 +427,7 @@ class Workload extends Component {
     let columns = [];
     columns.push(col.addCol('ID', 'Request Ids', '10%'));
     columns.push(col.addCol('CreatedAt', 'Created At', '25%'));
-    columns.push(col.addCol('success', 'Success', '25%'));
+    columns.push(col.addCol('status', 'Status', '25%'));
     columns.push(
       col.addColBtn(
         'items',
@@ -433,9 +441,9 @@ class Workload extends Component {
   renderDeploymentModalColumns = () => {
     let columns = [];
     columns.push(col.addCol('ID', 'ID', '10%'));
-    columns.push(col.addCol('CreatedAt', 'Created At', '25%'));
-    columns.push(col.addCol('chart', 'Chart', '25%'));
-    columns.push(col.addCol('status', 'Status', '25%'));
+    columns.push(col.addCol('CreatedAt', 'Created At', '20%'));
+    columns.push(col.addCol('chart', 'Chart', '50%'));
+    columns.push(col.addCol('status', 'Status', '20%'));
     return columns;
   };
 
@@ -491,34 +499,21 @@ class Workload extends Component {
             title=""
             content={
               <div>
-                <ModalDeployment
-                  show={this.state.deploymentModalShow}
-                  title={this.state.deploymentModalTitle}
-                  data={this.state.deploymentModalData}
-                  count={this.state.deploymentModalCount}
-                  onLoad={this.updateDeploymentModalTable}
-                  columns={this.renderDeploymentModalColumns()}
-                  close={() => this.onCloseDeploymentModal()}
-                />
+                <Row>
+                  <Col md={12}>
+                    <ModalDeployment
+                      show={this.state.deploymentModalShow}
+                      title={this.state.deploymentModalTitle}
+                      data={this.state.deploymentModalData}
+                      count={this.state.deploymentModalCount}
+                      onLoad={this.updateDeploymentModalTable}
+                      columns={this.renderDeploymentModalColumns()}
+                      close={() => this.onCloseDeploymentModal()}
+                    />
+                  </Col>
+                </Row>
                 <Row className="align-items-md-end">
                   {this.renderSelectEnv('deployments')}
-                  <Col md={3}>
-                    <FormGroup>
-                      <FormLabel>Deployment Search</FormLabel>
-                      <FormControl
-                        value={this.state.inputFilter}
-                        onChange={e =>
-                          this.setState({
-                            inputFilter: e.target.value
-                          })
-                        }
-                        style={{ width: '100%' }}
-                        type="text"
-                        placeholder="Search using any CHART"
-                        aria-label="Search using any field"
-                      />
-                    </FormGroup>
-                  </Col>
                   <Col md={2}>
                     <FormGroup>
                       <FormLabel>Start Date</FormLabel>

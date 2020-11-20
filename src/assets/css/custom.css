@@ -30,6 +30,9 @@
     width: 90%;
 }
 
+.deployment-modal {
+  max-width: 70%
+}
 
 .stepwizard-step p {
     margin-top: 0px;

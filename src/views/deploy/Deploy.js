@@ -110,7 +110,7 @@ export class Deploy extends Component {
                         className="pull-right"
                         onClick={this.onDeploy.bind(this)}
                       >
-                        Install/Update
+                        Request Install
                       </Button>
                     </Col>
                   </Row>
