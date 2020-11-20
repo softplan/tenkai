@@ -27,9 +27,11 @@ import Button from 'components/CustomButton/CustomButton.jsx';
 import CopyModal from 'components/Modal/CopyModal.jsx';
 import EditModal from 'components/Modal/EditModal';
 import { ACTION_DELETE_POD, ACTION_HELM_PURGE } from 'policies.js';
-import TableDeploymentList from './TableDeploymentList';
-import getDeploymentRequests from 'services/workload';
+import { getDeploymentRequests, getDeployments } from 'services/workload';
 import * as col from 'components/Table/TenkaiColumn';
+import TableDeploymentList from './TableDeploymentList';
+import ModalDeployment from './ModalDeployment';
+import { getDeployment } from 'stores/deployment/reducer';
 
 class Workload extends Component {
   state = {
@@ -52,7 +54,12 @@ class Workload extends Component {
     deploymentStartDate: this.formatDate(new Date()),
     deploymentEndDate: this.formatDate(new Date()),
     deploymentPageSize: 10,
-    deploymentPage: 1
+    deploymentPage: 1,
+    deploymentModalShow: false,
+    deploymentModalTitle: '',
+    deploymentModalData: [],
+    deploymentModalCount: 0,
+    deploymentModalItem: 0
   };
 
   formatDate(date) {
@@ -266,11 +273,67 @@ class Workload extends Component {
     }
   };
 
-  updadeDeploymentTable = (page, sizePerPage) => {
+  listDeploymentModal = () => {
+    if (this.state && this.state.selectedEnvironment) {
+      getDeployments(
+        this.state.deploymentModalItem,
+        this.state.selectedEnvironment.value,
+        this.state.deploymentPage,
+        this.state.deploymentPageSize
+      )
+        .then(response => {
+          console.log(response);
+          if (response.data) {
+            const transform = response.data.data.map(i => {
+              let status = 'Success';
+              if (!i.processed) {
+                status = 'Processing';
+              } else if (!i.success) {
+                status = 'Error';
+              }
+              return {
+                ID: i.ID,
+                chart: i.chart,
+                CreatedAt: this.formatDateTime(new Date(i.CreatedAt)),
+                status
+              };
+            });
+
+            this.setState({
+              deploymentModalShow: true,
+              deploymentModalTitle: `Request ID: ${this.state.deploymentModalItem}`,
+              deploymentModalData: transform,
+              deploymentModalCount: response.data.count
+            });
+          } else {
+            this.setState({
+              deploymentModalShow: true,
+              deploymentModalTitle: 'No items found.',
+              deploymentModalData: [],
+              deploymentModalCount: 0
+            });
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    }
+  };
+
+  updateDeploymentTable = (page, sizePerPage) => {
     this.setState(
       { deploymentPageSize: sizePerPage, deploymentPage: page },
       () => {
         this.listDeploymentRequests(page, sizePerPage);
+      }
+    );
+  };
+
+  updateDeploymentModalTable = (page, sizePerPage) => {
+    this.setState(
+      { deploymentPageSize: sizePerPage, deploymentPage: page },
+      () => {
+        this.listDeploymentModal(page, sizePerPage);
       }
     );
   };
@@ -368,11 +431,28 @@ class Workload extends Component {
     return columns;
   };
 
+  renderDeploymentModalColumns = () => {
+    let columns = [];
+    columns.push(col.addCol('ID', 'ID', '10%'));
+    columns.push(col.addCol('CreatedAt', 'Created At', '25%'));
+    columns.push(col.addCol('chart', 'Chart', '25%'));
+    columns.push(col.addCol('status', 'Status', '25%'));
+    return columns;
+  };
+
+  onCloseDeploymentModal = () => {
+    this.setState({ deploymentModalShow: false });
+  };
+
   onViewItems = item => {
-    this.props.history.push({
-      pathname: '/admin/workload',
-      search: '?deploymentReqId=' + item.ID
-    });
+    this.setState(
+      {
+        deploymentModalItem: item.ID
+      },
+      () => {
+        this.listDeploymentModal();
+      }
+    );
   };
 
   render() {
@@ -412,6 +492,15 @@ class Workload extends Component {
             title=""
             content={
               <div>
+                <ModalDeployment
+                  show={this.state.deploymentModalShow}
+                  title={this.state.deploymentModalTitle}
+                  data={this.state.deploymentModalData}
+                  count={this.state.deploymentModalCount}
+                  onLoad={this.updateDeploymentModalTable}
+                  columns={this.renderDeploymentModalColumns()}
+                  close={() => this.onCloseDeploymentModal()}
+                />
                 <Row className="align-items-md-end">
                   {this.renderSelectEnv('deployments')}
                   <Col md={3}>
@@ -477,12 +566,14 @@ class Workload extends Component {
                   </Col>
                 </Row>
                 <Row>
-                  <TableDeploymentList
-                    data={this.state.deploymentRequests}
-                    count={this.state.deploymentCount}
-                    onLoad={this.updadeDeploymentTable}
-                    columns={this.renderDeploymentColumns()}
-                  />
+                  <Col md={12}>
+                    <TableDeploymentList
+                      data={this.state.deploymentRequests}
+                      count={this.state.deploymentCount}
+                      onLoad={this.updateDeploymentTable}
+                      columns={this.renderDeploymentColumns()}
+                    />
+                  </Col>
                 </Row>
               </div>
             }
