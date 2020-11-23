@@ -823,7 +823,7 @@ export class HelmVariables extends Component {
                     <div>
                       <IstioVariable
                         disabled={
-                          !this.props.hasEnvironmentPolicy(
+                          this.props && !this.props.hasEnvironmentPolicy(
                             ACTION_SAVE_VARIABLES
                           )
                         }

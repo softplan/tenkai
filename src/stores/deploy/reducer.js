@@ -1,8 +1,10 @@
 import * as types from './actionTypes';
 
 const initialState = {
+  deployType: '',
   productVersionId: null,
   chartsToDeploy: [],
+  selectedEnvironments: [],
   error: null
 };
 
@@ -12,7 +14,16 @@ export default function reduce(state = initialState, action = {}) {
       return {
         ...state,
         productVersionId: parseInt(action.payload.productVersionId),
-        chartsToDeploy: action.payload.chartsToDeploy
+        chartsToDeploy: action.payload.chartsToDeploy,
+        deployType: action.payload.deployType
+      };
+
+    case types.LOAD_MULTI_ENV_CHARTS:
+      return {
+        ...state,
+        selectedEnvironments: action.payload.selectedEnvironments,
+        chartsToDeploy: action.payload.chartsToDeploy,
+        deployType: action.payload.deployType
       };
 
     case types.DEPLOY_SUCCESS:

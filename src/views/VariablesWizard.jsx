@@ -1,33 +1,48 @@
-import React, { Component } from 'react';
-import { Container, Row, Col, ButtonToolbar } from 'react-bootstrap';
-
+import {
+  getAllEnvironments,
+  getHelmCommand,
+  multipleInstall,
+  retrieveSettings,
+  validateVariables
+} from 'client-api/apicall.jsx';
 import { CardTenkai } from 'components/Card/CardTenkai.jsx';
 import Button from 'components/CustomButton/CustomButton.jsx';
 import HelmVariables from 'components/Deployment/HelmVariables.jsx';
 import CopyModal from 'components/Modal/CopyModal.jsx';
-import { multipleInstall, getHelmCommand } from 'client-api/apicall.jsx';
 import HelmCommandModal from 'components/Modal/HelmCommandModal.jsx';
-
+import { ACTION_DEPLOY, ACTION_SAVE_VARIABLES } from 'policies.js';
 import queryString from 'query-string';
-import { validateVariables } from 'client-api/apicall.jsx';
-import { ACTION_SAVE_VARIABLES, ACTION_DEPLOY } from 'policies.js';
-import { getAllEnvironments, retrieveSettings } from 'client-api/apicall.jsx';
+import React, { Component } from 'react';
+import {
+  ButtonToolbar,
+  Col,
+  Container,
+  Row,
+  FormGroup,
+  FormLabel
+} from 'react-bootstrap';
+import Select from 'react-select';
 
 class VariablesWizard extends Component {
-  state = {
-    envId: '',
-    charts: [],
-    chartVersions: new Map(),
-    onShowCopyModal: false,
-    desiredTags: new Map(),
-    showEditorModal: false,
-    helmValue: '',
-    showConfirmInstallModal: false,
-    installPayload: [],
-    invalidVariables: {},
-    chartsValidated: 0,
-    envsToCopy: []
-  };
+  constructor(props) {
+    super(props);
+    const values = queryString.parse(props.location.search);
+    this.state = {
+      charts: [],
+      chartVersions: new Map(),
+      onShowCopyModal: false,
+      desiredTags: new Map(),
+      showEditorModal: false,
+      helmValue: '',
+      showConfirmInstallModal: false,
+      installPayload: [],
+      invalidVariables: {},
+      chartsValidated: 0,
+      envsToCopy: [],
+      productVersionId: values.productVersionId,
+      envId: values.selectedEnvId
+    };
+  }
 
   async componentDidMount() {
     this.props.handleLoading(true);
@@ -68,7 +83,6 @@ class VariablesWizard extends Component {
     data.push('commonVariablesConfigMapChart');
     data.push('canaryChart');
 
-       
     let vCommonValuesConfigMapChart = '';
     let vCommonVariablesConfigMapChart = '';
     let vCanaryChart = '';
@@ -91,20 +105,33 @@ class VariablesWizard extends Component {
         }
       }
     }
-    this.setState({
-      vCommonValuesConfigMapChart: vCommonValuesConfigMapChart,
-      vCommonVariablesConfigMapChart: vCommonVariablesConfigMapChart,
-      vCanaryChart: vCanaryChart,
-      charts: helmCharts,
-      chartVersions: chartVersions,
-      desiredTags: desiredTags
-    },
+    this.setState(
+      {
+        vCommonValuesConfigMapChart: vCommonValuesConfigMapChart,
+        vCommonVariablesConfigMapChart: vCommonVariablesConfigMapChart,
+        vCanaryChart: vCanaryChart,
+        charts: helmCharts,
+        chartVersions: chartVersions,
+        desiredTags: desiredTags
+      },
       async () => this.didMountCallback(helmCharts)
     );
-      
   }
 
-  didMountCallback = async helmCharts => {
+  getSelectedEnvironment() {
+    if (this.state.envId) {
+      const found = this.props.environments.find(
+        e => String(e.value) === String(this.state.envId)
+      );
+
+      if (found) {
+        return [found];
+      }
+    }
+    return [];
+  }
+
+  didMountCallback = async () => {
     await this.getChildVariables();
     this.props.handleLoading(false);
   };
@@ -119,13 +146,6 @@ class VariablesWizard extends Component {
     }
   }
 
-  constructor(props) {
-    super(props);
-    this.state.envId = this.props.selectedEnvironment.value;
-    const values = queryString.parse(props.location.search);
-    this.state.productVersionId = values.productVersionId;
-  }
-
   onSaveVariablesClick = () => {
     this.setState({ invalidVariables: {}, chartsValidated: 0 }, () => {
       this.props.handleLoading(true);
@@ -133,7 +153,7 @@ class VariablesWizard extends Component {
       let index = 0;
 
       this.state.charts.forEach((item, key) => {
-        this.refs['h' + key].save(data => {
+        this.refs['h' + key].save(() => {
           index++;
           if (index >= count) {
             this.props.handleNotification(
@@ -205,7 +225,7 @@ class VariablesWizard extends Component {
     this.setState({ invalidVariables: {}, chartsValidated: 0 }, () => {
       let payload = {
         productVersionId: parseInt(this.state.productVersionId),
-        environmentId: parseInt(this.state.envId),
+        environmentIds: [parseInt(this.state.envId)],
         deployables: []
       };
 
@@ -379,42 +399,62 @@ class VariablesWizard extends Component {
               <CardTenkai
                 title=""
                 content={
-                  <div align="right">
-                    <ButtonToolbar style={{ display: 'block' }}>
-                      <Button variant="secondary" onClick={this.onHelmCommand}>
-                        Show Helm Command
-                      </Button>
+                  <Row>
+                    <Col md={4}>
+                      <FormGroup>
+                        <FormLabel>Environments</FormLabel>
+                        <Select
+                          value={this.getSelectedEnvironment()}
+                          options={this.props.environments}
+                          className="react-select-zindex-4"
+                          isMulti
+                          closeMenuOnSelect={false}
+                          isDisabled={true}
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col md={8}>
+                      <div align="right">
+                        <ButtonToolbar style={{ display: 'block' }}>
+                          <Button
+                            variant="secondary"
+                            onClick={this.onHelmCommand}
+                          >
+                            Show Helm Command
+                          </Button>
 
-                      <Button
-                        variant="secondary"
-                        onClick={this.onValidateVariablesClick}
-                      >
-                        Validate Variables
-                      </Button>
+                          <Button
+                            variant="secondary"
+                            onClick={this.onValidateVariablesClick}
+                          >
+                            Validate Variables
+                          </Button>
 
-                      <Button
-                        variant="secondary"
-                        onClick={this.onSaveVariablesClick}
-                        disabled={
-                          !this.props.hasEnvironmentPolicy(
-                            ACTION_SAVE_VARIABLES
-                          )
-                        }
-                      >
-                        Save Variables
-                      </Button>
+                          <Button
+                            variant="secondary"
+                            onClick={this.onSaveVariablesClick}
+                            disabled={
+                              !this.props.hasEnvironmentPolicy(
+                                ACTION_SAVE_VARIABLES
+                              )
+                            }
+                          >
+                            Save Variables
+                          </Button>
 
-                      <Button
-                        variant="primary"
-                        onClick={this.install}
-                        disabled={
-                          !this.props.hasEnvironmentPolicy(ACTION_DEPLOY)
-                        }
-                      >
-                        Install/Update
-                      </Button>
-                    </ButtonToolbar>
-                  </div>
+                          <Button
+                            variant="primary"
+                            onClick={this.install}
+                            disabled={
+                              !this.props.hasEnvironmentPolicy(ACTION_DEPLOY)
+                            }
+                          >
+                            Request Install
+                          </Button>
+                        </ButtonToolbar>
+                      </div>
+                    </Col>
+                  </Row>
                 }
               />
             </Col>

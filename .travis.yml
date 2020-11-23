@@ -3,11 +3,11 @@ language: node_js
 node_js:
   - '10'
 
-branches:
-  only:
-    - dev
-    - master
-    - /^\d{2}\.\d\.\d+(-\d+)?$/
+#branches:
+#  only:
+#    - develop
+#    - master
+#    - /^\d{2}\.\d\.\d+(-\d+)?$/
 
 cache:
   npm: false
