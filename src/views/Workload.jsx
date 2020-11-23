@@ -8,7 +8,9 @@ import {
   FormGroup,
   FormLabel,
   FormControl,
-  ButtonToolbar
+  ButtonToolbar,
+  OverlayTrigger,
+  Popover
 } from 'react-bootstrap';
 import Select from 'react-select';
 import { CardTenkai } from 'components/Card/CardTenkai.jsx';
@@ -296,7 +298,11 @@ class Workload extends Component {
               if (!i.processed) {
                 status = 'Processing';
               } else if (!i.success) {
-                status = 'Error';
+                if (i.message) {
+                  status = i.message;
+                } else {
+                  status = 'There is no detail for this error.';
+                }
               }
               return {
                 ID: i.ID,
@@ -345,7 +351,7 @@ class Workload extends Component {
     );
   };
 
-  onTabSelect(_tabName) { }
+  onTabSelect(_tabName) {}
 
   onChangeInputHandler(e) {
     this.setState({
@@ -441,11 +447,55 @@ class Workload extends Component {
   renderDeploymentModalColumns = () => {
     let columns = [];
     columns.push(col.addId());
-    columns.push(col.addCol('CreatedAt', 'Created At', '20%'));
+    columns.push(col.addCol('CreatedAt', 'Created At', '30%'));
     columns.push(col.addCol('chart', 'Chart', '50%'));
-    columns.push(col.addCol('status', 'Status', '20%'));
+    columns.push(this.addColStatus('10%'));
     return columns;
   };
+
+  addColStatus = wdt => {
+    return col.addColBtn(
+      'status',
+      'Status',
+      this.renderStatusBtn('pe-7s-edit'),
+      wdt
+    );
+  };
+
+  renderStatusBtn = () => {
+    return (cell, row) => {
+      if (row.status === 'Success') {
+        return (
+          <Button className="link-button">
+            <i className="pe-7s-edit pe-7s-check" />
+          </Button>
+        );
+      } else {
+        return this.renderErrorOverlay(row);
+      }
+    };
+  };
+
+  renderErrorOverlay = row => {
+    return (
+      <OverlayTrigger
+        placement="left"
+        delay={{ show: 150, hide: 200 }}
+        overlay={this.renderErrorTooltip(row.status)}
+      >
+        <Button className="link-button" value={row}>
+          <i className="pe-7s-attention cell-button-icon" />
+        </Button>
+      </OverlayTrigger>
+    );
+  };
+
+  renderErrorTooltip = message => (
+    <Popover id="popover-basic">
+      <Popover.Title as="h3">Error detail</Popover.Title>
+      <Popover.Content>{message}</Popover.Content>
+    </Popover>
+  );
 
   onCloseDeploymentModal = () => {
     this.setState({ deploymentModalShow: false });
