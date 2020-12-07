@@ -150,6 +150,7 @@ class Environments extends Component {
           name={item.name}
           clusterUri={item.cluster_uri}
           namespace={item.namespace}
+          productVersion={item.productVersion}
           navigateToEditEnvironment={this.navigateToEditEnvironment.bind(this)}
           navigateToEnvironmentVariables={this.navigateToEnvironmentVariables.bind(
             this
