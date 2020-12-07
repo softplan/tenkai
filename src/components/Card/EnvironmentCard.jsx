@@ -15,7 +15,7 @@ export const EnvironmentCard = props => (
           {props.namespace}
         </div>
       </div>
-      {props.productVersion != "" ? (
+      {props.productVersion !== "" ? (
         <div class="row">
           <div class="col-sm-12">
             <i>Product Version: </i>
