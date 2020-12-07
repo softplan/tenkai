@@ -9,8 +9,19 @@ export const EnvironmentCard = props => (
       <p className="category">{props.group}</p>
     </div>
     <div className={"content"}>
-      <i>Namespace: </i>
-      {props.namespace}
+      <div class="row">
+        <div class="col-sm-12">
+          <i>Namespace: </i>
+          {props.namespace}
+        </div>
+      </div>
+      {props.productVersion != "" ? (
+        <div class="row">
+          <div class="col-sm-12">
+            <i>Product Version: </i>
+            {props.productVersion}
+          </div>
+        </div>) : null}
       <div className="footer">
         {props.clusterUri}
         <hr />
