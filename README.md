@@ -6,9 +6,16 @@ An open platform to configure, deploy and manage microservices based on Helm Cha
 
 In this README:
 
-- [Introduction](#introduction)
-- [A demo deployment](#demo-deployment)
-- [A production deployment](#production-deployment)
+- [Tenkai](#tenkai)
+  - [Introduction](#introduction)
+  - [Demo Deployment](#demo-deployment)
+    - [Pre-requirements](#pre-requirements)
+      - [Keycloak](#keycloak)
+      - [RabbitMQ](#rabbitmq)
+    - [Deployment of Tenkai-api](#deployment-of-tenkai-api)
+    - [Deployment of Tenkai-helm-api](#deployment-of-tenkai-helm-api)
+    - [Deployment of Tenkai GUI](#deployment-of-tenkai-gui)
+  - [Production Deployment](#production-deployment)
 
 ![alt text](https://raw.githubusercontent.com/softplan/tenkai/dev/screenshots/tenkai_helm.png)
 
@@ -23,6 +30,9 @@ Besides that, Tenkai has a strong integration with Istio Service Mesh, abstracti
 ### Pre-requirements
 
 - Keycloak
+- RabbitMQ
+
+#### Keycloak
 
 Tenkai is integrate to keycloak, for tests purposes you need only to run a simple keycloak docker container:
 
@@ -42,12 +52,32 @@ So, create you user and associate them to this roles. Also enter a valid redirec
 
 - http://localhost:3000/admin/workload
 
+#### RabbitMQ
+
+Tenkai use queue's system to make install/upgrade of your services. So, you must provide for tenkai a connection with some RabbitMQ server. If you don't have any, you can just run RabbitMQ container:
+
+```
+docker run -d --hostname my-rabbit --name some-rabbit -p 15672:15672 -p 5672:5672 rabbitmq:3-management
+```
+
+Once started, Tenkai will create all queues his need.
+
 ### Deployment of Tenkai-api
 
 In a demo environment, you should only run the container without any adicional parameters.
 
 ```
-docker run --name tenkai-api -p 8080:8080 -d softplan/tenkai-api:dev
+docker run --name tenkai-api -e APP_RABBIT_URI=amqp://guest:guest@localhost:5672 -e APP_HELMAPIURL=http://localhost:8082 -p 8080:8080 -d softplan/tenkai-api:dev
+```
+
+### Deployment of Tenkai-helm-api
+
+This service will be responsable to consume install/upgrade solicitations make from tenkai-api via RabbitMQ, the processing of this solicitation and send back a response to tenkai-api also via RabbitMQ. This service also comunicates with tenkai-api via http protocol for some helm resources.
+
+To run this service, execute:
+
+```
+docker run --name=tenkai-helm -d -e APP_RABBIT_URI=amqp://guest:guest@localhost:5672 -p 8082:8082 softplan/tenkai-helm-api:main
 ```
 
 ### Deployment of Tenkai GUI
