@@ -18,9 +18,10 @@ export const errorOpts = {
 export function errorDefault(err) {
   if (err !== undefined) {
     let msg = errorOpts;
-
     if (!!err.data) {
       msg.message = err.data;
+    } else if (!!err.response.data) {
+      msg.message = err.response.data;
     } else if (!!err.message) {
       msg.message = err.message;
     }
