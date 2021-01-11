@@ -1,14 +1,15 @@
 import React, { Component } from 'react';
 import { CardTenkai } from 'components/Card/CardTenkai.jsx';
 import { FormInputs } from 'components/FormInputs/FormInputs.jsx';
-import { Button } from 'react-bootstrap';
+import { Button, FormGroup, Form } from 'react-bootstrap';
 
 export class EditProduct extends Component {
   state = {
     formData: {
       ID: '',
       team: '',
-      name: ''
+      name: '',
+      validateReleases: true
     }
   };
 
@@ -30,6 +31,17 @@ export class EditProduct extends Component {
       formData: {
         ...state.formData,
         [name]: value
+      }
+    }));
+  };
+
+  handleValidateReleases = event => {
+    const { checked } = event.target;
+    console.log(checked)
+    this.setState(state => ({
+      formData: {
+        ...state.formData,
+        validateReleases: checked
       }
     }));
   };
@@ -62,6 +74,17 @@ export class EditProduct extends Component {
                   }
                 ]}
               />
+
+              <FormGroup>
+                <Form.Check
+                  id="validateReleases"
+                  type="switch"
+                  inline
+                  checked={this.state.formData.validateReleases}
+                  onChange={this.handleValidateReleases}
+                  label="Enable release version validation"
+                ></Form.Check>
+              </FormGroup>
 
               <div className="btn-toolbar">
                 <div className="btn-group">
