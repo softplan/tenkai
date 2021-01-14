@@ -522,7 +522,7 @@ class Workload extends Component {
       .map((item, key) => (
         <ReleasePanel
           allowPurge={!this.props.hasEnvironmentPolicy(ACTION_HELM_PURGE)}
-          eventKey={key}
+          eventKey={item.Name}
           keycloak={this.props.keycloak}
           key={key}
           item={item}
