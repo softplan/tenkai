@@ -93,6 +93,7 @@ class Sidebar extends Component {
                         </li>
                       );
                     }
+                    return ""
                   });
 
                   return (
