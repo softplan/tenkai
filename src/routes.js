@@ -195,7 +195,7 @@ const dashboardRoutes = [
     component: null,
     layout: '/admin',
     menu: true,
-    role: 'tenkai-admin',
+    role: 'tenkai-user',
     submenu: [
       {
         path: '/config',
@@ -204,7 +204,7 @@ const dashboardRoutes = [
         component: Config,
         layout: '/admin',
         menu: true,
-        role: 'tenkai-user'
+        role: 'tenkai-admin'
       },
       {
         path: '/compareEnv',
@@ -213,7 +213,7 @@ const dashboardRoutes = [
         component: CompareEnv,
         layout: '/admin',
         menu: true,
-        role: 'tenkai-admin'
+        role: 'tenkai-user'
       },
       {
         path: '/webhook',

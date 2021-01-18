@@ -70,27 +70,29 @@ class Sidebar extends Component {
                 prop.menu &&
                 this.props.keycloak.hasRealmRole(prop.role)
               ) {
-                if (prop.submenu) {
+                if (!!prop.submenu && this.props.keycloak.hasRealmRole(prop.role)) {
                   const valuex = this.state.submenu.get(prop.path);
 
                   const subitems = prop.submenu.map((submenu, key) => {
-                    return (
-                      <li
-                        key={key}
-                        className={this.activeRoute(
-                          submenu.layout + submenu.path
-                        )}
-                      >
-                        <NavLink
-                          to={submenu.layout + submenu.path}
-                          className="nav-link"
-                          activeClassName="active"
+                    if (this.props.keycloak.hasRealmRole(submenu.role)) {
+                      return (
+                        <li
+                          key={key}
+                          className={this.activeRoute(
+                            submenu.layout + submenu.path
+                          )}
                         >
-                          <i className={submenu.icon} />
-                          <p>{submenu.name}</p>
-                        </NavLink>
-                      </li>
-                    );
+                          <NavLink
+                            to={submenu.layout + submenu.path}
+                            className="nav-link"
+                            activeClassName="active"
+                          >
+                            <i className={submenu.icon} />
+                            <p>{submenu.name}</p>
+                          </NavLink>
+                        </li>
+                      );
+                    }
                   });
 
                   return (
