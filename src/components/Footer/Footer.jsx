@@ -8,7 +8,7 @@ class Footer extends Component {
         <Container fluid>
           <nav className="pull-left"></nav>
           <p className="copyright pull-right">
-            &copy; 2019-2020
+            &copy; 2019-2021
             <a href="https://github.com/softplan/tenkai">
               https://github.com/softplan/tenkai
             </a>
