@@ -43,8 +43,10 @@ export class EditProduct extends Component {
         ...state.formData,
         validateReleases: checked
       }
-    }));
-  };
+    })
+    )
+    console.log("");
+  }
 
   saveClick = event => {
     event.preventDefault();
