@@ -18,5 +18,8 @@ export async function editWebHook(data) {
 }
 
 export async function loadWebhookTypes() {
-  return [{ value: 'HOOK_DEPLOY_PRODUCT', label: 'Deploy Product' }];
+  return [
+    { value: 'HOOK_DEPLOY_PRODUCT', label: 'Deploy Product', useEnv: true },
+    { value: 'HOOK_NEW_RELEASE', label: 'New Release', useEnv: false }
+  ];
 }
