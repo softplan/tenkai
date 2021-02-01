@@ -15,7 +15,8 @@ export class EditWebHook extends Component {
     formData: {
       ID: '',
       name: '',
-      url: ''
+      url: '',
+      additionalData: ''
     },
     selectedType: {},
     selectedEnvironment: {}
@@ -131,6 +132,19 @@ export class EditWebHook extends Component {
                       name="url"
                       type="text"
                       value={this.state.formData.url}
+                      onChange={this.handleChange}
+                    ></FormControl>
+                  </FormGroup>
+                </Col>
+              </Row>
+              <Row>
+                <Col xs={6}>
+                  <FormGroup>
+                    <FormLabel>Additional Data</FormLabel>
+                    <FormControl
+                      name="additionalData"
+                      type="text"
+                      value={this.state.formData.additionalData}
                       onChange={this.handleChange}
                     ></FormControl>
                   </FormGroup>
