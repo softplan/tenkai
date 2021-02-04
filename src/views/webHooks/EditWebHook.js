@@ -15,7 +15,8 @@ export class EditWebHook extends Component {
     formData: {
       ID: '',
       name: '',
-      url: ''
+      url: '',
+      additionalData: ''
     },
     selectedType: {},
     selectedEnvironment: {}
@@ -65,11 +66,20 @@ export class EditWebHook extends Component {
     event.preventDefault();
     const data = this.state.formData;
     data.type = this.state.selectedType.value;
-    data.environmentId = this.state.selectedEnvironment.value;
+    if (this.state.selectedType.useEnv) {
+      data.environmentId = this.state.selectedEnvironment.value;
+    } else {
+      data.enfironmentId = null;
+    }
     this.props.saveClick(data);
   };
 
   render() {
+    var disabled = false
+    if (!!this.state.selectedType) {
+      disabled = !this.state.selectedType.useEnv
+    }
+
     const { editMode } = this.props;
     return (
       <div>
@@ -80,29 +90,17 @@ export class EditWebHook extends Component {
               <Row>
                 <Col md={3}>
                   <FormGroup>
-                    <FormLabel>Environment</FormLabel>
-                    <Select
-                      name="environmentId"
-                      value={this.state.selectedEnvironment}
-                      options={this.props.environments}
-                      onChange={this.handleSelectEnv}
-                    />
-                  </FormGroup>
-                </Col>
-                <Col xs={3}>
-                  <FormGroup>
                     <FormLabel>Name</FormLabel>
                     <FormControl
                       name="name"
                       type="text"
                       value={this.state.formData.name}
                       onChange={this.handleChange}
-                    ></FormControl>
+                    >
+                    </FormControl>
                   </FormGroup>
                 </Col>
-              </Row>
-              <Row>
-                <Col md={3}>
+                <Col xs={3}>
                   <FormGroup>
                     <FormLabel>WebHook Types</FormLabel>
                     <Select
@@ -113,6 +111,20 @@ export class EditWebHook extends Component {
                     />
                   </FormGroup>
                 </Col>
+              </Row>
+              <Row>
+                <Col md={3}>
+                  <FormGroup>
+                    <FormLabel>Environment</FormLabel>
+                    <Select
+                      name="environmentId"
+                      value={this.state.selectedEnvironment}
+                      options={this.props.environments}
+                      onChange={this.handleSelectEnv}
+                      isDisabled={disabled}
+                    />
+                  </FormGroup>
+                </Col>
                 <Col xs={6}>
                   <FormGroup>
                     <FormLabel>URL</FormLabel>
@@ -120,6 +132,19 @@ export class EditWebHook extends Component {
                       name="url"
                       type="text"
                       value={this.state.formData.url}
+                      onChange={this.handleChange}
+                    ></FormControl>
+                  </FormGroup>
+                </Col>
+              </Row>
+              <Row>
+                <Col xs={6}>
+                  <FormGroup>
+                    <FormLabel>Additional Data</FormLabel>
+                    <FormControl
+                      name="additionalData"
+                      type="text"
+                      value={this.state.formData.additionalData}
                       onChange={this.handleChange}
                     ></FormControl>
                   </FormGroup>
