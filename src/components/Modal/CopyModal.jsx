@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { Modal, Button } from "react-bootstrap";
-import Select from "react-select";
-
+import React, { useState, useEffect } from 'react';
+import { Modal, Button } from 'react-bootstrap';
+import Select from 'react-select';
 
 const CopyModal = props => {
   const [selectedEnvironment, setSelectedEnvironment] = useState({});
@@ -20,9 +19,7 @@ const CopyModal = props => {
         <p>Environments:</p>
         <Select
           value={selectedEnvironment}
-          onChange={selectedEnvironment =>
-            setSelectedEnvironment(selectedEnvironment)
-          }
+          onChange={environment => setSelectedEnvironment(environment)}
           options={envsOptions}
         />
       </Modal.Body>
@@ -33,7 +30,7 @@ const CopyModal = props => {
         >
           Yes
         </Button>
-        <Button onClick={e => props.onClose(e)}>No</Button>
+        <Button onClick={props.onClose}>No</Button>
       </Modal.Footer>
     </Modal>
   );

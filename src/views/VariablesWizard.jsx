@@ -91,16 +91,16 @@ class VariablesWizard extends Component {
 
     for (let x = 0; x < result.List.length; x++) {
       let field = result.List[x].name;
-      let value = result.List[x].value;
+      let val = result.List[x].value;
 
       if (field === 'commonValuesConfigMapChart') {
-        vCommonValuesConfigMapChart = value;
+        vCommonValuesConfigMapChart = val;
       } else {
         if (field === 'commonVariablesConfigMapChart') {
-          vCommonVariablesConfigMapChart = value;
+          vCommonVariablesConfigMapChart = val;
         } else {
           if (field === 'canaryChart') {
-            vCanaryChart = value;
+            vCanaryChart = val;
           }
         }
       }

@@ -95,7 +95,7 @@ export class ConfigMap extends Component {
 
       const elements = this.state.values;
 
-      Object.keys(this.state.values).map(function(key, index) {
+      Object.keys(this.state.values).forEach(key => {
         payload.data.push({
           scope: scope,
           name: key,
@@ -109,9 +109,8 @@ export class ConfigMap extends Component {
 
       axios
         .post(TENKAI_API_URL + '/saveVariableValues', { data })
-        .then(res => {
+        .then(() => {
           let installPayload = {};
-          const environmentId = parseInt(this.props.envId);
           installPayload.name = this.props.configMapName;
           installPayload.chart = chartName;
           installPayload.environmentId = environmentId;
@@ -177,8 +176,8 @@ export class ConfigMap extends Component {
             environmentId: environmentId,
             scope: scope
           })
-          .then(response => {
-            this.addToValues(this, response.data.Variables);
+          .then(({ data }) => {
+            this.addToValues(this, data.Variables);
             this.props.handleLoading(false);
           })
           .catch(error => {
@@ -255,7 +254,7 @@ export class ConfigMap extends Component {
       }
     });
 
-    Object.keys(dynamicEntries).map(function(key) {
+    Object.keys(dynamicEntries).forEach(key => {
       for (let x = 0; x < dynamicEntries[key] / 2 - 1; x++) {
         self.addDynamicVariableClick(key);
       }

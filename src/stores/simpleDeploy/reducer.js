@@ -53,10 +53,6 @@ export default function reduce(state = initialState, action = {}) {
       };
 
     case types.SAVE_VARIABLES_SUCCESS:
-      return {
-        ...state
-      };
-
     case types.INSTALL_SUCCESS:
       return {
         ...state

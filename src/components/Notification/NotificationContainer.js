@@ -25,11 +25,17 @@ class NotificationContainer extends React.Component {
   }
 
   handleClick() {
-    const { success, error, warning, info } = this.props;
-    this.dispatchNotification(success, 3);
-    this.dispatchNotification(error, 60);
-    this.dispatchNotification(warning, 30);
-    this.dispatchNotification(info, 3);
+    const {
+      success: successFn,
+      error: errorFn,
+      warning: warningFn,
+      info: infoFn
+    } = this.props;
+
+    this.dispatchNotification(successFn, 3);
+    this.dispatchNotification(errorFn, 60);
+    this.dispatchNotification(warningFn, 30);
+    this.dispatchNotification(infoFn, 3);
   }
 
   handleRemoveAll() {
@@ -56,13 +62,10 @@ NotificationContainer.propTypes = {
   warning: PropTypes.func.isRequired
 };
 
-export default connect(
-  state => ({ notifications: state.notifications }),
-  {
-    success,
-    error,
-    warning,
-    info,
-    removeAll
-  }
-)(NotificationContainer);
+export default connect(state => ({ notifications: state.notifications }), {
+  success,
+  error,
+  warning,
+  info,
+  removeAll
+})(NotificationContainer);

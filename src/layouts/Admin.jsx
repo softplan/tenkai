@@ -236,15 +236,15 @@ class Admin extends Component {
     return false;
   };
 
-  getRoutes = routes => {
+  getRoutes = () => {
     return routes.map((prop, key) => {
       let auth = this.state.keycloak.hasRealmRole(prop.role);
       if (prop.layout === '/admin' && auth) {
         if (prop.submenu !== undefined) {
-          return prop.submenu.map((prop, key) => {
+          return prop.submenu.map((it, index) => {
             return (
               <Route
-                path={prop.layout + prop.path}
+                path={it.layout + it.path}
                 render={props => (
                   <prop.component
                     {...props}
@@ -260,7 +260,7 @@ class Admin extends Component {
                     )}
                   />
                 )}
-                key={key}
+                key={index}
               />
             );
           });
@@ -370,7 +370,7 @@ class Admin extends Component {
                 history={this.props.history}
                 environments={this.state.environmentList}
               />
-              <Switch>{this.getRoutes(routes)}</Switch>
+              <Switch>{this.getRoutes()}</Switch>
               <Footer />
             </div>
           </div>

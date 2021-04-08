@@ -1,9 +1,9 @@
-import React, { Component } from "react";
-import { Table, Container, Row, Col, FormGroup } from "react-bootstrap";
-import { CardTenkai } from "components/Card/CardTenkai.jsx";
-import Button from "components/CustomButton/CustomButton.jsx";
-import Select from "react-select";
-import { retrieveReleasesWithCallBack } from "client-api/apicall.jsx";
+import React, { Component } from 'react';
+import { Table, Container, Row, Col, FormGroup } from 'react-bootstrap';
+import { CardTenkai } from 'components/Card/CardTenkai.jsx';
+import Button from 'components/CustomButton/CustomButton.jsx';
+import Select from 'react-select';
+import { retrieveReleasesWithCallBack } from 'client-api/apicall.jsx';
 
 class DepAnalysis extends Component {
   state = {
@@ -25,12 +25,12 @@ class DepAnalysis extends Component {
 
     let helmCharts = [];
     let chartVersions = new Map();
-    let value = "";
-    let chartVersion = "";
+    let value = '';
+    let chartVersion = '';
     for (let i = 0; i < total; i++) {
-      value = chartsToDeploy[i].substring(0, chartsToDeploy[i].indexOf("@"));
+      value = chartsToDeploy[i].substring(0, chartsToDeploy[i].indexOf('@'));
       chartVersion = chartsToDeploy[i].substring(
-        chartsToDeploy[i].indexOf("@") + 1,
+        chartsToDeploy[i].indexOf('@') + 1,
         chartsToDeploy[i].length
       );
       helmCharts.push(value);
@@ -41,18 +41,14 @@ class DepAnalysis extends Component {
   }
 
   getReleases(chartName) {
-    retrieveReleasesWithCallBack(chartName, this, function(
-      chartName,
-      result,
-      self
-    ) {
+    retrieveReleasesWithCallBack(chartName, this, function(name, result, self) {
       if (result !== undefined && result.length > 0) {
         let list = [];
         for (let x = 0; x < result.length; x++) {
           list.push({ label: result[x].release, value: result[x].release });
         }
         self.setState({
-          releases: { ...self.state.releases, [chartName]: list }
+          releases: { ...self.state.releases, [name]: list }
         });
       }
     });
@@ -66,8 +62,8 @@ class DepAnalysis extends Component {
 
   onClick() {
     this.props.history.push({
-      pathname: "/admin/deployment-depgraph",
-      search: "?environment=" + this.state.envId,
+      pathname: '/admin/deployment-depgraph',
+      search: '?environment=' + this.state.envId,
       state: {
         charts: this.state.selectedVersion,
         environmentName: this.state.environmentName

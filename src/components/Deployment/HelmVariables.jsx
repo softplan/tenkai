@@ -160,7 +160,6 @@ export class HelmVariables extends Component {
         let list = [];
         //Main
         let installPayload = {};
-        const environmentId = parseInt(this.props.envId);
 
         installPayload.name = this.state.releaseName;
         installPayload.chart = scope;
@@ -184,7 +183,7 @@ export class HelmVariables extends Component {
 
     const elements = this.state.values;
 
-    Object.keys(this.state.values).map(function(key) {
+    Object.keys(this.state.values).forEach(key => {
       payload.data.push({
         scope: scope,
         chartVersion: chartVersion,
@@ -239,7 +238,7 @@ export class HelmVariables extends Component {
     });
 
     const hosts = this.state.hosts;
-    Object.keys(hosts).map(function(key) {
+    Object.keys(hosts).forEach(key => {
       payload.data.push({
         scope: scope,
         chartVersion: chartVersion,
@@ -256,26 +255,24 @@ export class HelmVariables extends Component {
       .post(TENKAI_API_URL + '/saveVariableValues', { data })
       .then(() => {
         if (this.state.applyConfigMap && this.refs.hConfigMap !== undefined) {
-          this.refs.hConfigMap.save(data => {
+          this.refs.hConfigMap.save(value => {
             let list = [];
 
             //Main
             let installPayload = {};
-            const environmentId = parseInt(this.props.envId);
 
             installPayload.name = this.state.releaseName;
             installPayload.chart = scope;
             installPayload.environmentId = environmentId;
 
             list.push(installPayload);
-            list.push(data);
+            list.push(value);
             callbackFunction(list);
           });
         } else {
           let list = [];
           //Main
           let installPayload = {};
-          const environmentId = parseInt(this.props.envId);
 
           installPayload.name = this.state.releaseName;
           installPayload.chart = scope;
@@ -410,11 +407,11 @@ export class HelmVariables extends Component {
             environmentId: environmentId,
             scope: scope
           })
-          .then(response => {
+          .then(({ data }) => {
             this.props.handleLoading(false);
-            this.addToValues(this, response.data.Variables);
-            this.fillIstioFields(response.data.Variables);
-            this.fillImageFields(response.data.Variables);
+            this.addToValues(this, data.Variables);
+            this.fillIstioFields(data.Variables);
+            this.fillImageFields(data.Variables);
           })
           .catch(error => {
             console.log(error.message);
@@ -522,7 +519,7 @@ export class HelmVariables extends Component {
       }
     });
 
-    Object.keys(dynamicEntries).map(function(key) {
+    Object.keys(dynamicEntries).forEach(key => {
       let max = dynamicEntries[key] / 2 - 1;
       let currentLenght =
         self.state.variables[key] !== undefined
@@ -689,10 +686,10 @@ export class HelmVariables extends Component {
                 />
               </OverlayTrigger>
               {this.hasInvalidVar(key) &&
-                this.props.invalidVariables[key].map(key => {
+                this.props.invalidVariables[key].map(val => {
                   return (
-                    <div key={key} className="invalid-feedback">
-                      {this.getInvalidMsg(key.name, key.ruleType)}
+                    <div key={val} className="invalid-feedback">
+                      {this.getInvalidMsg(val.name, val.ruleType)}
                     </div>
                   );
                 })}
@@ -823,7 +820,8 @@ export class HelmVariables extends Component {
                     <div>
                       <IstioVariable
                         disabled={
-                          this.props && !this.props.hasEnvironmentPolicy(
+                          this.props &&
+                          !this.props.hasEnvironmentPolicy(
                             ACTION_SAVE_VARIABLES
                           )
                         }

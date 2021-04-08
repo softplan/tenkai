@@ -11,7 +11,7 @@ const CustomCheckbox = ({ isChecked, number, label, inline, ...rest }) => {
       <input
         id={number}
         type="checkbox"
-        onChange={() => setIsChecked(isChecked => !isChecked)}
+        onChange={() => setIsChecked(!is_checked)}
         checked={is_checked}
         {...rest}
       />

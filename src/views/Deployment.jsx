@@ -48,7 +48,7 @@ class Deployment extends Component {
       .get(TENKAI_API_URL + '/repositories')
       .then(response => {
         var arr = [];
-        for (var x = 0; x < response.data.repositories.length; x++) {
+        for (let x = 0; x < response.data.repositories.length; x++) {
           var element = response.data.repositories[x];
           arr.push({ value: element.name, label: element.name });
         }

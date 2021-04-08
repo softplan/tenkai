@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from "react";
-import { CardTenkai } from "components/Card/CardTenkai.jsx";
-import { FormInputs } from "components/FormInputs/FormInputs.jsx";
-import { Button } from "react-bootstrap";
+import React, { useState, useEffect } from 'react';
+import { CardTenkai } from 'components/Card/CardTenkai.jsx';
+import { FormInputs } from 'components/FormInputs/FormInputs.jsx';
+import { Button } from 'react-bootstrap';
 
 export const ReleaseForm = props => {
   const [formData, setFormData] = useState({
-    ID: "",
-    chartName: "",
-    release: ""
+    ID: '',
+    chartName: '',
+    release: ''
   });
 
   useEffect(() => {
@@ -19,25 +19,25 @@ export const ReleaseForm = props => {
   return (
     <div>
       <CardTenkai
-        title={props.editMode ? "Edit Release" : "New Release"}
+        title={props.editMode ? 'Edit Release' : 'New Release'}
         content={
           <form>
             <FormInputs
-              ncols={["col-md-2"]}
+              ncols={['col-md-2']}
               properties={[
                 {
-                  name: "release",
-                  label: "Release Number",
-                  type: "text",
-                  bsPrefix: "form-control",
-                  placeholder: "Version",
+                  name: 'release',
+                  label: 'Release Number',
+                  type: 'text',
+                  bsPrefix: 'form-control',
+                  placeholder: 'Version',
                   value: formData.release,
                   onChange: event => {
                     const { value, name } = event.target;
-                    setFormData(formData => ({
+                    setFormData({
                       ...formData,
                       [name]: value
-                    }));
+                    });
                   }
                 }
               ]}

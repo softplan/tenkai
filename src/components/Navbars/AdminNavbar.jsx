@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import AdminNavbarLinks from './AdminNavbarLinks.jsx';
 
-class Header extends Component {
+class AdminNavbar extends Component {
   constructor(props) {
     super(props);
     this.mobileSidebarToggle = this.mobileSidebarToggle.bind(this);
@@ -36,4 +36,4 @@ class Header extends Component {
   }
 }
 
-export default Header;
+export default AdminNavbar;
