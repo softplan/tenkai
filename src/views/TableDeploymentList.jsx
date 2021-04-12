@@ -13,22 +13,25 @@ const TableDeploymentList = props => {
     setTotalSize(props.count);
   }, [props]);
 
-  const handleTableChange = (_type, { page, sizePerPage }) => {
-    setPage(page);
-    setSizePerPage(sizePerPage);
-    props.onLoad(page, sizePerPage);
+  const handleTableChange = (
+    _type,
+    { page: pageNumber, sizePerPage: size }
+  ) => {
+    setPage(pageNumber);
+    setSizePerPage(size);
+    props.onLoad(pageNumber, size);
   };
 
   const options = {
-    onSizePerPageChange: (sizePerPage, page) => {
-      setPage(page);
-      setSizePerPage(sizePerPage);
-      props.onLoad(page, sizePerPage);
+    onSizePerPageChange: (size, pageNumber) => {
+      setPage(pageNumber);
+      setSizePerPage(size);
+      props.onLoad(pageNumber, size);
     },
-    onPageChange: (page, sizePerPage) => {
-      setPage(page);
-      setSizePerPage(sizePerPage);
-      props.onLoad(page, sizePerPage);
+    onPageChange: (pageNumber, size) => {
+      setPage(pageNumber);
+      setSizePerPage(size);
+      props.onLoad(pageNumber, size);
     },
     page,
     sizePerPage,

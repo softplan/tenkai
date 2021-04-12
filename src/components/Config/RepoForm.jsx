@@ -9,7 +9,7 @@ export const RepoForm = ({ editMode, editItem, ...props }) => {
   );
 
   const handleChange = ({ target: { value, name } }) =>
-    setFormData(formData => ({ ...formData, [name]: value }));
+    setFormData({ ...formData, [name]: value });
 
   return (
     <div>

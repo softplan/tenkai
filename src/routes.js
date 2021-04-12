@@ -22,7 +22,7 @@ import SecurityOperation from 'views/securityOperation/SecurityOperation';
 import Deploy from 'views/deploy/Deploy';
 import WebHook from 'views/webHooks/WebHook';
 
-const dashboardRoutes = [
+const routes = [
   {
     path: '/deployment',
     name: 'Deployment',
@@ -266,4 +266,4 @@ const dashboardRoutes = [
   }
 ];
 
-export default dashboardRoutes;
+export default routes;

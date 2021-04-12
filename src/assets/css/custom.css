@@ -1,109 +1,108 @@
 .loading {
-    display: block;
-    visibility: visible;
-    position: absolute;
-    z-index: 999;
-    top: 0px;
-    left: 0px;
-    width: 100%;
-    height: 100vh;
-    background-color: #808080;
-    text-align: center;
-    padding-top: 10%;
-    filter: alpha(opacity=55);
-    opacity: 0.55;
-    background: url(../img/loading.gif) no-repeat center center;
+  display: block;
+  visibility: visible;
+  position: absolute;
+  z-index: 999;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100vh;
+  text-align: center;
+  padding-top: 10%;
+  filter: alpha(opacity=55);
+  opacity: 0.55;
+  background: #808080 url(../img/loading.gif) no-repeat center center;
 }
 
 .scroller {
-    margin: 0 auto;
-    height: 400px;
-    width: 100%;
-    overflow: auto;
+  margin: 0 auto;
+  height: 400px;
+  width: 100%;
+  overflow: auto;
 }
 
 .modal-90w {
-    width: 60%;
+  width: 60%;
 }
 
 .modal-900w {
-    width: 90%;
+  width: 90%;
 }
 
 .deployment-modal {
-  max-width: 70%
+  max-width: 70%;
 }
 
 .stepwizard-step p {
-    margin-top: 0px;
-    color:#666;
+  margin-top: 0px;
+  color: #666;
 }
 .stepwizard-row {
-    display: table-row;
+  display: table-row;
 }
 .stepwizard {
-    display: table;
-    width: 100%;
-    position: relative;
+  display: table;
+  width: 100%;
+  position: relative;
 }
 
 .stepwizard .stepwizard .stepwizard fieldset[disabled] .btn {
-    opacity:1 !important;
-    color:#bbb;
+  opacity: 1 !important;
+  color: #bbb;
 }
 
 .stepwizard-row:before {
-    top: 14px;
-    bottom: 0;
-    position: absolute;
-    content:" ";
-    width: 100%;
-    height: 1px;
-    background-color: #ccc;
-    z-index: 0;
+  top: 14px;
+  bottom: 0;
+  position: absolute;
+  content: ' ';
+  width: 100%;
+  height: 1px;
+  background-color: #ccc;
+  z-index: 0;
 }
 
 .stepwizard-step {
-    display: table-cell;
-    text-align: center;
-    position: relative;
+  display: table-cell;
+  text-align: center;
+  position: relative;
 }
 
 .btn-circle {
-    width: 30px;
-    height: 30px;
-    text-align: center;
-    padding: 6px 0;
-    font-size: 12px;
-    line-height: 1.428571429;
-    border-radius: 15px;
+  width: 30px;
+  height: 30px;
+  text-align: center;
+  padding: 6px 0;
+  font-size: 12px;
+  line-height: 1.428571429;
+  border-radius: 15px;
 }
 
 .word-wrap {
-    word-break: break-all;
+  word-break: break-all;
 }
 
 .no-wrap {
-    white-space: nowrap;
+  white-space: nowrap;
 }
 
 .fixed {
-    table-layout: fixed;
+  table-layout: fixed;
 }
 
-.chart{
-    position:relative;
-    background:#f9fbf4;
-    float:left;
-    width:317px;
-    height: 300px;
-    margin-right:20px;
-    margin-bottom:20px;
-    padding-bottom:10px;
+.chart {
+  position: relative;
+  background: #f9fbf4;
+  float: left;
+  width: 317px;
+  height: 300px;
+  margin-right: 20px;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
 }
 
 .left-space {
-    margin-left: 1em;
+  margin-left: 1em;
 }
 
 .cell-button-icon {
@@ -120,7 +119,7 @@
 }
 
 .scroll-table table {
-    table-layout: fixed;
+  table-layout: fixed;
 }
 
 .scroll-table .react-bootstrap-table {
@@ -129,30 +128,29 @@
 }
 
 .scroll-table th {
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    background-color: #eee;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: #eee;
 }
 
 .react-select-zindex-4 {
-    z-index: 4;
+  z-index: 4;
 }
 
 .react-select-zindex-3 {
-    z-index: 3;
+  z-index: 3;
 }
 
 .react-select-zindex-2 {
-    z-index: 2;
+  z-index: 2;
 }
 
 .bg-silver {
-    background-color: #C0C0C0;
+  background-color: #c0c0c0;
 }
 
 .sidebar .nav p i {
-    float: none;
-    font-size: 14px;
+  float: none;
+  font-size: 14px;
 }
-

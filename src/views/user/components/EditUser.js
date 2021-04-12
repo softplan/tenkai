@@ -52,7 +52,7 @@ export class UserForm extends Component {
 
   render() {
     const { editMode } = this.props;
-    const options = this.state.envs
+    const options = [...(this.state.envs || [])]
       .sort((a, b) => utils.sort(a.name, b.name))
       .map(e => ({
         value: e.name,
