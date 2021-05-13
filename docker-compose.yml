@@ -15,6 +15,8 @@ services:
         POSTGRES_PASSWORD: postgres
   keycloak:
       image: jboss/keycloak
+      volumes:
+        - ./realm-export.json:/opt/jboss/keycloak/imports/realm-export.json
       environment:
         DB_VENDOR: POSTGRES
         DB_ADDR: postgres
@@ -24,6 +26,7 @@ services:
         DB_PASSWORD: postgres
         KEYCLOAK_USER: admin
         KEYCLOAK_PASSWORD: admin
+        KEYCLOAK_IMPORT: /opt/jboss/keycloak/imports/realm-export.json
       ports:
         - 8180:8080
       depends_on:
