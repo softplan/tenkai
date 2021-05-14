@@ -13,6 +13,8 @@ services:
         POSTGRES_DB: keycloak
         POSTGRES_USER: postgres
         POSTGRES_PASSWORD: postgres
+      ports:
+        - 5432:5432
   keycloak:
       image: jboss/keycloak
       volumes:
@@ -33,6 +35,10 @@ services:
         - postgres
   rabbitmq:
     image: rabbitmq:3-management
+    volumes:
+      - ./rabbit_definitions.json:/tmp/rabbit_definitions.json
+    environment:
+      - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbitmq_management load_definitions "/tmp/rabbit_definitions.json"
     ports:
       - "15672:15672"
       - "5672:5672"
