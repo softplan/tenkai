@@ -9,10 +9,12 @@ services:
       image: postgres
       volumes:
         - postgres_data:/var/lib/postgresql/data
+        - ./pg-init-scripts:/docker-entrypoint-initdb.d
       environment:
         POSTGRES_DB: keycloak
         POSTGRES_USER: postgres
         POSTGRES_PASSWORD: postgres
+        POSTGRES_MULTIPLE_DATABASES: tenkai
       ports:
         - 5432:5432
   keycloak:
@@ -55,11 +57,13 @@ services:
     environment:
       - APP_RABBIT_URI=amqp://guest:guest@rabbitmq:5672
       - APP_HELMAPIURL=http://tenkai-helm-api:8082
+      - APP_DBMS_URI=host=postgres port=5432 user=postgres dbname=tenkai sslmode=disable password=postgres
     ports:
       - "8080:8080"
     depends_on:
       - rabbitmq
       - tenkai-helm-api
+      - postgres
   tenkai-web:
     image: softplan/tenkai-web:dev
     restart: always
