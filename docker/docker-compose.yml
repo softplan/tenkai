@@ -1,0 +1,77 @@
+version: "3.9"
+
+volumes:
+  postgres_data:
+      driver: local
+
+services:
+  postgres:
+      image: postgres
+      volumes:
+        - postgres_data:/var/lib/postgresql/data
+        - ./pg-init-scripts:/docker-entrypoint-initdb.d
+      environment:
+        POSTGRES_DB: keycloak
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: postgres
+        POSTGRES_MULTIPLE_DATABASES: tenkai
+      ports:
+        - 5432:5432
+  keycloak:
+      image: jboss/keycloak
+      volumes:
+        - ./realm-export.json:/opt/jboss/keycloak/imports/realm-export.json
+      environment:
+        DB_VENDOR: POSTGRES
+        DB_ADDR: postgres
+        DB_DATABASE: keycloak
+        DB_USER: postgres
+        DB_SCHEMA: public
+        DB_PASSWORD: postgres
+        KEYCLOAK_USER: admin
+        KEYCLOAK_PASSWORD: admin
+        KEYCLOAK_IMPORT: /opt/jboss/keycloak/imports/realm-export.json
+      ports:
+        - 8180:8080
+      depends_on:
+        - postgres
+  rabbitmq:
+    image: rabbitmq:3-management
+    volumes:
+      - ./rabbit_definitions.json:/tmp/rabbit_definitions.json
+    environment:
+      - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbitmq_management load_definitions "/tmp/rabbit_definitions.json"
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+  tenkai-helm-api:
+    image: softplan/tenkai-helm-api:main
+    restart: always
+    environment:
+      - APP_RABBIT_URI=amqp://guest:guest@rabbitmq:5672
+    depends_on:
+      - rabbitmq
+  tenkai-api:
+    image: softplan/tenkai-api:dev
+    restart: always
+    environment:
+      - APP_RABBIT_URI=amqp://guest:guest@rabbitmq:5672
+      - APP_HELMAPIURL=http://tenkai-helm-api:8082
+      - APP_DBMS_URI=host=postgres port=5432 user=postgres dbname=tenkai sslmode=disable password=postgres
+    ports:
+      - "8080:8080"
+    depends_on:
+      - rabbitmq
+      - tenkai-helm-api
+      - postgres
+  tenkai-web:
+    image: softplan/tenkai-web:dev
+    restart: always
+    environment:
+      - KEYCLOAK_URL=http://localhost:8180/auth
+      - KEYCLOAK_REALM=tenkai
+      - API_URL=http://localhost:8080
+    ports:
+      - "3001:80"
+    depends_on:
+      - keycloak
