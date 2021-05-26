@@ -11,7 +11,7 @@
 
 [class^="pe-7s-"], [class*=" pe-7s-"] {
 	display: inline-block;
-	font-family: 'Pe-icon-7-stroke';
+	font-family: Pe-icon-7-stroke, Monospace;
 	speak: none;
 	font-style: normal;
 	font-weight: normal;
