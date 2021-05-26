@@ -236,17 +236,17 @@ class Admin extends Component {
     return false;
   };
 
-  getRoutes = routes => {
-    return routes.map((prop, key) => {
+  getRoutes = localRoutes => {
+    return localRoutes.map((prop, key) => {
       let auth = this.state.keycloak.hasRealmRole(prop.role);
       if (prop.layout === '/admin' && auth) {
         if (prop.submenu !== undefined) {
-          return prop.submenu.map((prop, key) => {
+          return prop.submenu.map((it, index) => {
             return (
               <Route
-                path={prop.layout + prop.path}
+                path={it.layout + it.path}
                 render={props => (
-                  <prop.component
+                  <it.component
                     {...props}
                     handleClick={this.handleNotificationClick}
                     handleNotification={this.handleNotification}
@@ -260,7 +260,7 @@ class Admin extends Component {
                     )}
                   />
                 )}
-                key={key}
+                key={index}
               />
             );
           });
@@ -292,7 +292,8 @@ class Admin extends Component {
       }
     });
   };
-  getBrandText = path => {
+
+  getBrandText = () => {
     for (let i = 0; i < routes.length; i++) {
       if (
         this.props.location.pathname.indexOf(
@@ -304,15 +305,19 @@ class Admin extends Component {
     }
     return 'Brand';
   };
+
   handleImageClick = image => {
     this.setState({ image: image });
   };
+
   handleColorClick = color => {
     this.setState({ color: color });
   };
+
   handleHasImage = hasImage => {
     this.setState({ hasImage: hasImage });
   };
+
   handleFixedClick = () => {
     if (this.state.fixedClasses === 'dropdown') {
       this.setState({ fixedClasses: 'dropdown show-dropdown open' });
