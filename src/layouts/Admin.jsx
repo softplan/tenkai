@@ -236,8 +236,8 @@ class Admin extends Component {
     return false;
   };
 
-  getRoutes = () => {
-    return routes.map((prop, key) => {
+  getRoutes = localRoutes => {
+    return localRoutes.map((prop, key) => {
       let auth = this.state.keycloak.hasRealmRole(prop.role);
       if (prop.layout === '/admin' && auth) {
         if (prop.submenu !== undefined) {
@@ -246,7 +246,7 @@ class Admin extends Component {
               <Route
                 path={it.layout + it.path}
                 render={props => (
-                  <prop.component
+                  <it.component
                     {...props}
                     handleClick={this.handleNotificationClick}
                     handleNotification={this.handleNotification}
@@ -292,7 +292,8 @@ class Admin extends Component {
       }
     });
   };
-  getBrandText = path => {
+
+  getBrandText = () => {
     for (let i = 0; i < routes.length; i++) {
       if (
         this.props.location.pathname.indexOf(
@@ -304,15 +305,19 @@ class Admin extends Component {
     }
     return 'Brand';
   };
+
   handleImageClick = image => {
     this.setState({ image: image });
   };
+
   handleColorClick = color => {
     this.setState({ color: color });
   };
+
   handleHasImage = hasImage => {
     this.setState({ hasImage: hasImage });
   };
+
   handleFixedClick = () => {
     if (this.state.fixedClasses === 'dropdown') {
       this.setState({ fixedClasses: 'dropdown show-dropdown open' });
@@ -370,7 +375,7 @@ class Admin extends Component {
                 history={this.props.history}
                 environments={this.state.environmentList}
               />
-              <Switch>{this.getRoutes()}</Switch>
+              <Switch>{this.getRoutes(routes)}</Switch>
               <Footer />
             </div>
           </div>
