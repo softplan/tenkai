@@ -33,5 +33,9 @@ jobs:
           path: '**/node_modules'
           key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/download-artifact@v2
+      - name: Use Node.js
+        uses: actions/setup-node@v2
+      - name: Use yarn
+        uses: CultureHQ/actions-yarn@v1.0.1
       - name: make lint
         run: make lint
