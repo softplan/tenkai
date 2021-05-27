@@ -7,6 +7,10 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
       - name: Checkout Code
         uses: actions/checkout@v2
       - name: Use Node.js
@@ -15,10 +19,6 @@ jobs:
         uses: CultureHQ/actions-yarn@v1.0.1
       - name: make build
         run: make build
-      - uses: actions/cache@v2
-        with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/upload-artifact@v2
         with:
           name: build
