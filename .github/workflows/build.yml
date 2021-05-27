@@ -28,6 +28,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - uses: actions/cache@v2
         with:
           path: '**/node_modules'
@@ -37,5 +38,5 @@ jobs:
         uses: actions/setup-node@v2
       - name: Use yarn
         uses: CultureHQ/actions-yarn@v1.0.1
-      - name: yarn lint
-        run: yarn lint
+      - name: make lint
+        run: make lint
