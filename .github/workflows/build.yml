@@ -28,6 +28,11 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+      - uses: actions/upload-artifact@v2
       - uses: actions/download-artifact@v2
       - name: make lint
         run: make lint
