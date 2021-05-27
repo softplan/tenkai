@@ -544,7 +544,7 @@ class CompareEnv extends Component {
       Array.isArray(this.props.compareEnv.envsDiff)
     ) {
       data = this.props.compareEnv.envsDiff
-        .filter(f => this.customFilter(f, this.props.compareEnv.inputFilte))
+        .filter(f => this.customFilter(f, this.props.compareEnv.inputFilter))
         .sort(this.sort);
     }
     let striped = false;
