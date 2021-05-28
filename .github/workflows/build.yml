@@ -29,7 +29,6 @@ jobs:
       - uses: actions/setup-node@v2
       - uses: CultureHQ/actions-yarn@v1.0.1
       - uses: actions/checkout@v2
-      - uses: actions/download-artifact@v2
 
       - name: Cache node_modules
         id: cache-dependencies
@@ -49,7 +48,6 @@ jobs:
       - uses: actions/setup-node@v2
       - uses: CultureHQ/actions-yarn@v1.0.1
       - uses: actions/checkout@v2
-      - uses: actions/download-artifact@v2
 
       - name: Cache node_modules
         id: cache-dependencies
@@ -60,8 +58,7 @@ jobs:
           path: node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
 
-      - name: make build
-        run: make build
+      - run: make build
 
       - uses: actions/upload-artifact@v2
         with:
