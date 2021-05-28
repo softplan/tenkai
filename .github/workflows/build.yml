@@ -49,3 +49,28 @@ jobs:
 
       - name: make lint
         run: make lint
+  dockerize:
+    needs: lint
+    runs-on: ubuntu-latest
+    env:
+      IMAGE_REPO: softplan/tenkai-web
+      DOCKER_USERNAME: ${{ env.IMAGE_REPO }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+    if: contains(github.ref, 'refs/heads/master') || contains(github.ref, 'refs/tags')
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/download-artifact@v2
+
+      - name: Build the Docker image
+        run: make container-image
+
+      - name: Get branch or tag name
+        run: |
+          export TAG=${GITHUB_REF/refs\/heads\/}
+          export TAG=${TAG/refs\/tags\/}
+
+      - name: Tag docker image
+        run: make tag-image
+
+      - name: Publish docker image
+        run: make publish
