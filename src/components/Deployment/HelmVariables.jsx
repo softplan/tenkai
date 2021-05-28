@@ -308,7 +308,8 @@ export class HelmVariables extends Component {
       axios
         .post(TENKAI_API_URL + '/listVariables', {
           environmentId: environmentId,
-          scope: this.state.chartName
+          scope: this.state.chartName,
+          scopeVersion: this.state.chartVersion
         })
         .then(response => {
           this.addToValues(this, response.data.Variables);
@@ -400,12 +401,14 @@ export class HelmVariables extends Component {
 
         const scope = this.state.chartName;
         const environmentId = parseInt(this.props.envId);
+        const scopeVersion = this.state.scopeVersion;
 
         this.props.handleLoading(true);
         axios
           .post(TENKAI_API_URL + '/listVariables', {
             environmentId: environmentId,
-            scope: scope
+            scope: scope,
+            scopeVersion: scopeVersion
           })
           .then(({ data }) => {
             this.props.handleLoading(false);
