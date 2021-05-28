@@ -24,7 +24,7 @@ jobs:
         run: yarn install
   lint:
     name: Lint
-    needs: build
+    needs: install
     runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-node@v2
@@ -44,7 +44,7 @@ jobs:
       - name: make lint
         run: make lint
   build:
-    name: Build
+    name: lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-node@v2
@@ -69,7 +69,7 @@ jobs:
           name: build
           path: build
   dockerize:
-    needs: lint
+    needs: build
     runs-on: ubuntu-latest
     env:
       IMAGE_REPO: softplan/tenkai-web
