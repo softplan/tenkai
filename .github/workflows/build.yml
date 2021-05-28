@@ -54,7 +54,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       IMAGE_REPO: softplan/tenkai-web
-      DOCKER_USERNAME: ${{ env.IMAGE_REPO }}
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
     if: contains(github.ref, 'refs/heads/master') || contains(github.ref, 'refs/tags')
     steps:
