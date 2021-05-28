@@ -84,11 +84,11 @@ jobs:
           export TAG=${GITHUB_REF/refs\/heads\/}
           export TAG=${TAG/refs\/tags\/}
 
-      - name: print tag
-        run: echo ${TAG}
+      - name: Tag docker image
+        run: docker tag ${{ env.IMAGE_REPO }} ${{ env.IMAGE_REPO }}:$TAG
 
-      # - name: Tag docker image
-      #   run: make tag-image
+      - name: Docker login
+        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
 
-      # - name: Publish docker image
-      #   run: make publish
+      - name: Docker push
+        run: docker push ${{ env.IMAGE_REPO }}:$TAG
