@@ -3,8 +3,8 @@ name: Tenkai-Web CI
 on: [push, pull_request]
 
 jobs:
-  build:
-    name: Build
+  install:
+    name: Install
     runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-node@v2
@@ -20,14 +20,8 @@ jobs:
           path: node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
 
-      - name: make build
-        if: steps.cache-dependencies.outputs.cache-hit != 'true'
-        run: make build
-
-      - uses: actions/upload-artifact@v2
-        with:
-          name: build
-          path: build
+      - name: install
+        run: yarn install
   lint:
     name: Lint
     needs: build
@@ -49,6 +43,31 @@ jobs:
 
       - name: make lint
         run: make lint
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v2
+      - uses: CultureHQ/actions-yarn@v1.0.1
+      - uses: actions/checkout@v2
+      - uses: actions/download-artifact@v2
+
+      - name: Cache node_modules
+        id: cache-dependencies
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+
+      - name: make build
+        run: make build
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: build
+          path: build
   dockerize:
     needs: lint
     runs-on: ubuntu-latest
