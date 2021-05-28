@@ -7,18 +7,28 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/cache@v2
-        with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
-      - name: Checkout Code
-        uses: actions/checkout@v2
       - name: Use Node.js
         uses: actions/setup-node@v2
+
       - name: Use yarn
         uses: CultureHQ/actions-yarn@v1.0.1
+
+      - name: Cache node_modules
+        id: cache-dependencies
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
       - name: make build
+        if: steps.cache-dependencies.outputs.cache-hit != 'true'
         run: make build
+
       - uses: actions/upload-artifact@v2
         with:
           name: build
@@ -28,15 +38,25 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/cache@v2
-        with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/download-artifact@v2
       - name: Use Node.js
         uses: actions/setup-node@v2
+
       - name: Use yarn
         uses: CultureHQ/actions-yarn@v1.0.1
+
+      - name: Cache node_modules
+        id: cache-dependencies
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - uses: actions/download-artifact@v2
+
       - name: make lint
         run: make lint
