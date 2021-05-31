@@ -1,5 +1,4 @@
 IMAGE_REPO=softplan/tenkai-web
-TAG=$(TRAVIS_BRANCH)
 
 .DEFAULT_GOAL := build
 .PHONY: build container-image pre-build tag-image publish
