@@ -51,12 +51,12 @@ export function loadCharts(repo, allVersions) {
   };
 }
 
-export function loadVariables(envId, scope, callback) {
+export function loadVariables(envId, scope, scopeVersion, callback) {
   return async dispatch => {
     try {
       dispatch(global.beginLoad());
 
-      const result = await services.loadVariables(envId, scope);
+      const result = await services.loadVariables(envId, scope, scopeVersion);
       const variables = result.data.Variables;
 
       dispatch(types.loadVariablesSuccess(variables, findImage(variables)));

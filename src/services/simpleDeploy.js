@@ -9,10 +9,11 @@ export async function loadCharts(repo, allVersions) {
   return await axios.get(`${TENKAI_API_URL}/charts/${repo}?all=${allVersions}`);
 }
 
-export async function loadVariables(envId, chart) {
+export async function loadVariables(envId, chart, chartVersion) {
   return await axios.post(`${TENKAI_API_URL}/listVariables`, {
     environmentId: envId,
-    scope: chart
+    scope: chart,
+    scopeVersion: chartVersion
   });
 }
 

@@ -128,7 +128,8 @@ export class ConfigMap extends Component {
     axios
       .post(TENKAI_API_URL + '/listVariables', {
         environmentId: environmentId,
-        scope: scope
+        scope: scope,
+        scopeVersion: ''
       })
       .then(response => {
         this.addToValues(this, response.data.Variables);
@@ -174,7 +175,8 @@ export class ConfigMap extends Component {
         axios
           .post(TENKAI_API_URL + '/listVariables', {
             environmentId: environmentId,
-            scope: scope
+            scope: scope,
+            scopeVersion: ''
           })
           .then(({ data }) => {
             this.addToValues(this, data.Variables);
