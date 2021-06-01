@@ -23,6 +23,7 @@ import Select from 'react-select';
 import { ACTION_SAVE_VARIABLES } from 'policies.js';
 import NotesModal from 'components/Modal/NotesModal.jsx';
 import { retrieveNotes, saveNotes } from 'client-api/apicall.jsx';
+import Form from '../../../node_modules/react-bootstrap/esm/Form';
 
 export class HelmVariables extends Component {
   state = {
@@ -133,6 +134,16 @@ export class HelmVariables extends Component {
       values: {
         ...state.values,
         [name]: value
+      }
+    }));
+  };
+
+  onInputCheck = event => {
+    const { checked, name } = event.target;
+    this.setState(state => ({
+      values: {
+        ...state.values,
+        [name]: String(checked)
       }
     }));
   };
@@ -676,17 +687,31 @@ export class HelmVariables extends Component {
                 delayShow={300}
                 delayHide={150}
               >
-                <input
-                  name={key}
-                  disabled={
-                    !this.props.hasEnvironmentPolicy(ACTION_SAVE_VARIABLES)
-                  }
-                  value={value}
-                  onChange={this.onInputChange}
-                  type="text"
-                  style={{ width: '100%' }}
-                  className={this.isValid(key)}
-                />
+                {typeof variables[key] === 'boolean' ? (
+                  <Form.Check
+                    id={key}
+                    type="switch"
+                    name={key}
+                    inline
+                    checked={value === 'true'}
+                    onChange={this.onInputCheck}
+                    disabled={
+                      !this.props.hasEnvironmentPolicy(ACTION_SAVE_VARIABLES)
+                    }
+                  ></Form.Check>
+                ) : (
+                  <input
+                    name={key}
+                    disabled={
+                      !this.props.hasEnvironmentPolicy(ACTION_SAVE_VARIABLES)
+                    }
+                    value={value}
+                    onChange={this.onInputChange}
+                    type="text"
+                    style={{ width: '100%' }}
+                    className={this.isValid(key)}
+                  />
+                )}
               </OverlayTrigger>
               {this.hasInvalidVar(key) &&
                 this.props.invalidVariables[key].map(val => {
