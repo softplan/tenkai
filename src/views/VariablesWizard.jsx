@@ -420,7 +420,7 @@ class VariablesWizard extends Component {
 
                           <Button
                             variant="secondary"
-                            onClick={() => this.onValidateVariablesClick()}
+                            onClick={this.onValidateVariablesClick}
                           >
                             Validate Variables
                           </Button>
