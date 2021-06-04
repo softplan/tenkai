@@ -173,7 +173,7 @@ class VariablesWizard extends Component {
     let count = 0;
     const totalCharts = this.state.charts.length;
 
-    this.state.charts.forEach((item, key) => {
+    this.state.charts.forEach((_, key) => {
       this.refs['h' + key].save(list => {
         for (let x = 0; x < list.length; x++) {
           let data = list[x];
@@ -269,26 +269,21 @@ class VariablesWizard extends Component {
     );
   }
 
-  validateVars(helmCharts) {
+  validateVars = helmCharts => {
+    const cb = invalidVars => {
+      const invalidToMap = this.arrayToMap(invalidVars);
+
+      this.setState({
+        invalidVariables: {
+          ...this.state.invalidVariables,
+          ...invalidToMap
+        },
+        chartsValidated: this.state.chartsValidated + 1
+      });
+    };
+
     helmCharts.forEach(async chart => {
-      await validateVariables(
-        this,
-        parseInt(this.props.selectedEnvironment.value),
-        chart,
-        this.callbackValidate
-      );
-    });
-  }
-
-  callbackValidate = invalidVars => {
-    const invalidToMap = this.arrayToMap(invalidVars);
-
-    this.setState({
-      invalidVariables: {
-        ...this.state.invalidVariables,
-        ...invalidToMap
-      },
-      chartsValidated: this.state.chartsValidated + 1
+      await validateVariables(this, parseInt(this.state.envId), chart, cb);
     });
   };
 
@@ -425,7 +420,7 @@ class VariablesWizard extends Component {
 
                           <Button
                             variant="secondary"
-                            onClick={this.onValidateVariablesClick}
+                            onClick={() => this.onValidateVariablesClick()}
                           >
                             Validate Variables
                           </Button>
