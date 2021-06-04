@@ -34,24 +34,23 @@ export class ConfigMap extends Component {
     );
   }
 
-  async validateConfigMap(self) {
+  validateConfigMap = async self => {
+    const cb = invalidVars => {
+      const invalidToMap = this.arrayToMap(invalidVars);
+      this.setState({
+        invalidVariables: {
+          ...this.state.invalidVariables,
+          ...invalidToMap
+        }
+      });
+    };
+
     await validateVariables(
       self,
       parseInt(this.props.envId),
       this.props.configMapName,
-      this.callbackValidate
+      cb
     );
-  }
-
-  callbackValidate = invalidVars => {
-    const invalidToMap = this.arrayToMap(invalidVars);
-
-    this.setState({
-      invalidVariables: {
-        ...this.state.invalidVariables,
-        ...invalidToMap
-      }
-    });
   };
 
   arrayToMap(invalidVariables) {
