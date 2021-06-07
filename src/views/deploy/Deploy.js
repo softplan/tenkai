@@ -3,9 +3,7 @@ import { connect } from 'react-redux';
 import { Container, Row, Col } from 'react-bootstrap';
 
 import { CardTenkai } from 'components/Card/CardTenkai.jsx';
-import { getHelmCommand } from 'client-api/apicall.jsx';
 import TenkaiTable from 'components/Table/TenkaiTable';
-import HelmCommandModal from 'components/Modal/HelmCommandModal';
 
 import * as col from 'components/Table/TenkaiColumn';
 import * as actions from 'stores/deploy/actions';
@@ -14,14 +12,11 @@ import Select from 'react-select';
 import { Card, Button, FormGroup, FormLabel } from 'react-bootstrap';
 
 export class Deploy extends Component {
-  state = {
-    selectedEnvironments: this.getEnvs(),
-    showHelmCmdModal: false,
-    helmValue: ''
-  };
-
-  closeHelmCmdModal() {
-    this.setState({ showHelmCmdModal: false, helmValue: '' });
+  constructor(props) {
+    super(props);
+    this.state = {
+      selectedEnvironments: this.getEnvs()
+    };
   }
 
   isMultiEnvDeployment() {
@@ -73,18 +68,6 @@ export class Deploy extends Component {
     this.setState({ selectedEnvironments });
   };
 
-  hasEnvironmentSelected() {
-    return (
-      this.state.selectedEnvironments && this.state.selectedEnvironments.length
-    );
-  }
-
-  onShowHelmCommand() {
-    getHelmCommand(this.createDeployPayload(), this, ({ data }) => {
-      this.setState({ helmValue: data, showHelmCmdModal: true });
-    });
-  }
-
   render() {
     let columns = [];
     columns.push(col.addCol('chartName', 'Chart Name'));
@@ -121,24 +104,16 @@ export class Deploy extends Component {
                         />
                       </FormGroup>
                     </Col>
-                    <Col></Col>
+                    <Col md={8}>
+                      <Button
+                        variant="primary"
+                        className="pull-right"
+                        onClick={this.onDeploy.bind(this)}
+                      >
+                        Request Install
+                      </Button>
+                    </Col>
                   </Row>
-                  <div className="d-flex justify-content-end">
-                    <Button
-                      variant="secondary"
-                      onClick={this.onShowHelmCommand.bind(this)}
-                      disabled={!this.hasEnvironmentSelected()}
-                    >
-                      Show Helm Command
-                    </Button>
-                    <Button
-                      variant="primary"
-                      onClick={this.onDeploy.bind(this)}
-                      disabled={!this.hasEnvironmentSelected()}
-                    >
-                      Request Install
-                    </Button>
-                  </div>
                 </Card.Body>
               </Card>
             </Col>
@@ -160,11 +135,6 @@ export class Deploy extends Component {
             </Col>
           </Row>
         </Container>
-        <HelmCommandModal
-          value={this.state.helmValue}
-          show={this.state.showHelmCmdModal}
-          close={this.closeHelmCmdModal.bind(this)}
-        />
       </div>
     );
   }

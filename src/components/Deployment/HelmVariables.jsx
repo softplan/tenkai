@@ -9,8 +9,7 @@ import {
   FormLabel,
   FormControl,
   OverlayTrigger,
-  Tooltip,
-  Form
+  Tooltip
 } from 'react-bootstrap';
 import axios from 'axios';
 import ArrayVariable from 'components/Deployment/ArrayVariable.jsx';
@@ -24,6 +23,7 @@ import Select from 'react-select';
 import { ACTION_SAVE_VARIABLES } from 'policies.js';
 import NotesModal from 'components/Modal/NotesModal.jsx';
 import { retrieveNotes, saveNotes } from 'client-api/apicall.jsx';
+import Form from '../../../node_modules/react-bootstrap/esm/Form';
 
 export class HelmVariables extends Component {
   state = {
@@ -681,25 +681,25 @@ export class HelmVariables extends Component {
           <tr key={key}>
             <td className="word-wrap">{key}</td>
             <td>
-              {typeof variables[key] === 'boolean' ? (
-                <Form.Check
-                  id={key}
-                  type="switch"
-                  name={key}
-                  inline
-                  checked={!value ? Boolean(variables[key]) : value === 'true'}
-                  onChange={this.onInputCheck}
-                  disabled={
-                    !this.props.hasEnvironmentPolicy(ACTION_SAVE_VARIABLES)
-                  }
-                ></Form.Check>
-              ) : (
-                <OverlayTrigger
-                  placement="bottom"
-                  overlay={tooltip}
-                  delayShow={300}
-                  delayHide={150}
-                >
+              <OverlayTrigger
+                placement="bottom"
+                overlay={tooltip}
+                delayShow={300}
+                delayHide={150}
+              >
+                {typeof variables[key] === 'boolean' ? (
+                  <Form.Check
+                    id={key}
+                    type="switch"
+                    name={key}
+                    inline
+                    checked={value === 'true'}
+                    onChange={this.onInputCheck}
+                    disabled={
+                      !this.props.hasEnvironmentPolicy(ACTION_SAVE_VARIABLES)
+                    }
+                  ></Form.Check>
+                ) : (
                   <input
                     name={key}
                     disabled={
@@ -711,8 +711,8 @@ export class HelmVariables extends Component {
                     style={{ width: '100%' }}
                     className={this.isValid(key)}
                   />
-                </OverlayTrigger>
-              )}
+                )}
+              </OverlayTrigger>
               {this.hasInvalidVar(key) &&
                 this.props.invalidVariables[key].map(val => {
                   return (
