@@ -659,6 +659,14 @@ export class HelmVariables extends Component {
     );
   }
 
+  getCheckedStatus(value, defaultValue) {
+    if (!value) {
+      return defaultValue;
+    }
+
+    return value === 'true';
+  }
+
   renderVariables(variables) {
     return Object.keys(variables).map(key => {
       if (typeof variables[key] == 'object') {
@@ -687,7 +695,10 @@ export class HelmVariables extends Component {
                   type="switch"
                   name={key}
                   inline
-                  checked={!value ? Boolean(variables[key]) : value === 'true'}
+                  checked={this.getCheckedStatus(
+                    value,
+                    Boolean(variables[key])
+                  )}
                   onChange={this.onInputCheck}
                   disabled={
                     !this.props.hasEnvironmentPolicy(ACTION_SAVE_VARIABLES)

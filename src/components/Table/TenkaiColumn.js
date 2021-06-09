@@ -51,6 +51,19 @@ export const addColBtn = (dataField, text, button, wdt = '10%') => {
   };
 };
 
+export const addColCheckbox = (dataField, text, button, wdt = '2%') => {
+  return {
+    dataField: dataField,
+    text: text,
+    sort: false,
+    isDummyField: true,
+    formatter: button,
+    headerStyle: {
+      width: wdt
+    }
+  };
+};
+
 export const renderBtn = (handleEvt, icon, disabled = false) => {
   return (cell, row) => {
     return (

@@ -13,12 +13,27 @@ import * as selectors from 'stores/deploy/reducer';
 import Select from 'react-select';
 import { Card, Button, FormGroup, FormLabel } from 'react-bootstrap';
 
+const columns = checkboxElem => [
+  col.addColCheckbox('checkbox', '', checkboxElem),
+  col.addCol('chartName', 'Chart Name'),
+  col.addCol('chartVersion', 'Chart Version'),
+  col.addCol('dockerTag', 'Docker Tag')
+];
 export class Deploy extends Component {
   state = {
     selectedEnvironments: this.getEnvs(),
     showHelmCmdModal: false,
-    helmValue: ''
+    helmValue: '',
+    selectedCharts: []
   };
+
+  componentDidMount() {
+    const { deploy } = this.props;
+
+    if (deploy && deploy.chartsToDeploy.length === 1) {
+      this.setState({ selectedCharts: deploy.chartsToDeploy });
+    }
+  }
 
   closeHelmCmdModal() {
     this.setState({ showHelmCmdModal: false, helmValue: '' });
@@ -52,7 +67,7 @@ export class Deploy extends Component {
     return {
       productVersionId: this.props.deploy.productVersionId,
       environmentIds: this.getEnvironmentIds(),
-      deployables: this.props.deploy.chartsToDeploy.map(c => ({
+      deployables: this.state.selectedCharts.map(c => ({
         environmentId: this.state.selectedEnvironments[0].value,
         chart: c.chartName,
         chartVersion: c.chartVersion,
@@ -79,25 +94,82 @@ export class Deploy extends Component {
     );
   }
 
+  hasChartSelected() {
+    return this.state.selectedCharts.length;
+  }
+
   onShowHelmCommand() {
     getHelmCommand(this.createDeployPayload(), this, ({ data }) => {
       this.setState({ helmValue: data, showHelmCmdModal: true });
     });
   }
 
-  render() {
-    let columns = [];
-    columns.push(col.addCol('chartName', 'Chart Name'));
-    columns.push(col.addCol('chartVersion', 'Chart Version'));
-    columns.push(col.addCol('dockerTag', 'Docker Tag'));
+  selectAllCharts(data) {
+    const allChartsSelected = data.length === this.state.selectedCharts.length;
 
-    let data = [];
-    if (
-      this.props.deploy !== undefined &&
-      this.props.deploy.chartsToDeploy !== undefined
-    ) {
-      data = this.props.deploy.chartsToDeploy;
+    this.setState({
+      selectedCharts: allChartsSelected ? [] : data
+    });
+  }
+
+  handleSelectChart(value) {
+    const selected = this.state.selectedCharts;
+    const selectedIndex = selected.indexOf(value);
+    let newSelected = [];
+
+    if (selectedIndex === -1) {
+      newSelected = newSelected.concat(selected, value);
+    } else if (selectedIndex === 0) {
+      newSelected = newSelected.concat(selected.slice(1));
+    } else if (selectedIndex === selected.length - 1) {
+      newSelected = newSelected.concat(selected.slice(0, -1));
+    } else if (selectedIndex > 0) {
+      newSelected = newSelected.concat(
+        selected.slice(0, selectedIndex),
+        selected.slice(selectedIndex + 1)
+      );
     }
+
+    this.setState({ selectedCharts: newSelected });
+  }
+
+  renderCheckbox(_, row) {
+    return (
+      <input
+        type="checkbox"
+        onChange={() => this.handleSelectChart(row)}
+        checked={this.state.selectedCharts.indexOf(row) > -1}
+      />
+    );
+  }
+
+  renderTableContent() {
+    const { deploy } = this.props;
+    const data = (deploy && deploy.chartsToDeploy) || [];
+    const allChartsSelected = data.length === this.state.selectedCharts.length;
+
+    return (
+      <>
+        <Button
+          onClick={this.selectAllCharts.bind(this, data)}
+          variant="secondary"
+        >
+          {allChartsSelected ? 'Deselect All' : 'Select All'}
+        </Button>
+        <TenkaiTable
+          key={Math.random()}
+          keyfield="chartName"
+          columns={columns(this.renderCheckbox.bind(this))}
+          data={data}
+        />
+      </>
+    );
+  }
+
+  render() {
+    const shouldDisabledBtn = !(
+      this.hasEnvironmentSelected() && this.hasChartSelected()
+    );
 
     return (
       <div className="content">
@@ -127,14 +199,14 @@ export class Deploy extends Component {
                     <Button
                       variant="secondary"
                       onClick={this.onShowHelmCommand.bind(this)}
-                      disabled={!this.hasEnvironmentSelected()}
+                      disabled={shouldDisabledBtn}
                     >
                       Show Helm Command
                     </Button>
                     <Button
                       variant="primary"
                       onClick={this.onDeploy.bind(this)}
-                      disabled={!this.hasEnvironmentSelected()}
+                      disabled={shouldDisabledBtn}
                     >
                       Request Install
                     </Button>
@@ -147,15 +219,7 @@ export class Deploy extends Component {
             <Col md={12}>
               <CardTenkai
                 title="Charts to Deploy"
-                content={
-                  <form>
-                    <TenkaiTable
-                      keyfield="chartName"
-                      columns={columns}
-                      data={data}
-                    />
-                  </form>
-                }
+                content={this.renderTableContent()}
               />
             </Col>
           </Row>
