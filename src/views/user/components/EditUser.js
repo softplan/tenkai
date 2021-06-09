@@ -4,6 +4,7 @@ import { CardTenkai } from 'components/Card/CardTenkai.jsx';
 import { Button, Form, Row, Col } from 'react-bootstrap';
 import { getAllEnvironments } from 'client-api/apicall.jsx';
 import * as utils from 'utils/sort';
+import * as services from 'services/users';
 
 export class UserForm extends Component {
   state = {
@@ -12,10 +13,11 @@ export class UserForm extends Component {
     selected: []
   };
 
-  componentDidMount() {
+  async componentDidMount() {
     if (this.props.editMode) {
-      let selected = this.props.editItem.Environments.map(e => e.name);
-      this.setState({ formData: this.props.editItem, selected: selected });
+      const user = await services.getUser(this.props.editItem.ID);
+      let selected = user.data.Environments.map(e => e.name);
+      this.setState({ formData: user.data, selected: selected });
     } else {
       this.setState(() => ({
         formData: { checkedEnvs: [], email: '' }

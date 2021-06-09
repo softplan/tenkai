@@ -5,6 +5,10 @@ export async function allUsers() {
   return await axios.get(`${TENKAI_API_URL}/users`);
 }
 
+export async function getUser(userId) {
+  return await axios.get(`${TENKAI_API_URL}/users/${userId}`);
+}
+
 export async function deleteUser(userId) {
   return await axios.delete(`${TENKAI_API_URL}/users/${userId}`);
 }
