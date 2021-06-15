@@ -4,6 +4,7 @@ import { Button, Form, Row, Col } from 'react-bootstrap';
 import Select from 'react-select';
 import * as services from 'services/securityOperation';
 import * as roleServices from 'services/roles';
+import * as userServices from 'services/users';
 
 export class EditRole extends Component {
   state = {
@@ -17,8 +18,9 @@ export class EditRole extends Component {
 
   async componentDidMount() {
     const allRoles = await services.load();
+    const user = await userServices.getUser(this.props.editItem.ID);
 
-    let envs = this.props.editItem.Environments.map(e => ({
+    let envs = user.data.Environments.map(e => ({
       label: e.name,
       value: e.ID
     }));
@@ -37,8 +39,8 @@ export class EditRole extends Component {
 
     roles.push(...tmpRoles);
 
-    const email = this.props.editItem.email;
-    const userId = this.props.editItem.ID;
+    const email = user.data.email;
+    const userId = user.data.ID;
     this.setState({ envs: envs, roles: roles, email: email, userId: userId });
   }
 
