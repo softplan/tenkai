@@ -245,8 +245,7 @@ class Workload extends Component {
           status = 'Error';
         }
         return {
-          ID: i.ID,
-          chart: i.chart,
+          ...i,
           CreatedAt: this.formatDateTime(new Date(i.CreatedAt)),
           UpdatedAt: this.formatDateTime(new Date(i.UpdatedAt)),
           status
@@ -305,8 +304,7 @@ class Workload extends Component {
                 }
               }
               return {
-                ID: i.ID,
-                chart: i.chart,
+                ...i,
                 CreatedAt: this.formatDateTime(new Date(i.CreatedAt)),
                 status
               };
@@ -434,6 +432,7 @@ class Workload extends Component {
     columns.push(col.addId());
     columns.push(col.addCol('CreatedAt', 'Created At', '25%'));
     columns.push(col.addCol('status', 'Status', '25%'));
+    columns.push(col.addCol('user', 'Requester User', '25%'));
     columns.push(
       col.addColBtn(
         'items',
@@ -446,10 +445,12 @@ class Workload extends Component {
 
   renderDeploymentModalColumns = () => {
     let columns = [];
-    columns.push(col.addId());
     columns.push(col.addCol('CreatedAt', 'Created At', '30%'));
-    columns.push(col.addCol('chart', 'Chart', '50%'));
-    columns.push(this.addColStatus('10%'));
+    columns.push(col.addCol('environment', 'Environment', '30%'));
+    columns.push(col.addCol('chart', 'Chart', '30%'));
+    columns.push(col.addCol('chartVersion', 'Chart Version', '10%'));
+    columns.push(col.addCol('dockerVersion', 'Image Version', '10%'));
+    columns.push(this.addColStatus('8%'));
     return columns;
   };
 
